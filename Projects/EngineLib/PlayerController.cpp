@@ -71,8 +71,9 @@ void PlayerController::CameraMove()
 			float deltaX = _currentMousePos.x - _prevMousePos.x;
 			float deltaY = _currentMousePos.y - _prevMousePos.y;
 
-			_camRot.x = ::XMConvertToRadians(deltaY) * 10 * _dt;
-			_camRot.y = ::XMConvertToRadians(deltaX) * 10 * _dt;
+			_camRot.x = min(::XMConvertToRadians(deltaY), ::XMConvertToRadians(89.f)) * 0.1f;
+			_camRot.y = min(::XMConvertToRadians(deltaX), ::XMConvertToRadians(89.f)) * 0.1f;
+			_camRot.z = 0.f;
 
 			_camera.lock()->GetTransform()->RotateAround(_camRot);
 		}
@@ -614,6 +615,8 @@ void PlayerController::FixedUpdate()
 
 		_battleTimer += MANAGER_TIME()->GetDeltaTime();
 	}
+	CameraMove();
+
 }
 
 void PlayerController::Update()
@@ -623,5 +626,4 @@ void PlayerController::Update()
 
 void PlayerController::LateUpdate()
 {
-	CameraMove();
 }

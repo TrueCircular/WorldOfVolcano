@@ -29,8 +29,8 @@ void Camera::UpdateMatrix()
 	case CameraType::Target:
 	{
 		_eye = GetTransform()->GetPosition();
-		_look = GetGameObject()->GetParent()->GetTransform()->GetPosition();
-		_look.y += 15.f;
+		_look = (_target != nullptr) ? _target->GetPosition() : Vec3(0.f);
+		_look.y += 10.f;
 		_up = GetTransform()->GetUpVector();
 	}break;
 	}

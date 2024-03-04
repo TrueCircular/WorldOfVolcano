@@ -28,7 +28,7 @@ private:
 	float _width = 0.f;
 	float _height = 0.f;
 private:
-	Vec3 _target;
+	shared_ptr<Transform> _target;
 private:
 	Vec3 _eye;
 	Vec3 _look;
@@ -38,6 +38,7 @@ public:
 	static Matrix S_MatProjection;
 //function
 public:
+	void SetTargetTransform(const shared_ptr<Transform>& target) { _target = target; }
 	void SetProjectionType(ProjectionType type) { _type = type; }
 	void SetNear(float value) { _near = value; }
 	void SetPar(float value) { _far = value; }

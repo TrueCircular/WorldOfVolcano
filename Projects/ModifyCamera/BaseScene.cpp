@@ -53,7 +53,7 @@ void BaseScene::Init()
 		frustom = make_shared<FrustomCamera>();
 		_childCamera = make_shared<GameObject>();
 		_childCamera->Awake();
-		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, -1000.f));
+		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 100, -1000));
 		_childCamera->AddComponent(make_shared<Camera>());
 		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
 		_childCamera->AddComponent(frustom);
@@ -176,11 +176,13 @@ void BaseScene::Init()
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
 		_warrior->AddChild(_childCamera);
+		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		_warrior->AddComponent(make_shared<PlayerController>());
 		_warrior->Start();
 		_warrior->GetTransform()->SetLocalPosition(spawnPos);
 		Add(_warrior);
 		AddShadow(_warrior);
+
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"Lobby");
