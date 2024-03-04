@@ -209,6 +209,7 @@
     <FxCompile Include="..\..\Resources\Shader\Global.fx" />
     <FxCompile Include="..\..\Resources\Shader\Instancing.fx" />
     <FxCompile Include="..\..\Resources\Shader\Light.fx" />
+    <FxCompile Include="..\..\Resources\Shader\Mf_ky_TexController.fx" />
     <FxCompile Include="..\..\Resources\Shader\Render.fx" />
   </ItemGroup>
   <ItemGroup>

@@ -25,6 +25,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{f75b717a-d2ea-4643-b65f-3bdc98c976d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Effects">
+      <UniqueIdentifier>{e82251b9-e870-48d4-be05-00b3d568a14f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -157,6 +160,9 @@
     </FxCompile>
     <FxCompile Include="..\..\Resources\Shader\Render.fx">
       <Filter>Shader\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Mf_ky_TexController.fx">
+      <Filter>Shader\Effects</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
