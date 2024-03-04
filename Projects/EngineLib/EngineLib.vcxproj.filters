@@ -1,0 +1,625 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="00. Engine">
+      <UniqueIdentifier>{42eea8e2-c523-40eb-aa2b-71b15b8d094b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Graphics">
+      <UniqueIdentifier>{6085d5ad-3c66-478e-955f-340c43a523a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Managers">
+      <UniqueIdentifier>{659c991b-0477-4270-be0f-f7c99d6e6984}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject">
+      <UniqueIdentifier>{a2d97a6a-7abd-431a-9fef-e22912fd0947}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component">
+      <UniqueIdentifier>{e472a20d-fb90-4f2e-a26f-d244778341be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Engine\Resource">
+      <UniqueIdentifier>{d188278f-dbab-44fa-bab5-5ba4686575d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Graphics\Buffer">
+      <UniqueIdentifier>{790fe233-c16c-48ff-ab4f-fa6a8cc4c511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Graphics\Shader">
+      <UniqueIdentifier>{018dd310-b237-4866-9ed8-34175423cda6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Fixed">
+      <UniqueIdentifier>{295e276f-c2fe-4a5f-b070-33a7a00c3b1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Engine\Resource\Model">
+      <UniqueIdentifier>{bd7b0f9c-ef87-4059-a3f0-8dd7cee03442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05. Headers">
+      <UniqueIdentifier>{54d14474-30de-4c39-b064-15d7ee535bc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Utils">
+      <UniqueIdentifier>{ee3c9157-0f33-47a7-bf6c-a497f7a33534}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Controller">
+      <UniqueIdentifier>{97341dca-84e0-44b6-832d-684113424cbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Unit">
+      <UniqueIdentifier>{5874a3fc-72a4-4c89-b124-7413c64e4cbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Unit\PlayableUnit">
+      <UniqueIdentifier>{8d010ad0-d0be-489f-b771-5d2554540710}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Unit\EnemyUnit">
+      <UniqueIdentifier>{9968aebb-d016-4d42-825e-a4bcdae6b7f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Scripts">
+      <UniqueIdentifier>{03c24022-4f35-4037-9ced-1eb5ea1706c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Managers\GUI">
+      <UniqueIdentifier>{368b69bf-9bae-4514-8cd0-eb5e74f8b014}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Colision">
+      <UniqueIdentifier>{fa4b7f4d-a8f7-44b8-afca-ccfc8a9e6278}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Player">
+      <UniqueIdentifier>{ecb2a4f5-82c6-4049-aeca-b390ada6136b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Item">
+      <UniqueIdentifier>{87a56f64-0269-47a5-b495-dc8a05cca15c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Item\Equipment">
+      <UniqueIdentifier>{ace111dd-dc32-4530-9e82-a56f0c5351f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Item\Consumable">
+      <UniqueIdentifier>{350dee07-ca36-4587-88d7-0b2be9b2163b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Item">
+      <UniqueIdentifier>{97e872cd-cf84-487d-bb20-38bde4e90fab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Item\Equipment">
+      <UniqueIdentifier>{ef9c8c0d-dc4b-46ca-b750-3a7d607ea280}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Item\Equipment\LeftShoulder">
+      <UniqueIdentifier>{326db383-f3cc-4488-9bfa-14189e9dd5fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Item\Equipment\Helm">
+      <UniqueIdentifier>{ca1e9602-aa27-4cf7-967d-336fb038d7ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Item\Equipment\Belt">
+      <UniqueIdentifier>{e15beacc-9704-48e6-9fe4-325d8bf68c4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Item\Equipment\RightShoulder">
+      <UniqueIdentifier>{b2435a15-715e-41c2-af58-f50a086cf653}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Item\Equipment\Shield">
+      <UniqueIdentifier>{504a4117-f438-4cc9-aec2-8fe92aa3569d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Item\Equipment\Weapon">
+      <UniqueIdentifier>{9c613a33-0c57-4f69-b0ec-4772d318d277}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. GameObject\Item\Consumable">
+      <UniqueIdentifier>{e4d8fcb8-2410-4ec7-946e-c7122d82bd1e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>05. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="EnginePch.h">
+      <Filter>05. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml2.h">
+      <Filter>06. Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>06. Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>05. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleMath.h">
+      <Filter>06. Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceBase.h">
+      <Filter>00. Engine\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>00. Engine\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryHelper.h">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexData.h">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexBuffer.h">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="CGame.h">
+      <Filter>00. Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="IExecute.h">
+      <Filter>00. Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Pass.h">
+      <Filter>01. Graphics\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Technique.h">
+      <Filter>01. Graphics\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>01. Graphics\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Structs.h">
+      <Filter>05. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>04. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>03. GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="MonoBehaviour.h">
+      <Filter>04. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>04. Component\Fixed</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>04. Component\Fixed</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>00. Engine\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRenderer.h">
+      <Filter>04. Component\Fixed</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>00. Engine\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="FileUtils.h">
+      <Filter>06. Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelRenderer.h">
+      <Filter>04. Component\Fixed</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelMesh.h">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelAnimation.h">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelAnimator.h">
+      <Filter>04. Component\Fixed</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaData.h">
+      <Filter>03. GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameFactory.h">
+      <Filter>06. Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Warrior.h">
+      <Filter>03. GameObject\Unit\PlayableUnit</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayableUnit.h">
+      <Filter>03. GameObject\Unit\PlayableUnit</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAnimState.h">
+      <Filter>04. Component\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>04. Component\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit.h">
+      <Filter>03. GameObject\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyUnit.h">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreHound.h">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClInclude>
+    <ClInclude Include="AIController.h">
+      <Filter>04. Component\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h" />
+    <ClInclude Include="InstancingManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingBuffer.h">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterController.h">
+      <Filter>04. Component\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Plain.h">
+      <Filter>04. Component\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="PlainHeightAdder.h">
+      <Filter>04. Component\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>04. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="FrustomCamera.h">
+      <Filter>04. Component\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionData.h">
+      <Filter>05. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>00. Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>01. Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyAnimState.h">
+      <Filter>04. Component\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewport.h">
+      <Filter>01. Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIInterface.h">
+      <Filter>02. Managers\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuiManager.h">
+      <Filter>02. Managers\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCollider.h">
+      <Filter>04. Component\Colision</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereCollider.h">
+      <Filter>04. Component\Colision</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxCollider.h">
+      <Filter>04. Component\Colision</Filter>
+    </ClInclude>
+    <ClInclude Include="HeightGetter.h">
+      <Filter>04. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDraw.h" />
+    <ClInclude Include="SoundManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Sounds.h">
+      <Filter>00. Engine\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="CharacterInfo.h" />
+    <ClInclude Include="EquipmentSlot.h">
+      <Filter>04. Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="EquipmentItem.h">
+      <Filter>03. GameObject\Item\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsumableItem.h">
+      <Filter>03. GameObject\Item\Consumable</Filter>
+    </ClInclude>
+    <ClInclude Include="BaronGeddon.h">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientShieldData.h">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientSword.h">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientSwordData.h">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientBeltData.h">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientHelmData.h">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientLShoulderData.h">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientRShoulderData.h">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemData.h">
+      <Filter>04. Component\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>04. Component\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerSoundController.h">
+      <Filter>04. Component\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemySoundController.h">
+      <Filter>04. Component\Scripts</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>05. Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml2.cpp">
+      <Filter>06. Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>06. Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleMath.cpp">
+      <Filter>06. Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceBase.cpp">
+      <Filter>00. Engine\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>00. Engine\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryHelper.cpp">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry.cpp">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexData.cpp">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexBuffer.cpp">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexBuffer.cpp">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBuffer.cpp">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="CGame.cpp">
+      <Filter>00. Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="IExecute.cpp">
+      <Filter>00. Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Pass.cpp">
+      <Filter>01. Graphics\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Technique.cpp">
+      <Filter>01. Graphics\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>01. Graphics\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Structs.cpp">
+      <Filter>05. Headers</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>04. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>03. GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="MonoBehaviour.cpp">
+      <Filter>04. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>04. Component\Fixed</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>04. Component\Fixed</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>00. Engine\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshRenderer.cpp">
+      <Filter>04. Component\Fixed</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>00. Engine\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="FileUtils.cpp">
+      <Filter>06. Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelRenderer.cpp">
+      <Filter>04. Component\Fixed</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelMesh.cpp">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelAnimation.cpp">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelAnimator.cpp">
+      <Filter>04. Component\Fixed</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaData.cpp">
+      <Filter>03. GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameFactory.cpp">
+      <Filter>06. Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Warrior.cpp">
+      <Filter>03. GameObject\Unit\PlayableUnit</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayableUnit.cpp">
+      <Filter>03. GameObject\Unit\PlayableUnit</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAnimState.cpp">
+      <Filter>04. Component\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>04. Component\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Unit.cpp">
+      <Filter>03. GameObject\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyUnit.cpp">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreHound.cpp">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClCompile>
+    <ClCompile Include="AIController.cpp">
+      <Filter>04. Component\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp" />
+    <ClCompile Include="InstancingManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingBuffer.cpp">
+      <Filter>01. Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterController.cpp">
+      <Filter>04. Component\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Plain.cpp">
+      <Filter>04. Component\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="PlainHeightAdder.cpp">
+      <Filter>04. Component\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>04. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="FrustomCamera.cpp">
+      <Filter>04. Component\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>00. Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>01. Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyAnimState.cpp">
+      <Filter>04. Component\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewport.cpp">
+      <Filter>01. Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIInterface.cpp">
+      <Filter>02. Managers\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiManager.cpp">
+      <Filter>02. Managers\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseCollider.cpp">
+      <Filter>04. Component\Colision</Filter>
+    </ClCompile>
+    <ClCompile Include="SphereCollider.cpp">
+      <Filter>04. Component\Colision</Filter>
+    </ClCompile>
+    <ClCompile Include="BoxCollider.cpp">
+      <Filter>04. Component\Colision</Filter>
+    </ClCompile>
+    <ClCompile Include="HeightGetter.cpp">
+      <Filter>04. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugDraw.cpp" />
+    <ClCompile Include="CharacterInfo.cpp">
+      <Filter>04. Component\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="EquipmentSlot.cpp">
+      <Filter>04. Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="EquipmentItem.cpp">
+      <Filter>03. GameObject\Item\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsumableItem.cpp">
+      <Filter>03. GameObject\Item\Consumable</Filter>
+    </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Sounds.cpp">
+      <Filter>00. Engine\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="BaronGeddon.cpp">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientShieldData.cpp">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientSword.cpp">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientSwordData.cpp">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientBeltData.cpp">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientHelmData.cpp">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientLShoulderData.cpp">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientRShoulderData.cpp">
+      <Filter>04. Component\Item\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemData.cpp">
+      <Filter>04. Component\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>04. Component\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemySoundController.cpp">
+      <Filter>04. Component\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerSoundController.cpp">
+      <Filter>04. Component\Scripts</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SimpleMath.inl">
+      <Filter>06. Utils</Filter>
+    </None>
+  </ItemGroup>
+</Project>

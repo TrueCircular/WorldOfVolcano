@@ -1,0 +1,197 @@
+#include "pch.h"
+#include "AIController.h"
+#include "HeightGetter.h"
+
+void AIController::InitAnimState()
+{
+	switch (_type)
+	{
+	case AIType::PlayableUnit:
+	{
+		//Idle
+		_playerAnimStateList.push_back(make_shared<PlayerAnimIdle>());
+		//FrontWalk
+		_playerAnimStateList.push_back(make_shared<PlayerAnimFrontWalk>());
+		//BackWalk
+		_playerAnimStateList.push_back(make_shared<PlayerAnimBackWalk>());
+		//FrontRun
+		_playerAnimStateList.push_back(make_shared<PlayerAnimFrontRun>());
+		//BackRun
+		_playerAnimStateList.push_back(make_shared<PlayerAnimBackRun>());
+		//JumpStart
+		_playerAnimStateList.push_back(make_shared<PlayerAnimJumpStart>());
+		//JumpFall
+		_playerAnimStateList.push_back(make_shared<PlayerAnimJumpFall>());
+		//JumpEnd
+		_playerAnimStateList.push_back(make_shared<PlayerAnimJumpEnd>());
+		//Stun
+		_playerAnimStateList.push_back(make_shared<PlayerAnimStun>());
+		//Loot
+		_playerAnimStateList.push_back(make_shared<PlayerAnimLoot>());
+		//Damaged
+		_playerAnimStateList.push_back(make_shared<PlayerAnimDamaged>());
+		//Death
+		_playerAnimStateList.push_back(make_shared<PlayerAnimDeath>());
+		//Battle
+		_playerAnimStateList.push_back(make_shared<PlayerAnimBattle>());
+		//Attack1
+		_playerAnimStateList.push_back(make_shared<PlayerAnimAttack1>());
+		//Attack2
+		_playerAnimStateList.push_back(make_shared<PlayerAnimAttack2>());
+		//Casting
+		_playerAnimStateList.push_back(make_shared<PlayerAnimCasting>());
+		//Ability1
+		_playerAnimStateList.push_back(make_shared<PlayerAnimAbility1>());
+		//Ability2
+		_playerAnimStateList.push_back(make_shared<PlayerAnimAbility2>());
+
+		_currentPlayerAnimState = _playerAnimStateList[0];
+		_currentPlayerAnimState->Enter(shared_from_this());
+	}break;
+	case AIType::EnemyUnit:
+	{
+		//Stand
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimStand>());
+		//Walk
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimWalk>());
+		//Run
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimRun>());
+		//Damaged
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimDamaged>());
+		//Death
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimDeath>());
+		//Battle
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimBattle>());
+		//Attack1
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimAttack1>());
+		//Attack2
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimAttack2>());
+		//Casting
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimCasting>());
+		//Ability1
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimAbility1>());
+		//Ability2
+		_enemyAnimStateList.push_back(make_shared<EnemyAnimAbility2>());
+
+		//Default Stand
+		_currentEnemyAnimState = _enemyAnimStateList[0];
+		_currentEnemyAnimState->Enter(shared_from_this());
+	}break;
+	}
+
+
+}
+
+bool AIController::SetAnimState(const PlayerAnimType& type)
+{
+	if (type == PlayerAnimType::None)
+	{
+		return false;
+	}
+	else
+	{
+		_currentPlayerAnimState->Out();
+		_currentPlayerAnimState = _playerAnimStateList[static_cast<int>(type)];
+
+		if (_currentPlayerAnimState)
+		{
+			_currentPlayerAnimState->Enter(shared_from_this());
+			return true;
+		}
+
+	}
+
+	return false;
+}
+
+bool AIController::SetAnimState(const EnemyAnimType& type)
+{
+	if (type == EnemyAnimType::None)
+	{
+		return false;
+	}
+	else
+	{
+		_currentEnemyAnimState->Out();
+		_currentEnemyAnimState = _enemyAnimStateList[static_cast<int>(type)];
+		if (_currentEnemyAnimState)
+		{
+			_currentEnemyAnimState->Enter(shared_from_this());
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void AIController::Start()
+{
+	{
+		_transform = GetGameObject()->GetTransform();
+		_animator = GetGameObject()->GetChildByName(L"Model")->GetModelAnimator();
+		_jumpState = make_shared<JumpFlag>();
+	}
+
+	_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
+	{
+		if (_transform.lock())
+		{
+			Vec3 temPos = _transform.lock()->GetLocalPosition();
+			temPos.y = _heightGetterCom.lock()->GetHeight();
+			_transform.lock()->SetLocalPosition(temPos);
+		}
+	}
+
+	switch (_type)
+	{
+	case AIType::PlayableUnit:
+	{
+		_currentPlayerState = make_shared<PlayerUnitState>();
+		*_currentPlayerState = PlayerUnitState::Stand;
+	}break;
+	case AIType::EnemyUnit:
+	{
+		_currentEnemyState = make_shared<EnemyUnitState>();
+		*_currentEnemyState = EnemyUnitState::Stand;
+	}break;
+	}
+
+	InitAnimState();
+}
+
+void AIController::FixedUpdate()
+{
+	switch (_type)
+	{
+	case AIType::PlayableUnit:
+	{
+		_currentPlayerAnimState->Update();
+	}
+	break;
+	case AIType::EnemyUnit:
+	{
+		_currentEnemyAnimState->Update();
+	}
+	break;
+	}
+}
+
+void AIController::Update()
+{
+	if (_heightGetterCom.lock())
+	{
+		Vec3 tempPos = _transform.lock()->GetLocalPosition();
+		tempPos.y = _heightGetterCom.lock()->GetHeight();
+		_transform.lock()->SetLocalPosition(tempPos);
+	}
+	if (_aiSound)
+		_aiSound->PlaySound(GetCurrentPlayerAnimType());
+
+	if (_enemySound)
+		_enemySound->PlaySound(GetCurrentEnemyAnimType());
+
+}
+
+void AIController::LateUpdate()
+{
+}
