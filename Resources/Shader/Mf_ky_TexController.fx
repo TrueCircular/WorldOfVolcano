@@ -34,6 +34,7 @@ struct NumOutput
 
 cbuffer Effectbuffer
 {
+    //texture tiling, time, texturespeed, ycompression, extend, power,multiply
     float texture_tiling_scalar;
     float2 time_scalar_textureSpeed;
     float texture_y_compression_scalar;
@@ -41,20 +42,7 @@ cbuffer Effectbuffer
     float2 texPower_Muliply;
 };
 
-NumOutput MeshVS(NumMesh input)
-{
-    NumOutput output;
-
-    output.position = mul(input.position, input.world);
-    output.worldPosition = output.position;
-    output.position = mul(output.position, VP);
-    
-    output.uv = input.uv;
-    
-    return output;
-}
-
-float4 PS(NumOutput input) : SV_TARGET
+float4 ComputeTexControll(float4 color)
 {
     float2 mixuv = input.uv*texture_tiling_scalar;
     float2 speed = 
