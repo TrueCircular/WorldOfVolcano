@@ -206,12 +206,10 @@
     <ClCompile Include="StruectedLavaSprite.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\Resources\Shader\GameTerrain.fx" />
     <FxCompile Include="..\..\Resources\Shader\Global.fx" />
     <FxCompile Include="..\..\Resources\Shader\Instancing.fx" />
     <FxCompile Include="..\..\Resources\Shader\Light.fx" />
     <FxCompile Include="..\..\Resources\Shader\Render.fx" />
-    <FxCompile Include="..\..\Resources\Shader\TweenAnimation.fx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineLib\EngineLib.vcxproj">
