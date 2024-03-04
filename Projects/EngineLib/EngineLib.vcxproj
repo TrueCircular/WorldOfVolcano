@@ -132,7 +132,8 @@
       <AdditionalLibraryDirectories>../../Libraries/lib</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>copy "*.h" "..\\..\\Libraries\\Include\\engine"
+      <Command>mkdir "..\\..\\Libraries\\lib\\engine"
+copy "*.h" "..\\..\\Libraries\\Include\\engine"
 copy "*.inl" "..\\..\\Libraries\\Include\\engine"
 copy "Bin\\Debug\\*.idb" "..\\..\\Libraries\\lib\\engine"
 copy "Bin\\Debug\\*.lib" "..\\..\\Libraries\\lib\\engine"
