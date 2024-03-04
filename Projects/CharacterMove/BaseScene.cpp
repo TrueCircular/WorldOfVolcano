@@ -103,7 +103,6 @@ void BaseScene::Init()
 
 	}
 
-
 	auto fog_obj = make_shared<GameObject>();
 	//Character
 	{
