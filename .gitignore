@@ -401,8 +401,8 @@ FodyWeavers.xsd
 
 # Custom
 .Output/
-.Libraries/lib/engine/*.lib
-.Libraries/lib/engine/*.idb
+EngineLib.lib
+EngineLib.idb
 .Projects/EngineLib/Bin/
 
 ### VisualStudio Patch ###
