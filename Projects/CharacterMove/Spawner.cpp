@@ -177,7 +177,7 @@ void Spawner::SpawnMonster(uint64 uid, uint32 monsterId, Vec3 spawnPos)
 		break;
 	case 1:
 		_chr = make_shared<CoreHound>();
-		break;k
+		break;
 	case 2:
 		_chr = make_shared<BaronGeddon>();
 		break;
