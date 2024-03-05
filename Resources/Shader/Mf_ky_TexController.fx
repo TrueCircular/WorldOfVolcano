@@ -1,57 +1,41 @@
-#ifndef _RENDER_FX_
-#define _RENDER_FX_
 #include "Global.fx"
 
-Texture2D NoiseMap;
+Texture2D Ky_NoiseMap;
 
-BlendState DamageBlendState
+cbuffer ky_Effectbuffer
 {
-    BlendEnable[0] = true;
-    SrcBlend = SRC_ALPHA;
-    DestBlend = INV_SRC_ALPHA;
-    BlendOp = ADD;
-    BlendOpAlpha = ADD;
-    SrcBlendAlpha = ONE;
-    DestBlendAlpha = ZERO;
-    RenderTargetWriteMask[0] = 0x0F;
+    //texture tiling, time, texturespeed
+    float3 ky_tile_time_speed;
+    // ycompression, power,multiply
+    float3 ky_comp_power_multi;
+    
+    //float texture_tiling_scalar;
+    //float2 time_scalar_textureSpeed;
+    //float texture_y_compression_scalar;
+    //float extend_value;
+    //float2 texPower_Muliply;
 };
 
-//Mesh Render//
-struct NumMesh
+float4 Ky_ComputeTexControll(float2 uv)
 {
-    float4 position : POSITION;
-    float2 uv : TEXCOORD;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-};
-struct NumOutput
-{
-    float4 position : SV_POSITION;
-    float2 uv : TEXCOORD;
-    float3 worldPosition : POSITION1;
-    uint num : NUM;
-};
+    float2 mixuv = uv * ky_tile_time_speed.x;
+    
+    float2 speed_control = { ky_tile_time_speed.z, ky_tile_time_speed.z };
+    float2 offset = speed_control;
+    speed_control = speed_control * ky_tile_time_speed.y;
+    offset = speed_control + offset;
+    mixuv = offset + mixuv;
+    
+    mixuv.y = pow(mixuv.y, ky_comp_power_multi.x);
+    
+//    mixuv = mixuv + float2(comp_power_multi.y, comp_power_multi.y);
 
-cbuffer Effectbuffer
-{
-    //texture tiling, time, texturespeed, ycompression, extend, power,multiply
-    float texture_tiling_scalar;
-    float2 time_scalar_textureSpeed;
-    float texture_y_compression_scalar;
-    float extend_value;
-    float2 texPower_Muliply;
-};
-
-float4 ComputeTexControll(float4 color)
-{
-    float2 mixuv = input.uv*texture_tiling_scalar;
-    float2 speed = 
+    mixuv = mixuv + ky_comp_power_multi.y;
+    float4 color = Ky_NoiseMap.Sample(LinearSampler, mixuv);
+    color = pow(color, ky_comp_power_multi.y);
+    color = color * ky_comp_power_multi.z;
+    
+    return color;
+    
 }
-technique11 T0
-{
-    PASS_RS_BS_VP(P0,CullNone,DamageBlendState,MeshVS,PS)
-//    PASS_RS_SP(P0, CullNone, MeshVS, PS)
-//	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
-};
 
-#endif

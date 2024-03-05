@@ -164,5 +164,17 @@
     <FxCompile Include="..\..\Resources\Shader\Mf_ky_TexController.fx">
       <Filter>Shader\Effects</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Mf_ky_TexController_Primitive.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\MaskToTopUnder.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\UVcontrol_4x4.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\HightLight.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
