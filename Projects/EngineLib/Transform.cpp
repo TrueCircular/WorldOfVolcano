@@ -92,8 +92,14 @@ void Transform::RotateAround(const Vec3 axis)
 		return;
 	else
 	{
-		Quaternion temp = Quaternion::CreateFromYawPitchRoll(axis.y, axis.x, axis.z);
-		Matrix matRot = Matrix::CreateFromQuaternion(temp);
+		Quaternion x = ::XMQuaternionRotationNormal(Vec3(1, 0, 0), axis.x);
+		Quaternion y = ::XMQuaternionRotationNormal(Vec3(0, 1, 0), axis.y);
+		Quaternion last = ::XMQuaternionMultiply(x, y);
+
+		Vec3 rPos = _localPosition - _parent->GetLocalPosition();
+		Vec3 rot = ::XMVector3Rotate(rPos, last);;
+
+		_localPosition = _parent->GetLocalPosition() + rot;
 
 
 		UpdateTransform();
@@ -152,23 +158,12 @@ void Transform::UpdateTransform()
 {
 	if (isWroldMode)
 	{
-		if (HasParent())
-		{
-			_matWorld = _matLocal * _parent->GetWorldMatrix();
-		}
-		else
-		{
-			_matWorld = _matLocal;
-		}
+
+		_matWorld = _matLocal;
 
 		Quaternion quat;
 		_matWorld.Decompose(_scale, quat, _position);
 		_rotation = QuatToEulerAngles(quat);
-
-		for (const shared_ptr<Transform>& child : _children)
-		{
-			child->UpdateTransform();
-		}
 	}
 	else
 	{
@@ -191,6 +186,12 @@ void Transform::UpdateTransform()
 		Quaternion quat;
 		_matWorld.Decompose(_scale, quat, _position);
 		_rotation = QuatToEulerAngles(quat);
+
+
+		if (GetGameObject()->GetCamera() != nullptr)
+		{
+			GetGameObject()->GetCamera()->UpdateMatrix();
+		}
 
 		for (const shared_ptr<Transform>& child : _children)
 		{

@@ -14,6 +14,7 @@ Camera::~Camera()
 {
 }
 
+
 void Camera::UpdateMatrix()
 {
 	switch (_camType)
@@ -25,17 +26,19 @@ void Camera::UpdateMatrix()
 		_look = _eye + GetTransform()->GetLookVector();
 		_up = GetTransform()->GetUpVector();
 
+		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _look, _up);
+
 	}break;
 	case CameraType::Target:
 	{
-		_eye = GetTransform()->GetPosition();
-		_look = (_target != nullptr) ? _target->GetPosition() : Vec3(0.f);
-		_look.y += 10.f;
+		_eye = GetTransform()->GetLocalPosition();
+		_targetVec = GetTransform()->GetParent()->GetPosition();
+		_targetVec.y += 10.f;
 		_up = GetTransform()->GetUpVector();
+
+		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _targetVec, _up);
 	}break;
 	}
-
-	S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _look, _up);
 
 	switch (_type)
 	{
@@ -52,5 +55,5 @@ void Camera::UpdateMatrix()
 
 void Camera::Update()
 {
-	UpdateMatrix();
+	//UpdateMatrix();
 }

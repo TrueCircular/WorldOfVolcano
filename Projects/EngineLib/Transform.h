@@ -26,8 +26,8 @@ private:
 private:
 	Matrix _matLocal = Matrix::Identity;
 	Matrix _matWorld = Matrix::Identity;
-private:
-	Vec3 QuatToEulerAngles(Quaternion q);
+public:
+	static Vec3 QuatToEulerAngles(Quaternion q);
 public:
 	bool HasParent() { return _parent != nullptr; }
 public:

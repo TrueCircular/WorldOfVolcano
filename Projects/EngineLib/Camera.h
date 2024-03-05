@@ -32,6 +32,7 @@ private:
 private:
 	Vec3 _eye;
 	Vec3 _look;
+	Vec3 _targetVec;
 	Vec3 _up;
 public:
 	static Matrix S_MatView;
@@ -51,6 +52,7 @@ public:
 	Matrix& GetViewMatrix() { return _matView; }
 	Matrix& GetProjectionMatrix() { return _matProjection; }
 public:
+	void RotateAroundTarget(const Vec3& target, const Vec3& axis, float angle);
 	void UpdateMatrix();
 public:
 	virtual void Update() override;

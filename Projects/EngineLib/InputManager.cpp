@@ -54,23 +54,8 @@ void InputManager::Update()
 				state = KEY_STATE::NONE;
 		}
 	}
-
 	::GetCursorPos(&_mousePos);
 	::ScreenToClient(_hwnd, &_mousePos);
-
-	//{
-	//	Vec3 scmPos = GetWorldMousePos(Camera::S_MatView, Camera::S_MatProjection);
-
-	//	wstring tPos = L"X:";
-	//	tPos += ::to_wstring(scmPos.x);
-	//	tPos += L"  Y:";
-	//	tPos += ::to_wstring(scmPos.y);
-	//	tPos += L" Z:";
-	//	tPos += ::to_wstring(scmPos.z);
-	//	tPos += L"\n";
-	//	OutputDebugString(tPos.c_str());
-	//}
-
 }
 
 Vec3& InputManager::GetScreenMousePos()

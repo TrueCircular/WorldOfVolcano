@@ -71,10 +71,9 @@ void PlayerController::CameraMove()
 			float deltaX = _currentMousePos.x - _prevMousePos.x;
 			float deltaY = _currentMousePos.y - _prevMousePos.y;
 
-			_camRot.x = min(::XMConvertToRadians(deltaY), ::XMConvertToRadians(89.f)) * 0.1f;
-			_camRot.y = min(::XMConvertToRadians(deltaX), ::XMConvertToRadians(89.f)) * 0.1f;
+			_camRot.x = min(max(::XMConvertToRadians(deltaY), ::XMConvertToRadians(-45.f)), ::XMConvertToRadians(45.f)) * 3 * 0.1f;
+			_camRot.y = min(max(::XMConvertToRadians(deltaX), ::XMConvertToRadians(-45.f)), ::XMConvertToRadians(45.f)) * 3 * 0.1f;
 			_camRot.z = 0.f;
-
 			_camera.lock()->GetTransform()->RotateAround(_camRot);
 		}
 	}
@@ -91,7 +90,7 @@ void PlayerController::CameraMove()
 
 			Vec3 look = _transform.lock()->GetLookVector();
 			look.y = _rCamPos.y;
-			look.z -= _camDist;
+			look.z = -_camDist;
 
 			_camera.lock()->GetTransform()->SetLocalPosition(look);
 		}
@@ -170,9 +169,9 @@ void PlayerController::PlayerInput()
 	}
 
 	_animState->Update();
+
 	if (_sound)
 		_sound->PlaySound(_animState->GetStateAnimtype());
-
 
 	//Debug
 	{
