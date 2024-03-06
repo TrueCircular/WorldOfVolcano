@@ -53,7 +53,7 @@ void BaseScene::Init()
 		frustom = make_shared<FrustomCamera>();
 		_childCamera = make_shared<GameObject>();
 		_childCamera->Awake();
-		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 10, -100));
+		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 50, -100));
 		_childCamera->AddComponent(make_shared<Camera>());
 		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
 		_childCamera->AddComponent(frustom);
@@ -176,7 +176,7 @@ void BaseScene::Init()
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
 		_warrior->AddChild(_childCamera);
-		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
+		//_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		_warrior->AddComponent(make_shared<PlayerController>());
 		_warrior->Start();
 		_warrior->GetTransform()->SetLocalPosition(spawnPos);
@@ -192,10 +192,10 @@ void BaseScene::Init()
 	bgmpath += L"Scene/Lobby.mp3";
 	bgm->Load(bgmpath);
 	MANAGER_RESOURCES()->AddResource<Sounds>(L"Lobby", bgm);
-	auto chs = bgm->Play(true);
-	}
-	else {
-		bgm->Play(true);
+	//auto chs = bgm->Play(true);
+	//}
+	//else {
+	//	bgm->Play(true);
 	}
 
 	SpawnManager::GetInstance().Init();

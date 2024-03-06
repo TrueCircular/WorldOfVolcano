@@ -15,6 +15,33 @@ Camera::~Camera()
 }
 
 
+void Camera::RotateAroundTarget(const Vec3& target, const Vec3& axis)
+{
+	float angle = axis.Length();
+	Vec3 normalAxis;
+	axis.Normalize(normalAxis);
+
+	if (angle > 0)
+	{
+		Quaternion qRot = Quaternion::CreateFromYawPitchRoll(axis.y, axis.x, axis.z);
+		Matrix mQat = Matrix::CreateFromQuaternion(qRot);
+
+		Vec3 s, t;
+		Quaternion r;
+		S_MatView.Decompose(s, r, t);
+
+		Matrix mS, mR, mT, mW;
+
+		mS = Matrix::CreateScale(s);
+		mR = Matrix::CreateFromQuaternion(r);
+		mT = Matrix::CreateTranslation(t);
+		mW = mS * mR * mQat * mT;
+
+		S_MatView = mW;
+	}
+
+}
+
 void Camera::UpdateMatrix()
 {
 	switch (_camType)
@@ -31,9 +58,8 @@ void Camera::UpdateMatrix()
 	}break;
 	case CameraType::Target:
 	{
-		_eye = GetTransform()->GetLocalPosition();
-		_targetVec = GetTransform()->GetParent()->GetPosition();
-		_targetVec.y += 10.f;
+		_eye = GetTransform()->GetPosition();
+		_targetVec = Vec3(0.f);
 		_up = GetTransform()->GetUpVector();
 
 		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _targetVec, _up);

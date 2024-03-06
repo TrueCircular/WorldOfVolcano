@@ -86,24 +86,6 @@ void Transform::SetPosition(const Vec3& pos)
 
 void Transform::RotateAround(const Vec3 axis)
 {
-	float angle = axis.Length();
-
-	if (angle <= 0.f)
-		return;
-	else
-	{
-		Quaternion x = ::XMQuaternionRotationNormal(Vec3(1, 0, 0), axis.x);
-		Quaternion y = ::XMQuaternionRotationNormal(Vec3(0, 1, 0), axis.y);
-		Quaternion last = ::XMQuaternionMultiply(x, y);
-
-		Vec3 rPos = _localPosition - _parent->GetLocalPosition();
-		Vec3 rot = ::XMVector3Rotate(rPos, last);;
-
-		_localPosition = _parent->GetLocalPosition() + rot;
-
-
-		UpdateTransform();
-	}
 }
 
 void Transform::PreorderTransfroms(const shared_ptr<Transform>& node, int32 localIndex, int32 parentIndex)
@@ -170,32 +152,49 @@ void Transform::UpdateTransform()
 		Matrix matScale = Matrix::CreateScale(_localScale);
 		Quaternion mq = Quaternion::CreateFromYawPitchRoll(_localRotation.y, _localRotation.x, _localRotation.z);
 		Matrix matRot = Matrix::CreateFromQuaternion(mq);
+
 		Matrix matTranslation = Matrix::CreateTranslation(_localPosition);
 
 		_matLocal = matScale * matRot * matTranslation;
 
-		if (HasParent())
+		if (GetGameObject()->GetCamera() != nullptr)
 		{
-			_matWorld = _matLocal * _parent->GetWorldMatrix();
+			if (HasParent())
+			{
+				_matWorld = _matLocal * _parent->GetWorldMatrix();
+			}
+			else
+			{
+				_matWorld = _matLocal;
+			}
+
+			_matWorld = _matLocal;
+
+			Quaternion quat;
+			_matWorld.Decompose(_scale, quat, _position);
+			_rotation = QuatToEulerAngles(quat);
+
+			GetGameObject()->GetCamera()->UpdateMatrix();
 		}
 		else
 		{
-			_matWorld = _matLocal;
-		}
+			if (HasParent())
+			{
+				_matWorld = _matLocal * _parent->GetWorldMatrix();
+			}
+			else
+			{
+				_matWorld = _matLocal;
+			}
 
-		Quaternion quat;
-		_matWorld.Decompose(_scale, quat, _position);
-		_rotation = QuatToEulerAngles(quat);
+			Quaternion quat;
+			_matWorld.Decompose(_scale, quat, _position);
+			_rotation = QuatToEulerAngles(quat);
 
-
-		if (GetGameObject()->GetCamera() != nullptr)
-		{
-			GetGameObject()->GetCamera()->UpdateMatrix();
-		}
-
-		for (const shared_ptr<Transform>& child : _children)
-		{
-			child->UpdateTransform();
+			for (const shared_ptr<Transform>& child : _children)
+			{
+				child->UpdateTransform();
+			}
 		}
 	}
 }

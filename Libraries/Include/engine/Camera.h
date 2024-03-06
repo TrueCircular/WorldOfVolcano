@@ -52,7 +52,7 @@ public:
 	Matrix& GetViewMatrix() { return _matView; }
 	Matrix& GetProjectionMatrix() { return _matProjection; }
 public:
-	void RotateAroundTarget(const Vec3& target, const Vec3& axis, float angle);
+	void RotateAroundTarget(const Vec3& target, const Vec3& axis);
 	void UpdateMatrix();
 public:
 	virtual void Update() override;
