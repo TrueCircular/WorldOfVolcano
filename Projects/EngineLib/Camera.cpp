@@ -46,14 +46,22 @@ void Camera::RotateAroundTarget(const Vec3& target, const Vec3& axis)
 		Quaternion qRot = Quaternion::CreateFromYawPitchRoll(axis.y, axis.x, axis.z);
 		Matrix mQat = Matrix::CreateFromQuaternion(qRot);
 
-		Vec3 pPos = GetTransform()->GetParent()->GetPosition();
+		Vec3 pPos = GetTransform()->GetLocalPosition();
 
 		Matrix toTarget = Matrix::CreateTranslation(-pPos);
 		Matrix toBack = Matrix::CreateTranslation(pPos);
 		Matrix mFinal = toTarget * mQat * toBack;
 
-		S_MatView = mFinal * S_MatView;
+		pPos = Vec3::Transform(pPos, qRot);
 
+		GetTransform()->SetLocalPosition(pPos);
+
+		_eye = GetTransform()->GetPosition();
+		_target = GetTransform()->GetParent()->GetPosition();
+		_target.y += 15.f;
+		_up = GetTransform()->GetUpVector();
+
+		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _target, _up);
 	}
 }
 
