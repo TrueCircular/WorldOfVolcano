@@ -175,6 +175,7 @@
     <ClInclude Include="SpawnManager.h" />
     <ClInclude Include="StructList.h" />
     <ClInclude Include="StruectedLavaSprite.h" />
+    <ClInclude Include="TestScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseScene.cpp" />
@@ -204,17 +205,13 @@
     <ClCompile Include="SpawnManager.cpp" />
     <ClCompile Include="StructList.cpp" />
     <ClCompile Include="StruectedLavaSprite.cpp" />
+    <ClCompile Include="TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Resources\Shader\EffectBase.fx" />
-    <FxCompile Include="..\..\Resources\Shader\Fresnel.fx" />
     <FxCompile Include="..\..\Resources\Shader\Global.fx" />
-    <FxCompile Include="..\..\Resources\Shader\HightLight.fx" />
     <FxCompile Include="..\..\Resources\Shader\Instancing.fx" />
     <FxCompile Include="..\..\Resources\Shader\Light.fx" />
-    <FxCompile Include="..\..\Resources\Shader\MaskToTopUnder.fx" />
-    <FxCompile Include="..\..\Resources\Shader\Mf_ky_TexController.fx" />
-    <FxCompile Include="..\..\Resources\Shader\Mf_ky_TexController_Primitive.fx" />
     <FxCompile Include="..\..\Resources\Shader\Render.fx" />
     <FxCompile Include="..\..\Resources\Shader\Storm.fx" />
     <FxCompile Include="..\..\Resources\Shader\UVcontrol_4x4.fx" />

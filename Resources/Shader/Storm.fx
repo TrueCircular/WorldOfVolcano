@@ -2,17 +2,9 @@
 #define _RENDER_FX_
 #include "Global.fx"
 #include "Light.fx"
-
 #include "EffectBase.fx"
-#include "Fresnel.fx"
-#include "Mf_ky_TexController.fx"
-#include "Mf_ky_TexController_Primitive.fx"
-#include "MaskToTopUnder.fx"
-#include "HightLight.fx"
 
-Texture2D StormNoise;
-
-BlendState DamageBlendState
+BlendState AlphaBlendState
 {
     BlendEnable[0] = true;
     SrcBlend = SRC_ALPHA;
@@ -24,52 +16,149 @@ BlendState DamageBlendState
     RenderTargetWriteMask[0] = 0x0F;
 };
 //Mesh Render//
-struct StormMesh
+struct EffectMesh
 {
     float4 position : POSITION;
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
     float3 tangent : TANGENT;
-    uint instanceID : SV_INSTANCEID;
-    matrix world : INST;
-    uint num : INSTU;
 };
-struct NumOutput
+//struct EffectMesh
+//{
+//    float4 position : POSITION;
+//    float2 uv : TEXCOORD;
+//    float3 normal : NORMAL;
+//    uint instanceID : SV_INSTANCEID;
+//    matrix world : INST;
+//};
+struct EffectOutput
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
+    float3 normal : NORMAL;
     float3 worldPosition : POSITION1;
-    uint num : NUM;
 };
-NumOutput MeshVS(NumMesh input)
+cbuffer ColorBuffer
 {
-    NumOutput output;
-
-    output.position = mul(input.position, input.world);
+    float4 particleColor;
+    float4 LowParticleColor;
+};
+EffectOutput StormVS(EffectMesh input)
+{
+    EffectOutput output;
+    
+    output.position = mul(input.position, W);
+    //output.position = mul(input.position, input.world);
     output.worldPosition = output.position;
     output.position = mul(output.position, VP);
+    output.normal = mul(input.normal,VInv);
     
     output.uv = input.uv;
-    output.num = input.num;
     
     return output;
 }
 
-float4 PS(NumOutput input) : SV_TARGET
+float4 PS(EffectOutput input) : SV_TARGET
 {
-    HightLightStruct hightLightStruct;
     EffectTexController effectController;
-    EffectPrimTexController primeffectController;
-    EffectPrimTexController subColorControll;
-    TopUnder_EffectStruct topUnder_Effstruct;
+    effectController.tilingX = 5;
+    effectController.tilingY = 3;
+    effectController.offsetX = 0;
+    effectController.offSetY = 0;
+    effectController.textureSpeed = 3;
+    effectController.texPower = 0.5;
+    effectController.multiply = 0.6;
+    effectController.y_compression_scalar = 1;
+    effectController.extend_value = 0;
     
-    //ComputeFresnel(,);
-    return color;
+    float4 controlColor = ComputeTexControl(input.uv,effectController);
+    EffectPrimTexController primeffectController;
+    primeffectController.tilingX = 3;
+    primeffectController.tilingY = 3;
+    primeffectController.textureSpeed = 2;
+    primeffectController.extend_value= controlColor.g;
+    float4 primColor = ComputePrimTexControl(input.uv, primeffectController);
+    
+    HightLightStruct hightLightStruct;
+    hightLightStruct.noiseAScalar = float2(-0.5, 0.5);
+    hightLightStruct.noiseBScalar = float2(0.5, 0.75);
+    hightLightStruct.multiply = 50;
+    hightLightStruct.hilight =1.2f;
+    float hightLightColor = HightLight_ComputeTexControl(input.uv,hightLightStruct);
+    
+    float hightlightdensity = pow(primColor.r, 2.0f);
+    hightLightColor = hightLightColor * hightlightdensity;
+    
+    float baseColorDensity = 4.0f;
+    float baseColorDecay = 5.0f;
+    
+    baseColorDensity = pow(primColor.r, baseColorDensity);
+    
+    baseColorDecay = pow(primColor.r, baseColorDecay);
+    float subBaseColorDecay = baseColorDecay;
+    baseColorDecay = baseColorDecay + 1.0f;
+    baseColorDecay = baseColorDecay * particleColor.a;
+    
+    EffectPrimTexController subColorControl;
+    subColorControl.tilingX = 1;
+    subColorControl.tilingY = 1;
+    subColorControl.textureSpeed = 3;
+    subColorControl.extend_value= 1;
+    
+    float4 subColor = ComputePrimTexControl(input.uv, subColorControl);
+    float subColorDensity = 1.3f;
+    subColorDensity=subColor.r * subColorDensity;
+    subColor = float4(30,50,0,1);
+    subColor = subColorDensity * subColor;
+    
+    float3 ptColor= baseColorDensity*particleColor.rgb;
+    ptColor = hightLightColor * ptColor;
+    
+    subColor = subColor + float4(ptColor,1.0f);
+    
+    subColor = lerp(LowParticleColor,subColor, subBaseColorDecay);
+    
+    
+    
+    TopUnder_EffectStruct topUnder_Effstruct = {1.2f,4.0f,0.0f,1.0f};
+    float topUnderMask= TopUnder_ComputeTexControll(input.uv.y,topUnder_Effstruct);
+    topUnderMask = clamp(topUnderMask, 0,1);
+    baseColorDecay = baseColorDecay * topUnderMask;
+    
+    float fresnelScalar= ComputeFresnel(GlobalLight.direction,input.normal,0.5f);
+    fresnelScalar = 1.0f - fresnelScalar;
+    fresnelScalar = pow(fresnelScalar, 1.7);
+    fresnelScalar = fresnelScalar * 2.5;
+    float outlinepower = baseColorDecay * fresnelScalar;
+    float backpower = baseColorDecay * 0.02;
+    float3 tempoutline;
+    tempoutline.r = outlinepower;
+    tempoutline.g = outlinepower;
+    tempoutline.b = outlinepower;
+    float3 opacity;
+    opacity.r = backpower;
+    opacity.g = backpower;
+    opacity.b = backpower;
+    opacity = ComputeTwosided(tempoutline, opacity,input.normal);
+    
+    
+    
+    subColor = lerp(float4(0, 0, 0, 0), subColor, 1 - opacity.r);
+    
+    if (subColor.r + subColor.g + subColor.b / 3 < outlinepower*3)
+    {
+        return 0;
+        
+    }
+    else
+    {
+        return subColor;
+    }
 }
 
 technique11 T0
 {
-    PASS_RS_BS_VP(P0, CullNone, DamageBlendState, MeshVS, PS)
+    PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, StormVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

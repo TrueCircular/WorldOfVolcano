@@ -1,5 +1,4 @@
 #include "Global.fx"
-#include "EffectBase.fx"
 
 Texture2D Ky_NoiseMap;
 
@@ -19,19 +18,19 @@ Texture2D Ky_NoiseMap;
 
 struct EffectTexController
 {
-    float tilingX=1;
-    float tilingY=1;
-    float offsetX = 0;
-    float offSetY = 0;
-    float textureSpeed=0;
-    float y_compression_scalar = 1;
+    float tilingX;//=1;
+    float tilingY;//=1;
+    float offsetX;// = 0;
+    float offSetY;// = 0;
+    float textureSpeed;//=0;
+    float y_compression_scalar;// = 1;
     
-    float extend_value=0;
-    float texPower=1;
-    float multiply=1;
+    float extend_value;//=0;
+    float texPower;//=1;
+    float multiply;//=1;
 };
 
-float4 ComputeTexControll(float2 uv,EffectTexController effStruct)
+float4 ComputeTexControl(float2 uv,EffectTexController effStruct)
 {
 
     float2 mixuv;

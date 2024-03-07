@@ -1,15 +1,14 @@
 #include "Global.fx"
-#include "EffectBase.fx"
 
 Texture2D HightLightMap;
 
 struct HightLightStruct
 {
-    float2 noiseAScalar = { 0.3,0.1};
-    float2 noiseBScalar = {0.2,0.2 };
+    float2 noiseAScalar; //= { 0.3,0.1};
+    float2 noiseBScalar; //= {0.2,0.2 };
     
-    float multiply=50;
-    float hilight = 1;
+    float multiply;//=50;
+    float hilight;//= 1;
 };
 
 float HightLight_ComputeTexControl(float2 uv,HightLightStruct effStruct)// Don't Use MixedUV!!!!!!!

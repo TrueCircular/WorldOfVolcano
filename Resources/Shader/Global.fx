@@ -131,6 +131,14 @@ SamplerState ShadowSampler
     AddressW = Border;
     ComparisonFunc = LESS;
 };
+SamplerState CompSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+    AddressW = Wrap;
+    ComparisonFunc = LESS;
+};
 //Ra
 //RasterizerState//
 RasterizerState FillModeWireFrame
@@ -141,6 +149,10 @@ RasterizerState FillModeWireFrame
 RasterizerState CullNone
 {
     CullMode = None;
+};
+RasterizerState CullBack
+{
+    CullMode = Back;
 };
 RasterizerState ShadowRaster
 {

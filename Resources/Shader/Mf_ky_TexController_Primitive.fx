@@ -1,17 +1,16 @@
 #include "Global.fx"
-#include "EffectBase.fx"
 
 Texture2D Ky_PrimNoiseMap;
 
 struct EffectPrimTexController
 {
-    float tilingX = 1;
-    float tilingY = 1;
-    float textureSpeed = 0;
-    float extend_value = 0;
+    float tilingX;// = 1;
+    float tilingY;//= 1;
+    float textureSpeed;// = 0;
+    float extend_value;// = 0;
 };
 
-float4 ComputePrimTexControll(float2 uv, EffectPrimTexController effStruct)
+float4 ComputePrimTexControl(float2 uv, EffectPrimTexController effStruct)
 {
 
     float2 mixuv;
