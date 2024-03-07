@@ -28,18 +28,17 @@ private:
 	float _width = 0.f;
 	float _height = 0.f;
 private:
-	shared_ptr<Transform> _target;
-private:
 	Vec3 _eye;
 	Vec3 _look;
-	Vec3 _targetVec;
 	Vec3 _up;
+private:
+	shared_ptr<Transform> _targetTransform;
+	Vec3 _target;
 public:
 	static Matrix S_MatView;
 	static Matrix S_MatProjection;
-//function
 public:
-	void SetTargetTransform(const shared_ptr<Transform>& target) { _target = target; }
+	void SetTargetTransform(const shared_ptr<Transform>& target) { _targetTransform = target; }
 	void SetProjectionType(ProjectionType type) { _type = type; }
 	void SetNear(float value) { _near = value; }
 	void SetPar(float value) { _far = value; }
@@ -51,8 +50,12 @@ public:
 	ProjectionType GetProjectionType() const { return _type; }
 	Matrix& GetViewMatrix() { return _matView; }
 	Matrix& GetProjectionMatrix() { return _matProjection; }
+private:
+	void UpdateDefaultView();
+	void UpdateTargetView();
 public:
 	void RotateAroundTarget(const Vec3& target, const Vec3& axis);
+public:
 	void UpdateMatrix();
 public:
 	virtual void Update() override;

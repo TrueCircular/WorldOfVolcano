@@ -75,7 +75,7 @@ void PlayerController::CameraMove()
 			_camRot.y = ::XMConvertToRadians(deltaX) * 0.1f;
 			_camRot.z = 0.f;
 
-			_camera.lock()->GetCamera()->RotateAroundTarget(_transform.lock()->GetPosition(), _camRot);
+			_camera.lock()->GetCamera()->RotateAroundTarget(_movePos, _camRot);
 		}
 	}
 
@@ -580,7 +580,7 @@ void PlayerController::Start()
 	_jumpState = make_shared<JumpFlag>();
 
 	_transform = GetGameObject()->GetTransform();
-	_camera = GetGameObject()->GetChildByName(L"Camera");
+	_camera = MANAGER_SCENE()->GetCurrentScene()->GetCamera();
 	_animator = GetGameObject()->GetChildByName(L"Model")->GetModelAnimator();
 	_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
 	{

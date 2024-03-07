@@ -15,6 +15,32 @@ Camera::~Camera()
 }
 
 
+void Camera::UpdateDefaultView()
+{
+	_eye = GetTransform()->GetPosition();
+	_look = _eye + GetTransform()->GetLookVector();
+	_up = GetTransform()->GetUpVector();
+
+	S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _look, _up);
+}
+
+void Camera::UpdateTargetView()
+{
+	if (_targetTransform)
+	{
+		_eye = GetTransform()->GetLocalPosition();
+		_eye = Vec3::Transform(_eye, _targetTransform->GetWorldMatrix());
+		_target = _targetTransform->GetPosition();
+		_target.y += 15.f;
+		_up =
+
+		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _target, _up);
+
+		_eye = Vec3::Transform(_eye, _targetTransform->GetWorldMatrix().Invert());
+		GetTransform()->SetLocalPosition(_eye);
+	}
+}
+
 void Camera::RotateAroundTarget(const Vec3& target, const Vec3& axis)
 {
 	float angle = axis.Length();
@@ -23,23 +49,37 @@ void Camera::RotateAroundTarget(const Vec3& target, const Vec3& axis)
 
 	if (angle > 0)
 	{
-		Quaternion qRot = Quaternion::CreateFromYawPitchRoll(axis.y, axis.x, axis.z);
+		// 회전 쿼터니언 생성
+		Quaternion qRot = Quaternion::CreateFromAxisAngle(normalAxis, angle);
 		Matrix mQat = Matrix::CreateFromQuaternion(qRot);
 
+		// 타겟으로 이동하는 행렬 생성
+		Matrix toTarget = Matrix::CreateTranslation(-target);
+
+		// 원래 위치로 돌아오는 행렬 생성
+		Matrix backTarget = Matrix::CreateTranslation(target);
+
+		// 이동-회전-되돌리기 순서로 행렬을 곱함
+		Matrix mFinal = toTarget * mQat * backTarget;
+
+		// 카메라 행렬에 적용
+		Matrix camMat = GetTransform()->GetWorldMatrix();
+		camMat = mFinal * camMat;
+
+		// 분해하여 카메라의 위치, 회전, 스케일을 업데이트
 		Vec3 s, t;
 		Quaternion r;
-		S_MatView.Decompose(s, r, t);
+		camMat.Decompose(s, r, t);
+		Vec3 roro = Transform::QuatToEulerAngles(r);
 
-		Matrix mS, mR, mT, mW;
+		GetTransform()->SetLocalScale(s);
+		GetTransform()->SetLocalRotation(roro);
+		GetTransform()->SetLocalPosition(t);
+		GetTransform()->UpdateTransform();
 
-		mS = Matrix::CreateScale(s);
-		mR = Matrix::CreateFromQuaternion(r);
-		mT = Matrix::CreateTranslation(t);
-		mW = mS * mR * mQat * mT;
-
-		S_MatView = mW;
+		// 뷰 행렬 업데이트
+		UpdateMatrix();
 	}
-
 }
 
 void Camera::UpdateMatrix()
@@ -49,20 +89,11 @@ void Camera::UpdateMatrix()
 	case CameraType::Debug:
 	case CameraType::Normal: 
 	{
-		_eye = GetTransform()->GetPosition();
-		_look = _eye + GetTransform()->GetLookVector();
-		_up = GetTransform()->GetUpVector();
-
-		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _look, _up);
-
+		UpdateDefaultView();
 	}break;
 	case CameraType::Target:
 	{
-		_eye = GetTransform()->GetPosition();
-		_targetVec = Vec3(0.f);
-		_up = GetTransform()->GetUpVector();
-
-		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _targetVec, _up);
+		UpdateTargetView();
 	}break;
 	}
 
@@ -81,5 +112,5 @@ void Camera::UpdateMatrix()
 
 void Camera::Update()
 {
-	//UpdateMatrix();
+	UpdateMatrix();
 }

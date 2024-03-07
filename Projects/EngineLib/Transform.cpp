@@ -84,10 +84,6 @@ void Transform::SetPosition(const Vec3& pos)
 	}
 }
 
-void Transform::RotateAround(const Vec3 axis)
-{
-}
-
 void Transform::PreorderTransfroms(const shared_ptr<Transform>& node, int32 localIndex, int32 parentIndex)
 {
 	if (node == nullptr)
@@ -134,67 +130,33 @@ void Transform::Awake()
 
 void Transform::Update()
 {
+	//UpdateTransform();
 }
 
 void Transform::UpdateTransform()
 {
-	if (isWroldMode)
+	Matrix matScale = Matrix::CreateScale(_localScale);
+	Quaternion mq = Quaternion::CreateFromYawPitchRoll(_localRotation.y, _localRotation.x, _localRotation.z);
+	Matrix matRot = Matrix::CreateFromQuaternion(mq);
+	Matrix matTranslation = Matrix::CreateTranslation(_localPosition);
+
+	_matLocal = matScale * matRot * matTranslation;
+
+	if (HasParent())
 	{
-
-		_matWorld = _matLocal;
-
-		Quaternion quat;
-		_matWorld.Decompose(_scale, quat, _position);
-		_rotation = QuatToEulerAngles(quat);
+		_matWorld = _matLocal * _parent->GetWorldMatrix();
 	}
 	else
 	{
-		Matrix matScale = Matrix::CreateScale(_localScale);
-		Quaternion mq = Quaternion::CreateFromYawPitchRoll(_localRotation.y, _localRotation.x, _localRotation.z);
-		Matrix matRot = Matrix::CreateFromQuaternion(mq);
+		_matWorld = _matLocal;
+	}
 
-		Matrix matTranslation = Matrix::CreateTranslation(_localPosition);
+	Quaternion quat;
+	_matWorld.Decompose(_scale, quat, _position);
+	_rotation = QuatToEulerAngles(quat);
 
-		_matLocal = matScale * matRot * matTranslation;
-
-		if (GetGameObject()->GetCamera() != nullptr)
-		{
-			if (HasParent())
-			{
-				_matWorld = _matLocal * _parent->GetWorldMatrix();
-			}
-			else
-			{
-				_matWorld = _matLocal;
-			}
-
-			_matWorld = _matLocal;
-
-			Quaternion quat;
-			_matWorld.Decompose(_scale, quat, _position);
-			_rotation = QuatToEulerAngles(quat);
-
-			GetGameObject()->GetCamera()->UpdateMatrix();
-		}
-		else
-		{
-			if (HasParent())
-			{
-				_matWorld = _matLocal * _parent->GetWorldMatrix();
-			}
-			else
-			{
-				_matWorld = _matLocal;
-			}
-
-			Quaternion quat;
-			_matWorld.Decompose(_scale, quat, _position);
-			_rotation = QuatToEulerAngles(quat);
-
-			for (const shared_ptr<Transform>& child : _children)
-			{
-				child->UpdateTransform();
-			}
-		}
+	for (const shared_ptr<Transform>& child : _children)
+	{
+		child->UpdateTransform();
 	}
 }
