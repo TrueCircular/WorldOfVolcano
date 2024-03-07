@@ -54,7 +54,6 @@ void BaseScene::Init()
 		_childCamera = make_shared<GameObject>();
 		_childCamera->Awake();
 		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 500, -1000));
-		_childCamera->GetTransform()->UpdateTransform();
 		_childCamera->AddComponent(make_shared<Camera>());
 		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
 		_childCamera->AddComponent(frustom);
@@ -177,11 +176,12 @@ void BaseScene::Init()
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
 		_warrior->AddComponent(make_shared<PlayerController>());
+		_warrior->AddChild(_childCamera);
+
 		_warrior->Start();
 		_warrior->GetTransform()->SetLocalPosition(spawnPos);
 		Add(_warrior);
 		AddShadow(_warrior);
-		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}

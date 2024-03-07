@@ -155,6 +155,11 @@ void Transform::UpdateTransform()
 	_matWorld.Decompose(_scale, quat, _position);
 	_rotation = QuatToEulerAngles(quat);
 
+	if (GetGameObject()->GetCamera())
+	{
+		GetGameObject()->GetCamera()->UpdateMatrix();
+	}
+
 	for (const shared_ptr<Transform>& child : _children)
 	{
 		child->UpdateTransform();

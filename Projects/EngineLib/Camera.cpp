@@ -26,19 +26,12 @@ void Camera::UpdateDefaultView()
 
 void Camera::UpdateTargetView()
 {
-	if (_targetTransform)
-	{
-		_eye = GetTransform()->GetLocalPosition();
-		_eye = Vec3::Transform(_eye, _targetTransform->GetWorldMatrix());
-		_target = _targetTransform->GetPosition();
-		_target.y += 15.f;
-		_up =
+	_eye = GetTransform()->GetPosition();
+	_target = GetTransform()->GetParent()->GetPosition();
+	_target.y += 15.f;
+	_up = GetTransform()->GetUpVector();
 
-		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _target, _up);
-
-		_eye = Vec3::Transform(_eye, _targetTransform->GetWorldMatrix().Invert());
-		GetTransform()->SetLocalPosition(_eye);
-	}
+	S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _target, _up);
 }
 
 void Camera::RotateAroundTarget(const Vec3& target, const Vec3& axis)
@@ -50,35 +43,17 @@ void Camera::RotateAroundTarget(const Vec3& target, const Vec3& axis)
 	if (angle > 0)
 	{
 		// 회전 쿼터니언 생성
-		Quaternion qRot = Quaternion::CreateFromAxisAngle(normalAxis, angle);
+		Quaternion qRot = Quaternion::CreateFromYawPitchRoll(axis.y, axis.x, axis.z);
 		Matrix mQat = Matrix::CreateFromQuaternion(qRot);
 
-		// 타겟으로 이동하는 행렬 생성
-		Matrix toTarget = Matrix::CreateTranslation(-target);
+		Vec3 pPos = GetTransform()->GetParent()->GetPosition();
 
-		// 원래 위치로 돌아오는 행렬 생성
-		Matrix backTarget = Matrix::CreateTranslation(target);
+		Matrix toTarget = Matrix::CreateTranslation(-pPos);
+		Matrix toBack = Matrix::CreateTranslation(pPos);
+		Matrix mFinal = toTarget * mQat * toBack;
 
-		// 이동-회전-되돌리기 순서로 행렬을 곱함
-		Matrix mFinal = toTarget * mQat * backTarget;
+		S_MatView = mFinal * S_MatView;
 
-		// 카메라 행렬에 적용
-		Matrix camMat = GetTransform()->GetWorldMatrix();
-		camMat = mFinal * camMat;
-
-		// 분해하여 카메라의 위치, 회전, 스케일을 업데이트
-		Vec3 s, t;
-		Quaternion r;
-		camMat.Decompose(s, r, t);
-		Vec3 roro = Transform::QuatToEulerAngles(r);
-
-		GetTransform()->SetLocalScale(s);
-		GetTransform()->SetLocalRotation(roro);
-		GetTransform()->SetLocalPosition(t);
-		GetTransform()->UpdateTransform();
-
-		// 뷰 행렬 업데이트
-		UpdateMatrix();
 	}
 }
 
@@ -112,5 +87,5 @@ void Camera::UpdateMatrix()
 
 void Camera::Update()
 {
-	UpdateMatrix();
+	//UpdateMatrix();
 }
