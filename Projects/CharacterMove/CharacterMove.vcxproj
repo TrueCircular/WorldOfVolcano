@@ -209,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Resources\Shader\EffectBase.fx" />
+    <FxCompile Include="..\..\Resources\Shader\FirePillar.fx" />
     <FxCompile Include="..\..\Resources\Shader\Global.fx" />
     <FxCompile Include="..\..\Resources\Shader\Instancing.fx" />
     <FxCompile Include="..\..\Resources\Shader\Light.fx" />

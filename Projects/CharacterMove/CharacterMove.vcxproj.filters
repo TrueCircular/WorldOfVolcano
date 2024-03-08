@@ -176,5 +176,8 @@
     <FxCompile Include="..\..\Resources\Shader\EffectBase.fx">
       <Filter>Shader\Effects</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\FirePillar.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

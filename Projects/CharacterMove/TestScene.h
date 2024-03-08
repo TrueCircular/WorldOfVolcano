@@ -20,6 +20,10 @@ class TestScene : public Scene
 	shared_ptr<Transform> world;
 	shared_ptr<FrustomCamera> frustom;
 
+	shared_ptr<Shader> effShader2;
+	shared_ptr<Texture> pillarTex1;
+	shared_ptr<Texture> pillarTex2;
+	shared_ptr<Transform> world2;
 	float maxtime = 15.0f;
 	float currenttime=0;
 	shared_ptr<Terrain> _terrain;

@@ -28,6 +28,7 @@ struct EffectMesh
 //    float4 position : POSITION;
 //    float2 uv : TEXCOORD;
 //    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
 //    uint instanceID : SV_INSTANCEID;
 //    matrix world : INST;
 //};
@@ -36,7 +37,13 @@ struct EffectOutput
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
+    float3 reflect : REFLECT;
     float3 worldPosition : POSITION1;
+};
+cbuffer FresnelBuffer
+{
+    float4 eyePos;
+    float4 eyeLook;
 };
 cbuffer ColorBuffer
 {
@@ -51,8 +58,13 @@ EffectOutput StormVS(EffectMesh input)
     //output.position = mul(input.position, input.world);
     output.worldPosition = output.position;
     output.position = mul(output.position, VP);
-    output.normal = mul(input.normal,VInv);
+    float4x4 normalmat = VInv;
+    normalmat._41_42_43 = 0;
+    normalmat._44 = 1;
+    output.normal = normalize(mul(input.normal, normalmat));
     
+    float3 Incident = normalize(output.worldPosition - eyePos.xyz);
+    output.reflect = Reflect(Incident, output.normal);
     output.uv = input.uv;
     
     return output;
@@ -65,7 +77,7 @@ float4 PS(EffectOutput input) : SV_TARGET
     effectController.tilingY = 3;
     effectController.offsetX = 0;
     effectController.offSetY = 0;
-    effectController.textureSpeed = 3;
+    effectController.textureSpeed = float2(3,2);
     effectController.texPower = 0.5;
     effectController.multiply = 0.6;
     effectController.y_compression_scalar = 1;
@@ -75,7 +87,7 @@ float4 PS(EffectOutput input) : SV_TARGET
     EffectPrimTexController primeffectController;
     primeffectController.tilingX = 3;
     primeffectController.tilingY = 3;
-    primeffectController.textureSpeed = 2;
+    primeffectController.textureSpeed = float2(0,2);
     primeffectController.extend_value= controlColor.g;
     float4 primColor = ComputePrimTexControl(input.uv, primeffectController);
     
@@ -102,7 +114,7 @@ float4 PS(EffectOutput input) : SV_TARGET
     EffectPrimTexController subColorControl;
     subColorControl.tilingX = 1;
     subColorControl.tilingY = 1;
-    subColorControl.textureSpeed = 3;
+    subColorControl.textureSpeed = float2(0, 3);
     subColorControl.extend_value= 1;
     
     float4 subColor = ComputePrimTexControl(input.uv, subColorControl);
@@ -125,7 +137,9 @@ float4 PS(EffectOutput input) : SV_TARGET
     topUnderMask = clamp(topUnderMask, 0,1);
     baseColorDecay = baseColorDecay * topUnderMask;
     
-    float fresnelScalar= ComputeFresnel(GlobalLight.direction,input.normal,0.5f);
+    float inci = 1.33f;
+    inci = pow(1.0 - inci, 2.0) / pow(1.0 + inci, 2.0);
+    float fresnelScalar= ComputeFresnel(input.reflect,input.normal,inci);
     fresnelScalar = 1.0f - fresnelScalar;
     fresnelScalar = pow(fresnelScalar, 1.7);
     fresnelScalar = fresnelScalar * 2.5;

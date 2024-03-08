@@ -50,8 +50,15 @@ void TestScene::Init()
 	effTex->Load(L"../../Resources/Texture/Effect/T_ky_noise17.PNG");
 	world = make_shared<Transform>();
 	world->SetLocalScale(Vec3(10, 10, 10));
-	world->SetLocalPosition(Vec3(0, 100, 0));
-
+	world->SetLocalPosition(Vec3(0, 0, 0));
+	effShader2 = make_shared<Shader>(L"FirePillar.fx");
+	pillarTex1 = make_shared<Texture>();
+	pillarTex1->Load(L"../../Resources/Texture/Effect/T_ky_maskRGB5.PNG");
+	pillarTex2= make_shared<Texture>();
+	pillarTex2->Load(L"../../Resources/Texture/Effect/T_ky_flare3.PNG");
+	world2 = make_shared<Transform>();
+	world2->SetLocalScale(Vec3(10, 10, 10));
+	world2->SetLocalPosition(Vec3(10, 0, 0));
 	//HeightPlainInfo heightMapDesc;
 	//heightMapDesc.heightFilename = L"HeightMapBase";
 	//heightMapDesc.heightFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"test.bmp";
@@ -77,8 +84,9 @@ void TestScene::Start()
 {
 	Scene::Start();
 }
-struct TimeDesc {
-	float time;
+struct FresnelDesc {
+	Vec4 eyePos;
+	Vec4 eyeLook;
 };
 struct ColorDesc {
 	Vec4 baseColor;
@@ -91,7 +99,7 @@ void TestScene::Update()
 	//quadTreeTerrain->Frame((*frustom->frustomBox.get()));
 	//quadTreeTerrain->Update();
 
-
+	{
 	world->UpdateTransform();
 	auto _materialBuffer = make_shared<ConstantBuffer<ColorDesc>>();
 	_materialBuffer->CreateConstantBuffer();
@@ -103,15 +111,17 @@ void TestScene::Update()
 	_materialBuffer->CopyData(_desc);
 	data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
 
-	//auto _timeBuffer = make_shared<ConstantBuffer<TimeDesc>>();
-	//_timeBuffer->CreateConstantBuffer();
-	//auto timedata = effShader->GetConstantBuffer("TimeBuffer");
-	//
-	//TimeDesc _timedesc;
-	//_timedesc.time = MANAGER_TIME()->GetDeltaTime();
-	//_timeBuffer->CopyData(_timedesc);
-	//timedata->SetConstantBuffer(_timeBuffer->GetBuffer().Get());
-	effShader->PushTransformData(TransformDesc{ world->GetWorldMatrix()});
+	auto _fresnelBuffer = make_shared<ConstantBuffer<FresnelDesc>>();
+	_fresnelBuffer->CreateConstantBuffer();
+	auto fresneldata = effShader->GetConstantBuffer("FresnelBuffer");
+
+	FresnelDesc _fresneldesc;
+	_fresneldesc.eyePos = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetTransform()->GetLocalPosition();
+	_fresneldesc.eyeLook = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetTransform()->GetLookVector();
+	_fresnelBuffer->CopyData(_fresneldesc);
+	fresneldata->SetConstantBuffer(_fresnelBuffer->GetBuffer().Get());
+
+	effShader->PushTransformData(TransformDesc{ world->GetWorldMatrix() });
 	effShader->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
 	auto light = MANAGER_SCENE()->GetCurrentScene()->GetLight()->GetLight()->GetLightDesc();
 	light.direction = _camera->GetTransform()->GetLocalPosition();
@@ -127,151 +137,50 @@ void TestScene::Update()
 	texmap1->SetResource(effTex->GetTexture().Get());
 	texmap2->SetResource(effTex->GetTexture().Get());
 	texmap3->SetResource(effTex->GetTexture().Get());
-	auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Sphere") ->GetVertexBuffer()->GetStride();
-	auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Sphere") ->GetVertexBuffer()->GetOffset();
+	auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Sphere")->GetVertexBuffer()->GetStride();
+	auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Sphere")->GetVertexBuffer()->GetOffset();
 
 	DC()->IASetVertexBuffers(0, 1, MANAGER_RESOURCES()->GetResource<Mesh>(L"Sphere")->GetVertexBuffer()->GetBuffer().GetAddressOf(), &_stride, &_offset);
 	DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Sphere")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	effShader->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Sphere")->GetIndexBuffer()->GetCount(), 0, 0);
+	}
+
+	{
+		world2->UpdateTransform();
+		auto _materialBuffer = make_shared<ConstantBuffer<ColorDesc>>();
+		_materialBuffer->CreateConstantBuffer();
+		auto data = effShader2->GetConstantBuffer("ColorBuffer");
+
+		ColorDesc _desc;
+		_desc.baseColor = Vec4(1,0,0,1);
+		_desc.subColor = Vec4(1,1,0, 1);
+		_materialBuffer->CopyData(_desc);
+		data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
+
+		effShader2->PushTransformData(TransformDesc{ world2->GetWorldMatrix() });
+		effShader2->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
+		auto light = MANAGER_SCENE()->GetCurrentScene()->GetLight()->GetLight()->GetLightDesc();
+		light.direction = _camera->GetTransform()->GetLocalPosition();
+		light.direction.Normalize();
+		effShader2->PushLightData(light);
+
+		auto texmap1 = effShader2->GetSRV("FireNoise");
+		auto texmap2 = effShader2->GetSRV("FireMask");
+		auto times = effShader2->GetScalar("time")->SetFloat(currenttime);
+		texmap1->SetResource(pillarTex1->GetTexture().Get());
+		texmap2->SetResource(pillarTex2->GetTexture().Get());
+		auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetStride();
+		auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetOffset();
+
+		DC()->IASetVertexBuffers(0, 1, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetBuffer().GetAddressOf(), &_stride, &_offset);
+		DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		effShader2->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
+	}
 }
 
 void TestScene::LateUpdate()
 {
 	Scene::LateUpdate();
 }
-/*
-
-
-cbuffer cbObjectChangesEveryFrame: register(b1)
-{
-	// Object
-	matrix				g_matNormal;
-	// Global
-	float4				cb_vLightVector;
-	//float g_MeshColor.w	ref_at_norm_incidence = 1.33f;
-	float4				cb_vEyePos;
-	float4				cb_vEyeDir;
-};
-
-
-
-float3 Reflect( float3 incident, float3 normal)
-{
-	float cosI = dot(normal, incident);
-	return incident - 2 * cosI * normal;
-}
-
-float3 Refract( float3 incident,  float3 normal,  float etaRatio )
-{
-	float cosI = dot( incident, normal);
-	float cosT2 = 1.0f - etaRatio * etaRatio *( 1.0f - cosI * cosI );
-	float3 T = etaRatio * incident + ((etaRatio * cosI - sqrt( abs(cosT2))) * normal );
-	return T;
-}
-
-float ComputeFresnel(float3 vReflect, float3 vNormal, float F0)
-{
-	float cosAngle = 1-saturate(dot(vReflect, vNormal));
-	float result = pow( cosAngle, 5.0f);
-	result = saturate(mad(result, 1-saturate(F0), F0));
-	return result;
-}
-	float t = m_Timer.GetElapsedTime() * XM_PI;
-	m_pMainCamera->Update(g_fSecPerFrame);
-	m_matWorld = *m_pMainCamera->GetWorldMatrix();
-
-
-	if (I_Input.KeyCheck(DIK_7)== KEY_UP)
-	{
-		m_dwPixelShader = 0;
-	}
-	if (I_Input.KeyCheck(DIK_8) == KEY_UP)
-	{
-		m_dwPixelShader = 1;
-	}
-	if (I_Input.KeyCheck(DIK_9) == KEY_UP)
-	{
-		m_dwPixelShader = 2;
-	}
-
-	m_mSphereWorld =  *m_pMainCamera->GetWorldMatrix();
-	m_mSphereWorld._11 = 10.0f;
-	m_mSphereWorld._22 = 10.0f;
-	m_mSphereWorld._33 = 10.0f;
-
-	TMatrix mTranslate, mRotation;
-	D3DXMatrixTranslation( &mTranslate, 0.0f, 50.0f, 50.0f );
-	D3DXMatrixRotationX( &mRotation, 0 );
-	D3DXMatrixMultiply( &m_mLightWorld, &mTranslate, &mRotation );
-
-	m_vLightPosition.x = m_mLightWorld._41;
-	m_vLightPosition.y = m_mLightWorld._42;
-	m_vLightPosition.z = m_mLightWorld._43;
-
-	D3DXVec3Normalize( &m_vLightVector, &m_vLightPosition);
-	m_vLightVector *= -1.0f;
-
-	TMatrix matNormalTransform;
-	D3DXMatrixInverse(&matNormalTransform, NULL, &m_mSphereWorld );
-	D3DXMatrixTranspose( &matNormalTransform, &matNormalTransform );
-
-	D3D11_MAPPED_SUBRESOURCE MappedFaceDest;
-	if( SUCCEEDED( m_pImmediateContext->Map( (ID3D11Resource*)m_pConstantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedFaceDest ) ) )
-	{
-		CB_ENVIRONMENT* pConstData = (CB_ENVIRONMENT*)MappedFaceDest.pData;
-
-		//pConstData->matWorld		= m_mSphereWorld;
-		pConstData->matNormal		= matNormalTransform;
-		pConstData->vLightVector	= TVector4(m_vLightVector.x,
-										m_vLightVector.y,
-										m_vLightVector.z, 1.33f);
-		pConstData->vEyePos			= TVector4(m_pMainCamera->GetEyePt()->x,
-													m_pMainCamera->GetEyePt()->y,
-													m_pMainCamera->GetEyePt()->z, 100.0f	);
-		pConstData->vEyeDir			= TVector4(m_pMainCamera->GetLookVector()->x,
-													m_pMainCamera->GetLookVector()->y,
-													m_pMainCamera->GetLookVector()->z, 100.0f) ;
-		m_pImmediateContext->Unmap( m_pConstantBuffer.Get(), 0 );
-	}
-
-
-		if( m_SkyObj.Create(GetDevice(), L"../../data/shader/SkyObj.hlsl", L"../../data/sky/grassenvmap1024.dds" ) == false )
-	{
-		MessageBox( 0, _T("m_pSkyObj->Create"), _T("Fatal error"), MB_OK );
-		return 0;
-	}
-	m_SkyObj.SetSO(GetDevice(), GetContext());
-	//--------------------------------------------------------------------------------------
-	// 구 오브젝트 생성
-	//--------------------------------------------------------------------------------------
-	if( m_SphereObj.Create(GetDevice(), L"EnvMap.hlsl", L"../../data/map/basecolor.jpg" ) == false )
-	{
-		MessageBox( 0, _T("m_pSphereObj->Create"), _T("Fatal error"), MB_OK );
-		return 0;
-	}
-	m_pConstantBuffer.Attach(DX::CreateConstantBuffer(m_pd3dDevice, &m_cbEnvironment, 1, sizeof(CB_ENVIRONMENT),true));
-	FRESNEL_PS.Attach(DX::LoadPixelShaderFile(m_pd3dDevice, L"EnvMap.hlsl", "FRESNEL_PS"));
-	REFRACTION_PS.Attach(DX::LoadPixelShaderFile(m_pd3dDevice, L"EnvMap.hlsl", "REFRACTION_PS"));
-	//--------------------------------------------------------------------------------------
-	// 월드  행렬
-	//--------------------------------------------------------------------------------------
-	D3DXMatrixIdentity( &m_mSphereWorld );
-	D3DXMatrixIdentity( &m_matSkyWorld );
-	m_matSkyWorld._11 = 10.0f;
-	m_matSkyWorld._22 = 10.0f;
-	m_matSkyWorld._33 = 10.0f;
-	//--------------------------------------------------------------------------------------
-	// 카메라  행렬
-	//--------------------------------------------------------------------------------------
-	m_pMainCamera = make_shared<TModelViewCamera>();
-	m_pMainCamera->SetViewMatrix(TVector3(0.0f, 100.0f, -100.0f), TVector3(0.0f, 0.0f, 0.0f));
-
-	float fAspectRatio = m_iWindowWidth / (FLOAT)m_iWindowHeight;
-	m_pMainCamera->SetProjMatrix(XM_PI / 4, fAspectRatio, 0.1f, 500.0f);
-	m_pMainCamera->SetWindow(m_iWindowWidth, m_iWindowHeight);
-	return true;
-}
-
-
-*/

@@ -7,11 +7,12 @@ Texture2D Ky_NoiseMap;
 Texture2D HightLightMap;
 float time;
 
+
 struct EffectPrimTexController
 {
     float tilingX; // = 1;
     float tilingY; //= 1;
-    float textureSpeed; // = 0;
+    float2 textureSpeed; // = 0;
     float extend_value; // = 0;
 };
 
@@ -21,7 +22,7 @@ struct EffectTexController
     float tilingY; //=1;
     float offsetX; // = 0;
     float offSetY; // = 0;
-    float textureSpeed; //=0;
+    float2 textureSpeed; //=0;
     float y_compression_scalar; // = 1;
     
     float extend_value; //=0;
@@ -51,7 +52,7 @@ float4 ComputePrimTexControl(float2 uv, EffectPrimTexController effStruct)
     mixuv.x = uv.x * effStruct.tilingX;
     mixuv.y = uv.y * effStruct.tilingY;
     
-    float2 speed_control = { effStruct.textureSpeed, effStruct.textureSpeed };
+    float2 speed_control = effStruct.textureSpeed;
     
     speed_control = speed_control * time;
     
@@ -74,7 +75,7 @@ float4 ComputeTexControl(float2 uv, EffectTexController effStruct)
     mixuv.x = uv.x * effStruct.tilingX;
     mixuv.y = uv.y * effStruct.tilingY;
     
-    float2 speed_control = { effStruct.textureSpeed, effStruct.textureSpeed };
+    float2 speed_control =  effStruct.textureSpeed;
     float2 offset = { effStruct.offsetX, effStruct.offSetY };
     
     speed_control = speed_control * time;
@@ -139,21 +140,34 @@ float HightLight_ComputeTexControl(float2 uv, HightLightStruct effStruct)// Don'
 }
 
 
-float ComputeFresnel(float3 vLight, float3 vNormal,float incidence)// Don't Use MixedUV!!!!!!!
+float3 Reflect(float3 incident, float3 normal)
 {
-    //float incidence =1;
-
-    float R0 = pow(1.0 - incidence, 2.0) / pow(1.0 + incidence, 2.0);
-    float cosAngle = 1 - saturate(dot(vLight, vNormal));
-    float result = cosAngle * cosAngle;
-    
-    result = result * result;
-    result = result * cosAngle;
-    result = saturate(mad(result, 1 - saturate(R0), R0));
-    return result;
-    
+    float cosI = dot(normal, incident);
+    return incident - 2 * cosI * normal;
 }
 
+//float ComputeFresnel(float3 vLight, float3 vNormal,float incidence)// Don't Use MixedUV!!!!!!!
+//{
+//    //float incidence =1;
+//
+//    float R0 = pow(1.0 - incidence, 2.0) / pow(1.0 + incidence, 2.0);
+//    float cosAngle = 1 - saturate(dot(vLight, vNormal));
+//    float result = cosAngle * cosAngle;
+//    
+//    result = result * result;
+//    result = result * cosAngle;
+//    result = saturate(mad(result, 1 - saturate(R0), R0));
+//    return result;
+//    
+//}
+
+float ComputeFresnel(float3 vReflect, float3 vNormal, float F0)
+{
+    float cosAngle = 1 - saturate(dot(vReflect, vNormal));
+    float result = pow(cosAngle, 5.0f);
+    result = saturate(mad(result, 1 - saturate(F0), F0));
+    return result;
+}
 
 float3 ComputeTwosided(float3 sideA, float3 sideB, float3 normal)
 {
@@ -163,6 +177,10 @@ float3 ComputeTwosided(float3 sideA, float3 sideB, float3 normal)
     return color;
 }
 
+float2 Panner(float2 uv, float2 speed)
+{
+    return uv + (speed*time);
+}
 
 #endif
 
