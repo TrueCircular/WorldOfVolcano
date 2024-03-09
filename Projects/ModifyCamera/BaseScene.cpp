@@ -53,7 +53,7 @@ void BaseScene::Init()
 		frustom = make_shared<FrustomCamera>();
 		_childCamera = make_shared<GameObject>();
 		_childCamera->Awake();
-		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 500, -1000));
+		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 50, -100));
 		_childCamera->AddComponent(make_shared<Camera>());
 		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
 		_childCamera->AddComponent(frustom);

@@ -21,7 +21,8 @@ private:
 	Matrix _matView = Matrix::Identity;
 	Matrix _matProjection = Matrix::Identity;
 	Matrix _matAround = Matrix::Identity;
-
+	Vec3 _pPos = Vec3(0.f);
+	Vec3 _lastPos = Vec3(0.f);
 	float _near = 0.1f;
 	float _far = 10000.f;
 	float _fov = XM_PI / 4.f;
@@ -30,7 +31,7 @@ private:
 private:
 	Vec3 _eye;
 	Vec3 _look;
-	Vec3 _up;
+	Vec3 _up = Vec3(0, 1, 0);
 private:
 	shared_ptr<Transform> _targetTransform;
 	Vec3 _target;

@@ -28,9 +28,15 @@ private:
 	float _width = 0.f;
 	float _height = 0.f;
 private:
+	Vec3 _camPos = Vec3(0.f);
+	Vec3 _camRight = Vec3(0.f);
+	Vec3 _camUp = Vec3(0.f, 1.f, 0.f);
+
+	Vec3 _pPos = Vec3(0.f);
+	Vec3 _lastPos = Vec3(0.f);
 	Vec3 _eye;
 	Vec3 _look;
-	Vec3 _up;
+	Vec3 _up = Vec3(0, 1, 0);
 private:
 	shared_ptr<Transform> _targetTransform;
 	Vec3 _target;

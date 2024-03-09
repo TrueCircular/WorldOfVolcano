@@ -26,12 +26,35 @@ void Camera::UpdateDefaultView()
 
 void Camera::UpdateTargetView()
 {
-	_eye = GetTransform()->GetPosition();
-	_target = GetTransform()->GetParent()->GetPosition();
-	_target.y += 15.f;
-	_up = GetTransform()->GetUpVector();
+	if (_lastPos != Vec3::Zero)
+	{
+		_target = GetTransform()->GetParent()->GetPosition();
+		//_target.y += 15.f;
 
-	S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _target, _up);
+		float dist = 100.f;
+		Vec3 eyeDir = _target - _lastPos;
+		eyeDir.Normalize(eyeDir);
+
+		_eye = _target + (-eyeDir * dist);
+		//_up = Vec3(0,1,0);
+		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _target, _up);
+
+		Matrix tolocal = GetTransform()->GetParent()->GetWorldMatrix().Invert();
+		_eye = Vec3::Transform(_eye, tolocal);
+
+		GetTransform()->SetLocalPosition(_eye);
+	}
+	else
+	{
+		_eye = GetTransform()->GetPosition();
+		_look = GetTransform()->GetParent()->GetPosition();
+		_up = GetTransform()->GetUpVector();
+
+		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _look, _up);
+	}
+
+
+
 }
 
 void Camera::RotateAroundTarget(const Vec3& target, const Vec3& axis)
@@ -46,22 +69,22 @@ void Camera::RotateAroundTarget(const Vec3& target, const Vec3& axis)
 		Quaternion qRot = Quaternion::CreateFromYawPitchRoll(axis.y, axis.x, axis.z);
 		Matrix mQat = Matrix::CreateFromQuaternion(qRot);
 
-		Vec3 pPos = GetTransform()->GetLocalPosition();
+		Vec3 target = GetTransform()->GetParent()->GetPosition();
+		Matrix toTarget = Matrix::CreateTranslation(-target);
+		Matrix toBack = Matrix::CreateTranslation(target);
 
-		Matrix toTarget = Matrix::CreateTranslation(-pPos);
-		Matrix toBack = Matrix::CreateTranslation(pPos);
-		Matrix mFinal = toTarget * mQat * toBack;
+		_pPos = GetTransform()->GetLocalPosition();
+		_pPos = Vec3::Transform(_pPos, toTarget);
+		_pPos = Vec3::TransformNormal(_pPos, mQat);
+		_pPos = Vec3::Transform(_pPos, toBack);
 
-		pPos = Vec3::Transform(pPos, qRot);
+		float dt = MANAGER_TIME()->GetDeltaTime();
 
-		GetTransform()->SetLocalPosition(pPos);
+		_lastPos = Vec3::Lerp(GetTransform()->GetLocalPosition(), _pPos, 150 * dt);
+		_lastPos = Vec3::Transform(_lastPos, GetTransform()->GetParent()->GetWorldMatrix());
+		//_up = ::XMVector3TransformNormal(_up, mQat);
 
-		_eye = GetTransform()->GetPosition();
-		_target = GetTransform()->GetParent()->GetPosition();
-		_target.y += 15.f;
-		_up = GetTransform()->GetUpVector();
-
-		S_MatView = _matView = ::XMMatrixLookAtLH(_eye, _target, _up);
+		UpdateMatrix();
 	}
 }
 
@@ -95,5 +118,5 @@ void Camera::UpdateMatrix()
 
 void Camera::Update()
 {
-	//UpdateMatrix();
+	UpdateMatrix();
 }
