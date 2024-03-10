@@ -48,19 +48,7 @@ void BaseScene::Init()
 //		MANAGER_RENDERER()->PushLightData(lightDesc);
 	}
 
-	//Camera
-	{
-		frustom = make_shared<FrustomCamera>();
-		_childCamera = make_shared<GameObject>();
-		_childCamera->Awake();
-		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 50, -100));
-		_childCamera->AddComponent(make_shared<Camera>());
-		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
-		_childCamera->AddComponent(frustom);
-		_childCamera->Start();
-		_childCamera->SetName(L"Camera");
-		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
-	}
+
 
 	DamageIndicator::GetInstance().Init();
 	DamageIndicator::GetInstance().SetCamera(_childCamera);
@@ -171,13 +159,26 @@ void BaseScene::Init()
 	quadTreeTerrain->AddSplatter(splatter);
 	SetTerrain(_terrain);
 
-	//Character
+	//Camera
 	{
 		_warrior = make_shared<Warrior>();
+		_warrior->GetOrAddTransform();
+
+		frustom = make_shared<FrustomCamera>();
+		_childCamera = make_shared<GameObject>();
+		_childCamera->Awake();
+		_childCamera->AddComponent(make_shared<Camera>());
+		_childCamera->GetCamera()->Init(Vec3(0, 100, -50), CameraType::Target, ProjectionType::Perspective, _warrior->GetTransform(), 100.f);
+		_childCamera->AddComponent(frustom);
+		_childCamera->Start();
+		_childCamera->SetName(L"Camera");
+		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
+	}
+
+	//Character
+	{
 		_warrior->Awake();
 		_warrior->AddComponent(make_shared<PlayerController>());
-		_warrior->AddChild(_childCamera);
-
 		_warrior->Start();
 		_warrior->GetTransform()->SetLocalPosition(spawnPos);
 		Add(_warrior);
@@ -185,6 +186,7 @@ void BaseScene::Init()
 
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
+
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"Lobby");
 	if (bgm == nullptr) {
 	shared_ptr<Sounds> bgm = make_shared<Sounds>();

@@ -15,13 +15,9 @@ public:
 	virtual ~Camera();
 //member
 private:
-	ProjectionType _type = ProjectionType::Perspective;
+	ProjectionType _projType = ProjectionType::Perspective;
 	CameraType _camType = CameraType::Normal;
 private:
-	Matrix _matView = Matrix::Identity;
-	Matrix _matProjection = Matrix::Identity;
-	Matrix _matAround = Matrix::Identity;
-
 	float _near = 0.1f;
 	float _far = 10000.f;
 	float _fov = XM_PI / 4.f;
@@ -31,39 +27,54 @@ private:
 	Vec3 _camPos = Vec3(0.f);
 	Vec3 _camRight = Vec3(0.f);
 	Vec3 _camUp = Vec3(0.f, 1.f, 0.f);
-
-	Vec3 _pPos = Vec3(0.f);
-	Vec3 _lastPos = Vec3(0.f);
-	Vec3 _eye;
-	Vec3 _look;
-	Vec3 _up = Vec3(0, 1, 0);
+	Vec3 _camlook = Vec3(0.f, 0.f, -1.f);
+	Quaternion _camQRotation = Quaternion::Identity;
+	Vec3 _camPitchYawRoll = Vec3(0.f);
+	float _defaultCameDist = 0.f;
+	float _camDist = 0.f;
+	Vec3 _currentMousePos = Vec3(0.f);
+	Vec3 _lastMousePos = Vec3(0.f);
 private:
-	shared_ptr<Transform> _targetTransform;
-	Vec3 _target;
+	shared_ptr<Transform>	_targetTransform = nullptr;
+	Vec3					_targetPos = Vec3(0.f);
+private:
+	Matrix _matView = Matrix::Identity;
+	Matrix _matProjection = Matrix::Identity;
 public:
 	static Matrix S_MatView;
 	static Matrix S_MatProjection;
 public:
+	//Camera
+	//Setter
+	void SetCameraPosition(const Vec3& pos) { _camPos = pos; }
 	void SetTargetTransform(const shared_ptr<Transform>& target) { _targetTransform = target; }
-	void SetProjectionType(ProjectionType type) { _type = type; }
+	//Getter
+	const Vec3& GetCameraPosition() const { return _camPos; }
+	const Vec3& GetCameraLookVector() const { return _camlook; }
+	const Vec3& GetCameraRightVector() const { return _camRight; }
+	const Vec3& GetCameraUpVector() const { return _camUp; }
+public:
+	//Projection
+	//Setter
 	void SetNear(float value) { _near = value; }
 	void SetPar(float value) { _far = value; }
 	void SetFov(float value) { _fov = value; }
 	void SetWidth(float value) { _width = value; }
 	void SetHeight(float value) { _height = value; }
 	void SetCameraType(CameraType type) { _camType = type; }
-public:
-	ProjectionType GetProjectionType() const { return _type; }
-	Matrix& GetViewMatrix() { return _matView; }
-	Matrix& GetProjectionMatrix() { return _matProjection; }
+	void SetProjectionType(ProjectionType type) { _projType = type; }
+	//Getter
+	const ProjectionType& GetProjectionType() const { return _projType; }
+	const Matrix& GetViewMatrix() const { return _matView; }
+	const Matrix& GetProjectionMatrix() const { return _matProjection; }
 private:
 	void UpdateDefaultView();
 	void UpdateTargetView();
-public:
-	void RotateAroundTarget(const Vec3& target, const Vec3& axis);
-public:
 	void UpdateMatrix();
 public:
+	void RotateAroundToTarget(const Vec3& axis);
+public:
+	void Init(const Vec3 CamPos, CameraType camType = CameraType::Normal, ProjectionType projType = ProjectionType::Perspective, const shared_ptr<Transform> targetTransform = nullptr,  float dist = 0.f);
 	virtual void Update() override;
 };
 
