@@ -166,6 +166,9 @@
     <ClInclude Include="ManagerCleaner.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="ObjectExporter.h" />
+    <ClInclude Include="ParticleInstance.h" />
+    <ClInclude Include="ParticleManager.h" />
+    <ClInclude Include="ParticleObj.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="QuadTreeBlock.h" />
@@ -192,6 +195,9 @@
     <ClCompile Include="ManagerCleaner.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="ObjectExporter.cpp" />
+    <ClCompile Include="ParticleInstance.cpp" />
+    <ClCompile Include="ParticleManager.cpp" />
+    <ClCompile Include="ParticleObj.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -208,14 +214,25 @@
     <ClCompile Include="TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\Resources\Shader\EffectBase.fx" />
-    <FxCompile Include="..\..\Resources\Shader\FirePillar.fx" />
+    <FxCompile Include="..\..\Resources\Shader\EffectBase.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\FirePillar.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="..\..\Resources\Shader\Global.fx" />
     <FxCompile Include="..\..\Resources\Shader\Instancing.fx" />
     <FxCompile Include="..\..\Resources\Shader\Light.fx" />
+    <FxCompile Include="..\..\Resources\Shader\MagicCircle.fx" />
+    <FxCompile Include="..\..\Resources\Shader\RadialGradientExponetial.fx" />
     <FxCompile Include="..\..\Resources\Shader\Render.fx" />
-    <FxCompile Include="..\..\Resources\Shader\Storm.fx" />
-    <FxCompile Include="..\..\Resources\Shader\UVcontrol_4x4.fx" />
+    <FxCompile Include="..\..\Resources\Shader\Storm.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\UVcontrol_4x4.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\VectorToRadialvalue.fx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineLib\EngineLib.vcxproj">

@@ -28,6 +28,9 @@
     <Filter Include="Shader\Effects">
       <UniqueIdentifier>{e82251b9-e870-48d4-be05-00b3d568a14f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="particle">
+      <UniqueIdentifier>{f70b3e93-4d01-441c-97d3-139a957a7e16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -88,6 +91,15 @@
     </ClCompile>
     <ClCompile Include="TestScene.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleObj.cpp">
+      <Filter>particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleManager.cpp">
+      <Filter>particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleInstance.cpp">
+      <Filter>particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +165,15 @@
     <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleObj.h">
+      <Filter>particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleManager.h">
+      <Filter>particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleInstance.h">
+      <Filter>particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Resources\Shader\Global.fx">
@@ -177,6 +198,15 @@
       <Filter>Shader\Effects</Filter>
     </FxCompile>
     <FxCompile Include="..\..\Resources\Shader\FirePillar.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\VectorToRadialvalue.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\RadialGradientExponetial.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\MagicCircle.fx">
       <Filter>Shader\Effects</Filter>
     </FxCompile>
   </ItemGroup>
