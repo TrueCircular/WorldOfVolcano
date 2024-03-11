@@ -88,9 +88,10 @@ void PlayerController::CameraMove()
 			float deltaX = _currentMousePos.x - _prevMousePos.x;
 			_playerRot.y += ::XMConvertToRadians(deltaX) * 10 * _dt;
 			_transform.lock()->SetLocalRotation(_playerRot);
+			Vec3 camPos = _camera.lock()->GetTransform()->GetLocalPosition();
 
 			Vec3 look = _transform.lock()->GetLookVector();
-			look.y = _rCamPos.y;
+			look.y = camPos.y;
 			look.z = -1000.f;
 
 			_camera.lock()->GetTransform()->SetLocalPosition(look);

@@ -74,8 +74,8 @@ void Camera::RotateAroundToTarget(const Vec3& axis)
 	{
 		_cameraYaw += axis.y;
 		_cameraPitch += axis.x;
-		float minPitch = ::XMConvertToRadians(-89.f);
-		float maxPitch = ::XMConvertToRadians(89.f);
+		const float minPitch = ::XMConvertToRadians(-89.f);
+		const float maxPitch = ::XMConvertToRadians(89.f);
 
 		_cameraPitch = max(minPitch, min(maxPitch, _cameraPitch));
 
