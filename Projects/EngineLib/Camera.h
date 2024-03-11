@@ -29,7 +29,8 @@ private:
 	Vec3 _camUp = Vec3(0.f, 1.f, 0.f);
 	Vec3 _camlook = Vec3(0.f, 0.f, -1.f);
 	Quaternion _camQRotation = Quaternion::Identity;
-	Vec3 _camPitchYawRoll = Vec3(0.f);
+	float _cameraYaw = 0.f;
+	float _cameraPitch = 0.f;
 	float _defaultCameDist = 0.f;
 	float _camDist = 0.f;
 	Vec3 _currentMousePos = Vec3(0.f);
@@ -71,6 +72,8 @@ private:
 	void UpdateDefaultView();
 	void UpdateTargetView();
 	void UpdateMatrix();
+	void UpdateVector();
+	void SetViewMatrix(Vec3 vPos, Vec3 vTarget, Vec3 vUp);
 public:
 	void RotateAroundToTarget(const Vec3& axis);
 public:

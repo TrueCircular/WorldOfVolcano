@@ -71,11 +71,11 @@ void PlayerController::CameraMove()
 			float deltaX = _currentMousePos.x - _prevMousePos.x;
 			float deltaY = _currentMousePos.y - _prevMousePos.y;
 
-			//_camRot.x = ::XMConvertToRadians(deltaY) * 0.1f;
-			//_camRot.y = ::XMConvertToRadians(deltaX) * 0.1f;
-			//_camRot.z = 0.f;
+			_camRot.x = ::XMConvertToRadians(deltaY) * 0.1f;
+			_camRot.y = ::XMConvertToRadians(deltaX) * 0.1f;
+			_camRot.z = 0.f;
 
-			//_camera.lock()->GetCamera()->RotateAroundToTarget(_camRot);
+			_camera.lock()->GetCamera()->RotateAroundToTarget(_camRot);
 		}
 	}
 

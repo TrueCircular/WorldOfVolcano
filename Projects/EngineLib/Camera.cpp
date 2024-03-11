@@ -50,82 +50,44 @@ void Camera::UpdateTargetView()
 	}
 	else
 	{
-		_targetPos = _targetTransform->GetPosition();
-		Vec3 eyeDir = _targetPos - _camPos;
-		eyeDir.Normalize(eyeDir);
-
-		Vec3 desiredPos = _targetPos - (eyeDir * _camDist);
-		Vec3 toDesiredPos = desiredPos - _camPos;
-
-		float length = toDesiredPos.Length();
-
-		if (length > 0.0f)
-		{
-			Vec3 move;
-			toDesiredPos.Normalize(move);
-
-			move *= min(length, 30.f);
-			_camPos += move;
-		}
-
-		if (MANAGER_INPUT()->GetButton(KEY_TYPE::LBUTTON))
-		{
-
-			float dx = _currentMousePos.y - _lastMousePos.y;
-			float dy = _currentMousePos.x - _lastMousePos.x;
-			float dz = 0.f;
-
-			dx = ::XMConvertToRadians(dx) * 0.1f;
-			dy = ::XMConvertToRadians(dy) * 0.1f;
-
-			Quaternion qmat = Quaternion::CreateFromYawPitchRoll(dy, dx, dz);
-
-			_camPos = Vec3::Transform(_camPos, qmat);
-		}
-
-
 		Vec3 Eye, Look, Up;
+
+		_targetPos = _targetTransform->GetPosition();
+
 		Eye = _camPos;
 		Look = _targetPos;
 		Up = _camUp;
 
 		S_MatView = _matView = ::XMMatrixLookAtLH(Eye, Look, Up);
-
-		//Camera Right, Up, Look Update
-		{
-			_camRight.x = _matView._11;
-			_camRight.y = _matView._21;
-			_camRight.z = _matView._31;
-
-			_camUp.x = _matView._12;
-			_camUp.y = _matView._22;
-			_camUp.z = _matView._32;
-
-			_camlook.x = _matView._13;
-			_camlook.y = _matView._23;
-			_camlook.z = _matView._33;
-
-			_camlook.Normalize(_camlook);
-		}
+		UpdateVector();
 	}
 }
 
 void Camera::RotateAroundToTarget(const Vec3& axis)
 {
 	float angle = axis.Length();
-	Vec3 normalAxis;
-	axis.Normalize(normalAxis);
 
 	if (angle > 0)
 	{
-		_camQRotation = Quaternion::CreateFromYawPitchRoll(axis.y, axis.x, axis.z);
+		_cameraYaw += axis.y;
+		_cameraPitch += axis.x;
+
+		Matrix matRot = Matrix::CreateFromYawPitchRoll(_cameraYaw, _cameraPitch, 0.f);
+		Vec3 WorldUp, WorldLook;
+		Vec3 localUp = Vec3(0,1,0);
+		Vec3 localLook = Vec3(0,0,1);
+
+		Vec3 targetPos = _targetTransform->GetPosition();
+		WorldUp = Vec3::Transform(localUp, matRot);
+		WorldLook = Vec3::Transform(localLook, matRot);
+		_camPos = targetPos - (WorldLook * _camDist);
+
+		SetViewMatrix(_camPos, targetPos, WorldUp);
 	}
 }
 
 void Camera::UpdateMatrix()
 {
-	_currentMousePos = MANAGER_INPUT()->GetScreenMousePos();
-
 	switch (_camType)
 	{
 	case CameraType::Debug:
@@ -138,6 +100,44 @@ void Camera::UpdateMatrix()
 		UpdateTargetView();
 	}break;
 	}
+}
+
+void Camera::UpdateVector()
+{
+	_camRight.x = _matView._11;
+	_camRight.y = _matView._21;
+	_camRight.z = _matView._31;
+
+	_camUp.x = _matView._12;
+	_camUp.y = _matView._22;
+	_camUp.z = _matView._32;
+
+	_camlook.x = _matView._13;
+	_camlook.y = _matView._23;
+	_camlook.z = _matView._33;
+
+	_camlook.Normalize(_camlook);
+}
+
+void Camera::SetViewMatrix(Vec3 vPos, Vec3 vTarget, Vec3 vUp)
+{
+	_camPos = vPos;
+	_targetPos = vTarget;
+	S_MatView = _matView = ::XMMatrixLookAtLH(_camPos, _targetPos, vUp);
+	UpdateVector();
+}
+
+void Camera::Init(const Vec3 CamPos, CameraType camType, ProjectionType projType, const shared_ptr<Transform> targetTransform, float dist)
+{
+	_camPos = CamPos;
+	_camType = camType;
+	_projType = projType;
+	_targetTransform = targetTransform;
+	_targetPos = _targetTransform->GetPosition();
+	_defaultCameDist = dist;
+	_camDist = _defaultCameDist;
+
+	SetViewMatrix(_camPos, _targetPos, _camUp);
 
 	switch (_projType)
 	{
@@ -150,20 +150,6 @@ void Camera::UpdateMatrix()
 		S_MatProjection = _matProjection = ::XMMatrixOrthographicLH(_width, _height, _near, _far);
 	}break;
 	}
-
-	_lastMousePos = _currentMousePos;
-}
-
-void Camera::Init(const Vec3 CamPos, CameraType camType, ProjectionType projType, const shared_ptr<Transform> targetTransform, float dist)
-{
-	_camPos = CamPos;
-	_camType = camType;
-	_projType = projType;
-	_targetTransform = targetTransform;
-	_defaultCameDist = dist;
-	_camDist = _defaultCameDist;
-
-	UpdateMatrix();
 }
 
 void Camera::Update()

@@ -168,7 +168,7 @@ void BaseScene::Init()
 		_childCamera = make_shared<GameObject>();
 		_childCamera->Awake();
 		_childCamera->AddComponent(make_shared<Camera>());
-		_childCamera->GetCamera()->Init(Vec3(0, 100, -50), CameraType::Target, ProjectionType::Perspective, _warrior->GetTransform(), 100.f);
+		_childCamera->GetCamera()->Init(Vec3(0, 200, -100), CameraType::Target, ProjectionType::Perspective, _warrior->GetTransform(), 100.f);
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();
 		_childCamera->SetName(L"Camera");
@@ -302,9 +302,10 @@ void BaseScene::Update()
 	}
 	latestMessageSize = MANAGER_IMGUI()->GetLatestMessages().size();
 
+
 	Scene::Update();
+
 	//skyBox->Update();
-	quadTreeTerrain->Update();
 	DamageIndicator::GetInstance().Frame();
 
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
@@ -321,6 +322,9 @@ void BaseScene::Update()
 
 void BaseScene::LateUpdate()
 {
+
 	Scene::LateUpdate();
+	quadTreeTerrain->Update();
+
 	DamageIndicator::GetInstance().Render();
 }
