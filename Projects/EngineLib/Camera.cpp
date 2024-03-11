@@ -8,6 +8,18 @@ Camera::Camera() : Super(Component(ComponentType::Camera))
 {
 	_width = static_cast<float>(g_gameDesc.width);
 	_height = static_cast<float>(g_gameDesc.height);
+
+	switch (_projType)
+	{
+	case ProjectionType::Perspective:
+	{
+		S_MatProjection = _matProjection = ::XMMatrixPerspectiveFovLH(_fov, (_width / _height), _near, _far);
+	}break;
+	case ProjectionType::Orthographic:
+	{
+		S_MatProjection = _matProjection = ::XMMatrixOrthographicLH(_width, _height, _near, _far);
+	}break;
+	}
 }
 
 Camera::~Camera()
@@ -44,23 +56,14 @@ void Camera::UpdateDefaultView()
 
 void Camera::UpdateTargetView()
 {
-	if (_targetTransform == nullptr)
-	{
-		return;
-	}
-	else
-	{
-		Vec3 Eye, Look, Up;
+	Vec3 Eye, Look, Up;
 
-		_targetPos = _targetTransform->GetPosition();
+	Eye = GetTransform()->GetPosition();
+	Look = GetTransform()->GetParent()->GetPosition();
+	Up = GetTransform()->GetUpVector();
 
-		Eye = _camPos;
-		Look = _targetPos;
-		Up = _camUp;
-
-		S_MatView = _matView = ::XMMatrixLookAtLH(Eye, Look, Up);
-		UpdateVector();
-	}
+	S_MatView = _matView = ::XMMatrixLookAtLH(Eye, Look, Up);
+	//UpdateVector();
 }
 
 void Camera::RotateAroundToTarget(const Vec3& axis)
@@ -71,18 +74,30 @@ void Camera::RotateAroundToTarget(const Vec3& axis)
 	{
 		_cameraYaw += axis.y;
 		_cameraPitch += axis.x;
+		float minPitch = ::XMConvertToRadians(-89.f);
+		float maxPitch = ::XMConvertToRadians(89.f);
 
-		Matrix matRot = Matrix::CreateFromYawPitchRoll(_cameraYaw, _cameraPitch, 0.f);
+		_cameraPitch = max(minPitch, min(maxPitch, _cameraPitch));
+
+		Quaternion qt = Quaternion::CreateFromYawPitchRoll(_cameraYaw, _cameraPitch, 0.f);
+
 		Vec3 WorldUp, WorldLook;
 		Vec3 localUp = Vec3(0,1,0);
 		Vec3 localLook = Vec3(0,0,1);
 
-		Vec3 targetPos = _targetTransform->GetPosition();
-		WorldUp = Vec3::Transform(localUp, matRot);
-		WorldLook = Vec3::Transform(localLook, matRot);
-		_camPos = targetPos - (WorldLook * _camDist);
+		Vec3 targetPos = GetTransform()->GetParent()->GetPosition();
+		Vec3 mPos = GetTransform()->GetPosition();
+		Vec3 zmrl = targetPos - mPos;
+		float dist = Vec3::Distance(targetPos, mPos);
 
-		SetViewMatrix(_camPos, targetPos, WorldUp);
+		WorldUp = Vec3::Transform(localUp, qt);
+		WorldLook = Vec3::Transform(localLook, qt);
+		_camPos = targetPos - (WorldLook * dist);
+		_camPos = Vec3::Transform(_camPos, GetTransform()->GetParent()->GetWorldMatrix().Invert());
+
+		GetTransform()->SetLocalPosition(_camPos);
+
+		Update();
 	}
 }
 
@@ -134,8 +149,8 @@ void Camera::Init(const Vec3 CamPos, CameraType camType, ProjectionType projType
 	_projType = projType;
 	_targetTransform = targetTransform;
 	_targetPos = _targetTransform->GetPosition();
-	_defaultCameDist = dist;
-	_camDist = _defaultCameDist;
+	//_defaultCameDist = dist;
+	//_camDist = _defaultCameDist;
 
 	SetViewMatrix(_camPos, _targetPos, _camUp);
 

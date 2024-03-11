@@ -91,9 +91,10 @@ void PlayerController::CameraMove()
 
 			Vec3 look = _transform.lock()->GetLookVector();
 			look.y = _rCamPos.y;
-			look.z = -_camDist;
+			look.z = -1000.f;
 
 			_camera.lock()->GetTransform()->SetLocalPosition(look);
+			_camera.lock()->GetCamera()->SetYaw(_playerRot.y);
 		}
 	}
 
@@ -592,7 +593,7 @@ void PlayerController::Start()
 		}
 	}
 
-	_rCamPos = _camera.lock()->GetCamera()->GetCameraPosition();
+	_rCamPos = _camera.lock()->GetTransform()->GetLocalPosition();
 	_camDist = max(fabs(_rCamPos.x), fabs(_rCamPos.z));
 
 	AnimStateInit();

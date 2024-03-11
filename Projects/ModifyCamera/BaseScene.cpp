@@ -161,26 +161,29 @@ void BaseScene::Init()
 
 	//Camera
 	{
-		_warrior = make_shared<Warrior>();
-		_warrior->GetOrAddTransform();
 
 		frustom = make_shared<FrustomCamera>();
 		_childCamera = make_shared<GameObject>();
 		_childCamera->Awake();
 		_childCamera->AddComponent(make_shared<Camera>());
-		_childCamera->GetCamera()->Init(Vec3(0, 200, -100), CameraType::Target, ProjectionType::Perspective, _warrior->GetTransform(), 100.f);
+		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
+		//_childCamera->GetCamera()->Init(Vec3(0, 200, -100), CameraType::Target, ProjectionType::Perspective, _warrior->GetTransform(), 100.f);
+		_childCamera->GetTransform()->SetLocalPosition(Vec3(0, 500.f, -1000.f));
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();
 		_childCamera->SetName(L"Camera");
+
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}
 
 	//Character
 	{
+		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
 		_warrior->AddComponent(make_shared<PlayerController>());
 		_warrior->Start();
 		_warrior->GetTransform()->SetLocalPosition(spawnPos);
+		_warrior->AddChild(_childCamera);
 		Add(_warrior);
 		AddShadow(_warrior);
 

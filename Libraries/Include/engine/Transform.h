@@ -46,8 +46,8 @@ public:
 	Vec3& const GetPositionRef() { return _position; }
 	Matrix GetWorldMatrix() const { return _matWorld; }
 public:
-	Vec3 GetUpVector() const { return Vec3(_matWorld._12, _matWorld._22, _matWorld._32); }
-	Vec3 GetRightVector() const { return Vec3(_matWorld._11, _matWorld._21, _matWorld._31); }
+	Vec3 GetUpVector() const { return _matWorld.Up(); }
+	Vec3 GetRightVector() const { return _matWorld.Right(); }
 	Vec3 GetLookVector() const { return _matWorld.Backward(); }
 public:
 	//local

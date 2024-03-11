@@ -31,10 +31,6 @@ private:
 	Quaternion _camQRotation = Quaternion::Identity;
 	float _cameraYaw = 0.f;
 	float _cameraPitch = 0.f;
-	float _defaultCameDist = 0.f;
-	float _camDist = 0.f;
-	Vec3 _currentMousePos = Vec3(0.f);
-	Vec3 _lastMousePos = Vec3(0.f);
 private:
 	shared_ptr<Transform>	_targetTransform = nullptr;
 	Vec3					_targetPos = Vec3(0.f);
@@ -64,6 +60,7 @@ public:
 	void SetHeight(float value) { _height = value; }
 	void SetCameraType(CameraType type) { _camType = type; }
 	void SetProjectionType(ProjectionType type) { _projType = type; }
+	void SetYaw(float yaw) { _cameraYaw = yaw; }
 	//Getter
 	const ProjectionType& GetProjectionType() const { return _projType; }
 	const Matrix& GetViewMatrix() const { return _matView; }
