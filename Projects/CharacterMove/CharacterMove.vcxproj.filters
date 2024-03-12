@@ -101,6 +101,9 @@
     <ClCompile Include="ParticleInstance.cpp">
       <Filter>particle</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleRenderer.cpp">
+      <Filter>particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -172,6 +175,9 @@
       <Filter>particle</Filter>
     </ClInclude>
     <ClInclude Include="ParticleInstance.h">
+      <Filter>particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleRenderer.h">
       <Filter>particle</Filter>
     </ClInclude>
   </ItemGroup>

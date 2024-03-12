@@ -169,6 +169,7 @@
     <ClInclude Include="ParticleInstance.h" />
     <ClInclude Include="ParticleManager.h" />
     <ClInclude Include="ParticleObj.h" />
+    <ClInclude Include="ParticleRenderer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="QuadTreeBlock.h" />
@@ -198,6 +199,7 @@
     <ClCompile Include="ParticleInstance.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
     <ClCompile Include="ParticleObj.cpp" />
+    <ClCompile Include="ParticleRenderer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

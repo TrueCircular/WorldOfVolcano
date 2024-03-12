@@ -39,7 +39,7 @@ cbuffer ColorBuffer
     float4 LowParticleColor;
 };
 
-EffectOutput StormVS(EffectMesh input)
+EffectOutput CircleVS(EffectMesh input)
 {
     EffectOutput output;
     
@@ -105,7 +105,7 @@ float4 PS(EffectOutput input) : SV_TARGET
 
 technique11 T0
 {
-    PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, StormVS, PS)
+    PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, CircleVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

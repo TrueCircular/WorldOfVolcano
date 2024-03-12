@@ -5,7 +5,32 @@ class VertexBuffer;
 struct ParticleInstanceData {
 	Matrix world;
 	float duration;
-	float currentime;
+	float currentime = 0;;
+};
+
+struct ParticleInstance
+{
+	ParticleInstanceData data;
+	bool isTargeting = false;
+	bool isLoop = false;
+	bool isDestroy = false;
+	shared_ptr<Transform> targetTransform;
+	shared_ptr<Transform> particleTransform;
+	float speed;
+	ParticleInstance(float duration, shared_ptr<Transform> pos, shared_ptr<Transform> target, float speedVel, bool loop = false) {
+		data.duration = duration;
+		particleTransform = pos;
+		if (target) {
+			targetTransform = target;
+			isTargeting = true;
+		}
+		else {
+			targetTransform = nullptr;
+		}
+		speed = speedVel;
+		isLoop = loop;
+	};
+
 };
 
 class ParticleInstancingBuffer
@@ -27,11 +52,7 @@ public:
 	uint32						GetCount() { return static_cast<uint32>(_data.size()); }
 	shared_ptr<VertexBuffer>	GetBuffer() { return _instanceBuffer; }
 
-	void	SetID(uint64 instanceId) { _instanceId = instanceId; }
-	uint64	GetID() { return _instanceId; }
-
 private:
-	uint64						_instanceId = 0;
 	shared_ptr<VertexBuffer>	_instanceBuffer;
 	uint32						_maxCount = 0;
 	vector<ParticleInstanceData>		_data;
