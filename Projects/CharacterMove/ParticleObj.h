@@ -17,12 +17,13 @@ private:
 public:
 	ParticleObj() {};
 	~ParticleObj() {};
+	UINT GetCountofInstance() { return instanceCounter; };
 	virtual void AddParticle(ParticleInstance& data);
-
+	virtual void DeleteInstance(ParticleInstance& data);
+	
 	virtual void Update()=0;
 	virtual void LateUpdate()=0;
 
-	virtual void DeleteInstance(ParticleInstance& data)=0;
 	virtual void OnDestroy()=0;
 };
 

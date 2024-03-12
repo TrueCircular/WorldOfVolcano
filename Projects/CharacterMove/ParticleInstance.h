@@ -16,6 +16,7 @@ struct ParticleInstance
 	bool isDestroy = false;
 	shared_ptr<Transform> targetTransform;
 	shared_ptr<Transform> particleTransform;
+	shared_ptr<Transform> parentTransform;
 	float speed;
 	ParticleInstance(float duration, shared_ptr<Transform> pos, shared_ptr<Transform> target, float speedVel, bool loop = false) {
 		data.duration = duration;

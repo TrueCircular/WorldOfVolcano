@@ -25,13 +25,38 @@ ParticleManager* ParticleManager::GetInstance()
 
 void ParticleManager::Update()
 {
+	for (auto c : particleList) {
+		if (c.second->GetCountofInstance() != 0) {
+			c.second->Update();
+		}
+	}
 }
 
-void ParticleManager::Render(vector<shared_ptr<GameObject>>& gameObjects)
+void ParticleManager::Render()
 {
-
+	for (auto c : particleList) {
+		if(c.second->GetCountofInstance()!=0){
+			c.second->LateUpdate();
+		}
+	}
 }
 
-void ParticleManager::AddManagingParticle(shared_ptr<ParticleObj> ParticleObj)
+void ParticleManager::AddManagingParticle(wstring name,shared_ptr<ParticleObj> ParticleObj)
 {
+	auto iter = particleList.find(name);
+	if (iter != particleList.end()) {
+
+	}
+	else {
+		particleList.insert(make_pair(name.c_str(), ParticleObj));
+	}
+}
+
+shared_ptr<ParticleObj> ParticleManager::GetParticleFromName(wstring name)
+{
+	auto iter = particleList.find(name);
+	if (iter != particleList.end()) {
+		return iter->second;
+	}
+	return nullptr;
 }

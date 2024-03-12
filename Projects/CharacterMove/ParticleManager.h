@@ -9,10 +9,11 @@ public:
 	~ParticleManager();
 	static ParticleManager* GetInstance();
 	void Update();
-	void Render(vector<shared_ptr<GameObject>>& ParticleObj);
-	void AddManagingParticle(shared_ptr<ParticleObj> ParticleObj);
+	void Render();
+	void AddManagingParticle(wstring name, shared_ptr<ParticleObj> ParticleObj);
+	shared_ptr<ParticleObj> GetParticleFromName(wstring name);
 private:
-	vector<shared_ptr<ParticleObj>> particleList;
+	map<wstring,shared_ptr<ParticleObj>>particleList;
 
 };
 

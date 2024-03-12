@@ -35,8 +35,7 @@ FMOD::Channel* Sounds::Play(bool doLoop)
 	(doLoop) ? fr = fm_Sound->setMode(FMOD_LOOP_NORMAL) : fr = fm_Sound->setMode(FMOD_LOOP_OFF);
 	fr=fm_Sound->setMode(FMOD_2D);
 	fr=g_fmSystem->playSound(fm_Sound, nullptr, false, &channel);
-	fr=channel->setVolume(100);
-	float speed;
+	channel->setVolume(MANAGER_SOUND()->GetCurrentVolume());
 	MANAGER_SOUND()->AddChannel(channel);
 	return channel;
 }
@@ -58,6 +57,7 @@ FMOD::Channel* Sounds::Play3D(bool doLoop, Vec3 *pos, Vec3 vel)
 	fr=fm_Sound->setMode(FMOD_3D);
 	fr=g_fmSystem->playSound(fm_Sound, nullptr, false, &channel);
 //	fm_Sound->get3DCustomRolloff(&vec,&ids);
+	channel->setVolume(MANAGER_SOUND()->GetCurrentVolume());
 	fr=channel->set3DAttributes(&position, &velocity);
 	channel->set3DMinMaxDistance(10,100);
 
@@ -89,6 +89,7 @@ void Sounds::Play3DEffect(Vec3* pos,Vec3 vel )
 
 	g_fmSystem->playSound(fm_Sound, nullptr, false, &channel);
 	channel->set3DAttributes(&position, &velocity);
+	channel->setVolume(MANAGER_SOUND()->GetCurrentVolume());
 	MANAGER_SOUND()->AddChannel(pos, channel);
 
 }
