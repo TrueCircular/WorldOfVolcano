@@ -51,15 +51,15 @@ public:
 	Vec3 GetLookVector() const { return _matWorld.Backward(); }
 public:
 	//local
-	void SetLocalScale(const Vec3& scale) { _localScale = scale; UpdateTransform(); }
-	void SetLocalRotation(const Vec3& rot) { _localRotation = rot; UpdateTransform();}
-	void SetLocalPosition(const Vec3& pos) { _localPosition = pos; UpdateTransform();}
+	void SetLocalScale(Vec3 scale) { _localScale = scale; UpdateTransform(); }
+	void SetLocalRotation(Vec3 rot) { _localRotation = rot; UpdateTransform();}
+	void SetLocalPosition(Vec3 pos) { _localPosition = pos; UpdateTransform();}
 	//world
-	void SetScale(const Vec3& scale);
-	void SetRotation(const Vec3& rot);
-	void SetPosition(const Vec3& pos);
-	void SetLookVector(const Vec3& look) { _matWorld.Backward() = look; }
-	void SetLocalMatrix(const Matrix& mat) { _matLocal = mat; }
+	void SetScale(Vec3 scale);
+	void SetRotation(Vec3 rot);
+	void SetPosition(Vec3 pos);
+	void SetLookVector(Vec3 look) { _matWorld.Backward() = look; }
+	void SetLocalMatrix(Matrix mat) { _matLocal = mat; }
 private:
 	void PreorderTransfroms(const shared_ptr<Transform>& node, int32 localIndex, int32 parentIndex);
 public:

@@ -35,7 +35,7 @@ void Transform::AddChild(shared_ptr<Transform> child)
 	_children.push_back(child);
 }
 
-void Transform::SetScale(const Vec3& scale)
+void Transform::SetScale(Vec3 scale)
 {
 	if (HasParent())
 	{
@@ -52,7 +52,7 @@ void Transform::SetScale(const Vec3& scale)
 	}
 }
 
-void Transform::SetRotation(const Vec3& rot)
+void Transform::SetRotation(Vec3 rot)
 {
 	if (HasParent())
 	{
@@ -68,13 +68,12 @@ void Transform::SetRotation(const Vec3& rot)
 	}
 }
 
-void Transform::SetPosition(const Vec3& pos)
+void Transform::SetPosition(Vec3 pos)
 {
 	if (HasParent())
 	{
 		Matrix pMat = _parent->GetWorldMatrix().Invert();
-		Vec3 lPos;
-		lPos.Transform(pos, pMat);
+		Vec3 lPos = Vec3::Transform(pos, pMat);
 
 		SetLocalPosition(lPos);
 	}

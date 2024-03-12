@@ -167,7 +167,7 @@ void BaseScene::Init()
 		_childCamera->Awake();
 		_childCamera->AddComponent(make_shared<Camera>());
 		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
-		//_childCamera->GetCamera()->Init(Vec3(0, 200, -100), CameraType::Target, ProjectionType::Perspective, _warrior->GetTransform(), 100.f);
+		_childCamera->GetCamera()->Init(CameraType::Target, ProjectionType::Perspective, 1000);
 		_childCamera->GetTransform()->SetLocalPosition(Vec3(0, 500.f, -1000.f));
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();

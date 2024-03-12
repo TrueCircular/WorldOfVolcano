@@ -71,7 +71,9 @@ private:
 	Vec3 _playerRot;
 	Vec3 _playerPos;
 	float _camDist = 0.f;
-	float _camSpeed = 2000.f;
+	float _camMinDist = 0.f;
+	float _camMaxDist = 0.f;
+	float _camSpeed = 100.f;
 private:
 	//Sound
 	shared_ptr<PlayerSoundController> _sound = nullptr;
@@ -87,19 +89,24 @@ private:
 	//Camera
 	void CameraMove();
 public:
+	//Setter
 	bool SetAnimState(const PlayerAnimType& animType);
+	void SetIsAttack(bool setting) { _isAttack = setting; }
+public:
+	//Getter Animation
 	const shared_ptr<ModelAnimator>& GetAnimator() { return _animator.lock(); }
 	const shared_ptr<PlayerUnitState> GetCurrentUnitState() { return _currentState; }
 	shared_ptr<PlayerAnimState> GetAnimState() { return _animState; }
 	const PlayerAnimType GetCurrentAnimType();
 	PlayerAnimType& GetCurrentAnimTypeRef();
+public:
+	//Getter Character State
 	const shared_ptr<JumpFlag>& GetJumpState() { return _jumpState; }
 	const float& GetDefaultSpeed() const { return _defaultSpeed; }
 	const float& GetCurrentSpeed() const { return _currentSpeed; }
 	const bool& IsAttack() const { return _isAttack; }
-	void SetIsAttack(bool setting) { _isAttack = setting; }
-	void NotifyPlayerAlive(bool isAlive);
 	const bool& IsBattle() const { return _isBattle; }
+	void NotifyPlayerAlive(bool isAlive);
 	const CHARACTER_INFO& GetPickedInfo() const { return _pickedInfo; }
 	int GetAttackQueueSize();
 public:
