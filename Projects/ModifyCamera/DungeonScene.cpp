@@ -53,20 +53,6 @@ void DungeonScene::Init()
 //		MANAGER_RENDERER()->PushLightData(lightDesc);
 	}
 
-	//Camera
-	{
-		frustom = make_shared<FrustomCamera>();
-		_childCamera = make_shared<GameObject>();
-		_childCamera->Awake();
-		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, -1000.f));
-		_childCamera->AddComponent(make_shared<Camera>());
-		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
-		_childCamera->AddComponent(frustom);
-		_childCamera->Start();
-		_childCamera->SetName(L"Camera");
-		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
-	}
-
 	DamageIndicator::GetInstance().Init();
 	DamageIndicator::GetInstance().SetCamera(_childCamera);
 
@@ -150,13 +136,24 @@ void DungeonScene::Init()
 
 
 	SetTerrain(_terrain);
-	//	Add(_chr);
-			//Character
+	//Camera
+	{
+		frustom = make_shared<FrustomCamera>();
+		_childCamera = make_shared<GameObject>();
+		_childCamera->Awake();
+		_childCamera->AddComponent(make_shared<Camera>());
+		_childCamera->AddComponent(frustom);
+		_childCamera->Start();
+		_childCamera->SetName(L"Camera");
+		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 100.f);
+		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
+		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
+	}
 		//Character
 	{
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
-		_warrior->AddChild(_childCamera);
+		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		_warrior->AddComponent(make_shared<PlayerController>());
 		_warrior->Start();
 		_warrior->GetTransform()->SetLocalPosition(spawnPos);
@@ -326,7 +323,6 @@ void DungeonScene::Update()
 	//DamageIndicator::GetInstance().Add(box);
 
 	Scene::Update();
-	quadTreeTerrain->Update();
 	skyBox->Update();
 	DamageIndicator::GetInstance().Frame();
 
@@ -345,5 +341,7 @@ void DungeonScene::Update()
 void DungeonScene::LateUpdate()
 {
 	Scene::LateUpdate();
+	quadTreeTerrain->Update();
+
 	DamageIndicator::GetInstance().Render();
 }
