@@ -61,70 +61,74 @@ void PlayerController::CameraMove()
 	_dt = MANAGER_TIME()->GetDeltaTime();
 	_currentMousePos = MANAGER_INPUT()->GetScreenMousePos();
 
-	//마우스 왼쪽 버튼 누르고 있을 때(카메라만 시점 변경)
-	if (MANAGER_INPUT()->GetButton(KEY_TYPE::LBUTTON))
+	//휠 올렸을 때(시점 앞으로)
+	if (g_gameDesc.WheelState == 1)
 	{
+		_camDist -= _camSpeed * _dt;
+		_camPos = _camera.lock()->GetCamera()->GetCameraPosition();
+
+		if (_camDist < _camMinDist)
 		{
-			_rCamPos = _camera.lock()->GetTransform()->GetLocalPosition();
-			_camDist = max(fabs(_rCamPos.x), fabs(_rCamPos.z));
-
-			float deltaX = _currentMousePos.x - _prevMousePos.x;
-			float deltaY = _currentMousePos.y - _prevMousePos.y;
-
-			_camRot.x = ::XMConvertToRadians(deltaY) * 10 * _dt;
-			_camRot.y = ::XMConvertToRadians(deltaX) * 10 * _dt;
-
-			_camera.lock()->GetTransform()->RotateAround(_camRot);
+			_camDist = _camMinDist;
 		}
-	}
 
+		Vec3 cameraDirection = _camera.lock()->GetCamera()->GetCameraLookVector();
+		Vec3 newCamPos = _playerPos - cameraDirection * _camDist; // 타깃에서 카메라 방향으로 _camDist만큼 떨어진 위치
+		newCamPos += _camera.lock()->GetCamera()->GetCameraToTargetOffset();
+
+		_camera.lock()->GetCamera()->SetCameraPosition(newCamPos);
+		_camera.lock()->GetCamera()->Update();
+	}
+	//휠 내렸을 때(시점 뒤로)
+	else if (g_gameDesc.WheelState == -1)
+	{
+		_camDist += _camSpeed * _dt;
+		_camPos = _camera.lock()->GetCamera()->GetCameraPosition();
+
+		if (_camDist > _camMaxDist)
+		{
+			_camDist = _camMaxDist;
+		}
+
+
+		Vec3 cameraDirection = _camera.lock()->GetCamera()->GetCameraLookVector();
+		cameraDirection.Normalize(cameraDirection);
+		Vec3 newCamPos = _playerPos - cameraDirection * _camDist; // 타깃에서 카메라 방향으로 _camDist만큼 떨어진 위치
+		newCamPos += _camera.lock()->GetCamera()->GetCameraToTargetOffset();
+
+		_camera.lock()->GetCamera()->SetCameraPosition(newCamPos);
+		_camera.lock()->GetCamera()->SetCameraDistance(_camDist);
+		_camera.lock()->GetCamera()->Update();
+
+	}
 	//마우스 오른쪽 버튼 누르고 있을 때(캐릭터회전 = 카메라 회전(위치이동))
 	if (MANAGER_INPUT()->GetButton(KEY_TYPE::RBUTTON) && _isAlive == true)
 	{
 		{
 			_playerRot = _transform.lock()->GetLocalRotation();
-
 			float deltaX = _currentMousePos.x - _prevMousePos.x;
 			_playerRot.y += ::XMConvertToRadians(deltaX) * 10 * _dt;
 			_transform.lock()->SetLocalRotation(_playerRot);
 
-			Vec3 look = _transform.lock()->GetLookVector();
-			look.y = _rCamPos.y;
-			look.z -= _camDist;
-
-			_camera.lock()->GetTransform()->SetLocalPosition(look);
+			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
 		}
 	}
-
-	//휠 올렸을 때(시점 앞으로)
-	if (g_gameDesc.WheelState == 1)
+	//마우스 왼쪽 버튼 누르고 있을 때(카메라만 시점 변경)
+	else if (MANAGER_INPUT()->GetButton(KEY_TYPE::LBUTTON))
 	{
-		_camPos = _camera.lock()->GetTransform()->GetLocalPosition();
-		if (_camPos.z <= 1000.f)
 		{
-			_camPos.z += _camSpeed * _dt;
-			_camera.lock()->GetTransform()->SetLocalPosition(_camPos);
+			float deltaX = _currentMousePos.x - _prevMousePos.x;
+			float deltaY = _currentMousePos.y - _prevMousePos.y;
 
-			_rCamPos = _camera.lock()->GetTransform()->GetLocalPosition();
-			_camDist = max(fabs(_rCamPos.x), fabs(_rCamPos.z));
+			_camRot.x = ::XMConvertToRadians(deltaY) * 0.1f;
+			_camRot.y = ::XMConvertToRadians(deltaX) * 0.1f;
+			_camRot.z = 0.f;
+
+			_camera.lock()->GetCamera()->RotateAroundToTarget(_playerPos, _camRot);
 		}
 	}
-
-	//휠 내렸을 때(시점 뒤로)
-	else if (g_gameDesc.WheelState == -1)
-	{
-		_camPos = _camera.lock()->GetTransform()->GetLocalPosition();
-
-		if (_camPos.z >= -1000.f)
-		{
-			_camPos.z -= _camSpeed * _dt;
-			_camera.lock()->GetTransform()->SetLocalPosition(_camPos);
-
-			_rCamPos = _camera.lock()->GetTransform()->GetLocalPosition();
-			_camDist = max(fabs(_rCamPos.x), fabs(_rCamPos.z));
-		}
-	}
-
+	_camera.lock()->GetCamera()->SetCameraDistance(_camDist);
+	//_camera.lock()->GetCamera()->SetCameraPosition(_camPos);
 	_prevMousePos = _currentMousePos;
 }
 
@@ -169,81 +173,83 @@ void PlayerController::PlayerInput()
 	}
 
 	_animState->Update();
+
 	if (_sound)
 		_sound->PlaySound(_animState->GetStateAnimtype());
 
-
 	//Debug
-	{
-		string outputString;
+	//{
+	//	string outputString;
 
-		switch (*_currentState)
-		{
-		case PlayerUnitState::Stand:
-		{
-			outputString = "Stand";
-		}
-		break;
-		case PlayerUnitState::FrontMove:
-		{
-			outputString = "FrontMove";
-		}
-		break;
-		case PlayerUnitState::FrontRightMove:
-		{
-			outputString = "FrontRightMove";
-		}
-		break;
-		case PlayerUnitState::FrontLeftMove:
-		{
-			outputString = "FrontLeftMove";
-		}
-		break;
-		case PlayerUnitState::BackMove:
-		{
-			outputString = "BackMove";
-		}
-		break;
-		case PlayerUnitState::BackRightMove:
-		{
-			outputString = "BackRightMove";
-		}
-		break;
-		case PlayerUnitState::BackLeftMove:
-		{
-			outputString = "BackLeftMove";
-		}
-		break;
-		case PlayerUnitState::RightMove:
-		{
-			outputString = "RightMove";
-		}
-		break;
-		case PlayerUnitState::LeftMove:
-		{
-			outputString = "LeftMove";
-		}
-		break;
-		case PlayerUnitState::Jump:
-		{
-			outputString = "Jump";
-		}
-		break;
-		}
-		outputString += "\n";
-		::OutputDebugStringA(outputString.c_str());
-	}
+	//	switch (*_currentState)
+	//	{
+	//	case PlayerUnitState::Stand:
+	//	{
+	//		outputString = "Stand";
+	//	}
+	//	break;
+	//	case PlayerUnitState::FrontMove:
+	//	{
+	//		outputString = "FrontMove";
+	//	}
+	//	break;
+	//	case PlayerUnitState::FrontRightMove:
+	//	{
+	//		outputString = "FrontRightMove";
+	//	}
+	//	break;
+	//	case PlayerUnitState::FrontLeftMove:
+	//	{
+	//		outputString = "FrontLeftMove";
+	//	}
+	//	break;
+	//	case PlayerUnitState::BackMove:
+	//	{
+	//		outputString = "BackMove";
+	//	}
+	//	break;
+	//	case PlayerUnitState::BackRightMove:
+	//	{
+	//		outputString = "BackRightMove";
+	//	}
+	//	break;
+	//	case PlayerUnitState::BackLeftMove:
+	//	{
+	//		outputString = "BackLeftMove";
+	//	}
+	//	break;
+	//	case PlayerUnitState::RightMove:
+	//	{
+	//		outputString = "RightMove";
+	//	}
+	//	break;
+	//	case PlayerUnitState::LeftMove:
+	//	{
+	//		outputString = "LeftMove";
+	//	}
+	//	break;
+	//	case PlayerUnitState::Jump:
+	//	{
+	//		outputString = "Jump";
+	//	}
+	//	break;
+	//	}
+	//	outputString += "\n";
+	//	::OutputDebugStringA(outputString.c_str());
+	//}
 }
 
 void PlayerController::PlayerMove()
 {
 	_dt = MANAGER_TIME()->GetDeltaTime();
-	_movePos = _transform.lock()->GetPosition();
+	_playerPos = _transform.lock()->GetPosition();
+	_playerForward = _transform.lock()->GetLookVector();
+	_playerRight = _transform.lock()->GetRightVector();
 
 	if (_heightGetterCom.lock())
 	{
 		if (_jumpState->isJump == false)
-			_movePos.y = _heightGetterCom.lock()->GetHeight();
+			_playerPos.y = _heightGetterCom.lock()->GetHeight();
 	}
 
 	if (_isSlow)
@@ -265,9 +271,12 @@ void PlayerController::PlayerMove()
 		{
 			*_currentState = PlayerUnitState::LeftMove;
 			{
-				_moveRight = _transform.lock()->GetRightVector();
-				_movePos -= _moveRight * _currentSpeed * _dt;
-				_transform.lock()->SetPosition(_movePos);
+				//_playerRight = _transform.lock()->GetRightVector();
+				_playerPos -= _playerRight * _currentSpeed * _dt;
+				_transform.lock()->SetPosition(_playerPos);
+				_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+				_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+
 			}
 		}
 		//오른쪽
@@ -276,20 +285,24 @@ void PlayerController::PlayerMove()
 			*_currentState = PlayerUnitState::RightMove;
 
 			{
-				_moveRight = _transform.lock()->GetRightVector();
-				_movePos += _moveRight * _currentSpeed * _dt;
-				_transform.lock()->SetPosition(_movePos);
+				//_playerRight = _transform.lock()->GetRightVector();
+				_playerPos += _playerRight * _currentSpeed * _dt;
+				_transform.lock()->SetPosition(_playerPos);
+				_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+				_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+
 			}
 		}
-
 		//앞
 		if (MANAGER_INPUT()->GetButton(KEY_TYPE::W))
 		{
 			*_currentState = PlayerUnitState::FrontMove;
 
-			_moveForward = _transform.lock()->GetLookVector();
-			_movePos += _moveForward * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_movePos);
+			_playerForward = _transform.lock()->GetLookVector();
+			_playerPos += _playerForward * _currentSpeed * _dt;
+			_transform.lock()->SetPosition(_playerPos);
+			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
 
 		}
 		//뒤
@@ -297,9 +310,12 @@ void PlayerController::PlayerMove()
 		{
 			*_currentState = PlayerUnitState::BackMove;
 
-			_moveForward = _transform.lock()->GetLookVector();
-			_movePos -= _moveForward * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_movePos);
+			_playerForward = _transform.lock()->GetLookVector();
+			_playerPos -= _playerForward * _currentSpeed * _dt;
+			_transform.lock()->SetPosition(_playerPos);
+			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+
 		}
 	}
 	else // _isAttack == true
@@ -307,31 +323,43 @@ void PlayerController::PlayerMove()
 		//왼쪽
 		if (MANAGER_INPUT()->GetButton(KEY_TYPE::A))
 		{
-			_moveRight = _transform.lock()->GetRightVector();
-			_movePos -= _moveRight * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_movePos);
+			_playerRight = _transform.lock()->GetRightVector();
+			_playerPos -= _playerRight * _currentSpeed * _dt;
+			_transform.lock()->SetPosition(_playerPos);
+			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+
 		}
 		//오른쪽
 		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::D))
 		{
-			_moveRight = _transform.lock()->GetRightVector();
-			_movePos += _moveRight * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_movePos);
+			_playerRight = _transform.lock()->GetRightVector();
+			_playerPos += _playerRight * _currentSpeed * _dt;
+			_transform.lock()->SetPosition(_playerPos);
+			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+
 		}
 
 		//앞
 		if (MANAGER_INPUT()->GetButton(KEY_TYPE::W))
 		{
-			_moveForward = _transform.lock()->GetLookVector();
-			_movePos += _moveForward * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_movePos);
+			_playerForward = _transform.lock()->GetLookVector();
+			_playerPos += _playerForward * _currentSpeed * _dt;
+			_transform.lock()->SetPosition(_playerPos);
+			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+
 		}
 		//뒤
 		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::S))
 		{
-			_moveForward = _transform.lock()->GetLookVector();
-			_movePos -= _moveForward * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_movePos);
+			_playerForward = _transform.lock()->GetLookVector();
+			_playerPos -= _playerForward * _currentSpeed * _dt;
+			_transform.lock()->SetPosition(_playerPos);
+			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+
 		}
 	}
 
@@ -353,8 +381,9 @@ void PlayerController::PlayerJump()
 		{
 			_jumpState->isJump = true;
 			_jumpState->isJumpUP = true;
-			_jumpUpMaxPos = _movePos + (_jumpUpDir * _jumpPower);
+			_jumpUpMaxPos = _playerPos + (_jumpUpDir * _jumpPower);
 			*_currentState = PlayerUnitState::Jump;
+			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
 		}
 	}
 
@@ -362,10 +391,10 @@ void PlayerController::PlayerJump()
 	{
 		if (_jumpState->isJumpUP)
 		{
-			if (_movePos.y < _jumpUpMaxPos.y + FLT_EPSILON)
+			if (_playerPos.y < _jumpUpMaxPos.y + FLT_EPSILON)
 			{
-				_movePos = Vec3::Lerp(_movePos, Vec3(_movePos + _jumpUpDir * _jumpPower), 2.0f * _dt);
-				_transform.lock()->SetPosition(_movePos);
+				_playerPos = Vec3::Lerp(_playerPos, Vec3(_playerPos + _jumpUpDir * _jumpPower), 2.0f * _dt);
+				_transform.lock()->SetPosition(_playerPos);
 			}
 			else
 			{
@@ -377,31 +406,31 @@ void PlayerController::PlayerJump()
 		{
 			float height = _heightGetterCom.lock()->GetHeight();
 			float test = height + _jumpPower;
-			if (_movePos.y < (height + _jumpPower) / 1.4f)
+			if (_playerPos.y < (height + _jumpPower) / 1.4f)
 			{
 				_jumpState->isJumpFall = false;
 				_jumpState->isJumEnd = true;
 			}
 			else
 			{
-				_movePos = Vec3::Lerp(_movePos, Vec3(_movePos + _jumpDownDir * _jumpPower), 1.5f * _dt);
-				_transform.lock()->SetPosition(_movePos);
+				_playerPos = Vec3::Lerp(_playerPos, Vec3(_playerPos + _jumpDownDir * _jumpPower), 1.5f * _dt);
+				_transform.lock()->SetPosition(_playerPos);
 			}
 		}
 		if (_jumpState->isJumEnd)
 		{
-			if (_movePos.y < _heightGetterCom.lock()->GetHeight() + FLT_EPSILON)
+			if (_playerPos.y < _heightGetterCom.lock()->GetHeight() + FLT_EPSILON)
 			{
-				_movePos.y = _heightGetterCom.lock()->GetHeight();
-				_transform.lock()->SetLocalPosition(_movePos);
+				_playerPos.y = _heightGetterCom.lock()->GetHeight();
+				_transform.lock()->SetLocalPosition(_playerPos);
 				_jumpState->isJumEnd = false;
 				_jumpState->isJump = false;
 				return;
 			}
 			else
 			{
-				_movePos = Vec3::Lerp(_movePos, Vec3(_movePos + _jumpDownDir * _jumpPower), 1.5f * _dt);
-				_transform.lock()->SetPosition(_movePos);
+				_playerPos = Vec3::Lerp(_playerPos, Vec3(_playerPos + _jumpDownDir * _jumpPower), 1.5f * _dt);
+				_transform.lock()->SetPosition(_playerPos);
 			}
 		}
 	}
@@ -438,7 +467,7 @@ void PlayerController::PlayerPicking()
 
 			if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
 			{
-				Vec3 diff = DirectX::XMVectorSubtract(_movePos, _pickedInfo._pos);
+				Vec3 diff = DirectX::XMVectorSubtract(_playerPos, _pickedInfo._pos);
 				float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diff));
 
 				if (distance <= 15.0f)
@@ -450,11 +479,11 @@ void PlayerController::PlayerPicking()
 					_isAttack = true;
 					_isBattle = true;
 				}
-				
+
 			}
 		}
 	}
-	
+
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::LBUTTON))
 	{
 		int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
@@ -533,7 +562,6 @@ void PlayerController::KeyStateCheck()
 
 			}
 		}
-
 	}
 }
 
@@ -545,7 +573,7 @@ void PlayerController::NotifyPlayerAlive(bool isAlive)
 	{
 		SetAnimState(PlayerAnimType::Stand);
 	}
-	
+
 	if (isAlive == false)
 	{
 		SetAnimState(PlayerAnimType::Death);
@@ -579,7 +607,7 @@ void PlayerController::Start()
 	_jumpState = make_shared<JumpFlag>();
 
 	_transform = GetGameObject()->GetTransform();
-	_camera = GetGameObject()->GetChildByName(L"Camera");
+	_camera = MANAGER_SCENE()->GetCurrentScene()->GetCamera();
 	_animator = GetGameObject()->GetChildByName(L"Model")->GetModelAnimator();
 	_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
 	{
@@ -590,9 +618,9 @@ void PlayerController::Start()
 			_transform.lock()->SetLocalPosition(temPos);
 		}
 	}
-
-	_rCamPos = _camera.lock()->GetTransform()->GetLocalPosition();
-	_camDist = max(fabs(_rCamPos.x), fabs(_rCamPos.z));
+	_camDist = _camera.lock()->GetCamera()->GetCameraDistance();
+	_camMaxDist = _camDist + FLT_EPSILON;
+	_camMinDist = 25.f;
 
 	AnimStateInit();
 }
@@ -619,9 +647,9 @@ void PlayerController::FixedUpdate()
 void PlayerController::Update()
 {
 	PlayerInput();
+	CameraMove();
 }
 
 void PlayerController::LateUpdate()
 {
-	CameraMove();
 }

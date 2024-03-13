@@ -6,10 +6,11 @@ class Transform;
 
 enum class ComponentType : uint8
 {
+	Camera,
 	Transform,
 	MeshRenderer,
 	ModelRenderer,
-	Camera,
+
 	Animator,
 	Light,
 	ModelAnimator,

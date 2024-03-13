@@ -249,6 +249,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Sounds.h" />
     <ClInclude Include="SphereCollider.h" />
+    <ClInclude Include="SpringArm.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="Technique.h" />
     <ClInclude Include="Terrain.h" />
@@ -343,6 +344,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Sounds.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
+    <ClCompile Include="SpringArm.cpp" />
     <ClCompile Include="Structs.cpp" />
     <ClCompile Include="Technique.cpp" />
     <ClCompile Include="Terrain.cpp" />

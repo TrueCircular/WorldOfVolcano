@@ -2,6 +2,7 @@
 #include "Terrain.h"
 #include "Scene.h"
 #include "BaseCollider.h"
+#include "FrustomCamera.h"
 
 void Scene::Init() {};
 
@@ -23,7 +24,6 @@ void Scene::FixedUpdate()
 	{
 		object->FixedUpdate();
 	}
-
 }
 void Scene::Update()
 {
@@ -33,7 +33,6 @@ void Scene::Update()
 	{
 		object->Update();
 	}
-
 }
 
 void Scene::LateUpdate()
@@ -43,6 +42,14 @@ void Scene::LateUpdate()
 	for (shared_ptr<GameObject> object : objects)
 	{
 		object->LateUpdate();
+	}
+	for (const auto& obj : _cameras)
+	{
+		if (obj->GetCamera())
+		{
+			obj->GetCamera()->Update();
+			obj->GetComponent<FrustomCamera>()->Update();
+		}
 	}
 	// INSTANCING
 	vector<shared_ptr<GameObject>> temp;
@@ -59,7 +66,6 @@ void Scene::ShadowUpdate()
 }
 void Scene::Add(shared_ptr<GameObject> object)
 {
-	_objects.insert(object);
 
 	if (object->GetCamera() != nullptr)
 	{
@@ -69,6 +75,11 @@ void Scene::Add(shared_ptr<GameObject> object)
 	if (object->GetLight() != nullptr)
 	{
 		_lights.insert(object);
+	}
+
+	if (object->GetCamera() == nullptr && object->GetLight() == nullptr)
+	{
+		_objects.insert(object);
 	}
 }
 void Scene::AddShadow(shared_ptr<GameObject> object)

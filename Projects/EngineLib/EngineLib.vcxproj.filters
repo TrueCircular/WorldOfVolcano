@@ -360,6 +360,9 @@
     <ClInclude Include="EnemySoundController.h">
       <Filter>04. Component\Scripts</Filter>
     </ClInclude>
+    <ClInclude Include="SpringArm.h">
+      <Filter>04. Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -615,6 +618,9 @@
     </ClCompile>
     <ClCompile Include="PlayerSoundController.cpp">
       <Filter>04. Component\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="SpringArm.cpp">
+      <Filter>04. Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
