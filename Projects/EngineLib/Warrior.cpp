@@ -63,6 +63,8 @@ void Warrior::CharacterInit()
 		rot.x += ::XMConvertToRadians(90.f);
 		rot.y -= ::XMConvertToRadians(90.f);
 		_childModel->GetTransform()->SetLocalRotation(rot);
+		_childModel->GetTransform()->SetLocalScale(Vec3(0.1f));
+
 	}
 	{
 		auto height = make_shared<HeightGetter>();
@@ -72,7 +74,7 @@ void Warrior::CharacterInit()
 
 	SetName(L"Warrior");
 	AddChild(_childModel);
-	GetTransform()->SetScale(Vec3(0.1f));
+	//GetTransform()->SetScale(Vec3(0.1f));
 
 	{
 		//shared_ptr<AncientSword> sword = make_shared<AncientSword>();

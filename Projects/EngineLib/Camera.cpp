@@ -50,9 +50,6 @@ void Camera::SetProjectionType(ProjectionType type)
 void Camera::UpdateDefaultView()
 {
 	Vec3 Eye, Look, Up;
-	_camPos = GetTransform()->GetPosition();
-	_camlook = GetTransform()->GetLookVector();
-	_camUp = GetTransform()->GetUpVector();
 
 	Eye = _camPos;
 	Look = _camPos + _camlook;
@@ -64,32 +61,76 @@ void Camera::UpdateDefaultView()
 
 void Camera::UpdateTargetView()
 {
-	if (GetTransform()->GetParent() == nullptr)
+	if (_targetTransform == nullptr)
 	{
 		UpdateDefaultView();
 	}
 	else
 	{
-		Vec3 Eye, Look, Up;
-		_camPos = GetTransform()->GetPosition();
-		_camUp = GetTransform()->GetUpVector();
-		_targetPos = GetTransform()->GetParent()->GetPosition();
+		if(_camIsRotateAround == false)
+		{
+			_targetPos = _targetTransform->GetPosition();
 
-		Eye = _camPos;
-		Look = _targetPos;
-		Up = _camUp;
+			Vec3 lookVector = _targetTransform->GetLookVector(); // 타겟의 룩 벡터 가져오기
+			lookVector.Normalize(); // 룩 벡터 정규화
+			Vec3 newCamPos = _targetPos + lookVector * (-_distance) + Vec3(0, 50.f, 0);
+			_camPos = (newCamPos);
 
-		S_MatView = _matView = ::XMMatrixLookAtLH(Eye, Look, Up);
-		UpdateVector();
+
+			Vec3 Eye, Look, Up;
+			Eye = _camPos;
+			Look = _targetPos;
+			if (_camOffset != Vec3::Zero)
+			{
+				Look += _camOffset;
+			}
+			Up = Vec3(0, 1, 0);
+
+			S_MatView = _matView = ::XMMatrixLookAtLH(Eye, Look, Up);
+			UpdateVector();
+		}
+		else
+		{
+			_targetPos = _targetTransform->GetPosition();
+
+			Vec3 Eye, Look, Up;
+			Eye = _camPos;
+			Look = _targetPos;
+			if (_camOffset != Vec3::Zero)
+			{
+				Look += _camOffset;
+			}
+			Up = Vec3(0, 1, 0);
+
+			S_MatView = _matView = ::XMMatrixLookAtLH(Eye, Look, Up);
+			UpdateVector();
+		}
 	}
 }
 
-void Camera::RotateAroundToTarget(const Vec3& pos, const Vec3& axis, float dist)
+void Camera::RotateAroundToTarget(const Vec3& target, const Vec3& axis)
 {
 	float angle = axis.Length();
 
 	if (angle > 0.f)
 	{
+		_camIsRotateAround = true;
+
+		Vec3 targetPos = target;
+		targetPos += _camOffset;
+		{
+			Vec3 dirToCamera = _camPos - targetPos;
+			dirToCamera.Normalize(dirToCamera);
+			// 수평 거리 계산 (XZ 평면에서의 거리)
+			float horizontalDistance = sqrt(dirToCamera.x * dirToCamera.x + dirToCamera.z * dirToCamera.z);
+
+			// 높이 차이 계산
+			float heightDifference = dirToCamera.y;
+
+			// 아크탄젠트 함수를 사용하여 피치 각도 계산 (라디안 단위)
+			float pitchRadians = atan2(heightDifference, horizontalDistance);
+			_camPitch = pitchRadians;
+		}
 		_camYaw += axis.y;
 		_camPitch += axis.x;
 		_camPitch = max(_camMinPitch, min(_camMaxPitch, _camPitch));
@@ -100,23 +141,13 @@ void Camera::RotateAroundToTarget(const Vec3& pos, const Vec3& axis, float dist)
 		Vec3 localUp = Vec3(0,1,0);
 		Vec3 localLook = Vec3(0,0,1);
 
-		Vec3 targetPos = GetTransform()->GetParent()->GetPosition();
-		Vec3 mPos = pos;
-		Vec3 zmrl = targetPos - mPos;
-
 		WorldUp = Vec3::Transform(localUp, qt);
 		WorldLook = Vec3::Transform(localLook, qt);
 
-		_distance = dist;
+		Vec3 distVec = targetPos - _camPos;
+		float dist = distVec.Length();
+
 		_camPos = targetPos - (WorldLook * dist);
-
-		GetTransform()->SetPosition(_camPos);
-		UpdateMatrix();
-
-		wstring dString = L"Around Dist :";
-		dString += ::to_wstring(dist);
-		dString += L"\n";
-		OutputDebugString(dString.c_str());
 	}
 }
 
@@ -153,15 +184,18 @@ void Camera::UpdateVector()
 	_camlook.Normalize(_camlook);
 }
 
-void Camera::Init(CameraType camType, ProjectionType projType, float dist)
+void Camera::Init(const Vec3& camPos, CameraType camType, ProjectionType projType, float distance)
 {
+	_camPos = camPos;
 	_camType = camType;
 	_projType = projType;
-	_distance = dist;
+	_distance = distance;
+
 	_width = static_cast<float>(g_gameDesc.width);
 	_height = static_cast<float>(g_gameDesc.height);
 
 	SetCameraMinMaxRotationPitch(-89.f, 89.f);
+	SetCameraMinMaxRotationYaw(-179.f, 179.f);
 
 	switch (_camType)
 	{

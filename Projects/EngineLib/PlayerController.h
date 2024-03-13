@@ -20,14 +20,15 @@ public:
 	PlayerController();
 	~PlayerController();
 private:
+	//Character Controll
 	weak_ptr<HeightGetter> _heightGetterCom;
 	weak_ptr<Transform> _transform;
-	Vec3 _movePos = { 0,0,0 };
-	Vec3 _moveForward = { 0,0,0 };
-	Vec3 _moveRight = { 0,0,0 };
-	Vec3 _scale = { 1,1,1 };
-	Vec3 _rotation = { 0,0,0 };
-	Vec3 _target = { 0,0,0 };
+	Vec3 _playerPos = { 0,0,0 };
+	Vec3 _playerRot = { 0,0,0 };
+	Vec3 _playerForward = { 0,0,0 };
+	Vec3 _playerRight = { 0,0,0 };
+	Vec3 _playerUp = { 0,0,0 };
+
 	Vec3 _jumpStartPos = { 0,0,0 };
 	Vec3 _jumpUpMaxPos = { 0,0,0 };
 	Vec3 _jumpUpDir = { 0,1,0 };
@@ -55,25 +56,24 @@ private:
 	weak_ptr<ModelAnimator>				_animator;
 	shared_ptr<PlayerAnimState>			_animState;
 	vector<shared_ptr<PlayerAnimState>> _animStateList;
-	float _defaultSpeed = 300.f;
-	float _currentSpeed = 300.f;
-	float _slowSpeed = 150.f;
+	float _defaultSpeed = 40.f;
+	float _currentSpeed = 40.f;
+	float _slowSpeed = 20.f;
 	float _dt = 0.f;
 	bool _isSlow = false;
 private:
+	Vec3 _prevMousePos = Vec3(0.f);
+	Vec3 _currentMousePos = Vec3(0.f);
+private:
 	//Camera Controll
 	weak_ptr<GameObject> _camera;
-	Vec3 _prevMousePos;
-	Vec3 _currentMousePos;
-	Vec3 _camRot;
 	Vec3 _camPos;
-	Vec3 _rCamPos;
-	Vec3 _playerRot;
-	Vec3 _playerPos;
+	Vec3 _camRot;
+	//Vec3 _playerRot;
 	float _camDist = 0.f;
 	float _camMinDist = 0.f;
 	float _camMaxDist = 0.f;
-	float _camSpeed = 100.f;
+	float _camSpeed = 500.f;
 private:
 	//Sound
 	shared_ptr<PlayerSoundController> _sound = nullptr;

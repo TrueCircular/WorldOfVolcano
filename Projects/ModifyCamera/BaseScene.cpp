@@ -31,7 +31,6 @@ void BaseScene::Init()
 	}
 
 	//랜더 매니저 초기화
-//	MANAGER_RENDERER()->Init(_shader);
 	MANAGER_SOUND()->Init();
 	//light
 	{
@@ -47,8 +46,6 @@ void BaseScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(light);
 //		MANAGER_RENDERER()->PushLightData(lightDesc);
 	}
-
-
 
 	DamageIndicator::GetInstance().Init();
 	DamageIndicator::GetInstance().SetCamera(_childCamera);
@@ -74,21 +71,6 @@ void BaseScene::Init()
 		obj->AddComponent(sprite);
 		obj->AddComponent(make_shared<Lava>(100, 3, false));
 		MANAGER_SCENE()->GetCurrentScene()->Add(obj);
-	}
-
-	{
-		//SkyBoxDesc descs{};
-		//descs.resourceFilePath[SkyBoxDesc::SKY_Front] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_Back] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_Right] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_Left] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_UP] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_DOWN] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.shaderPath = L"skyBox.fx";
-		//skyBox = make_shared < Skybox>();
-		//skyBox->Set(&descs);
-		//skyBox->Start();
-
 	}
 
 	auto fog_obj = make_shared<GameObject>();
@@ -166,29 +148,27 @@ void BaseScene::Init()
 		_childCamera = make_shared<GameObject>();
 		_childCamera->Awake();
 		_childCamera->AddComponent(make_shared<Camera>());
-		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
-		_childCamera->GetCamera()->Init(CameraType::Target, ProjectionType::Perspective, 1000);
-		_childCamera->GetTransform()->SetLocalPosition(Vec3(0, 500.f, -1000.f));
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();
 		_childCamera->SetName(L"Camera");
-
+		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 100.f);
+		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}
-
 	//Character
 	{
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
+		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		_warrior->AddComponent(make_shared<PlayerController>());
 		_warrior->Start();
 		_warrior->GetTransform()->SetLocalPosition(spawnPos);
-		_warrior->AddChild(_childCamera);
 		Add(_warrior);
 		AddShadow(_warrior);
 
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
+
 
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"Lobby");
 	if (bgm == nullptr) {
