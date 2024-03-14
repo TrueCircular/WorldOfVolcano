@@ -31,6 +31,9 @@
     <Filter Include="particle">
       <UniqueIdentifier>{f70b3e93-4d01-441c-97d3-139a957a7e16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="particle\ParticleObjects">
+      <UniqueIdentifier>{1306ba67-d6c8-4638-ba5e-3d56c10585d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -103,6 +106,9 @@
     </ClCompile>
     <ClCompile Include="ParticleRenderer.cpp">
       <Filter>particle</Filter>
+    </ClCompile>
+    <ClCompile Include="FireStorm.cpp">
+      <Filter>particle\ParticleObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +185,9 @@
     </ClInclude>
     <ClInclude Include="ParticleRenderer.h">
       <Filter>particle</Filter>
+    </ClInclude>
+    <ClInclude Include="FireStorm.h">
+      <Filter>particle\ParticleObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

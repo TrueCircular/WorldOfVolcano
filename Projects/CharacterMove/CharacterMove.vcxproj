@@ -159,6 +159,7 @@
     <ClInclude Include="DamageIndicator.h" />
     <ClInclude Include="Demo.h" />
     <ClInclude Include="DungeonScene.h" />
+    <ClInclude Include="FireStorm.h" />
     <ClInclude Include="LavaFlow.h" />
     <ClInclude Include="LayerSplatter.h" />
     <ClInclude Include="main.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="DamageIndicator.cpp" />
     <ClCompile Include="Demo.cpp" />
     <ClCompile Include="DungeonScene.cpp" />
+    <ClCompile Include="FireStorm.cpp" />
     <ClCompile Include="LavaFlow.cpp" />
     <ClCompile Include="LayerSplatter.cpp" />
     <ClCompile Include="main.cpp" />

@@ -16,3 +16,8 @@ void ParticleObj::DeleteInstance(ParticleInstance& data)
 		}
 	}
 }
+
+void ParticleObj::Update()
+{
+	colorBuffer->
+}

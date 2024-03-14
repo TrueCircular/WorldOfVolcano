@@ -55,7 +55,7 @@ void ParticleStaticRenderer::Render(vector<ParticleInstance>& data)
 		shader->PushLightData(lightObj->GetLight()->GetLightDesc());
 	}
 	shader->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
-
+	
 
 	for (auto pData : data)
 	{
