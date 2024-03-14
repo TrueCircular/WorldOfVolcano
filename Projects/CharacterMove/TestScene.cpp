@@ -47,13 +47,13 @@ void TestScene::Init()
 		_camera->AddComponent(frustom);
 		MANAGER_SCENE()->GetCurrentScene()->Add(_camera);
 	}
-	effShader = make_shared<Shader>(L"storm.fx");
+	effShader = make_shared<Shader>(L"StormLegacy.fx");
 	effTex = make_shared<Texture>();
 	effTex->Load(L"../../Resources/Texture/Effect/T_ky_noise17.PNG");
 	world = make_shared<Transform>();
 	world->SetLocalScale(Vec3(10, 10, 10));
 	world->SetLocalPosition(Vec3(0, 0, 0));
-	effShader2 = make_shared<Shader>(L"FirePillar.fx");
+	effShader2 = make_shared<Shader>(L"FirePillarLegacy.fx");
 	pillarTex1 = make_shared<Texture>();
 	pillarTex1->Load(L"../../Resources/Texture/Effect/T_ky_maskRGB5.PNG");
 	pillarTex2= make_shared<Texture>();

@@ -17,14 +17,14 @@ private:
 	shared_ptr<Mesh> _mesh;
 public:
 	virtual void Render(vector<ParticleInstance>& data) override;
-	void SetMesh(shared_ptr<Mesh> mesh);
+	void SetMesh(shared_ptr<Mesh> mesh) { _mesh = mesh; };
 };
 class ParticleStaticRenderer : public ParticleRenderer {
 private:
 	shared_ptr<Model> _model;
 public:
 	virtual void Render(vector<ParticleInstance>& data) override;
-	void SetModel(shared_ptr<Model> model);
+	void SetModel(shared_ptr<Model> model) { _model = model; };
 
 };
 class ParticleAnimRenderer : public ParticleRenderer {
@@ -32,7 +32,7 @@ private:
 	shared_ptr<ModelAnimator> _animator;
 public:
 	virtual void Render(vector<ParticleInstance>& data) override;
-	void SetAnimator(shared_ptr<ModelAnimator> animator);
+	void SetAnimator(shared_ptr<ModelAnimator> animator) { _animator = animator; };
 
 };
 

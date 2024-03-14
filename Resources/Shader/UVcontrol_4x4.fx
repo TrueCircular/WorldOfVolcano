@@ -1,29 +1,75 @@
 #include "Global.fx"
 
 
-cbuffer TopUnder_Effectbuffer
+struct Uvcontrol44Desc
 {
-    //texture Muilti&mask
-    float2 multiply_powermask;
+    float uvExtention;
+    bool pickUpCh;
+    float uvNum;
 };
-
-float TopUnder_ComputeTexControll(float uv_y)// Don't Use MixedUV!!!!!!!
+Texture2D UVImage;
+float4 UV44Control(float2 uv, Uvcontrol44Desc desc)// Don't Use MixedUV!!!!!!!
 {
 
-    float under_mask = 1.0f - uv_y;
-    under_mask = pow(under_mask, multiply_powermask.y);
-    under_mask = under_mask * multiply_powermask.x;
-    under_mask = clamp(under_mask, 0.0f, 1.0f);
+    float scalarA = desc.uvNum - 16.0f;
+    if (scalarA > 16.0f)
+    {
+        
+    }
+    else
+    {
+        scalarA = 16.0f;
+    }
+    float scalarB = desc.uvNum - 32.0f;
+    if (scalarB > 32.0f;)
+    {
+        
+    }
+    else
+    {
+        scalarB = scalarA;
+    }
+    float scalarC = 0f;
+    if (scalarB > 4.0f)
+    {
+        scalarC = 1;
+    }
     
-    float top_under = pow(uv_y, multiply_powermask.x);
-    top_under = top_under * multiply_powermask.x;
+    if (scalarB > 8.0f)
+    {
+        scalarC = 2.0f;
+    }
+    if (scalarC > 12.0f)
+    {
+        scalarC = 3.0f;
+    }
+    float2 uvDynamic = float2(desc.uvNum, scalarC);
+    uvDynamic = floor(uvDynamic);
+    uvDynamic = uvDynamic / 4.0f;
+    uvDynamic = float2(desc.uvExtention, desc.uvExtention) + uvDynamic;
+    uvDynamic = uv + uvDynamic;
+    float4 color = UVImage.Sample(LinearSampler, uvDynamic);
     
-    top_under = top_under * under_mask;
-    top_under = clamp(top_under, 0.0f, 1.0f);
+    float3 rgbColor;
+    if (desc.pickUpCh)
+    {
+        rgbColor = color.rgb;
+    }
+    else
+    {
+        rgbColor = float3(color.r, color.r, color.r);
+    }
+    if (uvDynamic > 16.0f)
+    {
+        rgbColor = float3(color.g, color.g, color.g);
+    }
+    if (uvDynamic > 32.0f)
+    {
+        rgbColor= float3(color.b, color.b, color.b);
+    }
+    color.rgb = rgbColor;
     
-    
-    
-    return top_under;
+    return color;
     
 }
 

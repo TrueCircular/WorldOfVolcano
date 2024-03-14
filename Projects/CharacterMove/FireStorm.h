@@ -10,6 +10,7 @@ private:
 	shared_ptr<Texture> noiseTexture;
 	shared_ptr<ConstantBuffer<FresnelDesc>> fresnelData;
 	ComPtr<ID3DX11EffectConstantBuffer> fresnelBuffer;
+
 	FresnelDesc _fresneldesc;
 public:
 	virtual void Update() override;
