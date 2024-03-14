@@ -4,6 +4,7 @@
 void ParticleObj::AddParticle(ParticleInstance& data)
 {
 	instanceList.push_back(data);
+	++instanceCounter;
 }
 
 void ParticleObj::DeleteInstance(ParticleInstance& data)
@@ -13,11 +14,29 @@ void ParticleObj::DeleteInstance(ParticleInstance& data)
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
 			--i;
+			--instanceCounter;
 		}
 	}
 }
 
 void ParticleObj::Update()
 {
-//	colorBuffer->
+
+	for (auto c : instanceList) {
+		c.data.currentime+= MANAGER_TIME()->GetDeltaTime();
+		if (c.data.currentime > c.duration) {
+			if (c.isLoop) {
+				c.data.currentime -= c.duration;
+			}
+			else {
+				c.isDestroy = true;
+			}
+		}
+		
+	}
+	if (colorData) {
+		colorData->CopyData(_colorDesc);
+		if(colorBuffer)
+		colorBuffer->SetConstantBuffer(colorData->GetBuffer().Get());
+	}
 }

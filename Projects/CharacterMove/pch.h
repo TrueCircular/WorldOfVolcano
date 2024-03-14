@@ -8,3 +8,13 @@
 
 
 #include "DamageIndicator.h" 
+
+
+struct FresnelDesc {
+	Vec4 eyePos;
+	Vec4 eyeLook;
+};
+struct ColorDesc {
+	Vec4 baseColor;
+	Vec4 subColor;
+};

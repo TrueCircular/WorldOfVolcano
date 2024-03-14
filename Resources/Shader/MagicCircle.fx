@@ -22,14 +22,17 @@ struct EffectMesh
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
     float3 tangent : TANGENT;
+    uint instanceID : SV_INSTANCEID;
+    matrix world : INST;
+    float time : INSTTIME;
 };
-
 struct EffectOutput
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPosition : POSITION1;
+    float time : TIME;
 };
 Texture2D NoiseImage;
 Texture2D SpellImage;
@@ -52,6 +55,7 @@ EffectOutput CircleVS(EffectMesh input)
     output.normal = input.normal;
     
     output.uv = input.uv;
+    output.time = input.time;
     
     return output;
 }
@@ -65,8 +69,8 @@ float4 PS(EffectOutput input) : SV_TARGET
     vectorDesc.uv = mul(input.uv, 2);
     float2 mixeduv = VectorToRadialValue(vectorDesc);
     
-    float2 panneduv1 = Panner(input.uv, float2(-0.05, -0.35));
-    float2 panneduv2 = Panner(input.uv, float2(0.05, -0.2));
+    float2 panneduv1 = Panner(input.uv, float2(-0.05, -0.35), input.time);
+    float2 panneduv2 = Panner(input.uv, float2(0.05, -0.2), input.time);
     
     float4 pannedColor1 = NoiseImage.Sample(LinearSampler,panneduv1);
     float4 pannedColor2 = NoiseImage.Sample(LinearSampler, panneduv2);

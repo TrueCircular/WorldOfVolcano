@@ -4,8 +4,7 @@ class VertexBuffer;
 
 struct ParticleInstanceData {
 	Matrix world;
-	float duration;
-	float currentime = 0;;
+	float currentime = 0;
 };
 
 struct ParticleInstance
@@ -17,9 +16,10 @@ struct ParticleInstance
 	shared_ptr<Transform> targetTransform;
 	shared_ptr<Transform> particleTransform;
 	shared_ptr<Transform> parentTransform;
-	float speed;
-	ParticleInstance(float duration, shared_ptr<Transform> pos, shared_ptr<Transform> target, float speedVel, bool loop = false) {
-		data.duration = duration;
+	float speed=1.0f;
+	float duration=0.0f;
+	ParticleInstance(float _duration, shared_ptr<Transform> pos, shared_ptr<Transform> target, float speedVel, bool loop = false) {
+		duration = _duration;
 		particleTransform = pos;
 		if (target) {
 			targetTransform = target;

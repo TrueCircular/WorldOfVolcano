@@ -5,7 +5,6 @@
 Texture2D Ky_PrimNoiseMap;
 Texture2D Ky_NoiseMap;
 Texture2D HightLightMap;
-float time;
 
 
 struct EffectPrimTexController
@@ -98,7 +97,7 @@ float3 ComputeTwosided(float3 sideA, float3 sideB, float3 normal)
     return color;
 }
 
-float2 Panner(float2 uv, float2 speed)
+float2 Panner(float2 uv, float2 speed,float time)
 {
     return uv + (speed * time);
 }
@@ -137,7 +136,7 @@ float ExponetialDensity(float depth, float density, bool doInvert)
 
 
 
-float4 ComputePrimTexControl(float2 uv, EffectPrimTexController effStruct)
+float4 ComputePrimTexControl(float2 uv, EffectPrimTexController effStruct,float time)
 {
 
     float2 mixuv;
@@ -160,7 +159,7 @@ float4 ComputePrimTexControl(float2 uv, EffectPrimTexController effStruct)
 
 
 
-float4 ComputeTexControl(float2 uv, EffectTexController effStruct)
+float4 ComputeTexControl(float2 uv, EffectTexController effStruct, float time)
 {
 
     float2 mixuv;
@@ -206,7 +205,7 @@ float TopUnder_ComputeTexControll(float uv_y, TopUnder_EffectStruct effStruct)//
     
 }
 
-float HightLight_ComputeTexControl(float2 uv, HightLightStruct effStruct)// Don't Use MixedUV!!!!!!!
+float HightLight_ComputeTexControl(float2 uv, HightLightStruct effStruct, float time)// Don't Use MixedUV!!!!!!!
 {
     //NoiseSpeed
     float2 mixuvB = time * effStruct.noiseAScalar;
