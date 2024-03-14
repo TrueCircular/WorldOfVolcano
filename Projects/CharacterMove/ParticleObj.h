@@ -8,14 +8,16 @@ class ParticleObj
 protected:
 	wstring name;
 	vector<ParticleInstance> instanceList;
+	shared_ptr<ParticleInstancingBuffer> instanceBuffer;
 	shared_ptr<ParticleMeshRenderer> meshRenderer;
 	shared_ptr<ParticleStaticRenderer> staticRenderer;
 	shared_ptr<ParticleAnimRenderer> animRenderer;
 	shared_ptr<Shader> shader;
 
 
-//	ColorDesc _colorDesc;
-//	shared_ptr<ConstantBuffer<ColorDesc>> colorBuffer;
+	ColorDesc _colorDesc;
+	shared_ptr<ConstantBuffer<ColorDesc>> colorData;
+	ComPtr<ID3DX11EffectConstantBuffer> colorBuffer;
 	UINT instanceCounter=0;
 
 public:
@@ -29,6 +31,6 @@ public:
 	virtual void Update();
 	virtual void LateUpdate()=0;
 
-	virtual void OnDestroy()=0;
+	virtual void OnDestroy(ParticleInstance& instance)=0;
 };
 

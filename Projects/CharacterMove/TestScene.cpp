@@ -87,14 +87,6 @@ void TestScene::Start()
 	Scene::Start();
 }
 
-struct FresnelDesc {
-	Vec4 eyePos;
-	Vec4 eyeLook;
-};
-struct ColorDesc {
-	Vec4 baseColor;
-	Vec4 subColor;
-};
 void TestScene::Update()
 {
 	Scene::Update();

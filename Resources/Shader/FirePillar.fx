@@ -22,21 +22,17 @@ struct EffectMesh
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
     float3 tangent : TANGENT;
+    uint instanceID : SV_INSTANCEID;
+    matrix world : INST;
+    float time : INSTTIME;
 };
-//struct EffectMesh
-//{
-//    float4 position : POSITION;
-//    float2 uv : TEXCOORD;
-//    float3 normal : NORMAL;
-//    uint instanceID : SV_INSTANCEID;
-//    matrix world : INST;
-//};
 struct EffectOutput
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
     float3 normal : NORMAL;
     float3 worldPosition : POSITION1;
+    float time : TIME;
 };
 cbuffer ColorBuffer
 {
@@ -51,14 +47,14 @@ EffectOutput PillarVS(EffectMesh input)
 {
     EffectOutput output;
     
-    output.position = mul(input.position, W);
-    //output.position = mul(input.position, input.world);
+    //output.position = mul(input.position, W);
+    output.position = mul(input.position, input.world);
     output.worldPosition = output.position;
     output.position = mul(output.position, VP);
     output.normal = mul(input.normal, VInv);
     
     output.uv = input.uv;
-    
+    output.time = input.time;
     return output;
 }
 
@@ -67,13 +63,13 @@ float4 PS(EffectOutput input) : SV_TARGET
     //Lowparticle == Inner Color
     //Particle == OutLine Color
     /// Base to hightLight
-    float2 pannedUV1 = Panner(input.uv, float2(-0.2, -0.3));
+    float2 pannedUV1 = Panner(input.uv, float2(-0.2, -0.3), input.time);
     float4 pannedSample1 = FireNoise.Sample(LinearSampler, pannedUV1);
     
-    float2 pannedUV2 = Panner(input.uv, float2(0.2, 0.5));
+    float2 pannedUV2 = Panner(input.uv, float2(0.2, 0.5), input.time);
     float4 pannedSample2 = FireNoise.Sample(LinearSampler, pannedUV2);
     
-    pannedUV1 = Panner(input.uv,float2(-0.1, 0.2));
+    pannedUV1 = Panner(input.uv, float2(-0.1, 0.2), input.time);
     pannedSample1.b = pow(pannedSample1.b, 2);
     pannedSample1.b = pannedSample1.b * 5;
     pannedUV1 = pannedUV1 * float2(pannedSample1.b, pannedSample1.b);
@@ -101,7 +97,7 @@ float4 PS(EffectOutput input) : SV_TARGET
     
         
     pannedUV1 = float2(input.uv.x * 2, input.uv.y);
-    pannedUV1 = Panner(pannedUV1, float2(0.5, 3.0));
+    pannedUV1 = Panner(pannedUV1, float2(0.5, 3.0), input.time);
     
     pannedSample1 = FireNoise.Sample(LinearSampler, pannedUV1);
     
