@@ -45,6 +45,7 @@ public:
 	void RenderInstancing(shared_ptr<class InstancingBuffer>& buffer);
 	void RenderInstancingShadow(shared_ptr<class InstancingBuffer>& buffer,ShadowViewDesc& desc);
 	InstanceID GetInstanceID();
+
 public:
 	void SetPlay(bool play) { _isPlay = play; }
 	bool GetPlay() const { return _isPlay; }
@@ -59,6 +60,7 @@ public:
 	const shared_ptr<TweenDesc>& GetTweenDesc() { return _tweenDesc; }
 	bool SetCurrentAnimation(wstring animName);
 	bool SetNextAnimation(wstring animName);
+	ID3D11ShaderResourceView* GetTransformSRV() { return _srv.Get(); };
 public:
 	virtual void Start() override;
 	virtual void Update() override;

@@ -25,6 +25,15 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{f75b717a-d2ea-4643-b65f-3bdc98c976d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Effects">
+      <UniqueIdentifier>{e82251b9-e870-48d4-be05-00b3d568a14f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="particle">
+      <UniqueIdentifier>{f70b3e93-4d01-441c-97d3-139a957a7e16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="particle\ParticleObjects">
+      <UniqueIdentifier>{1306ba67-d6c8-4638-ba5e-3d56c10585d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -82,6 +91,24 @@
     </ClCompile>
     <ClCompile Include="Spawner.cpp">
       <Filter>Scripts\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleObj.cpp">
+      <Filter>particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleManager.cpp">
+      <Filter>particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleInstance.cpp">
+      <Filter>particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleRenderer.cpp">
+      <Filter>particle</Filter>
+    </ClCompile>
+    <ClCompile Include="FireStorm.cpp">
+      <Filter>particle\ParticleObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +171,24 @@
     <ClInclude Include="Spawner.h">
       <Filter>Scripts\GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="TestScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleObj.h">
+      <Filter>particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleManager.h">
+      <Filter>particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleInstance.h">
+      <Filter>particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleRenderer.h">
+      <Filter>particle</Filter>
+    </ClInclude>
+    <ClInclude Include="FireStorm.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Resources\Shader\Global.fx">
@@ -157,6 +202,27 @@
     </FxCompile>
     <FxCompile Include="..\..\Resources\Shader\Render.fx">
       <Filter>Shader\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\UVcontrol_4x4.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Storm.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\EffectBase.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\FirePillar.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\VectorToRadialvalue.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\RadialGradientExponetial.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\MagicCircle.fx">
+      <Filter>Shader\Effects</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
