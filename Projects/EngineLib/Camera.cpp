@@ -10,7 +10,6 @@ Camera::Camera() : Super(Component(ComponentType::Camera))
 
 Camera::~Camera()
 {
-
 }
 
 void Camera::SetCameraMinMaxRotationYaw(float min, float max)
