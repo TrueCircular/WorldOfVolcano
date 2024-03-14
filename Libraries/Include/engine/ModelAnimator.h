@@ -66,6 +66,6 @@ public:
 	virtual void Update() override;
 	void UpdateTweenData();
 	void ShadowUpdate();
-	void UpdateEquipmentTransform();
+	void UpdateEquipmentTransform(int currentFrame, int nextFrame, float ratio);
 };
 

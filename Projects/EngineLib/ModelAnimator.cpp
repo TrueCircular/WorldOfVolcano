@@ -200,8 +200,6 @@ void ModelAnimator::UpdateTweenData()
 						_tweenDesc->current.sumTime = 0;
 						_tweenDesc->current.currentFrame = (_tweenDesc->current.currentFrame + 1);
 						_tweenDesc->current.nextFrame = (_tweenDesc->current.currentFrame + 1);
-						UpdateEquipmentTransform();
-
 					}
 
 					_tweenDesc->current.ratio = (_tweenDesc->current.sumTime / _timePerFrame);
@@ -234,11 +232,14 @@ void ModelAnimator::UpdateTweenData()
 							_tweenDesc->next.sumTime = 0;
 							_tweenDesc->next.currentFrame = (_tweenDesc->next.currentFrame + 1) % _nextAnim->frameCount;
 							_tweenDesc->next.nextFrame = (_tweenDesc->next.currentFrame + 1) % _nextAnim->frameCount;
+
 						}
 						_tweenDesc->next.ratio = _tweenDesc->next.sumTime / timeperFrame;
+						//UpdateEquipmentTransform(_tweenDesc->next.currentFrame, _tweenDesc->next.nextFrame, _tweenDesc->next.ratio);
 					}
 				}
 			}
+			UpdateEquipmentTransform(_tweenDesc->current.currentFrame, _tweenDesc->current.nextFrame, _tweenDesc->current.ratio);
 		}
 		//논 루프 애니메이션
 		else
@@ -260,7 +261,8 @@ bool ModelAnimator::SetNextAnimation(wstring animName)
 		{
 			_nextAnim = anim;
 			_tweenDesc->next.animIndex = num;
-			_tweenDesc->tweenDuration = 3.f / _nextAnim->duration + FLT_EPSILON;
+			_tweenDesc->tweenDuration = 1.f / _nextAnim->frameCount + FLT_EPSILON;
+
 			return true;
 		}
 		num++;
@@ -417,7 +419,7 @@ void ModelAnimator::ShadowUpdate() {
 
 }
 
-void ModelAnimator::UpdateEquipmentTransform()
+void ModelAnimator::UpdateEquipmentTransform(int currentFrame, int nextFrame, float ratio)
 {
 	auto equipmentSlot = GetGameObject()->GetParent()->GetComponent<EquipmentSlot>();
 
@@ -431,18 +433,16 @@ void ModelAnimator::UpdateEquipmentTransform()
 		if (helm != nullptr)
 		{
 			int index = _tweenDesc->current.animIndex;
-			int currentFrame = _tweenDesc->current.currentFrame;
 			int boneIndex = _equipmentBoneIndexList.HelmIndex;
+
 			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
+			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
+			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
 
-			Vec3 s, r, t;
-			Quaternion qr;
-			itemMat.Decompose(s, qr, t);
-			r = Transform::QuatToEulerAngles(qr);
+			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
 
-			helm->GetTransform()->SetScale(s);
-			helm->GetTransform()->SetRotation(r);
-			helm->GetTransform()->SetPosition(t);
+			helm->GetTransform()->SetLocalMatrix(lerpMat);
 		}
 	}
 	//LeftShoulder
@@ -452,18 +452,16 @@ void ModelAnimator::UpdateEquipmentTransform()
 		if (LeftShoulder != nullptr)
 		{
 			int index = _tweenDesc->current.animIndex;
-			int currentFrame = _tweenDesc->current.currentFrame;
 			int boneIndex = _equipmentBoneIndexList.LeftShoulderIndex;
+
 			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
+			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
+			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
 
-			Vec3 s, r, t;
-			Quaternion qr;
-			itemMat.Decompose(s, qr, t);
-			r = Transform::QuatToEulerAngles(qr);
+			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
 
-			LeftShoulder->GetTransform()->SetScale(s);
-			LeftShoulder->GetTransform()->SetRotation(r);
-			LeftShoulder->GetTransform()->SetPosition(t);
+			LeftShoulder->GetTransform()->SetLocalMatrix(lerpMat);
 		}
 	}
 	//RightShoulder
@@ -473,18 +471,15 @@ void ModelAnimator::UpdateEquipmentTransform()
 		if (RightShoulder != nullptr)
 		{
 			int index = _tweenDesc->current.animIndex;
-			int currentFrame = _tweenDesc->current.currentFrame;
 			int boneIndex = _equipmentBoneIndexList.RightShoulderIndex;
+
 			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
+			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
+			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
+			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
 
-			Vec3 s, r, t;
-			Quaternion qr;
-			itemMat.Decompose(s, qr, t);
-			r = Transform::QuatToEulerAngles(qr);
-
-			RightShoulder->GetTransform()->SetScale(s);
-			RightShoulder->GetTransform()->SetRotation(r);
-			RightShoulder->GetTransform()->SetPosition(t);
+			RightShoulder->GetTransform()->SetLocalMatrix(lerpMat);
 		}
 	}
 	//Belt
@@ -494,18 +489,14 @@ void ModelAnimator::UpdateEquipmentTransform()
 		if (Belt != nullptr)
 		{
 			int index = _tweenDesc->current.animIndex;
-			int currentFrame = _tweenDesc->current.currentFrame;
 			int boneIndex = _equipmentBoneIndexList.BeltIndex;
 			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
+			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
+			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
+			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
 
-			Vec3 s, r, t;
-			Quaternion qr;
-			itemMat.Decompose(s, qr, t);
-			r = Transform::QuatToEulerAngles(qr);
-
-			Belt->GetTransform()->SetScale(s);
-			Belt->GetTransform()->SetRotation(r);
-			Belt->GetTransform()->SetPosition(t);
+			Belt->GetTransform()->SetLocalMatrix(lerpMat);
 		}
 	}
 	//Weapon
@@ -515,13 +506,14 @@ void ModelAnimator::UpdateEquipmentTransform()
 		if (weapon != nullptr)
 		{
 		  int index = _tweenDesc->current.animIndex;
-		  int currentFrame = _tweenDesc->current.currentFrame;
-		  //int boneIndex = _equipmentBoneIndexList.WeaponIndex;
-		  int boneIndex = 92;
+		  int boneIndex = _equipmentBoneIndexList.WeaponIndex;
 		  Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
-		  _model->GetBoneByIndex(_equipmentBoneIndexList.WeaponIndex);
+		  itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
+		  Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
+		  itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
+		  Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
 
-		  weapon->GetTransform()->SetLocalMatrix(itemMat);
+		  weapon->GetTransform()->SetLocalMatrix(lerpMat);
 		}
 	}
 	//Shield
@@ -531,18 +523,14 @@ void ModelAnimator::UpdateEquipmentTransform()
 		if (Shield != nullptr)
 		{
 			int index = _tweenDesc->current.animIndex;
-			int currentFrame = _tweenDesc->current.currentFrame;
 			int boneIndex = _equipmentBoneIndexList.ShieldIndex;
 			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
+			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
+			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
+			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
 
-			Vec3 s, r, t;
-			Quaternion qr;
-			itemMat.Decompose(s, qr, t);
-			r = Transform::QuatToEulerAngles(qr);
-
-			Shield->GetTransform()->SetScale(s);
-			Shield->GetTransform()->SetRotation(r);
-			Shield->GetTransform()->SetPosition(t);
+			Shield->GetTransform()->SetLocalMatrix(lerpMat);
 		}
 	}
 }

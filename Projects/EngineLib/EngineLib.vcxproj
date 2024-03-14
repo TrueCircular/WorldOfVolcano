@@ -175,10 +175,15 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AIController.h" />
+    <ClInclude Include="AncientBelt.h" />
     <ClInclude Include="AncientBeltData.h" />
+    <ClInclude Include="AncientHelm.h" />
     <ClInclude Include="AncientHelmData.h" />
+    <ClInclude Include="AncientLShoulder.h" />
     <ClInclude Include="AncientLShoulderData.h" />
+    <ClInclude Include="AncientRShoulder.h" />
     <ClInclude Include="AncientRShoulderData.h" />
+    <ClInclude Include="AncientShield.h" />
     <ClInclude Include="AncientShieldData.h" />
     <ClInclude Include="AncientSword.h" />
     <ClInclude Include="AncientSwordData.h" />
@@ -266,10 +271,15 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIController.cpp" />
+    <ClCompile Include="AncientBelt.cpp" />
     <ClCompile Include="AncientBeltData.cpp" />
+    <ClCompile Include="AncientHelm.cpp" />
     <ClCompile Include="AncientHelmData.cpp" />
+    <ClCompile Include="AncientLShoulder.cpp" />
     <ClCompile Include="AncientLShoulderData.cpp" />
+    <ClCompile Include="AncientRShoulder.cpp" />
     <ClCompile Include="AncientRShoulderData.cpp" />
+    <ClCompile Include="AncientShield.cpp" />
     <ClCompile Include="AncientShieldData.cpp" />
     <ClCompile Include="AncientSword.cpp" />
     <ClCompile Include="AncientSwordData.cpp" />

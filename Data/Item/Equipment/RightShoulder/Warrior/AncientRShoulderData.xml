@@ -7,7 +7,7 @@
     <ATK>0</ATK>
     <DEF>100</DEF>
     <Price>5000</Price>
-    <MeshFilePath>../../Resources/Mesh/Static/AncientHelm/AncientRShoulder.mesh</MeshFilePath>
-    <MaterialFilePath>../../Resources/Texture/Static/AncientHelm/AncientRShoulder.xml</MaterialFilePath>
+    <MeshFilePath>../../Resources/Mesh/Static/AncientRShoulder/AncientRShoulder.mesh</MeshFilePath>
+    <MaterialFilePath>../../Resources/Texture/Static/AncientRShoulder/AncientRShoulder.xml</MaterialFilePath>
     <ImageFilePath>../../Resources/Texture/Item/Helm/AncientRShoulder.png</ImageFilePath>
 </ItemInfo>

@@ -5,7 +5,7 @@
 #pragma comment(lib, "../../../Libraries/lib/server/ServerCore.lib")
 
 #include "CorePch.h"
-#include "../..//Engine/SimpleMath.h"
+#include "../../EngineLib/SimpleMath.h"
 
 using Vec2 = DirectX::SimpleMath::Vector2;
 using Vec3 = DirectX::SimpleMath::Vector3;

@@ -363,6 +363,21 @@
     <ClInclude Include="AncientBeltData.h">
       <Filter>04. Component\ItemData\Equipment\Warrior</Filter>
     </ClInclude>
+    <ClInclude Include="AncientHelm.h">
+      <Filter>03. GameObject\Item\Equipment\Helm</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientBelt.h">
+      <Filter>03. GameObject\Item\Equipment\Belt</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientLShoulder.h">
+      <Filter>03. GameObject\Item\Equipment\LeftShoulder</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientRShoulder.h">
+      <Filter>03. GameObject\Item\Equipment\RightShoulder</Filter>
+    </ClInclude>
+    <ClInclude Include="AncientShield.h">
+      <Filter>03. GameObject\Item\Equipment\Shield</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -618,6 +633,21 @@
     </ClCompile>
     <ClCompile Include="AncientBeltData.cpp">
       <Filter>04. Component\ItemData\Equipment\Warrior</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientHelm.cpp">
+      <Filter>03. GameObject\Item\Equipment\Helm</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientBelt.cpp">
+      <Filter>03. GameObject\Item\Equipment\Belt</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientLShoulder.cpp">
+      <Filter>03. GameObject\Item\Equipment\LeftShoulder</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientRShoulder.cpp">
+      <Filter>03. GameObject\Item\Equipment\RightShoulder</Filter>
+    </ClCompile>
+    <ClCompile Include="AncientShield.cpp">
+      <Filter>03. GameObject\Item\Equipment\Shield</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

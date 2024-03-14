@@ -9,7 +9,7 @@ float4 DefaultPS(MeshOutput input) : SV_TARGET
 {
     ComputeNormalMapping(input.normal, input.tangent, input.uv);
     float4 color = ComputeLight(input.normal, input.uv, input.worldPosition);
-//    float4 color = DiffuseMap.Sample(LinearSampler, input.uv);
+    //float4 color = DiffuseMap.Sample(LinearSampler, input.uv);
 
     return color;
 }
@@ -91,9 +91,9 @@ technique11 T0
 	PASS_VP(P0, MeshVS, DefaultPS)
     //Model Static
 //    PASS_VP(P1, StaticModelVS, DefaultPS)
-    PASS_RS_SP(P1, CullNone, StaticModelVS, DefaultPS)
+    PASS_RS_SP(P1, CullNone, StaticModelVS, NoneLightPS)
     //Model Dynamic
-    PASS_VP(P2, DynamicModelVS, DefaultPS)
+    PASS_VP(P2, DynamicModelVS, NoneLightPS)
     //StaticMesh
 	PASS_VP(P3, StaticMeshSHADOW, PSSHADOW)
     //SkeletalMesh

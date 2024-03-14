@@ -1067,8 +1067,8 @@ bool PlayerAnimJumpEnd::Enter(const shared_ptr<CharacterController>& playerContr
 	}
 
 	_stateAnim = PlayerAnimType::JumpEnd;
-	_animator.lock()->GetTweenDesc()->ClearCurrentAnim();
-	_animator.lock()->SetCurrentAnimation(L"JumpEnd");
+	//_animator.lock()->GetTweenDesc()->ClearCurrentAnim();
+	//_animator.lock()->SetCurrentAnimation(L"JumpEnd");
 	_animator.lock()->GetTweenDesc()->ClearNextAnim();
 	_animator.lock()->SetNextAnimation(L"JumpEnd");
 

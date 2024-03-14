@@ -4,8 +4,12 @@
 #include "CharacterInfo.h"
 #include "HeightGetter.h"
 #include "ItemData.h"
-#include "AncientHelmData.h"
+#include "AncientHelm.h"
+#include "AncientLShoulder.h"
+#include "AncientRShoulder.h"
+#include "AncientBelt.h"
 #include "AncientSword.h"
+#include "AncientShield.h"
 #include "EquipmentSlot.h"
 
 Warrior::Warrior()
@@ -83,10 +87,36 @@ void Warrior::CharacterInit()
 	{
 		auto equipmentSlot = make_shared<EquipmentSlot>();
 
+		//Helm
+		shared_ptr<AncientHelm> helm = make_shared<AncientHelm>();
+		helm->Init(shared_from_this());
+		equipmentSlot->EquipmentItem(0, helm);
+
+		//LShoulder
+		shared_ptr<AncientLShoulder> LShoulder = make_shared<AncientLShoulder>();
+		LShoulder->Init(shared_from_this());
+		equipmentSlot->EquipmentItem(1, LShoulder);
+
+		//RShoulder
+		shared_ptr<AncientRShoulder> RShoulder = make_shared<AncientRShoulder>();
+		RShoulder->Init(shared_from_this());
+		equipmentSlot->EquipmentItem(2, RShoulder);
+
+		//Belt
+		shared_ptr<AncientBelt> Belt = make_shared<AncientBelt>();
+		Belt->Init(shared_from_this());
+		equipmentSlot->EquipmentItem(3, Belt);
+
+		//Weapon
 		shared_ptr<AncientSword> sword = make_shared<AncientSword>();
 		sword->Init(shared_from_this());
-
 		equipmentSlot->EquipmentItem(4, sword);
+
+		//Shield
+		shared_ptr<AncientShield> shield = make_shared<AncientShield>();
+		shield->Init(shared_from_this());
+		equipmentSlot->EquipmentItem(5, shield);
+
 		AddComponent(equipmentSlot);
 	}
 
