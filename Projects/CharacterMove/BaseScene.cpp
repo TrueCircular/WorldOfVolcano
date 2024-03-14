@@ -31,7 +31,6 @@ void BaseScene::Init()
 	}
 
 	//랜더 매니저 초기화
-//	MANAGER_RENDERER()->Init(_shader);
 	MANAGER_SOUND()->Init();
 	//light
 	{
@@ -45,21 +44,7 @@ void BaseScene::Init()
 		//		lightDesc.direction = Vec3(0, 0.0f, 1.f);
 		light->GetLight()->SetLightDesc(lightDesc);
 		MANAGER_SCENE()->GetCurrentScene()->Add(light);
-//		MANAGER_RENDERER()->PushLightData(lightDesc);
-	}
-
-	//Camera
-	{
-		frustom = make_shared<FrustomCamera>();
-		_childCamera = make_shared<GameObject>();
-		_childCamera->Awake();
-		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, -1000.f));
-		_childCamera->AddComponent(make_shared<Camera>());
-		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
-		_childCamera->AddComponent(frustom);
-		_childCamera->Start();
-		_childCamera->SetName(L"Camera");
-		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
+		//		MANAGER_RENDERER()->PushLightData(lightDesc);
 	}
 
 	DamageIndicator::GetInstance().Init();
@@ -86,21 +71,6 @@ void BaseScene::Init()
 		obj->AddComponent(sprite);
 		obj->AddComponent(make_shared<Lava>(100, 3, false));
 		MANAGER_SCENE()->GetCurrentScene()->Add(obj);
-	}
-
-	{
-		//SkyBoxDesc descs{};
-		//descs.resourceFilePath[SkyBoxDesc::SKY_Front] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_Back] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_Right] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_Left] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_UP] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.resourceFilePath[SkyBoxDesc::SKY_DOWN] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		//descs.shaderPath = L"skyBox.fx";
-		//skyBox = make_shared < Skybox>();
-		//skyBox->Set(&descs);
-		//skyBox->Start();
-
 	}
 
 	auto fog_obj = make_shared<GameObject>();
@@ -171,29 +141,46 @@ void BaseScene::Init()
 	quadTreeTerrain->AddSplatter(splatter);
 	SetTerrain(_terrain);
 
+	//Camera
+	{
+
+		frustom = make_shared<FrustomCamera>();
+		_childCamera = make_shared<GameObject>();
+		_childCamera->Awake();
+		_childCamera->AddComponent(make_shared<Camera>());
+		_childCamera->AddComponent(frustom);
+		_childCamera->Start();
+		_childCamera->SetName(L"Camera");
+		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Debug, ProjectionType::Perspective, 100.f);
+		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
+		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
+	}
 	//Character
 	{
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
-		_warrior->AddChild(_childCamera);
+		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		_warrior->AddComponent(make_shared<PlayerController>());
 		_warrior->Start();
 		_warrior->GetTransform()->SetLocalPosition(spawnPos);
 		Add(_warrior);
 		AddShadow(_warrior);
+
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
+
+
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"Lobby");
 	if (bgm == nullptr) {
-	shared_ptr<Sounds> bgm = make_shared<Sounds>();
-	wstring bgmpath = RESOURCES_ADDR_SOUND;
-	bgmpath += L"Scene/Lobby.mp3";
-	bgm->Load(bgmpath);
-	MANAGER_RESOURCES()->AddResource<Sounds>(L"Lobby", bgm);
-	auto chs = bgm->Play(true);
-	}
-	else {
-		bgm->Play(true);
+		shared_ptr<Sounds> bgm = make_shared<Sounds>();
+		wstring bgmpath = RESOURCES_ADDR_SOUND;
+		bgmpath += L"Scene/Lobby.mp3";
+		bgm->Load(bgmpath);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Lobby", bgm);
+		//auto chs = bgm->Play(true);
+		//}
+		//else {
+		//	bgm->Play(true);
 	}
 
 	SpawnManager::GetInstance().Init();
@@ -298,9 +285,10 @@ void BaseScene::Update()
 	}
 	latestMessageSize = MANAGER_IMGUI()->GetLatestMessages().size();
 
+
 	Scene::Update();
+
 	//skyBox->Update();
-	quadTreeTerrain->Update();
 	DamageIndicator::GetInstance().Frame();
 
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
@@ -317,6 +305,9 @@ void BaseScene::Update()
 
 void BaseScene::LateUpdate()
 {
+
 	Scene::LateUpdate();
+	quadTreeTerrain->Update();
+
 	DamageIndicator::GetInstance().Render();
 }

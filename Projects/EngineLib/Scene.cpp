@@ -47,8 +47,7 @@ void Scene::LateUpdate()
 	{
 		if (obj->GetCamera())
 		{
-			obj->GetCamera()->Update();
-			obj->GetComponent<FrustomCamera>()->Update();
+			obj->Update();
 		}
 	}
 	// INSTANCING

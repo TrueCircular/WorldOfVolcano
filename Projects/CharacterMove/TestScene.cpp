@@ -36,9 +36,11 @@ void TestScene::Init()
 		frustom = make_shared<FrustomCamera>();
 		_camera = make_shared<GameObject>();
 		_camera->Awake();
-		_camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, -100.f));
+		_camera->GetTransform()->SetLocalPosition(Vec3(0.f, 0.f, 0));
 		_camera->AddComponent(make_shared<Camera>());
-		_camera->GetCamera()->SetCameraType(CameraType::Debug);
+//		_camera->GetCamera()->SetCameraType(CameraType::Debug);
+		_camera->GetCamera()->Init(Vec3(0, 0, -100.f), CameraType::Debug, ProjectionType::Perspective, 100.f);
+		_camera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 0, 0));
 		_camera->Start();
 		_camera->SetName(L"Camera");
 		_camera->AddComponent(make_shared<CameraMove>());
@@ -84,6 +86,7 @@ void TestScene::Start()
 {
 	Scene::Start();
 }
+
 struct FresnelDesc {
 	Vec4 eyePos;
 	Vec4 eyeLook;
@@ -95,7 +98,6 @@ struct ColorDesc {
 void TestScene::Update()
 {
 	Scene::Update();
-
 	//quadTreeTerrain->Frame((*frustom->frustomBox.get()));
 	//quadTreeTerrain->Update();
 
@@ -116,8 +118,8 @@ void TestScene::Update()
 	auto fresneldata = effShader->GetConstantBuffer("FresnelBuffer");
 
 	FresnelDesc _fresneldesc;
-	_fresneldesc.eyePos = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetTransform()->GetLocalPosition();
-	_fresneldesc.eyeLook = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetTransform()->GetLookVector();
+	_fresneldesc.eyePos = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraPosition();
+	_fresneldesc.eyeLook = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraLookVector();
 	_fresnelBuffer->CopyData(_fresneldesc);
 	fresneldata->SetConstantBuffer(_fresnelBuffer->GetBuffer().Get());
 

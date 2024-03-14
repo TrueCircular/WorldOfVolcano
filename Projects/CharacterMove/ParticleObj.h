@@ -14,8 +14,8 @@ protected:
 	shared_ptr<Shader> shader;
 
 
-	ColorDesc _colorDesc;
-	shared_ptr<ConstantBuffer<ColorDesc>> colorBuffer;
+//	ColorDesc _colorDesc;
+//	shared_ptr<ConstantBuffer<ColorDesc>> colorBuffer;
 	UINT instanceCounter=0;
 
 public:

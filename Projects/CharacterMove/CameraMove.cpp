@@ -10,7 +10,7 @@ void CameraMove::Update()
 {
 	_dt = MANAGER_TIME()->GetDeltaTime();
 
-	Vec3 pos = GetTransform()->GetPosition();
+	Vec3 pos = GetGameObject()->GetCamera()->GetCameraPosition();
 	Vec3 rot = GetTransform()->GetLocalRotation();
 	Vec3 currentMousePos = MANAGER_INPUT()->GetScreenMousePos();
 
@@ -58,22 +58,22 @@ void CameraMove::Update()
 	{
 		if (MANAGER_INPUT()->GetButton(KEY_TYPE::W))
 		{
-			pos += GetTransform()->GetLookVector() * _speed * _dt;
+			pos += GetGameObject()->GetCamera()->GetCameraLookVector() * _speed * _dt;
 		}
 		if (MANAGER_INPUT()->GetButton(KEY_TYPE::S))
 		{
-			pos -= GetTransform()->GetLookVector() * _speed * _dt;
+			pos -= GetGameObject()->GetCamera()->GetCameraLookVector() * _speed * _dt;
 		}
 		if (MANAGER_INPUT()->GetButton(KEY_TYPE::A))
 		{
-			pos -= GetTransform()->GetRightVector() * _speed * _dt;
+			pos -= GetGameObject()->GetCamera()->GetCameraRightVector() * _speed * _dt;
 		}
 		if (MANAGER_INPUT()->GetButton(KEY_TYPE::D))
 		{
-			pos += GetTransform()->GetRightVector() * _speed * _dt;
+			pos += GetGameObject()->GetCamera()->GetCameraRightVector() * _speed * _dt;
 		}
 	}
 
-	GetTransform()->SetPosition(pos);
+	GetGameObject()->GetCamera()->SetCameraPosition(pos);
 	_lastMousePos = currentMousePos;
 }
