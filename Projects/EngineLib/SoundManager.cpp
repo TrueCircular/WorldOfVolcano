@@ -23,22 +23,22 @@ void SoundManager::Init()
 	if (!managed_2Dchannels.empty()) {
 		for (auto c : managed_2Dchannels) {
 			c->setPaused(true);
-//			c->stop();
+			c->stop();
 		}
 		managed_2Dchannels.clear();
 	}
 	if (!managed_channels.empty()) {
 		for (auto c : managed_channels) {
 			c.second->setPaused(true);
-//			c.second->stop();
+			c.second->stop();
 		}
 		managed_channels.clear();
 	}
 	if (g_fmSystem == nullptr) {
 		FMOD::Debug_Initialize(FMOD_DEBUG_LEVEL_LOG);
 		FMOD::System_Create(&g_fmSystem);
-		FMOD_RESULT fr= g_fmSystem->init(64, FMOD_INIT_NORMAL, nullptr);
-		g_fmSystem->set3DSettings(0.01, 0.01, 0.01);
+		FMOD_RESULT fr= g_fmSystem->init(128, FMOD_INIT_NORMAL, nullptr);
+		//g_fmSystem->set3DSettings(0.01, 0.01, 0.01);
 	}
 }
 
@@ -74,8 +74,8 @@ void SoundManager::Update()
 		}
 		FMOD_VECTOR vel = { 1,1,1 };
 		Vec3 cpos = soundTransform->GetLocalPosition() - *managed_channels[i].first;
-		float sound = 100/ cpos.Length();
-		if (sound >= 100)sound = 100;
+		float sound = soundVolume/ cpos.Length();
+		if (sound >= 1)sound = 1;
 
 		FMOD_VECTOR pos = { cpos.x, cpos.y, cpos.z };
 		managed_channels[i].second->setVolume(sound);

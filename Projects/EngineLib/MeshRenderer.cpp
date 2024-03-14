@@ -130,7 +130,7 @@ void MeshRenderer::RenderInstancing(shared_ptr<class InstancingBuffer>& buffer)
 	// Light
 	auto lightObj = MANAGER_SCENE()->GetCurrentScene()->GetLight();
 	if (lightObj)
-		//shader->PushLightData(lightObj->GetLight()->GetLightDesc());
+		shader->PushLightData(lightObj->GetLight()->GetLightDesc());
 
 	// Light
 	_material->Update();

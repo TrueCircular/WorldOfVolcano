@@ -3,7 +3,7 @@
 #include "BaseScene.h"
 #include "DungeonScene.h"
 #include "MainScene.h"
-
+#include "TestScene.h"
 
 class Demo : public IExecute
 {
