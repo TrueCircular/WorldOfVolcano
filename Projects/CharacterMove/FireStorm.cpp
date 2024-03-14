@@ -4,11 +4,7 @@
 void FireStorm::Update()
 {
 	ParticleObj::Update();
-	_fresneldesc.eyeLook = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraLookVector();
-	_fresneldesc.eyePos = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraPosition();
-	noiseSRV->SetResource(noiseTexture->GetTexture().Get());
-	primNoiseSRV->SetResource(noiseTexture->GetTexture().Get());
-	hightLightSRV->SetResource(noiseTexture->GetTexture().Get());;
+
 	for (int i = 0; i < instanceList.size(); ++i) {
 		if (instanceList[i].isDestroy) {
 			OnDestroy(instanceList[i]);
@@ -42,6 +38,12 @@ void FireStorm::Update()
 
 void FireStorm::LateUpdate()
 {
+	ParticleObj::LateUpdate();
+	_fresneldesc.eyeLook = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraLookVector();
+	_fresneldesc.eyePos = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraPosition();
+	noiseSRV->SetResource(noiseTexture->GetTexture().Get());
+	primNoiseSRV->SetResource(noiseTexture->GetTexture().Get());
+	hightLightSRV->SetResource(noiseTexture->GetTexture().Get());;
 	staticRenderer->Render(instanceList);
 }
 

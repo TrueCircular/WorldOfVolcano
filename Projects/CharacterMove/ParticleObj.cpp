@@ -34,9 +34,13 @@ void ParticleObj::Update()
 		}
 		
 	}
+}
+
+void ParticleObj::LateUpdate()
+{
 	if (colorData) {
 		colorData->CopyData(_colorDesc);
-		if(colorBuffer)
-		colorBuffer->SetConstantBuffer(colorData->GetBuffer().Get());
+		if (colorBuffer)
+			colorBuffer->SetConstantBuffer(colorData->GetBuffer().Get());
 	}
 }

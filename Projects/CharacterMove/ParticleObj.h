@@ -29,7 +29,7 @@ public:
 	virtual void DeleteInstance(ParticleInstance& data);
 	
 	virtual void Update();
-	virtual void LateUpdate()=0;
+	virtual void LateUpdate();
 
 	virtual void OnDestroy(ParticleInstance& instance)=0;
 };
