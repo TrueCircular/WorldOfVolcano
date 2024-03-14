@@ -28,6 +28,7 @@
 #define DATA_ADDR_LOAD L"../../Data/Load/"
 #define DATA_ADDR_META L"../../Data/Meta/"
 #define DATA_ADDR_ITEM L"../../Data/Item/"
+#define DATA_ADDR_UNIT L"../../Data/Unit/"
 #define DATA_ADDR_SCREENSHOT L"../../Data/ScreenShot/"
 #else
 //resources
@@ -55,6 +56,7 @@
 #define DATA_ADDR_LOAD L"Data/Load/"
 #define DATA_ADDR_META L"Data/Meta/"
 #define DATA_ADDR_ITEM L"Data/Item/"
+#define DATA_ADDR_UNIT L"Data/Unit/"
 #define DATA_ADDR_SCREENSHOT L"Data/ScreenShot/"
 #endif
 

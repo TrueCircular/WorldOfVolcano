@@ -11,14 +11,14 @@ public:
 	virtual ~Item(){}
 protected:
 	shared_ptr<ModelRenderer>	_itemModel;
-	shared_ptr<ModelAnimator>	_itemOwnerAnimator;
 	shared_ptr<ItemData>		_itemData;
+	shared_ptr<GameObject>		_itemOwner;
 	shared_ptr<CharacterInfo>   _itemOwnerInfo;
 public:
-	void SetItemOwnerInfo(const shared_ptr<CharacterInfo>& info) { _itemOwnerInfo = info; }
-	void SetItemOwnerAnimator(const shared_ptr<ModelAnimator>& Animator) { _itemOwnerAnimator = Animator; }
+	void SetItemOwner(const shared_ptr<GameObject>& owner) { _itemOwner = owner; }
+	const shared_ptr<ItemData>& GetItemData() const { return _itemData; }
 public:
-	virtual void Init() {}
+	virtual bool Init(const shared_ptr<GameObject>& owner) { return false; }
 	virtual bool ApplyItem(const bool& apply) { return false; }
 public:
 	virtual void Awake() override;

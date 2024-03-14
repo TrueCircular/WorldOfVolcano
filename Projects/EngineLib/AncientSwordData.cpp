@@ -17,8 +17,7 @@ AncientSwordData::~AncientSwordData()
 
 bool AncientSwordData::ItemEffectToSelf(bool active)
 {
-	if (_itemOwnerUnitInfo.lock() == nullptr ||
-		_itemInfo.Name == L"")
+	if (_itemOwnerUnitInfo.lock() == nullptr)
 	{
 		return false;
 	}

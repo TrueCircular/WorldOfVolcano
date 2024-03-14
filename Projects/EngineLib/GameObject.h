@@ -43,8 +43,8 @@ public:
 	void SetName(wstring name);
 	wstring GetName();
 public:
-	void SetParent(const shared_ptr<GameObject>& parent) { _parent = parent; }
-	void AddChild(shared_ptr<GameObject>& child);
+	void SetParent(const shared_ptr<GameObject>& parent);
+	void AddChild(const shared_ptr<GameObject>& child);
 	shared_ptr<GameObject> GetChildByName(wstring name);
 	shared_ptr<GameObject> GetParent() { return _parent; }
 public:

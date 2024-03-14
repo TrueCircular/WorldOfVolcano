@@ -123,10 +123,6 @@ void Transform::SaveMetaData(wstring& metaPath)
 	Vec3 temp;
 }
 
-void Transform::Awake()
-{
-}
-
 void Transform::Update()
 {
 	//UpdateTransform();
@@ -134,28 +130,51 @@ void Transform::Update()
 
 void Transform::UpdateTransform()
 {
-	Matrix matScale = Matrix::CreateScale(_localScale);
-	Quaternion mq = Quaternion::CreateFromYawPitchRoll(_localRotation.y, _localRotation.x, _localRotation.z);
-	Matrix matRot = Matrix::CreateFromQuaternion(mq);
-	Matrix matTranslation = Matrix::CreateTranslation(_localPosition);
-
-	_matLocal = matScale * matRot * matTranslation;
-
-	if (HasParent())
+	if (_isItemTransform)
 	{
-		_matWorld = _matLocal * _parent->GetWorldMatrix();
+		if (HasParent())
+		{
+			_matWorld = _matLocal * _parent->GetWorldMatrix();
+		}
+		else
+		{
+			_matWorld = _matLocal;
+		}
+
+		Quaternion quat;
+		_matWorld.Decompose(_scale, quat, _position);
+		_rotation = QuatToEulerAngles(quat);
+
+		for (const shared_ptr<Transform>& child : _children)
+		{
+			child->UpdateTransform();
+		}
 	}
 	else
 	{
-		_matWorld = _matLocal;
-	}
+		Matrix matScale = Matrix::CreateScale(_localScale);
+		Quaternion mq = Quaternion::CreateFromYawPitchRoll(_localRotation.y, _localRotation.x, _localRotation.z);
+		Matrix matRot = Matrix::CreateFromQuaternion(mq);
+		Matrix matTranslation = Matrix::CreateTranslation(_localPosition);
 
-	Quaternion quat;
-	_matWorld.Decompose(_scale, quat, _position);
-	_rotation = QuatToEulerAngles(quat);
+		_matLocal = matScale * matRot * matTranslation;
 
-	for (const shared_ptr<Transform>& child : _children)
-	{
-		child->UpdateTransform();
+		if (HasParent())
+		{
+			_matWorld = _matLocal * _parent->GetWorldMatrix();
+		}
+		else
+		{
+			_matWorld = _matLocal;
+		}
+
+		Quaternion quat;
+		_matWorld.Decompose(_scale, quat, _position);
+		_rotation = QuatToEulerAngles(quat);
+
+		for (const shared_ptr<Transform>& child : _children)
+		{
+			child->UpdateTransform();
+		}
 	}
 }

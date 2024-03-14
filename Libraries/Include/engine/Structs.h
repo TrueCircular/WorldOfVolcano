@@ -162,16 +162,17 @@ struct CHARACTER_INFO
 {
 	uint32 _instanceId = 0;
 	uint32 _spawnMapId = 0;
-	//wstring _name;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+	std::wstring _name;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 	uint32 _maxHp = 1000;
 	uint32 _maxMp = 1000;
 	uint32 _hp = 1000;
 	uint32 _mp = 1000;
 	uint16 _atk = 100;
-	//uint16 _def = 100;
+	uint16 _def = 100;
 	uint16 _moveSpeed = 10;
 	uint16 _aggroLevel = 100;
 	float _attackRange = 15.0f;
+	float _attackTime = 0.8f;
 	Vec3 _pos = { 0.0f, 0.0f, 0.0f };
 	Vec3 _Rotate = { 0.0f, 0.0f, 0.0f };
 	bool _isAlive = true;
@@ -222,4 +223,14 @@ struct ItemInfo
 	std::wstring	MeshFilePath;
 	std::wstring	MaterialFilePath;
 	std::wstring	ImageFilePath;
+};
+
+struct EquipmentBoneIndexDesc
+{
+	uint16 HelmIndex = 0;
+	uint16 LeftShoulderIndex = 0;
+	uint16 RightShoulderIndex = 0;
+	uint16 BeltIndex = 0;
+	uint16 WeaponIndex = 0;
+	uint16 ShieldIndex = 0;
 };

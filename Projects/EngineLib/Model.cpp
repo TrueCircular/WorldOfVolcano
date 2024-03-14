@@ -38,9 +38,34 @@ void Model::BindCacheInfo()
 	if (_root == nullptr && _bones.size() > 0)
 	{
 		_root = _bones[0];
-
+		uint16 count = 0;
 		for (const auto& bone : _bones)
 		{
+			if (bone->name == L"Helm")
+			{
+				_equipmentIndex.HelmIndex = count;
+			}
+			if (bone->name == L"LShoulder")
+			{
+				_equipmentIndex.LeftShoulderIndex = count;
+			}
+			if (bone->name == L"RShoulder")
+			{
+				_equipmentIndex.RightShoulderIndex = count;
+			}
+			if (bone->name == L"Belt")
+			{
+				_equipmentIndex.BeltIndex = count;
+			}
+			if (bone->name == L"Weapon")
+			{
+				_equipmentIndex.WeaponIndex = count;
+			}
+			if (bone->name == L"Shield")
+			{
+				_equipmentIndex.ShieldIndex = count;
+			}
+
 			if (bone->parentIndex >= 0)
 			{
 				bone->parent = _bones[bone->parentIndex];
@@ -50,6 +75,7 @@ void Model::BindCacheInfo()
 			{
 				bone->parent = nullptr;
 			}
+			count++;
 		}
 	}
 }

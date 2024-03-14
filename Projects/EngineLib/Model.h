@@ -14,6 +14,7 @@ private:
 	vector<shared_ptr<ModelBone>>		_bones;
 	vector<shared_ptr<ModelMesh>>		_meshes;
 	vector<shared_ptr<ModelAnimation>>	_animations;
+	EquipmentBoneIndexDesc				_equipmentIndex;
 private:
 	ModelType		_modelType = ModelType::None;
 	ModelMetaData	_modelData;
@@ -43,6 +44,7 @@ public:
 	ModelType			GetModelType() { return _modelType; }
 	void				SetModelType(ModelType type);
 	ModelMetaData		GetModelMetaData() { return _modelData; }
+	EquipmentBoneIndexDesc GetEquipmentBoneIndex() { return _equipmentIndex; }
 public:
 	//Asset Read Helper
 	void ReadMaterial(wstring fileName);

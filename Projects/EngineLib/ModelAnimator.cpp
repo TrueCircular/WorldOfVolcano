@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ModelAnimator.h"
 #include <float.h>
+#include "EquipmentSlot.h"
 
 ModelAnimator::ModelAnimator() : Super(ComponentType::ModelAnimator)
 {
@@ -190,6 +191,7 @@ void ModelAnimator::UpdateTweenData()
 						_tweenDesc->current.nextFrame = 1;
 					}
 
+
 					_tweenDesc->current.sumTime += MANAGER_TIME()->GetDeltaTime();
 					_timePerFrame = 1 / (_currentAnim->frameRate * _tweenDesc->current.speed);
 
@@ -198,6 +200,7 @@ void ModelAnimator::UpdateTweenData()
 						_tweenDesc->current.sumTime = 0;
 						_tweenDesc->current.currentFrame = (_tweenDesc->current.currentFrame + 1);
 						_tweenDesc->current.nextFrame = (_tweenDesc->current.currentFrame + 1);
+						UpdateEquipmentTransform();
 
 					}
 
@@ -340,6 +343,8 @@ void ModelAnimator::Start()
 			_anims.clear();
 		}
 
+		_equipmentBoneIndexList = _model->GetEquipmentBoneIndex();
+
 		uint32 count = _model->GetAnimationCount();
 		if (count > 0)
 		{
@@ -410,6 +415,136 @@ void ModelAnimator::ShadowUpdate() {
 	float viewdis = sqrt(fWidthLength + fHeightLength);
 	//Global
 
+}
+
+void ModelAnimator::UpdateEquipmentTransform()
+{
+	auto equipmentSlot = GetGameObject()->GetParent()->GetComponent<EquipmentSlot>();
+
+	if (equipmentSlot == nullptr)
+		return;
+	
+	//Helm
+	{
+		auto helm = equipmentSlot->GetEquipmentItem(0);
+
+		if (helm != nullptr)
+		{
+			int index = _tweenDesc->current.animIndex;
+			int currentFrame = _tweenDesc->current.currentFrame;
+			int boneIndex = _equipmentBoneIndexList.HelmIndex;
+			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+
+			Vec3 s, r, t;
+			Quaternion qr;
+			itemMat.Decompose(s, qr, t);
+			r = Transform::QuatToEulerAngles(qr);
+
+			helm->GetTransform()->SetScale(s);
+			helm->GetTransform()->SetRotation(r);
+			helm->GetTransform()->SetPosition(t);
+		}
+	}
+	//LeftShoulder
+	{
+		auto LeftShoulder = equipmentSlot->GetEquipmentItem(1);
+
+		if (LeftShoulder != nullptr)
+		{
+			int index = _tweenDesc->current.animIndex;
+			int currentFrame = _tweenDesc->current.currentFrame;
+			int boneIndex = _equipmentBoneIndexList.LeftShoulderIndex;
+			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+
+			Vec3 s, r, t;
+			Quaternion qr;
+			itemMat.Decompose(s, qr, t);
+			r = Transform::QuatToEulerAngles(qr);
+
+			LeftShoulder->GetTransform()->SetScale(s);
+			LeftShoulder->GetTransform()->SetRotation(r);
+			LeftShoulder->GetTransform()->SetPosition(t);
+		}
+	}
+	//RightShoulder
+	{
+		auto RightShoulder = equipmentSlot->GetEquipmentItem(2);
+
+		if (RightShoulder != nullptr)
+		{
+			int index = _tweenDesc->current.animIndex;
+			int currentFrame = _tweenDesc->current.currentFrame;
+			int boneIndex = _equipmentBoneIndexList.RightShoulderIndex;
+			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+
+			Vec3 s, r, t;
+			Quaternion qr;
+			itemMat.Decompose(s, qr, t);
+			r = Transform::QuatToEulerAngles(qr);
+
+			RightShoulder->GetTransform()->SetScale(s);
+			RightShoulder->GetTransform()->SetRotation(r);
+			RightShoulder->GetTransform()->SetPosition(t);
+		}
+	}
+	//Belt
+	{
+		auto Belt = equipmentSlot->GetEquipmentItem(3);
+
+		if (Belt != nullptr)
+		{
+			int index = _tweenDesc->current.animIndex;
+			int currentFrame = _tweenDesc->current.currentFrame;
+			int boneIndex = _equipmentBoneIndexList.BeltIndex;
+			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+
+			Vec3 s, r, t;
+			Quaternion qr;
+			itemMat.Decompose(s, qr, t);
+			r = Transform::QuatToEulerAngles(qr);
+
+			Belt->GetTransform()->SetScale(s);
+			Belt->GetTransform()->SetRotation(r);
+			Belt->GetTransform()->SetPosition(t);
+		}
+	}
+	//Weapon
+	{
+		auto weapon = equipmentSlot->GetEquipmentItem(4);
+
+		if (weapon != nullptr)
+		{
+		  int index = _tweenDesc->current.animIndex;
+		  int currentFrame = _tweenDesc->current.currentFrame;
+		  //int boneIndex = _equipmentBoneIndexList.WeaponIndex;
+		  int boneIndex = 92;
+		  Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+		  _model->GetBoneByIndex(_equipmentBoneIndexList.WeaponIndex);
+
+		  weapon->GetTransform()->SetLocalMatrix(itemMat);
+		}
+	}
+	//Shield
+	{
+		auto Shield = equipmentSlot->GetEquipmentItem(5);
+
+		if (Shield != nullptr)
+		{
+			int index = _tweenDesc->current.animIndex;
+			int currentFrame = _tweenDesc->current.currentFrame;
+			int boneIndex = _equipmentBoneIndexList.ShieldIndex;
+			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
+
+			Vec3 s, r, t;
+			Quaternion qr;
+			itemMat.Decompose(s, qr, t);
+			r = Transform::QuatToEulerAngles(qr);
+
+			Shield->GetTransform()->SetScale(s);
+			Shield->GetTransform()->SetRotation(r);
+			Shield->GetTransform()->SetPosition(t);
+		}
+	}
 }
 
 void ModelAnimator::Update()

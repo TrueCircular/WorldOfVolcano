@@ -13,9 +13,15 @@ AncientSword::~AncientSword()
 {
 }
 
-void AncientSword::Init()
+bool AncientSword::Init(const shared_ptr<GameObject>& owner)
 {
-	shared_ptr<AncientSwordData> itemData = make_shared<AncientSwordData>();
+	if (owner == nullptr)
+		return false;
+
+	const auto& ownerInfo = owner->GetComponent<CharacterInfo>();
+	_itemOwnerInfo = ownerInfo;
+
+	const auto& itemData = make_shared<AncientSwordData>();
 	_itemData = itemData;
 	_itemData->SetOwnerUnitInfo(_itemOwnerInfo);
 
@@ -26,8 +32,12 @@ void AncientSword::Init()
 	AddComponent(_itemModel);
 
 	GetOrAddTransform();
+	GetTransform()->_isItemTransform = true;
+	owner->GetChildByName(L"Model")->AddChild(shared_from_this());
 
 	MANAGER_SCENE()->GetCurrentScene()->Add(shared_from_this());
+
+	return true;
 }
 
 bool AncientSword::ApplyItem(const bool& apply)
@@ -57,37 +67,14 @@ void AncientSword::Start()
 void AncientSword::FixedUpdate()
 {
 	Super::FixedUpdate();
-	if (_itemOwnerAnimator != nullptr)
-	{
-		int animIndex = _itemOwnerAnimator->GetTweenDesc()->current.animIndex;
-		int cuFrame = _itemOwnerAnimator->GetTweenDesc()->current.currentFrame;
-
-		Matrix tf = _itemOwnerAnimator->GetAnimTransform()[animIndex].transforms[cuFrame][92];
-
-		GetTransform()->isWroldMode = true;
-		GetTransform()->SetLocalMatrix(tf);
-		//Vec3 sc, rr, ts;
-		//Quaternion rot;
-		//tf.Decompose(sc, rot, ts);
-		//rr = GetTransform()->QuatToEulerAngles(rot);
-		//rr.x *= -1;
-		//rr.z *= -1;
-		//GetTransform()->SetLocalPosition(ts);
-		//GetTransform()->SetLocalRotation(rr);
-	}
-
 }
 
 void AncientSword::Update()
 {
-
 	Super::Update();
 }
 
 void AncientSword::LateUpdate()
 {
-
-
 	Super::LateUpdate();
-
 }

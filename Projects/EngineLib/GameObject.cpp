@@ -110,7 +110,11 @@ wstring GameObject::GetName()
 	return _name;
 }
 
-void GameObject::AddChild(shared_ptr<GameObject>& child)
+void GameObject::SetParent(const shared_ptr<GameObject>& parent)
+{
+	_parent = parent;
+}
+void GameObject::AddChild(const shared_ptr<GameObject>& child)
 {
 	child->SetParent(shared_from_this());
 	_children.push_back(child);

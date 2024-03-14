@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameServer", "Projects\Game
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModifyCamera", "Projects\ModifyCamera\ModifyCamera.vcxproj", "{32E342C3-4098-4A6C-8385-82EB717C46D4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Equipment", "Projects\Equipment\Equipment.vcxproj", "{23173AAC-F530-4A80-AAA3-38BCE96528BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -83,6 +85,14 @@ Global
 		{32E342C3-4098-4A6C-8385-82EB717C46D4}.Release|x64.Build.0 = Release|x64
 		{32E342C3-4098-4A6C-8385-82EB717C46D4}.Release|x86.ActiveCfg = Release|Win32
 		{32E342C3-4098-4A6C-8385-82EB717C46D4}.Release|x86.Build.0 = Release|Win32
+		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Debug|x64.ActiveCfg = Debug|x64
+		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Debug|x64.Build.0 = Debug|x64
+		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Debug|x86.ActiveCfg = Debug|Win32
+		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Debug|x86.Build.0 = Debug|Win32
+		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Release|x64.ActiveCfg = Release|x64
+		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Release|x64.Build.0 = Release|x64
+		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Release|x86.ActiveCfg = Release|Win32
+		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,6 +106,7 @@ Global
 		{C551EFB0-AC02-4488-B484-DD700227A1B2} = {022BF3BB-8F86-4E44-8EB3-9A0548D656DF}
 		{15B10DDE-34E6-4E43-8879-32E2DBFACE1A} = {72070B66-C377-489C-A9DF-42514021721D}
 		{32E342C3-4098-4A6C-8385-82EB717C46D4} = {72070B66-C377-489C-A9DF-42514021721D}
+		{23173AAC-F530-4A80-AAA3-38BCE96528BF} = {72070B66-C377-489C-A9DF-42514021721D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4983060C-B398-4026-85DA-0E060E22D851}
