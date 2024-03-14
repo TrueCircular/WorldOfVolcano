@@ -65,7 +65,6 @@ void Scene::ShadowUpdate()
 }
 void Scene::Add(shared_ptr<GameObject> object)
 {
-
 	if (object->GetCamera() != nullptr)
 	{
 		_cameras.insert(object);

@@ -29,6 +29,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModifyCamera", "Projects\Mo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Equipment", "Projects\Equipment\Equipment.vcxproj", "{23173AAC-F530-4A80-AAA3-38BCE96528BF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EnemyAI", "Projects\EnemyAI\EnemyAI.vcxproj", "{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -93,6 +95,14 @@ Global
 		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Release|x64.Build.0 = Release|x64
 		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Release|x86.ActiveCfg = Release|Win32
 		{23173AAC-F530-4A80-AAA3-38BCE96528BF}.Release|x86.Build.0 = Release|Win32
+		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07}.Debug|x64.ActiveCfg = Debug|x64
+		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07}.Debug|x64.Build.0 = Debug|x64
+		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07}.Debug|x86.ActiveCfg = Debug|Win32
+		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07}.Debug|x86.Build.0 = Debug|Win32
+		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07}.Release|x64.ActiveCfg = Release|x64
+		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07}.Release|x64.Build.0 = Release|x64
+		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07}.Release|x86.ActiveCfg = Release|Win32
+		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,6 +117,7 @@ Global
 		{15B10DDE-34E6-4E43-8879-32E2DBFACE1A} = {72070B66-C377-489C-A9DF-42514021721D}
 		{32E342C3-4098-4A6C-8385-82EB717C46D4} = {72070B66-C377-489C-A9DF-42514021721D}
 		{23173AAC-F530-4A80-AAA3-38BCE96528BF} = {72070B66-C377-489C-A9DF-42514021721D}
+		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07} = {72070B66-C377-489C-A9DF-42514021721D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4983060C-B398-4026-85DA-0E060E22D851}

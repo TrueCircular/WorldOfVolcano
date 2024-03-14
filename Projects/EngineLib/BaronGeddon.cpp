@@ -2,6 +2,8 @@
 #include "BaronGeddon.h"
 #include "SphereCollider.h"
 #include "HeightGetter.h"
+#include "CharacterInfo.h"
+#include "AIController.h"
 
 BaronGeddon::BaronGeddon()
 {
@@ -14,6 +16,14 @@ BaronGeddon::~BaronGeddon()
 void BaronGeddon::CharacterInit()
 {
 	_childModel = make_shared<GameObject>();
+
+	auto chinfo = make_shared<CharacterInfo>();
+	AddComponent(chinfo);
+
+	auto aiCon = make_shared<AIController>();
+	aiCon->SetAIType(AIType::EnemyUnit);
+	AddComponent(aiCon);
+
 
 	//Character
 	{
@@ -45,19 +55,23 @@ void BaronGeddon::CharacterInit()
 		Vec3 rot = _childModel->GetTransform()->GetLocalRotation();
 		rot.x += ::XMConvertToRadians(90.f);
 		rot.y -= ::XMConvertToRadians(90.f);
+		_childModel->GetTransform()->SetLocalScale(Vec3(0.5f));
 		_childModel->GetTransform()->SetLocalRotation(rot);
-		_childModel->GetTransform()->SetLocalPosition(Vec3(0, 100, 0));
+		_childModel->GetTransform()->SetLocalPosition(Vec3(0, 35, 0));
+		AddChild(_childModel);
 	}
-	AddComponent(make_shared<SphereCollider>());
-	SetName(L"BaronGeddon");
-	AddChild(_childModel);
-	GetTransform()->SetScale(Vec3(0.5f));
-
 	{
 		auto height = make_shared<HeightGetter>();
 		height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
 		AddComponent(height);
 	}
+
+	{
+		auto collider = make_shared<SphereCollider>();
+		collider->SetRadius(35.f);
+		AddComponent(collider);
+	}
+	SetName(L"BaronGeddon");
 }
 
 void BaronGeddon::Awake()
