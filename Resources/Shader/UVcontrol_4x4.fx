@@ -21,7 +21,7 @@ float4 UV44Control(float2 uv, Uvcontrol44Desc desc)// Don't Use MixedUV!!!!!!!
         scalarA = 16.0f;
     }
     float scalarB = desc.uvNum - 32.0f;
-    if (scalarB > 32.0f;)
+    if (scalarB > 32.0f)
     {
         
     }
@@ -29,7 +29,7 @@ float4 UV44Control(float2 uv, Uvcontrol44Desc desc)// Don't Use MixedUV!!!!!!!
     {
         scalarB = scalarA;
     }
-    float scalarC = 0f;
+    float scalarC = 0.0f;
     if (scalarB > 4.0f)
     {
         scalarC = 1;
@@ -59,13 +59,13 @@ float4 UV44Control(float2 uv, Uvcontrol44Desc desc)// Don't Use MixedUV!!!!!!!
     {
         rgbColor = float3(color.r, color.r, color.r);
     }
-    if (uvDynamic > 16.0f)
+    if (uvDynamic.x > 16.0f &&uvDynamic.y > 16.0f)
     {
         rgbColor = float3(color.g, color.g, color.g);
     }
-    if (uvDynamic > 32.0f)
+    if (uvDynamic.x > 32.0f && uvDynamic.y > 32.0f)
     {
-        rgbColor= float3(color.b, color.b, color.b);
+        rgbColor = float3(color.b, color.b, color.b);
     }
     color.rgb = rgbColor;
     

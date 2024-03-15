@@ -61,6 +61,20 @@ void TestScene::Init()
 	world2 = make_shared<Transform>();
 	world2->SetLocalScale(Vec3(10, 10, 10));
 	world2->SetLocalPosition(Vec3(10, 0, 0));
+
+	effShader3 = make_shared<Shader>(L"MagicCircleLegacy.fx");
+	circleTex1 = make_shared<Texture>();
+	circleTex1->Load(L"../../Resources/Texture/Effect/T_ky_magicCircle020.PNG");
+	//circleTex2 = make_shared<Texture>();
+	//circleTex2->Load(L"../../Resources/Texture/Effect/T_ky_flare3.PNG");
+	world3 = make_shared<Transform>();
+	world3->SetLocalScale(Vec3(10, 10, 10));
+	world3->SetLocalPosition(Vec3(-10, 0, 0));
+
+
+
+
+
 	//HeightPlainInfo heightMapDesc;
 	//heightMapDesc.heightFilename = L"HeightMapBase";
 	//heightMapDesc.heightFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"test.bmp";
@@ -100,8 +114,8 @@ void TestScene::Update()
 	auto data = effShader->GetConstantBuffer("ColorBuffer");
 
 	ColorDesc _desc;
-	_desc.baseColor = Vec4(1, 0, 0, 1);
-	_desc.subColor = Vec4(0.8, 0.2, 0.2, 1);
+	_desc.baseColor = Vec4(1, 0.2, 0.2, 1);
+	_desc.subColor = Vec4(0.8, 0.3, 0.3, 1);
 	_materialBuffer->CopyData(_desc);
 	data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
 
@@ -172,6 +186,40 @@ void TestScene::Update()
 
 		effShader2->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
 	}
+
+	{
+		world3->UpdateTransform();
+		auto _materialBuffer = make_shared<ConstantBuffer<ColorDesc>>();
+		_materialBuffer->CreateConstantBuffer();
+		auto data = effShader3->GetConstantBuffer("ColorBuffer");
+
+		ColorDesc _desc;
+		_desc.baseColor = Vec4(1, 0.2, 0.2, 1);
+		_desc.subColor = Vec4(1, 1, 0, 1);
+		_materialBuffer->CopyData(_desc);
+		data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
+
+		effShader3->PushTransformData(TransformDesc{ world3->GetWorldMatrix() });
+		effShader3->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
+		auto light = MANAGER_SCENE()->GetCurrentScene()->GetLight()->GetLight()->GetLightDesc();
+		light.direction = _camera->GetTransform()->GetLocalPosition();
+		light.direction.Normalize();
+		effShader3->PushLightData(light);
+
+		auto texmap1 = effShader3->GetSRV("NoiseImage");
+		auto texmap2 = effShader3->GetSRV("SpellImage");
+		auto times = effShader3->GetScalar("time")->SetFloat(currenttime);
+		texmap1->SetResource(circleTex1->GetTexture().Get());
+		texmap2->SetResource(circleTex1->GetTexture().Get());
+		auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetStride();
+		auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetOffset();
+
+		DC()->IASetVertexBuffers(0, 1, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetBuffer().GetAddressOf(), &_stride, &_offset);
+		DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		effShader3->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
+	}
+
 }
 
 void TestScene::LateUpdate()

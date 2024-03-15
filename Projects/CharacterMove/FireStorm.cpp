@@ -32,6 +32,7 @@ void FireStorm::Update()
 			instanceList[i].particleTransform->SetLocalPosition(pos);
 		}
 		instanceList[i].particleTransform->Update();
+		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
 	}
 	instanceBuffer->ClearData();
 }
@@ -39,8 +40,14 @@ void FireStorm::Update()
 void FireStorm::LateUpdate()
 {
 	ParticleObj::LateUpdate();
+
 	_fresneldesc.eyeLook = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraLookVector();
 	_fresneldesc.eyePos = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraPosition();
+	if (fresnelData) {
+		fresnelData->CopyData(_fresneldesc);
+		if (fresnelBuffer)
+			fresnelBuffer->SetConstantBuffer(fresnelData->GetBuffer().Get());
+	}
 	noiseSRV->SetResource(noiseTexture->GetTexture().Get());
 	primNoiseSRV->SetResource(noiseTexture->GetTexture().Get());
 	hightLightSRV->SetResource(noiseTexture->GetTexture().Get());;
@@ -90,7 +97,8 @@ FireStorm::FireStorm()
 	staticRenderer = make_shared<ParticleStaticRenderer>();
 	staticRenderer->SetModel(particleModel);
 	staticRenderer->SetShader(shader);
-	staticRenderer->SetBuffer(instanceBuffer);
+	staticRenderer->SetBuffer(instanceBuffer); 
+	staticRenderer->SetPass(1);
 }
 
 FireStorm::~FireStorm()

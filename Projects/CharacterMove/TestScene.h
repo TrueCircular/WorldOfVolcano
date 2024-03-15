@@ -24,6 +24,12 @@ class TestScene : public Scene
 	shared_ptr<Texture> pillarTex1;
 	shared_ptr<Texture> pillarTex2;
 	shared_ptr<Transform> world2;
+
+	shared_ptr<Shader> effShader3;
+	shared_ptr<Texture> circleTex1;
+	shared_ptr<Texture> circleTex2;
+	shared_ptr<Transform> world3;
+
 	float maxtime = 15.0f;
 	float currenttime=0;
 	shared_ptr<Terrain> _terrain;

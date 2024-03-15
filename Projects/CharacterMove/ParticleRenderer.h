@@ -6,7 +6,9 @@ class ParticleRenderer
 protected:
 	shared_ptr<Shader> shader;
 	shared_ptr<ParticleInstancingBuffer> buffer;
+	UINT _pass = 0;
 public:
+	void SetPass(UINT pass) { _pass = pass; };
 	void SetShader(shared_ptr<Shader> _shader) { shader = _shader; };
 	void SetBuffer(shared_ptr<ParticleInstancingBuffer> _buffer) { buffer = _buffer; };
 	virtual void Render(vector<ParticleInstance>& data)=0;
