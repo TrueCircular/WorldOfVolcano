@@ -222,6 +222,8 @@
     <ClCompile Include="WarriorRoar.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\..\Resources\Shader\EarthCrack.fx" />
+    <FxCompile Include="..\..\Resources\Shader\EarthCrackLegacy.fx" />
     <FxCompile Include="..\..\Resources\Shader\EffectBase.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </FxCompile>
@@ -231,7 +233,10 @@
     <FxCompile Include="..\..\Resources\Shader\Global.fx" />
     <FxCompile Include="..\..\Resources\Shader\Instancing.fx" />
     <FxCompile Include="..\..\Resources\Shader\Light.fx" />
+    <FxCompile Include="..\..\Resources\Shader\LineSpark.fx" />
     <FxCompile Include="..\..\Resources\Shader\MagicCircle.fx" />
+    <FxCompile Include="..\..\Resources\Shader\Polar.fx" />
+    <FxCompile Include="..\..\Resources\Shader\PolarLegacy.fx" />
     <FxCompile Include="..\..\Resources\Shader\RadialGradientExponetial.fx" />
     <FxCompile Include="..\..\Resources\Shader\Render.fx" />
     <FxCompile Include="..\..\Resources\Shader\Storm.fx">
@@ -241,6 +246,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\..\Resources\Shader\VectorToRadialvalue.fx" />
+    <FxCompile Include="..\..\Resources\Shader\WarriorRoar.fx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineLib\EngineLib.vcxproj">

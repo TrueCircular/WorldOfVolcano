@@ -236,5 +236,23 @@
     <FxCompile Include="..\..\Resources\Shader\MagicCircle.fx">
       <Filter>Shader\Effects</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\EarthCrack.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\LineSpark.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\EarthCrackLegacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\WarriorRoar.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Polar.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\PolarLegacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

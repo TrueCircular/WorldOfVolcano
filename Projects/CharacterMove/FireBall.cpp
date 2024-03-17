@@ -28,7 +28,7 @@ void FireBall::Update()
 			instanceList[i].particleTransform->SetLocalRotation(rotate);
 			Vec3 velocity = instanceList[i].particleTransform->GetLocalPosition() - instanceList[i].targetTransform->GetLocalPosition();
 			velocity.Normalize();
-			velocity* (instanceList[i].speed * MANAGER_TIME()->GetDeltaTime());
+			velocity = velocity* (instanceList[i].speed * MANAGER_TIME()->GetDeltaTime());
 			Vec3 pos = instanceList[i].particleTransform->GetLocalPosition();
 			pos += velocity;
 			Vec3 targetPos = instanceList[i].targetTransform->GetLocalPosition();

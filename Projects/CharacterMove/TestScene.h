@@ -30,7 +30,16 @@ class TestScene : public Scene
 	shared_ptr<Texture> circleTex2;
 	shared_ptr<Transform> world3;
 
-	float maxtime = 15.0f;
+	shared_ptr<Shader> effShader4;
+	shared_ptr<Texture> quakeTex;
+	shared_ptr<Transform> world4;
+
+	shared_ptr<Shader> effShader5;
+	shared_ptr<Texture> polarTex;
+	shared_ptr<Transform> world5;
+
+//	float maxtime = 15.0f;
+	float maxtime = 3.0f;
 	float currenttime=0;
 	shared_ptr<Terrain> _terrain;
 	shared_ptr<QuadTreeTerrain> quadTreeTerrain;

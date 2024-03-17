@@ -71,8 +71,19 @@ void TestScene::Init()
 	world3->SetLocalScale(Vec3(10, 10, 10));
 	world3->SetLocalPosition(Vec3(-10, 0, 0));
 
+	effShader4 = make_shared<Shader>(L"EarthCrackLegacy.fx");
+	quakeTex = make_shared<Texture>();
+	quakeTex->Load(L"../../Resources/Texture/Effect/T_Earth_Crack.PNG");
+	world4 = make_shared<Transform>();
+	world4->SetLocalScale(Vec3(10, 10, 10));
+	world4->SetLocalPosition(Vec3(20, 0, 0));
 
-
+	effShader5 = make_shared<Shader>(L"PolarLegacy.fx");
+	polarTex = make_shared<Texture>();
+	polarTex->Load(L"../../Resources/Texture/Effect/T_ky_decoLinesB.PNG");
+	world5 = make_shared<Transform>();
+	world5->SetLocalScale(Vec3(10, 10, 10));
+	world5->SetLocalPosition(Vec3(0, 10, 0));
 
 
 	//HeightPlainInfo heightMapDesc;
@@ -219,6 +230,61 @@ void TestScene::Update()
 
 		effShader3->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
 	}
+
+	{
+		world4->UpdateTransform();
+		auto _materialBuffer = make_shared<ConstantBuffer<ColorDesc>>();
+		_materialBuffer->CreateConstantBuffer();
+		auto data = effShader4->GetConstantBuffer("ColorBuffer");
+
+		ColorDesc _desc;
+		_desc.baseColor = Vec4(1, 1, 0.2, 1);
+		_desc.subColor = Vec4(1.0, 1.0, 0.0, 1);
+		_materialBuffer->CopyData(_desc);
+		data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
+
+		effShader4->PushTransformData(TransformDesc{ world4->GetWorldMatrix() });
+		effShader4->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
+
+		auto texmap1 = effShader4->GetSRV("EffectMap");
+		auto times = effShader4->GetScalar("time")->SetFloat(currenttime);
+		auto ctimes = effShader4->GetScalar("duration")->SetFloat(maxtime);
+		texmap1->SetResource(quakeTex->GetTexture().Get());
+		auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetStride();
+		auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetOffset();
+
+		DC()->IASetVertexBuffers(0, 1, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetBuffer().GetAddressOf(), &_stride, &_offset);
+		DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		effShader4->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
+	}
+	{
+		world5->UpdateTransform();
+		auto _materialBuffer = make_shared<ConstantBuffer<ColorDesc>>();
+		_materialBuffer->CreateConstantBuffer();
+		auto data = effShader5->GetConstantBuffer("ColorBuffer");
+
+		ColorDesc _desc;
+		_desc.baseColor = Vec4(1, 1, 1, 1);
+		_desc.subColor = Vec4(1.0, 1.0, 0.0, 1);
+		_materialBuffer->CopyData(_desc);
+		data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
+
+		effShader5->PushTransformData(TransformDesc{ world5->GetWorldMatrix() });
+		effShader5->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
+
+		auto texmap1 = effShader5->GetSRV("NoiseMap");
+		auto times = effShader5->GetScalar("time")->SetFloat(currenttime);
+		texmap1->SetResource(polarTex->GetTexture().Get());
+		auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetStride();
+		auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetOffset();
+
+		DC()->IASetVertexBuffers(0, 1, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetBuffer().GetAddressOf(), &_stride, &_offset);
+		DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		effShader5->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
+	}
+
 
 }
 
