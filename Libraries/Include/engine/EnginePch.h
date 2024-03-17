@@ -209,3 +209,6 @@ extern FMOD::System* g_fmSystem;
 
 //Terrain
 #include "Terrain.h"
+
+//Character
+#include "MagniBronzebeard.h"

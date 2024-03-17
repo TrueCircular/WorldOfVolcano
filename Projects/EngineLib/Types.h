@@ -187,3 +187,21 @@ enum class UsableItemType : uint8
 	End
 };
 
+//Map Type
+enum class MapType
+{
+	None,
+	Lobby,
+	Dungeon,
+	BossRoom
+};
+
+//Skill Type
+enum class SkillType
+{
+	NormalAttack,
+	WhirlWind,
+	IceArrow,
+	Blizzard,
+	Test_AllAttack,
+};

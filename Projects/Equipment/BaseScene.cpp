@@ -161,7 +161,20 @@ void BaseScene::Init()
 
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
-
+	//Npc
+	{
+		_MagniBronzebeard = make_shared<MagniBronzebeard>();
+		_MagniBronzebeard->Awake();
+		shared_ptr<AIController> _aiCon = make_shared<AIController>();
+		_aiCon->SetAIType(AIType::PlayableUnit);
+		_MagniBronzebeard->AddComponent(_aiCon);
+		_MagniBronzebeard->AddComponent(make_shared<CharacterInfo>());
+		_MagniBronzebeard->Start();
+		_MagniBronzebeard->GetTransform()->SetLocalScale(Vec3(0.2f, 0.2f, 0.2f));
+		_MagniBronzebeard->GetTransform()->SetLocalPosition(spawnPos);
+		Add(_MagniBronzebeard);
+		//AddShadow(_MagniBronzebeard);
+	}
 
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"Lobby");
 	if (bgm == nullptr) {
@@ -204,7 +217,7 @@ void BaseScene::Update()
 		sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
 		sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
 		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
-		sendInfo._spawnMapId = SpawnManager::GetInstance().GetSpawnMapId();
+		sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
 
 		//Alive
 		if (sendInfo._isAlive == false)
@@ -233,7 +246,8 @@ void BaseScene::Update()
 			if (size > 0)
 			{
 				uint32 targetId = _warrior->GetComponent<PlayerController>()->GetPickedInfo()._instanceId;
-				_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId);
+				SkillType skillType = _warrior->GetComponent<PlayerController>()->GetFrontAttackQueue();
+				_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId, skillType);
 				_service->Broadcast(_sendBuffer);
 			}
 		}

@@ -46,7 +46,7 @@ bool CharacterInfo::LoadCharacterInformationFromFile(const wstring& loadPath)
 			::XMLElement* element = node->FirstChildElement("Name");
 			string temp;
 			temp = element->GetText();
-			tempInfo._name = Utils::ToWString(temp);
+			//tempInfo._name = Utils::ToWString(temp);
 
 			//HP
 			element = node->FirstChildElement("HP");
@@ -96,10 +96,10 @@ bool CharacterInfo::LoadCharacterInformationFromFile(const wstring& loadPath)
 			element = node->FirstChildElement("AttackTime");
 			float attackTime = 0;
 			element->QueryFloatText(&attackTime);
-			tempInfo._attackTime = attackTime;
+			//tempInfo._attackTime = attackTime;
 
 
-			_info._name = tempInfo._name;
+			//_info._name = tempInfo._name;
 			_info._hp = tempInfo._hp;
 			_info._maxHp = tempInfo._maxHp;
 			_info._atk = tempInfo._atk;
@@ -107,7 +107,7 @@ bool CharacterInfo::LoadCharacterInformationFromFile(const wstring& loadPath)
 			_info._moveSpeed = tempInfo._moveSpeed;
 			_info._aggroLevel = tempInfo._aggroLevel;
 			_info._attackRange = tempInfo._attackRange;
-			_info._attackTime = tempInfo._attackTime;
+			//_info._attackTime = tempInfo._attackTime;
 		}
 	}
 
@@ -128,7 +128,8 @@ bool CharacterInfo::SaveCharacterInformationFromFile(const wstring& savePath)
         document->InsertFirstChild(node);
 
 		::XMLElement* element = document->NewElement("Name");
-		element->SetText(Utils::ToString(_info._name).c_str());
+		//element->SetText(Utils::ToString(_info._name).c_str());
+		element->SetText(Utils::ToString(L"test").c_str());
 		node->InsertEndChild(element);
 
 		element = document->NewElement("HP");
@@ -159,9 +160,9 @@ bool CharacterInfo::SaveCharacterInformationFromFile(const wstring& savePath)
 		element->SetText(_info._attackRange);
 		node->InsertEndChild(element);
 
-		element = document->NewElement("AttackTime");
+		/*element = document->NewElement("AttackTime");
 		element->SetText(_info._attackTime);
-		node->InsertEndChild(element);
+		node->InsertEndChild(element);*/
     }
 
 	//Save Data

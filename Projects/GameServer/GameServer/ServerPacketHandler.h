@@ -52,6 +52,23 @@ enum class EnemyUnitState
 	End
 };
 
+enum class MapType
+{
+	None,
+	Lobby,
+	Dungeon,
+	BossRoom
+};
+
+enum class SkillType
+{
+	NormalAttack,
+	WhirlWind,
+	IceArrow,
+	Blizzard,
+	Test_AllAttack,
+};
+
 struct JumpFlag
 {
 	bool isJumpUP = false;
@@ -63,7 +80,7 @@ struct JumpFlag
 struct CHARACTER_INFO
 {
 	uint32 _instanceId = 0;
-	uint32 _spawnMapId = 0;
+	MapType _spawnMapType = MapType::Lobby;
 	//wstring _name;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 	uint32 _maxHp = 1000;
 	uint32 _maxMp = 1000;
@@ -114,7 +131,7 @@ public:
 
 	static SendBufferRef Make_USER_CONNECT();
 	static SendBufferRef Make_USER_INFO(Player_INFO userInfo, bool otherPacket);
-	static SendBufferRef Make_MONSTER_INFO(map<uint64, MONSTER_INFO> mobInfo);
+	static SendBufferRef Make_MONSTER_INFO(map<uint32, MONSTER_INFO> mobInfo);
 	static SendBufferRef Make_USER_DISCONNECT(uint64 uid);
 	static SendBufferRef Make_MESSAGE(MESSAGE message);
 };

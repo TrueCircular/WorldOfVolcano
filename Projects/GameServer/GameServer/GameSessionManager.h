@@ -17,8 +17,6 @@ enum
 	BossRoom = 2,
 };
 
-
-
 class GameSessionManager
 {
 public:
@@ -27,13 +25,18 @@ public:
 	void Broadcast(SendBufferRef sendBuffer);
 	Set<GameSessionRef> GetSessionsRef() { return _sessions; }
 	//플레이어
-	map<uint64, Player_INFO>& GetUserInfoList() { return _userInfoList; }
+	map<uint32, Player_INFO>& GetUserInfoList() { return _userInfoList; }
 	void UpdateUserInfo(Player_INFO info);
 	//몬스터
 	void GenerateMobList();
-	map<uint64, MONSTER_INFO>& GetMobInfoList() { return _mobInfoList; }
+	map<uint32, MONSTER_INFO>& GetMobInfoList() { return _mobInfoList; }
 	void UpdateMobInfo(MONSTER_INFO info);
+	void ClearMobInfoList() { _mobInfoList.clear(); }
 	void EnemyIsAttack(Player_INFO& target, MONSTER_INFO& enemy);
+
+	void CheckAndResetMonster();
+	void DamageCalculate(Player_INFO atkInfo, uint32 tgtId, SkillType skillType);
+	void BattleCalculate(Player_INFO atkInfo, uint32 tgtId, SkillType skillType);
 private:
 	float attackTime = 1.5f;
 	float attackTimer = 0.0f;
@@ -43,8 +46,8 @@ private:
 private:
 	uint64 sessionIdCount = 0;
 private:
-	map<uint64, MONSTER_INFO> _mobInfoList;
-	map<uint64, Player_INFO> _userInfoList;
+	map<uint32, MONSTER_INFO> _mobInfoList;
+	map<uint32, Player_INFO> _userInfoList;
 };
 
 extern GameSessionManager GSessionManager;

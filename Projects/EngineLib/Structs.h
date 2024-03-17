@@ -161,8 +161,8 @@ struct ShadowViewDesc {
 struct CHARACTER_INFO
 {
 	uint32 _instanceId = 0;
-	uint32 _spawnMapId = 0;
-	std::wstring _name;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+	MapType _spawnMapType = MapType::Lobby;
+	//wstring _name;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 	uint32 _maxHp = 1000;
 	uint32 _maxMp = 1000;
 	uint32 _hp = 1000;
@@ -172,7 +172,6 @@ struct CHARACTER_INFO
 	uint16 _moveSpeed = 10;
 	uint16 _aggroLevel = 100;
 	float _attackRange = 15.0f;
-	float _attackTime = 0.8f;
 	Vec3 _pos = { 0.0f, 0.0f, 0.0f };
 	Vec3 _Rotate = { 0.0f, 0.0f, 0.0f };
 	bool _isAlive = true;

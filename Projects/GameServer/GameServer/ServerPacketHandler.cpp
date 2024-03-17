@@ -87,27 +87,9 @@ void ServerPacketHandler::Handle_BATTLE(BYTE* buffer, int32 len)
 
 	Player_INFO atkInfo;
 	uint32 tgtId;
-	br >> atkInfo >> tgtId;
-
-	auto it = GSessionManager.GetMobInfoList().find(tgtId);
-	if (it != GSessionManager.GetMobInfoList().end())
-	{
-		if (atkInfo._atk >= it->second._hp) //¸·Å¸
-		{
-			it->second._hp = 0;
-			it->second._isAlive = false;
-		}
-		else
-		{
-			it->second._hp -= atkInfo._atk;
-		}
-
-
-		
-		GSessionManager.UpdateMobInfo(it->second);
-	}
-
-	
+	SkillType skillType;
+	br >> atkInfo >> tgtId >> skillType;
+	GSessionManager.BattleCalculate(atkInfo, tgtId, skillType);
 }
 
 SendBufferRef ServerPacketHandler::Make_USER_CONNECT()
@@ -133,7 +115,7 @@ SendBufferRef ServerPacketHandler::Make_USER_INFO(Player_INFO userInfo, bool oth
 	return sendBuffer;
 }
 
-SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint64, MONSTER_INFO> charaInfo)
+SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint32, MONSTER_INFO> charaInfo)
 {
 	SendBufferRef sendBuffer = GSendBufferManager->Open(4096); //4kb
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
@@ -143,9 +125,6 @@ SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint64, MONSTER_INFO> c
 		uint64 id = pair.first;
 		MONSTER_INFO info = pair.second;
 		info._timeStamp = TIMER().getCurrentTime();
-
-		cout << "map id : " << pair.second._spawnMapId << endl;
-		cout << "position : ( " << pair.second._pos.x << ", " << pair.second._pos.y << ", " << pair.second._pos.z << " )" << endl;
 
 		bw << info;
 	}
