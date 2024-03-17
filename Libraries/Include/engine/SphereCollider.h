@@ -7,7 +7,7 @@ class SphereCollider : public BaseCollider
 public:
 	SphereCollider();
 	virtual ~SphereCollider();
-private:
+protected:
 	float			_radius = 10.f;
 	BoundingSphere	_boundingSphere;
 	Vec3			_sphereWeight = Vec3(0.f);

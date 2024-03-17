@@ -1,6 +1,5 @@
 #pragma once
 #include "CharacterController.h"
-
 #include "PlayerSoundController.h"
 #pragma region Declaration
 class PlayerAnimState;

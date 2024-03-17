@@ -25,9 +25,9 @@ Warrior::~Warrior()
 
 void Warrior::CharacterInit()
 {
-	//Set Information 
+	//Set Information
+	auto UnitInfo = make_shared<CharacterInfo>();
 	{
-		auto UnitInfo = make_shared<CharacterInfo>();
 		wstring LoadPath = DATA_ADDR_UNIT;
 		LoadPath += L"Warrior/Information.xml";
 		UnitInfo->LoadCharacterInformationFromFile(LoadPath);

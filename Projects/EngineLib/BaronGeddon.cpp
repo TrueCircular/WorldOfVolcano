@@ -15,18 +15,18 @@ BaronGeddon::~BaronGeddon()
 
 void BaronGeddon::CharacterInit()
 {
-	_childModel = make_shared<GameObject>();
-
 	auto chinfo = make_shared<CharacterInfo>();
-	AddComponent(chinfo);
-
-	auto aiCon = make_shared<AIController>();
-	aiCon->SetAIType(AIType::EnemyUnit);
-	AddComponent(aiCon);
-
+	{
+		wstring LoadPath = DATA_ADDR_UNIT;
+		LoadPath += L"BaronGeddon/Information.xml";
+		chinfo->LoadCharacterInformationFromFile(LoadPath);
+		AddComponent(chinfo);
+	}
 
 	//Character
 	{
+		_childModel = make_shared<GameObject>();
+
 		shared_ptr<Model> model = make_shared<Model>();
 		{
 			AddModelAndMaterial(model, L"BaronGeddon");
@@ -71,6 +71,13 @@ void BaronGeddon::CharacterInit()
 		collider->SetRadius(35.f);
 		AddComponent(collider);
 	}
+
+	auto aiCon = make_shared<AIController>();
+	{
+		aiCon->SetAIType(AIType::EnemyUnit);
+		AddComponent(aiCon);
+	}
+
 	SetName(L"BaronGeddon");
 }
 

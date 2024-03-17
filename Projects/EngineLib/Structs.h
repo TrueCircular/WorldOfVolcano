@@ -234,3 +234,11 @@ struct EquipmentBoneIndexDesc
 	uint16 WeaponIndex = 0;
 	uint16 ShieldIndex = 0;
 };
+
+struct AbilityDataDesc
+{
+	std::wstring		Name;
+	AbilityType Type = AbilityType::None;
+	uint32		ConsumedMp = 0;
+	float		AbilityPow = 0.f;
+};

@@ -447,6 +447,25 @@ void PlayerController::PlayerAttack()
 
 void PlayerController::PlayerPicking()
 {
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::LBUTTON))
+	{
+		int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
+		int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
+
+		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
+
+		if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
+		{
+			_isPicked = true;
+			_pickedObj = pickObj;
+		}
+		else
+		{
+			MANAGER_IMGUI()->UpdatePicked(false);
+			_isPicked = false;
+		}
+	}
+
 	if (_isPicked)
 	{
 		_pickedInfo = _pickedObj->GetComponent<CharacterInfo>()->GetCharacterInfo();
@@ -481,25 +500,6 @@ void PlayerController::PlayerPicking()
 				}
 
 			}
-		}
-	}
-
-	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::LBUTTON))
-	{
-		int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
-		int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
-
-		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
-
-		if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
-		{
-			_isPicked = true;
-			_pickedObj = pickObj;
-		}
-		else
-		{
-			MANAGER_IMGUI()->UpdatePicked(false);
-			_isPicked = false;
 		}
 	}
 }

@@ -235,7 +235,6 @@ void ModelAnimator::UpdateTweenData()
 
 						}
 						_tweenDesc->next.ratio = _tweenDesc->next.sumTime / timeperFrame;
-						//UpdateEquipmentTransform(_tweenDesc->next.currentFrame, _tweenDesc->next.nextFrame, _tweenDesc->next.ratio);
 					}
 				}
 			}

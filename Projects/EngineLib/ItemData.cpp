@@ -122,9 +122,12 @@ bool ItemData::LoadItemInformationFromFile(const wstring& loadPath)
 
         //Create Model Data
         {
-            _itemMesh = make_shared<Model>();
-            _itemMesh->ReadMaterial(_itemInfo.MaterialFilePath);
-            _itemMesh->ReadModel(_itemInfo.MeshFilePath);    
+            if (_itemInfo.ItemType != ItemType::Consumable)
+            {
+                _itemMesh = make_shared<Model>();
+                _itemMesh->ReadMaterial(_itemInfo.MaterialFilePath);
+                _itemMesh->ReadModel(_itemInfo.MeshFilePath);
+            } 
         }
 
         //CreateImage Data

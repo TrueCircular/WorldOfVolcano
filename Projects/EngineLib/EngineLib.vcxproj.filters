@@ -100,6 +100,21 @@
     <Filter Include="04. Component\ItemData\Equipment\Warrior">
       <UniqueIdentifier>{b11f81a0-a762-4f8e-8a38-75c8bed4b3f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Component\FSM">
+      <UniqueIdentifier>{6ee66613-00d8-4f97-95bc-5589b0d2b6de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Ability">
+      <UniqueIdentifier>{4d2cf066-bc5d-4b21-9fb4-c90afe6dc14d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Ability\Warrior">
+      <UniqueIdentifier>{4a66deb7-8ab7-4993-a237-40b51baca287}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Ability\BaronGeddon">
+      <UniqueIdentifier>{330c491c-efe3-4163-bd8e-545c8d902181}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Ability\Ragnaros">
+      <UniqueIdentifier>{c5b75787-4151-4a50-9e9e-e1300016a730}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -378,6 +393,33 @@
     <ClInclude Include="AncientShield.h">
       <Filter>03. GameObject\Item\Equipment\Shield</Filter>
     </ClInclude>
+    <ClInclude Include="StaticCollider.h">
+      <Filter>04. Component\Colision</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitFSM.h">
+      <Filter>04. Component\FSM</Filter>
+    </ClInclude>
+    <ClInclude Include="AbilitySlot.h">
+      <Filter>04. Component\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Ability.h">
+      <Filter>04. Component\Ability</Filter>
+    </ClInclude>
+    <ClInclude Include="AbilityData.h">
+      <Filter>04. Component\Ability</Filter>
+    </ClInclude>
+    <ClInclude Include="WarriorCharge.h">
+      <Filter>04. Component\Ability\Warrior</Filter>
+    </ClInclude>
+    <ClInclude Include="WarriorRoar.h">
+      <Filter>04. Component\Ability\Warrior</Filter>
+    </ClInclude>
+    <ClInclude Include="WarriorRoarData.h">
+      <Filter>04. Component\Ability\Warrior</Filter>
+    </ClInclude>
+    <ClInclude Include="WarriorChargeData.h">
+      <Filter>04. Component\Ability\Warrior</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -648,6 +690,33 @@
     </ClCompile>
     <ClCompile Include="AncientShield.cpp">
       <Filter>03. GameObject\Item\Equipment\Shield</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticCollider.cpp">
+      <Filter>04. Component\Colision</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitFSM.cpp">
+      <Filter>04. Component\FSM</Filter>
+    </ClCompile>
+    <ClCompile Include="AbilitySlot.cpp">
+      <Filter>04. Component\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Ability.cpp">
+      <Filter>04. Component\Ability</Filter>
+    </ClCompile>
+    <ClCompile Include="AbilityData.cpp">
+      <Filter>04. Component\Ability</Filter>
+    </ClCompile>
+    <ClCompile Include="WarriorCharge.cpp">
+      <Filter>04. Component\Ability\Warrior</Filter>
+    </ClCompile>
+    <ClCompile Include="WarriorRoar.cpp">
+      <Filter>04. Component\Ability\Warrior</Filter>
+    </ClCompile>
+    <ClCompile Include="WarriorRoarData.cpp">
+      <Filter>04. Component\Ability\Warrior</Filter>
+    </ClCompile>
+    <ClCompile Include="WarriorChargeData.cpp">
+      <Filter>04. Component\Ability\Warrior</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
