@@ -16,7 +16,6 @@
 
 #include "DungeonScene.h"
 #include "BaseScene.h"
-#include "MainScene.h"
 
 #include "engine\PlayerSoundController.h"
 

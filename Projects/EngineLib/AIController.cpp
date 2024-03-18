@@ -178,12 +178,16 @@ void AIController::FixedUpdate()
 
 void AIController::Update()
 {
-	if (_heightGetterCom.lock())
+	if (_jumpState->isJump == false)
 	{
-		Vec3 tempPos = _transform.lock()->GetLocalPosition();
-		tempPos.y = _heightGetterCom.lock()->GetHeight();
-		_transform.lock()->SetLocalPosition(tempPos);
+		if (_heightGetterCom.lock())
+		{
+			Vec3 tempPos = _transform.lock()->GetLocalPosition();
+			tempPos.y = _heightGetterCom.lock()->GetHeight();
+			_transform.lock()->SetLocalPosition(tempPos);
+		}
 	}
+	
 	if (_aiSound)
 		_aiSound->PlaySound(GetCurrentPlayerAnimType());
 

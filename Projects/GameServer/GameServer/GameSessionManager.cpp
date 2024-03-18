@@ -77,8 +77,8 @@ void GameSessionManager::GenerateMobList()
 		if (name == L"BaronGeddon")
 		{
 			mobInfo._monsterId = 2;
-			mobInfo._maxHp = 10000;
-			mobInfo._hp = 10000;
+			mobInfo._maxHp = 1000;
+			mobInfo._hp = 1000;
 			mobInfo._atk = 200;
 		}
 

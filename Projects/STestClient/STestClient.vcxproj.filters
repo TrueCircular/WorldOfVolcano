@@ -77,7 +77,7 @@
     <ClCompile Include="DamageIndicator.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="MainScene.cpp">
+    <ClCompile Include="TitleScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Spawner.cpp">
@@ -138,7 +138,7 @@
     <ClInclude Include="DamageIndicator.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="MainScene.h">
+    <ClInclude Include="TitleScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Spawner.h">

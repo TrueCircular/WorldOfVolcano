@@ -3,14 +3,14 @@
 
 #include "DungeonScene.h"
 #include "BaseScene.h"
-#include "MainScene.h"
+#include "TitleScene.h"
 
 ClientServiceRef _service;
 
 void Demo::Init(){
 #pragma region Client Thread
 	_service = MakeShared<ClientService>(
-		NetAddress(L"192.168.0.1", 7777),
+		NetAddress(L"192.168.0.122", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<ServerSession>,
 		1);
@@ -32,12 +32,9 @@ void Demo::Init(){
 
 	//shared_ptr<BaseScene> scene = make_shared<BaseScene>();
 	//scene->SetSceneName(L"BaseScene");
-//	shared_ptr<Scene> scene = make_shared<DungeonScene>();
-//	scene->SetSceneName(L"DungeonScene");
-
-	shared_ptr<Scene> scene = make_shared<BaseScene>();
-	scene->SetSceneName(L"BaseScene");
-	//shared_ptr<Scene> scene = make_shared<MainScene>();
+	//shared_ptr<Scene> scene = make_shared<DungeonScene>();
+	//scene->SetSceneName(L"DungeonScene");
+	shared_ptr<Scene> scene = make_shared<TitleScene>();
 	MANAGER_SCENE()->ChangeScene(scene);
 }
 

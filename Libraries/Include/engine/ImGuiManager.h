@@ -30,6 +30,7 @@ public:
 	void UpdatePicked(bool isPicked, uint32 maxHp = 0, uint32 hp = 0, wstring name = L"");
 	void NotifyPlayerAlive(bool isAlive) { show_death_window = !isAlive;}
 	int GetAttackQueueSize();
+	bool CheckGameStart() { return _isGameStart; }
 private:
 	//Player Stat
 	float _hp = 1.0f;
@@ -39,11 +40,19 @@ private:
 	float _pickedHp = 1.0f;
 	//Rebirth
 	queue<bool> _rebirthQueue;
+	//메인 타이틀
+	bool _isGameStart = false;
+	shared_ptr<Texture> _mainTexture;
+	//전체 윈도우 활성화 여부
+	bool show_all_window = false;
+	bool show_main_window = true;
 	//윈도우 활성화 여부
 	bool show_hp_window = true;
 	bool show_picked_hp_window = false;
 	bool show_chat_window = true;
+	bool show_skill_window = true;
 	bool show_death_window = false;
+	bool show_dialogue_window = false;
 	bool show_nickname_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 

@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "DamageIndicator.h"
 
-
-
 	DamageIndicator& DamageIndicator::GetInstance() {
 		static DamageIndicator indiCator;
 		return indiCator;
