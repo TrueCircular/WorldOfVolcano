@@ -297,15 +297,21 @@ void BaseScene::Update()
 	DamageIndicator::GetInstance().Frame();
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	scene->SetSceneName(L"DungeonScene");
-	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::E)) {
+	if (MANAGER_INPUT()->GetButton(KEY_TYPE::E)) {
 		auto roarParticle = MANATER_PARTICLE()->GetParticleFromName(L"WarriorRoar");
-		ParticleInstance instancedata(3, _warrior->GetChildByName(L"Model")->GetTransform(),nullptr,0 );
+		shared_ptr<Transform> pos = make_shared<Transform>();
+		pos->SetParent(_warrior->GetChildByName(L"Model")->GetTransform());
+		pos->SetLocalScale(Vec3(2, 2, 2));
+		//pos->SetLocalPosition(Vec3(0, 30, 0));
+		//pos->SetLocalRotation(Vec3(::XMConvertToRadians(90.f), ::XMConvertToRadians(90.f),0));
+		//ParticleInstance instancedata(3, _warrior->GetChildByName(L"Model")->GetTransform(),nullptr,0 );
+		ParticleInstance instancedata(3,pos, nullptr, 0);
 		auto _tweenDesc = _warrior->GetChildByName(L"Model")->GetModelAnimator()->GetTweenDesc();
 		roarParticle->AddParticle(instancedata,_tweenDesc);
 	}
 
 	MANATER_PARTICLE()->Update();
-	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::Q))
 	{
 		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
 		SpawnManager::GetInstance().Reset(name);

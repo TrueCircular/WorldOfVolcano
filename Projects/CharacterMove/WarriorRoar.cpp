@@ -50,7 +50,7 @@ void WarriorRoar::Update()
 void WarriorRoar::LateUpdate()
 {
 	ParticleObj::LateUpdate();
-
+	
 	for (int i = 0; i < instanceCounter; ++i) {
 		instanceTweenDesc.tweens[i] = *eachTweenData[i];
 	}
@@ -67,7 +67,8 @@ void WarriorRoar::OnDestroy(ParticleInstance& instance)
 WarriorRoar::WarriorRoar()
 {
 	instanceBuffer = make_shared<ParticleInstancingBuffer>();
-	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"WarriorRoar");
+	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
+//	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"WarriorRoar");
 	if (shader == nullptr) {
 		shader = make_shared<Shader>(L"WarriorRoar.fx");
 		MANAGER_RESOURCES()->AddResource<Shader>(L"WarriorRoar", shader);
@@ -77,6 +78,13 @@ WarriorRoar::WarriorRoar()
 	colorBuffer = shader->GetConstantBuffer("ColorBuffer");
 	colorData = make_shared<ConstantBuffer<ColorDesc>>();
 	colorData->CreateConstantBuffer();
+
+	maskTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"NoiseMap17");
+	if (maskTexture == nullptr) {
+		maskTexture = make_shared<Texture>();
+		maskTexture->Load(L"../../Resources/Texture/Effect/T_ky_noise17.PNG");
+		MANAGER_RESOURCES()->AddResource(L"NoiseMap17", maskTexture);
+	}
 
 	animRenderer = make_shared<ParticleAnimRenderer>();
 	animRenderer->SetShader(shader);

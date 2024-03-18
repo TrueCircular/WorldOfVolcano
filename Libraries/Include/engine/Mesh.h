@@ -11,6 +11,7 @@ public:
     virtual ~Mesh();
 
 	void CreateQuad();
+	void CreateQuadPlain();
 	void CreateCube();
 	void CreateGrid(int32 sizeX, int32 sizeZ);
 	void CreateGridWithDistance(int32 sizeX, int32 sizeZ, float distance);

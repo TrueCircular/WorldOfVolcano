@@ -4,6 +4,9 @@ class WarriorRoar: public ParticleObj
 private:
 	shared_ptr<ModelAnimator> particleAnimator;
 
+	ComPtr<ID3DX11EffectShaderResourceVariable> maskSRV;
+	shared_ptr<Texture> maskTexture;
+
 	InstancedTweenDesc instanceTweenDesc;
 	vector<shared_ptr<TweenDesc>> eachTweenData;
 private:

@@ -87,11 +87,8 @@ void ParticleAnimRenderer::Render(vector<ParticleInstance>& data)
 	if (_animator == nullptr)
 		return;
 
-	for (auto pData : data)
+	for (auto& pData : data)
 	{
-		ParticleInstanceData insdata;
-
-
 		buffer->AddData(pData.data);
 	}
 	// GlobalData

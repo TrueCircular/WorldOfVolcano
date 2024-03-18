@@ -140,13 +140,14 @@ matrix GetAnimationMatrix(EffectModel input)
     
     return transform;
 }
-EffectOutput DynamicModelVS(EffectModel input)
+EffectOutput ModelVS(EffectModel input)
 {
+//    EffectModel outinput = input;
+//    outinput.position.xyz = mul(outinput.position.xyz, ((1 + input.time) * 3));
+  
     EffectOutput output;
     matrix m = GetAnimationMatrix(input);
     output.position = mul(input.position, m);
-    output.position.z = output.position + 10;
-    //output.position = mul(output.position , ((1 + input.time) * 3));
     output.position = mul(output.position, input.world);
     output.worldPosition = output.position.xyz;
     output.position = mul(output.position, VP);
@@ -154,7 +155,7 @@ EffectOutput DynamicModelVS(EffectModel input)
     output.uv = input.uv;
     output.normal = mul(input.normal, (float3x3) input.world);
     output.tangent = mul(input.tangent, (float3x3) input.world);
-    
+    output.time = input.time;
     return output;
 }
 
@@ -171,12 +172,12 @@ float4 PS(EffectOutput input) : SV_TARGET
    //}
    //color = lerp(mixcolor, particleColor, paColor);
    //color.a = paColor;
-    return color;
+    return origincolor;
 }
 
 technique11 T0
 {
-    PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, DynamicModelVS, PS)
+    PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, ModelVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };
