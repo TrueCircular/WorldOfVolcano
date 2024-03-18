@@ -14,6 +14,8 @@ public:
 protected:
 	weak_ptr<Transform>		_transform;
 	weak_ptr<AIController>	_controller;
+	weak_ptr<ModelAnimator> _animator;
+	weak_ptr<CharacterInfo> _characterInfo;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller){}
 	virtual void Update(){}
@@ -28,10 +30,8 @@ public:
 	virtual ~UnitFSMStand();
 private:
 	float					_traceRadius = 0.f;
-	float					_attackDistance = 0.f;
+	float					_attackRange = 0.f;
 	TarceTargetList			_targetList;
-	weak_ptr<ModelAnimator> _animator;
-	weak_ptr<CharacterInfo> _characterInfo;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;
@@ -46,8 +46,11 @@ public:
 	virtual ~UnitFSMTrace();
 private:
 	float					_traceRadius = 0.f;
+	float					_attackRange = 0.f;
+	float					_dt = 0.f;
+	float					_totargetRotationSpeed = 2.5f;
 	TarceTargetList			_targetList;
-	weak_ptr<ModelAnimator> _animator;
+	weak_ptr<Transform>		_targetTransform;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;
@@ -71,7 +74,13 @@ public:
 	UnitFSMBattle();
 	virtual ~UnitFSMBattle();
 private:
-	uint32 _toAttackDamage = 0;
+	float					_traceRadius = 0.f;
+	float					_attackRange = 0.f;
+	float					_attackTime = 0.f;
+	float					_attackTimeCal = 0.f;
+	float					_dt = 0.f;
+	float					_totargetRotationSpeed = 2.5f;
+	weak_ptr<Transform>		_targetTransform;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;
@@ -83,6 +92,13 @@ class UnitFSMAttack : public UnitFSM
 public:
 	UnitFSMAttack();;
 	virtual ~UnitFSMAttack();
+private:
+	float					_traceRadius = 0.f;
+	float					_attackRange = 0.f;
+
+	float					_dt = 0.f;
+	float					_totargetRotationSpeed = 2.5f;
+	weak_ptr<Transform>		_targetTransform;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;

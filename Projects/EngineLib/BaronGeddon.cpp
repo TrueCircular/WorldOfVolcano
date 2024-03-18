@@ -17,6 +17,25 @@ void BaronGeddon::CharacterInit()
 {
 	auto chinfo = make_shared<CharacterInfo>();
 	{
+		{
+			//CHARACTER_INFO saveInfo;
+			//saveInfo._name = L"BaronGeddon";
+			//saveInfo._hp = 80000;
+			//saveInfo._mp = 1000;
+			//saveInfo._atk = 250;
+			//saveInfo._def = 200;
+			//saveInfo._moveSpeed = 35;
+			//saveInfo._aggroLevel = 0;
+			//saveInfo._attackRange = 30;
+			//saveInfo._attackTime = 0.8f;
+			//saveInfo._traceRadius = 60.f;
+
+			//chinfo->SetDefaultCharacterInfo(saveInfo);
+			//wstring savePath = DATA_ADDR_UNIT;
+			//savePath += L"BaronGeddon/Information.xml";
+			//chinfo->SaveCharacterInformationFromFile(savePath);
+		}
+
 		wstring LoadPath = DATA_ADDR_UNIT;
 		LoadPath += L"BaronGeddon/Information.xml";
 		chinfo->LoadCharacterInformationFromFile(LoadPath);

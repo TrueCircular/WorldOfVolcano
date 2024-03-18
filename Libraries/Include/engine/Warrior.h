@@ -6,8 +6,6 @@ class PlayerController;
 class CharacterInfo;
 #pragma endregion
 
-
-
 class Warrior : public PlayableUnit
 {
 	using Super = PlayableUnit;

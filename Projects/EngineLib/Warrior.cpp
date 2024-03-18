@@ -28,6 +28,26 @@ void Warrior::CharacterInit()
 	//Set Information
 	auto UnitInfo = make_shared<CharacterInfo>();
 	{
+
+		{
+			//CHARACTER_INFO saveInfo;
+			//saveInfo._name = L"Warrior";
+			//saveInfo._hp = 2000;
+			//saveInfo._mp = 350;
+			//saveInfo._atk = 250;
+			//saveInfo._def = 600;
+			//saveInfo._moveSpeed = 40;
+			//saveInfo._aggroLevel = 100;
+			//saveInfo._attackRange = 15;
+			//saveInfo._attackTime = 0.8f;
+			//saveInfo._traceRadius = 0.f;
+
+			//UnitInfo->SetCharacterInfo(saveInfo);
+			//wstring savePath = DATA_ADDR_UNIT;
+			//savePath += L"Warrior/Information.xml";
+			//UnitInfo->SaveCharacterInformationFromFile(savePath);
+		}
+
 		wstring LoadPath = DATA_ADDR_UNIT;
 		LoadPath += L"Warrior/Information.xml";
 		UnitInfo->LoadCharacterInformationFromFile(LoadPath);

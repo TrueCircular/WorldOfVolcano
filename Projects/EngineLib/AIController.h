@@ -19,12 +19,12 @@ private:
 	weak_ptr<Transform>			_transform;
 	shared_ptr<Transform>		_targetTransform;
 	Vec3						_targetPos;
+	Vec3						_spwanPos;
 	AIType						_type = AIType::None;
 	weak_ptr<CharacterInfo>		_characterInfo;
 	shared_ptr<JumpFlag>		_jumpState;
 	shared_ptr<UnitFSM>			_currentFsmState;
 	vector<shared_ptr<UnitFSM>>	_fsmList;
-	float _traceRadius = 50.f;
 	float _defaultSpeed = 35.f;
 	float _currentSpeed = 35.f;
 	float _slowSpeed = 17.5f;
@@ -33,7 +33,7 @@ private:
 	bool _isAttack = false;
 	bool _isAlive = true;
 private:
-	weak_ptr<ModelAnimator>		_animator;
+	weak_ptr<ModelAnimator>				_animator;
 private:
 	//Player
 	shared_ptr<PlayerUnitState>			_currentPlayerState;
@@ -55,11 +55,11 @@ public:
 	void SetIsAttack(bool attack) { _isAttack = attack; }
 	void SetIsTrace(bool trace) { _isTrace = trace; }
 	void SetJumpState(const JumpFlag& jumpFlag) { *_jumpState = jumpFlag; }
-	void SetTraceRadius(float radius) { _traceRadius = radius; }
 	void SetAIType(AIType type) { _type = type; }
 	void notifyEnemyDeath() { _isAlive = false; }
 	void SetTargetTransform(const shared_ptr<Transform> transform) { _targetTransform = transform; }
 	void SetCurrentFsmState(UnitFSMState state);
+	void SetSpwanPosition(const Vec3& position) { _spwanPos = position; }
 	//Animation Controll
 	bool SetAnimState(const PlayerAnimType& type);
 	bool SetAnimState(const EnemyAnimType& type);
@@ -75,10 +75,11 @@ public:
 	const float& GetDefaultSpeed() const { return _defaultSpeed; }
 	const float& GetCurrentSpeed() const { return _currentSpeed; }
 	const shared_ptr<JumpFlag>& GetJumpState() const { return _jumpState; }
-	const float& GetTraceRadius() const { return _traceRadius; }
 	const bool& IsAttack() const { return _isAttack; }
 	const bool& IsTrace() const { return _isTrace; }
 	const bool& IsAlive() const { return _isAlive; }
+	const shared_ptr<Transform>& GetTargetTransform() const { return _targetTransform; }
+	const Vec3& GetSpwanPosition() const { return _spwanPos; }
 	//Animation Controll
 	const shared_ptr<ModelAnimator>& GetAnimator() const { return _animator.lock(); }
 	const shared_ptr<Transform>& GetTransform() const { return _transform.lock(); }
@@ -86,6 +87,8 @@ public:
 	const shared_ptr<EnemyUnitState>& GetCurrentEnemyUnitState() const { return _currentEnemyState; }
 	const PlayerAnimType& GetCurrentPlayerAnimType() const { return _currentPlayerAnimState->GetStateAnimtype(); }
 	const EnemyAnimType& GetCurrentEnemyAnimType() const { return _currentEnemyAnimState->GetStateAnimtype(); }
+public:
+	virtual void TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage) override;
 public:
 	virtual void Start() override;
 	virtual void FixedUpdate() override;

@@ -10,7 +10,7 @@ void MainScene::Init()
 
 	//title
 	{
-
+		
 	}
 }
 

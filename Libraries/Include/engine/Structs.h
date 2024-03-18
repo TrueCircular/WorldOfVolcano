@@ -173,6 +173,7 @@ struct CHARACTER_INFO
 	uint16 _aggroLevel = 100;
 	float _attackRange = 15.0f;
 	float _attackTime = 0.8f;
+	float _traceRadius = 0.f;
 	Vec3 _pos = { 0.0f, 0.0f, 0.0f };
 	Vec3 _Rotate = { 0.0f, 0.0f, 0.0f };
 	bool _isAlive = true;
@@ -187,6 +188,18 @@ struct CHARACTER_ADD_INFO
 	uint32 _AddMP = 0;
 	uint16 _AddATK = 0;
 	uint16 _AddDEF = 0;
+};
+
+struct CHARACTER_CALCULATED_INFO
+{
+	uint32 _hp = 0;
+	uint32 _maxHp = 0;
+	uint32 _mp = 0;
+	uint32 _maxMp = 0;
+	uint32 _atk = 0;
+	uint32 _def = 0;
+	Vec3 _pos = { 0.0f, 0.0f, 0.0f };
+	Vec3 _Rotate = { 0.0f, 0.0f, 0.0f };
 };
 
 struct MESSAGE
@@ -237,8 +250,8 @@ struct EquipmentBoneIndexDesc
 
 struct AbilityDataDesc
 {
-	std::wstring		Name;
-	AbilityType Type = AbilityType::None;
-	uint32		ConsumedMp = 0;
-	float		AbilityPow = 0.f;
+	std::wstring	Name;
+	AbilityType		Type = AbilityType::None;
+	uint32			ConsumedMp = 0;
+	float			AbilityPow = 0.f;
 };

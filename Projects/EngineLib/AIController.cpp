@@ -52,36 +52,9 @@ void AIController::InitAnimState()
 	}break;
 	case AIType::EnemyUnit:
 	{
-		////Stand
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimStand>());
-		////Walk
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimWalk>());
-		////Run
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimRun>());
-		////Damaged
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimDamaged>());
-		////Death
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimDeath>());
-		////Battle
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimBattle>());
-		////Attack1
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimAttack1>());
-		////Attack2
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimAttack2>());
-		////Casting
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimCasting>());
-		////Ability1
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimAbility1>());
-		////Ability2
-		//_enemyAnimStateList.push_back(make_shared<EnemyAnimAbility2>());
-
-		////Default Stand
-		//_currentEnemyAnimState = _enemyAnimStateList[0];
-		//_currentEnemyAnimState->Enter(shared_from_this()); 
-
-		//Stand
+		//Stand 0
 		_fsmList.push_back(make_shared<UnitFSMStand>());
-		//Trace
+		//Trace 1
 		_fsmList.push_back(make_shared<UnitFSMTrace>());
 		//MoveToSpwanPoint
 		_fsmList.push_back(make_shared<UnitFSMMoveToSpwanPoint>());
@@ -184,6 +157,18 @@ bool AIController::SetAnimState(const EnemyAnimType& type)
 	}
 
 	return false;
+}
+
+void AIController::TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage)
+{
+	auto characterInfo = sender->GetComponent<CharacterInfo>();
+
+	if (characterInfo != nullptr)
+	{
+		//characterInfo->GetAddCharacterInfo
+
+	}
+
 }
 
 void AIController::Start()

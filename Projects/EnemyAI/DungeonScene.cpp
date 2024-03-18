@@ -134,7 +134,7 @@ void DungeonScene::Init()
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();
 		_childCamera->SetName(L"Camera");
-		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 100.f);
+		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 150.f);
 		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}
@@ -202,7 +202,7 @@ void DungeonScene::Init()
 		auto baronGeddon = make_shared<BaronGeddon>();
 		baronGeddon->Awake();
 		baronGeddon->Start();
-		baronGeddon->GetTransform()->SetPosition(spawnPos);
+		baronGeddon->GetTransform()->SetPosition(Vec3(103,0,240));
 
 		Add(baronGeddon);
 	}

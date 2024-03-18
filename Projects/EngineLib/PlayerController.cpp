@@ -468,7 +468,8 @@ void PlayerController::PlayerPicking()
 
 	if (_isPicked)
 	{
-		_pickedInfo = _pickedObj->GetComponent<CharacterInfo>()->GetCharacterInfo();
+		_pickedInfo = _pickedObj->GetComponent<CharacterInfo>()->GetDefaultCharacterInfo();
+
 		MANAGER_IMGUI()->UpdatePicked(true, _pickedInfo._maxHp, _pickedInfo._hp, _pickedObj->GetName());
 		if (_pickedInfo._hp == 0)
 		{
