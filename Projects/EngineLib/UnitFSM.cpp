@@ -505,11 +505,6 @@ void UnitFSMAttack::Update()
 		{
 			Out(UnitFSMState::Battle);
 		}
-		else
-		{
-
-		}
-
 	}
 }
 
