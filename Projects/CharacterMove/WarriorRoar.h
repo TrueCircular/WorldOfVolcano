@@ -1,21 +1,17 @@
 #pragma once
-#include "ParticleObj.h"
 class WarriorRoar: public ParticleObj
 {
 private:
 	shared_ptr<ModelAnimator> particleAnimator;
 
-	ComPtr<ID3DX11EffectShaderResourceVariable> maskSRV;
-	shared_ptr<Texture> maskTexture;
-
 	InstancedTweenDesc instanceTweenDesc;
-	vector<TweenDesc> eachTweenData;
+	vector<shared_ptr<TweenDesc>> eachTweenData;
 private:
 	void RemoveTweenData(int index);
 	virtual void AddParticle(ParticleInstance& data) override {};
 public:
-	void AddParticle(ParticleInstance& data, TweenDesc& desc);
-	void AddTweenData(TweenDesc& tweenData);
+	virtual void AddParticle(ParticleInstance& data, shared_ptr<TweenDesc> desc);
+	void AddTweenData(shared_ptr<TweenDesc> tweenData);
 	void SetAnimator(shared_ptr<ModelAnimator> _animator);
 	virtual void Update() override;
 	virtual void LateUpdate() override;

@@ -7,14 +7,14 @@ void WarriorRoar::RemoveTweenData(int index)
 	eachTweenData.erase(iter);
 }
 
-void WarriorRoar::AddParticle(ParticleInstance& data, TweenDesc& desc)
+void WarriorRoar::AddParticle(ParticleInstance& data, shared_ptr<TweenDesc> desc)
 {
 	instanceList.push_back(data);
 	AddTweenData(desc);
 	++instanceCounter;
 }
 
-void WarriorRoar::AddTweenData(TweenDesc& tweenData)
+void WarriorRoar::AddTweenData(shared_ptr<TweenDesc> tweenData)
 {
 	eachTweenData.push_back(tweenData);
 }
@@ -37,7 +37,9 @@ void WarriorRoar::Update()
 			RemoveTweenData(i);
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
+			instanceCounter--;
 			--i;
+			continue;
 		}
 
 		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
@@ -49,9 +51,8 @@ void WarriorRoar::LateUpdate()
 {
 	ParticleObj::LateUpdate();
 
-	maskSRV->SetResource(maskTexture->GetTexture().Get());
 	for (int i = 0; i < instanceCounter; ++i) {
-		instanceTweenDesc.tweens[i] = eachTweenData[i];
+		instanceTweenDesc.tweens[i] = *eachTweenData[i];
 	}
 	shader->PushTweenData(instanceTweenDesc);
 	animRenderer->Render(instanceList);
@@ -66,24 +67,17 @@ void WarriorRoar::OnDestroy(ParticleInstance& instance)
 WarriorRoar::WarriorRoar()
 {
 	instanceBuffer = make_shared<ParticleInstancingBuffer>();
-	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"StormEffect");
+	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"WarriorRoar");
 	if (shader == nullptr) {
-		shader = make_shared<Shader>(L"Storm.fx");
-		MANAGER_RESOURCES()->AddResource<Shader>(L"StormEffect", shader);
+		shader = make_shared<Shader>(L"WarriorRoar.fx");
+		MANAGER_RESOURCES()->AddResource<Shader>(L"WarriorRoar", shader);
 	}
 	_colorDesc.baseColor = Vec4(1, 0, 0, 1);
 	_colorDesc.subColor = Vec4(1, 1, 0, 1);
 	colorBuffer = shader->GetConstantBuffer("ColorBuffer");
 	colorData = make_shared<ConstantBuffer<ColorDesc>>();
+	colorData->CreateConstantBuffer();
 
-	maskTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"NoiseMap17");
-	if (maskTexture == nullptr) {
-		maskTexture = make_shared<Texture>();
-		maskTexture->Load(L"../../Resources/Texture/Effect/T_ky_noise17.PNG");
-		MANAGER_RESOURCES()->AddResource(L"NoiseMap17", maskTexture);
-	}
-
-	maskSRV = shader->GetSRV("HightLightMap");
 	animRenderer = make_shared<ParticleAnimRenderer>();
 	animRenderer->SetShader(shader);
 	animRenderer->SetBuffer(instanceBuffer);

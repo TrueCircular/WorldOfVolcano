@@ -1,6 +1,10 @@
 #pragma once
 #include "ParticleInstance.h"
 
+class ModelAnimator;
+class Mesh;
+class Model;
+
 class ParticleRenderer
 {
 protected:

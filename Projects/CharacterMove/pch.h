@@ -10,14 +10,6 @@
 #include "DamageIndicator.h" 
 
 
-struct FresnelDesc {
-	Vec4 eyePos;
-	Vec4 eyeLook;
-};
-struct ColorDesc {
-	Vec4 baseColor;
-	Vec4 subColor;
-};
 
 static Vec3 QuadToYawPitchRoll(Quaternion& q) {
 	float sqw = q.w * q.w;

@@ -234,3 +234,12 @@ struct EquipmentBoneIndexDesc
 	uint16 WeaponIndex = 0;
 	uint16 ShieldIndex = 0;
 };
+
+struct FresnelDesc {
+	Vec4 eyePos;
+	Vec4 eyeLook;
+};
+struct ColorDesc {
+	Vec4 baseColor;
+	Vec4 subColor;
+};

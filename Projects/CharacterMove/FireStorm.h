@@ -1,5 +1,4 @@
 #pragma once
-#include "ParticleObj.h"
 class FireStorm : public ParticleObj
 {
 private:

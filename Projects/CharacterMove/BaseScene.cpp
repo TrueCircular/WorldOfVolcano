@@ -18,6 +18,7 @@
 #include "BaseScene.h"
 #include "MainScene.h"
 
+#include "WarriorRoar.h"
 void BaseScene::Init()
 {
 	//리소스 매니저 초기화
@@ -183,6 +184,10 @@ void BaseScene::Init()
 		//	bgm->Play(true);
 	}
 
+	shared_ptr<WarriorRoar> roar = make_shared<WarriorRoar>();
+	auto _waranimator=_warrior->GetChildByName(L"Model")->GetModelAnimator();
+	roar->SetAnimator(_waranimator);
+	MANATER_PARTICLE()->AddManagingParticle(L"WarriorRoar", roar);
 	SpawnManager::GetInstance().Init();
 }
 void BaseScene::Start()
@@ -290,10 +295,16 @@ void BaseScene::Update()
 
 	//skyBox->Update();
 	DamageIndicator::GetInstance().Frame();
-
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	scene->SetSceneName(L"DungeonScene");
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::E)) {
+		auto roarParticle = MANATER_PARTICLE()->GetParticleFromName(L"WarriorRoar");
+		ParticleInstance instancedata(3, _warrior->GetChildByName(L"Model")->GetTransform(),nullptr,0 );
+		auto _tweenDesc = _warrior->GetChildByName(L"Model")->GetModelAnimator()->GetTweenDesc();
+		roarParticle->AddParticle(instancedata,_tweenDesc);
+	}
 
+	MANATER_PARTICLE()->Update();
 	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
 	{
 		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
@@ -310,4 +321,5 @@ void BaseScene::LateUpdate()
 	quadTreeTerrain->Update();
 
 	DamageIndicator::GetInstance().Render();
+	MANATER_PARTICLE()->Render();
 }

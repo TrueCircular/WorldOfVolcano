@@ -144,8 +144,9 @@ EffectOutput DynamicModelVS(EffectModel input)
 {
     EffectOutput output;
     matrix m = GetAnimationMatrix(input);
-    output.position = input.position * ((1 + input.time) * 3);
-    output.position = mul(output.position, m);
+    output.position = mul(input.position, m);
+    output.position.z = output.position + 10;
+    //output.position = mul(output.position , ((1 + input.time) * 3));
     output.position = mul(output.position, input.world);
     output.worldPosition = output.position.xyz;
     output.position = mul(output.position, VP);
@@ -162,14 +163,14 @@ float4 PS(EffectOutput input) : SV_TARGET
     ComputeNormalMapping(input.normal, input.tangent, input.uv);
     float4 origincolor = DiffuseMap.Sample(LinearSampler, input.uv);
     float4 color = ComputeLight(input.normal, input.uv, input.worldPosition);
-    float4 mixcolor = color - origincolor;
-    float paColor = mixcolor.r + mixcolor.g + mixcolor.b;
-    if (paColor > 0)
-    {
-        paColor = paColor / 3;
-    }
-    color = lerp(mixcolor, particleColor, paColor);
-    color.a = paColor;
+   //float4 mixcolor = color - origincolor;
+   //float paColor = mixcolor.r + mixcolor.g + mixcolor.b;
+   //if (paColor > 0)
+   //{
+   //    paColor = paColor / 3;
+   //}
+   //color = lerp(mixcolor, particleColor, paColor);
+   //color.a = paColor;
     return color;
 }
 

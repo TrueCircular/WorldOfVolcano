@@ -159,8 +159,12 @@
     <ClInclude Include="DamageIndicator.h" />
     <ClInclude Include="Demo.h" />
     <ClInclude Include="DungeonScene.h" />
-    <ClInclude Include="FireBall.h" />
-    <ClInclude Include="FireStorm.h" />
+    <ClInclude Include="FireBall.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="FireStorm.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="LavaFlow.h" />
     <ClInclude Include="LayerSplatter.h" />
     <ClInclude Include="main.h" />
@@ -168,10 +172,6 @@
     <ClInclude Include="ManagerCleaner.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="ObjectExporter.h" />
-    <ClInclude Include="ParticleInstance.h" />
-    <ClInclude Include="ParticleManager.h" />
-    <ClInclude Include="ParticleObj.h" />
-    <ClInclude Include="ParticleRenderer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="QuadTreeBlock.h" />
@@ -182,7 +182,9 @@
     <ClInclude Include="StructList.h" />
     <ClInclude Include="StruectedLavaSprite.h" />
     <ClInclude Include="TestScene.h" />
-    <ClInclude Include="WarriorRoar.h" />
+    <ClInclude Include="WarriorRoar.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseScene.cpp" />
@@ -192,8 +194,12 @@
     <ClCompile Include="DamageIndicator.cpp" />
     <ClCompile Include="Demo.cpp" />
     <ClCompile Include="DungeonScene.cpp" />
-    <ClCompile Include="FireBall.cpp" />
-    <ClCompile Include="FireStorm.cpp" />
+    <ClCompile Include="FireBall.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="FireStorm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="LavaFlow.cpp" />
     <ClCompile Include="LayerSplatter.cpp" />
     <ClCompile Include="main.cpp" />
@@ -201,10 +207,6 @@
     <ClCompile Include="ManagerCleaner.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="ObjectExporter.cpp" />
-    <ClCompile Include="ParticleInstance.cpp" />
-    <ClCompile Include="ParticleManager.cpp" />
-    <ClCompile Include="ParticleObj.cpp" />
-    <ClCompile Include="ParticleRenderer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -219,7 +221,9 @@
     <ClCompile Include="StructList.cpp" />
     <ClCompile Include="StruectedLavaSprite.cpp" />
     <ClCompile Include="TestScene.cpp" />
-    <ClCompile Include="WarriorRoar.cpp" />
+    <ClCompile Include="WarriorRoar.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Resources\Shader\EarthCrack.fx" />

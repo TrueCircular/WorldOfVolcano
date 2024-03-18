@@ -11,6 +11,9 @@
 #include "ThreadManager.h"
 #include "Service.h"
 
+class ColorDesc;
+class FresnelDesc;
+
 class TestScene : public Scene
 {
 

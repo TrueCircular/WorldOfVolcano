@@ -95,18 +95,6 @@
     <ClCompile Include="TestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleObj.cpp">
-      <Filter>particle</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleManager.cpp">
-      <Filter>particle</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleInstance.cpp">
-      <Filter>particle</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleRenderer.cpp">
-      <Filter>particle</Filter>
-    </ClCompile>
     <ClCompile Include="FireStorm.cpp">
       <Filter>particle\ParticleObjects</Filter>
     </ClCompile>
@@ -179,18 +167,6 @@
     </ClInclude>
     <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleObj.h">
-      <Filter>particle</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleManager.h">
-      <Filter>particle</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleInstance.h">
-      <Filter>particle</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleRenderer.h">
-      <Filter>particle</Filter>
     </ClInclude>
     <ClInclude Include="FireStorm.h">
       <Filter>particle\ParticleObjects</Filter>
