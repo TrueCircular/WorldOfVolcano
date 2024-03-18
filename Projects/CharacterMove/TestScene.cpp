@@ -85,6 +85,38 @@ void TestScene::Init()
 	world5->SetLocalScale(Vec3(10, 10, 10));
 	world5->SetLocalPosition(Vec3(0, 10, 0));
 
+	effShader6 = make_shared<Shader>(L"SmokeLegacy.fx");
+	smoke1Tex1 = make_shared<Texture>();
+	smoke1Tex1->Load(L"../../Resources/Texture/Effect/T_ky_noise6.PNG");
+	smoke1Tex2 = make_shared<Texture>();
+	smoke1Tex2->Load(L"../../Resources/Texture/Effect/T_ky_smoke1.PNG");
+	world6 = make_shared<Transform>();
+	world6->SetLocalScale(Vec3(10, 10, 10));
+	world6->SetLocalPosition(Vec3(-10, 10, 0));
+
+	effShader7 = make_shared<Shader>(L"Smoke2Legacy.fx");
+	smoke2Tex1 = make_shared<Texture>();
+	smoke2Tex1->Load(L"../../Resources/Texture/Effect/T_ky_dist_noise.PNG");
+	smoke2Tex2 = make_shared<Texture>();
+	smoke2Tex2->Load(L"../../Resources/Texture/Effect/T_ky_smoke_kai.PNG");
+	world7 = make_shared<Transform>();
+	world7->SetLocalScale(Vec3(10, 10, 10));
+	world7->SetLocalPosition(Vec3(-20, 10, 0));
+
+	effShader8 = make_shared<Shader>(L"Smoke3Legacy.fx");
+	smoke3Tex = make_shared<Texture>();
+	smoke3Tex->Load(L"../../Resources/Texture/Effect/T_ky_circleDust.PNG");
+	world8 = make_shared<Transform>();
+	world8->SetLocalScale(Vec3(10, 10, 10));
+	world8->SetLocalPosition(Vec3(-20, 0, 0));
+
+	effShader9 = make_shared<Shader>(L"LineSparkLegacy.fx");
+	lineSparkTex = make_shared<Texture>();
+	lineSparkTex->Load(L"../../Resources/Texture/Effect/T_Sparks.PNG");
+	world9= make_shared<Transform>();
+	world9->SetLocalScale(Vec3(10, 10, 10));
+	world9->SetLocalPosition(Vec3(10, 10, 0));
+
 
 	//HeightPlainInfo heightMapDesc;
 	//heightMapDesc.heightFilename = L"HeightMapBase";
@@ -283,6 +315,116 @@ void TestScene::Update()
 		DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
 
 		effShader5->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
+	}
+	{
+		world6->UpdateTransform();
+		auto _materialBuffer = make_shared<ConstantBuffer<ColorDesc>>();
+		_materialBuffer->CreateConstantBuffer();
+		auto data = effShader6->GetConstantBuffer("ColorBuffer");
+
+		ColorDesc _desc;
+		_desc.baseColor = Vec4(0, 0.7, 0.8, 1);
+		_desc.subColor = Vec4(1.0, 1.0, 0.0, 1);
+		_materialBuffer->CopyData(_desc);
+		data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
+
+		effShader6->PushTransformData(TransformDesc{ world6->GetWorldMatrix() });
+		effShader6->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
+
+		auto texmap1 = effShader6->GetSRV("NoiseMap");
+		auto texmap2 = effShader6->GetSRV("MaskMap");
+		auto times = effShader6->GetScalar("time")->SetFloat(currenttime);
+		texmap1->SetResource(smoke1Tex1->GetTexture().Get());
+		texmap2->SetResource(smoke1Tex2->GetTexture().Get());
+		auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetStride();
+		auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetOffset();
+
+		DC()->IASetVertexBuffers(0, 1, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetBuffer().GetAddressOf(), &_stride, &_offset);
+		DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		effShader6->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
+	}
+
+	{
+		world7->UpdateTransform();
+		auto _materialBuffer = make_shared<ConstantBuffer<ColorDesc>>();
+		_materialBuffer->CreateConstantBuffer();
+		auto data = effShader7->GetConstantBuffer("ColorBuffer");
+
+		ColorDesc _desc;
+		_desc.baseColor = Vec4(1, 1, 1, 1);
+		_desc.subColor = Vec4(1.0, 1.0, 1, 1);
+		_materialBuffer->CopyData(_desc);
+		data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
+
+		effShader7->PushTransformData(TransformDesc{ world7->GetWorldMatrix() });
+		effShader7->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
+
+		auto texmap1 = effShader7->GetSRV("NoiseMap");
+		auto texmap2 = effShader7->GetSRV("MaskMap");
+		auto times = effShader7->GetScalar("time")->SetFloat(currenttime);
+		texmap1->SetResource(smoke2Tex1->GetTexture().Get());
+		texmap2->SetResource(smoke2Tex2->GetTexture().Get());
+		auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetStride();
+		auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetOffset();
+
+		DC()->IASetVertexBuffers(0, 1, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetBuffer().GetAddressOf(), &_stride, &_offset);
+		DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		effShader7->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
+	}
+	{
+		world8->UpdateTransform();
+		auto _materialBuffer = make_shared<ConstantBuffer<ColorDesc>>();
+		_materialBuffer->CreateConstantBuffer();
+		auto data = effShader8->GetConstantBuffer("ColorBuffer");
+
+		ColorDesc _desc;
+		_desc.baseColor = Vec4(1, 1, 1, 1);
+		_desc.subColor = Vec4(1.0, 1.0, 1, 1);
+		_materialBuffer->CopyData(_desc);
+		data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
+
+		effShader8->PushTransformData(TransformDesc{ world8->GetWorldMatrix() });
+		effShader8->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
+
+		auto texmap1 = effShader8->GetSRV("MaskMap");
+		auto times = effShader8->GetScalar("time")->SetFloat(currenttime);
+		texmap1->SetResource(smoke3Tex->GetTexture().Get());
+		auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetStride();
+		auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetOffset();
+
+		DC()->IASetVertexBuffers(0, 1, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetBuffer().GetAddressOf(), &_stride, &_offset);
+		DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		effShader8->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
+	}
+	{
+		world9->UpdateTransform();
+		auto _materialBuffer = make_shared<ConstantBuffer<ColorDesc>>();
+		_materialBuffer->CreateConstantBuffer();
+		auto data = effShader9->GetConstantBuffer("ColorBuffer");
+
+		ColorDesc _desc;
+		_desc.baseColor = Vec4(1, 0.8, 0.4, 1);
+		_desc.subColor = Vec4(1.0, 1.0, 1, 1);
+		_materialBuffer->CopyData(_desc);
+		data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
+
+		effShader9->PushTransformData(TransformDesc{ world9->GetWorldMatrix() });
+		effShader9->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
+
+		auto texmap1 = effShader9->GetSRV("EffectMap");
+		auto times = effShader9->GetScalar("time")->SetFloat(currenttime);
+		auto ctimes = effShader9->GetScalar("duration")->SetFloat(maxtime);
+		texmap1->SetResource(lineSparkTex->GetTexture().Get());
+		auto _stride = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetStride();
+		auto _offset = MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetOffset();
+
+		DC()->IASetVertexBuffers(0, 1, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetVertexBuffer()->GetBuffer().GetAddressOf(), &_stride, &_offset);
+		DC()->IASetIndexBuffer(MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetBuffer().Get(), DXGI_FORMAT_R32_UINT, 0);
+
+		effShader9->DrawIndexed(0, 0, MANAGER_RESOURCES()->GetResource<Mesh>(L"Quad")->GetIndexBuffer()->GetCount(), 0, 0);
 	}
 
 

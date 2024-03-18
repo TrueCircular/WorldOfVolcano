@@ -151,7 +151,7 @@ void BaseScene::Init()
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();
 		_childCamera->SetName(L"Camera");
-		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Debug, ProjectionType::Perspective, 100.f);
+		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 100.f);
 		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}

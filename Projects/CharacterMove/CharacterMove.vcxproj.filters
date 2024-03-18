@@ -254,5 +254,26 @@
     <FxCompile Include="..\..\Resources\Shader\PolarLegacy.fx">
       <Filter>Shader\Effects</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke2.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke2Legacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\SmokeLegacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke3.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\LineSparkLegacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke3Legacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

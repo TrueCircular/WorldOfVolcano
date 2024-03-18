@@ -197,6 +197,27 @@ DepthStencilState ShadowDepth
     BackFaceStencilFunc = ALWAYS;
 
 };
+
+DepthStencilState DefaultStencil
+{
+    DepthEnable = true;
+    DepthWriteMask = ALL;
+    DepthFunc = LESS_EQUAL;
+    StencilEnable = false;
+    StencilReadMask = 1;
+    StencilWriteMask = 1;
+    FrontFaceStencilFunc = ALWAYS;
+    FrontFaceStencilFail = INCR;
+    FrontFaceStencilDepthFail = KEEP;
+    FrontFaceStencilPass = KEEP;
+
+    BackFaceStencilFail = KEEP;
+    BackFaceStencilDepthFail = KEEP;
+    BackFaceStencilPass = KEEP;
+    BackFaceStencilFunc = ALWAYS;
+
+};
+
 //Macro//
 
 #define PASS_VP(name, vs, ps)						\
@@ -234,6 +255,7 @@ pass name											\
 {													\
     SetRasterizerState(rs);							\
     SetBlendState(bs,float4(0.0, 0.0, 0.0, 0.0), 0xFFFFFFFF);							    \
+    SetDepthStencilState(DefaultStencil,false);     \
     SetVertexShader(CompileShader(vs_5_0, vs()));	\
     SetPixelShader(CompileShader(ps_5_0, ps()));	\
 }                                                   \
