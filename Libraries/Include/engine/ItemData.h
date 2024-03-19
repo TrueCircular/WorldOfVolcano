@@ -3,7 +3,7 @@
 
 class CharacterInfo;
 
-class ItemData : public MonoBehaviour
+class ItemData : public MonoBehaviour, public enable_shared_from_this<ItemData>
 {
 public:
 	ItemData();
@@ -15,7 +15,6 @@ protected:
 	ItemInfo				_itemInfo;
 	shared_ptr<Model>		_itemMesh;
 	shared_ptr<Texture>		_itemImage;
-	bool					_isApply = false;
 public:
 	bool LoadItemInformationFromFile(const wstring& loadPath);
 	bool SaveItemInformationToFile(const wstring& savePath);

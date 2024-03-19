@@ -85,6 +85,7 @@ private:
 	void PlayerJump();
 	void PlayerAttack();
 	void PlayerPicking();
+	void PlayerTargetControll();
 	void KeyStateCheck();
 	//Camera
 	void CameraMove();

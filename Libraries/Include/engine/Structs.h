@@ -192,6 +192,7 @@ struct CHARACTER_ADD_INFO
 
 struct CHARACTER_CALCULATED_INFO
 {
+	std::wstring _name;
 	uint32 _hp = 0;
 	uint32 _maxHp = 0;
 	uint32 _mp = 0;

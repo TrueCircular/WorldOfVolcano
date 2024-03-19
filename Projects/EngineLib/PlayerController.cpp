@@ -169,13 +169,16 @@ void PlayerController::PlayerInput()
 {
 	if (_isAlive == true)
 	{
+		PlayerPicking();
+		PlayerAttack();
 		PlayerMove();
+
+		_animState->Update();
+
+		if (_sound)
+			_sound->PlaySound(_animState->GetStateAnimtype());
 	}
 
-	_animState->Update();
-
-	if (_sound)
-		_sound->PlaySound(_animState->GetStateAnimtype());
 
 	//Debug
 	//{
@@ -260,9 +263,6 @@ void PlayerController::PlayerMove()
 	{
 		_currentSpeed = _defaultSpeed;
 	}
-
-	PlayerPicking();
-	PlayerAttack();
 
 	if (_isAttack == false)
 	{
@@ -505,6 +505,25 @@ void PlayerController::PlayerPicking()
 	}
 }
 
+void PlayerController::PlayerTargetControll()
+{
+
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::LBUTTON))
+	{
+		int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
+		int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
+
+		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
+
+		if (pickObj != nullptr && pickObj->GetObjectType() == ObjectType::EnemyUnit)
+		{
+			MANAGER_IMGUI()->UpdatePicked(true);
+
+		}
+	}
+
+}
+
 void PlayerController::KeyStateCheck()
 {
 	if (_jumpState->isJump == false)
@@ -627,7 +646,6 @@ void PlayerController::FixedUpdate()
 	if (_isAlive == false)
 	{
 		_isBattle = false;
-
 	}
 
 	if (_isBattle)

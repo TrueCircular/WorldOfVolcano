@@ -2,6 +2,7 @@
 #include "CharacterInfo.h"
 #include <filesystem>
 #include "Utils.h"
+#include "ItemData.h"
 
 CharacterInfo::CharacterInfo()
 {
@@ -15,6 +16,63 @@ CharacterInfo::~CharacterInfo()
 
 void CharacterInfo::InitInformation()
 {
+}
+
+void CharacterInfo::UpdateAddInformation(const shared_ptr<ItemData>& data, const bool& equip)
+{
+	if (data == nullptr)
+		return;
+
+	if (equip)
+	{
+		_addInfo._AddHP += data->GetItemInfo().HP;
+		_addInfo._AddMP += data->GetItemInfo().MP;
+		_addInfo._AddATK += data->GetItemInfo().ATK;
+		_addInfo._AddDEF += data->GetItemInfo().DEF;
+	}
+	else
+	{
+		int tempHP = _addInfo._AddHP -= data->GetItemInfo().HP;
+		if (tempHP < 0)
+		{
+			_addInfo._AddHP = 0;
+		}
+		else
+		{
+			_addInfo._AddHP -= data->GetItemInfo().HP;
+		}
+
+		int tempMP = _addInfo._AddMP -= data->GetItemInfo().MP;
+		if (tempMP < 0)
+		{
+			_addInfo._AddMP = 0;
+		}
+		else
+		{
+			_addInfo._AddMP -= data->GetItemInfo().MP;
+		}
+
+		int tempATK = _addInfo._AddATK -= data->GetItemInfo().ATK;
+		if (tempATK < 0)
+		{
+			_addInfo._AddATK = 0;
+		}
+		else
+		{
+			_addInfo._AddATK -= data->GetItemInfo().ATK;
+		}
+		
+		int tempDEF = _addInfo._AddDEF -= data->GetItemInfo().DEF;
+		if (tempDEF < 0)
+		{
+			_addInfo._AddDEF = 0;
+		}
+		else
+		{
+			_addInfo._AddDEF -= data->GetItemInfo().DEF;
+		}
+	}
+
 }
 
 bool CharacterInfo::LoadCharacterInformationFromFile(const wstring& loadPath)
@@ -115,6 +173,13 @@ bool CharacterInfo::LoadCharacterInformationFromFile(const wstring& loadPath)
 			_defaultInfo._attackRange = tempInfo._attackRange;
 			_defaultInfo._attackTime = tempInfo._attackTime;
 			_defaultInfo._traceRadius = tempInfo._traceRadius;
+
+			_info._name = _defaultInfo._name;
+			_info._hp = _defaultInfo._hp;
+			_info._maxHp = _defaultInfo._maxHp;
+			_info._mp = _defaultInfo._maxMp;
+			_info._atk = _defaultInfo._atk;
+			_info._def = _defaultInfo._def;
 		}
 	}
 
