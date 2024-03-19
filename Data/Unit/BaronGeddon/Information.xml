@@ -6,7 +6,7 @@
     <DEF>200</DEF>
     <MoveSpeed>35</MoveSpeed>
     <AggroPow>0</AggroPow>
-    <AttackRange>35</AttackRange>
-    <AttackTime>0.80000001</AttackTime>
+    <AttackRange>40</AttackRange>
+    <AttackTime>1.5</AttackTime>
     <TraceRadius>80</TraceRadius>
 </CharacterInfo>

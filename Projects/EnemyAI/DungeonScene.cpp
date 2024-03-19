@@ -134,7 +134,7 @@ void DungeonScene::Init()
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();
 		_childCamera->SetName(L"Camera");
-		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 150.f);
+		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 125.f);
 		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}
@@ -145,7 +145,10 @@ void DungeonScene::Init()
 		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		_warrior->AddComponent(make_shared<PlayerController>());
 		_warrior->Start();
-		_warrior->GetTransform()->SetLocalPosition(spawnPos);
+		//_warrior->GetTransform()->SetLocalPosition(spawnPos);
+		_warrior->GetTransform()->SetLocalPosition(Vec3(-44.f,0.f,277.f));
+		_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
+
 		Add(_warrior);
 		AddShadow(_warrior);
 

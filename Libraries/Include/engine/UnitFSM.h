@@ -4,8 +4,6 @@
 class PlayableUnit;
 class CharacterInfo;
 
-
-
 class UnitFSM
 {
 public:
@@ -48,7 +46,7 @@ private:
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 	float					_dt = 0.f;
-	float					_totargetRotationSpeed = 2.5f;
+	float					_totargetRotationSpeed = 5.0f;
 	TarceTargetList			_targetList;
 	weak_ptr<Transform>		_targetTransform;
 public:
@@ -79,7 +77,7 @@ private:
 	float					_attackTime = 0.f;
 	float					_attackTimeCal = 0.f;
 	float					_dt = 0.f;
-	float					_totargetRotationSpeed = 2.5f;
+	float					_totargetRotationSpeed = 5.0f;
 	weak_ptr<Transform>		_targetTransform;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
@@ -95,9 +93,8 @@ public:
 private:
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
-
 	float					_dt = 0.f;
-	float					_totargetRotationSpeed = 2.5f;
+	float					_totargetRotationSpeed = 5.0f;
 	weak_ptr<Transform>		_targetTransform;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;

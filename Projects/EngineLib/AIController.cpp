@@ -215,7 +215,10 @@ void AIController::FixedUpdate()
 		tempPos.y = _heightGetterCom.lock()->GetHeight();
 		_transform.lock()->SetLocalPosition(tempPos);
 	}
+}
 
+void AIController::Update()
+{
 	switch (_type)
 	{
 	case AIType::PlayableUnit:
@@ -229,10 +232,6 @@ void AIController::FixedUpdate()
 	}
 	break;
 	}
-}
-
-void AIController::Update()
-{
 
 	if (_aiSound)
 		_aiSound->PlaySound(GetCurrentPlayerAnimType());
