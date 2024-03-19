@@ -318,13 +318,13 @@ void DungeonScene::Update()
 	shared_ptr<Scene> scene = make_shared<BaseScene>();
 	scene->SetSceneName(L"BaseScene");
 
-	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
+	/*if ()
 	{
 		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
 		SpawnManager::GetInstance().Reset(name);
 		SpawnManager::GetInstance().EraseSpawnerMap(name);
 		MANAGER_SCENE()->ChangeScene(scene);
-	}
+	}*/
 }
 
 void DungeonScene::LateUpdate()

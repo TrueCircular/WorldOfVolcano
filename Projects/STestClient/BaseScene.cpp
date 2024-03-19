@@ -300,12 +300,24 @@ void BaseScene::Update()
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	scene->SetSceneName(L"DungeonScene");
 
-	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
+	/*if ()
 	{
 		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
 		SpawnManager::GetInstance().Reset(name);
 		SpawnManager::GetInstance().EraseSpawnerMap(name);
 		MANAGER_SCENE()->ChangeScene(scene);
+	}*/
+
+	//Change
+	{
+		int size = MANAGER_IMGUI()->GetChangeSceneQueueSize();
+		if (size > 0)
+		{
+			wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
+			SpawnManager::GetInstance().Reset(name);
+			SpawnManager::GetInstance().EraseSpawnerMap(name);
+			MANAGER_SCENE()->ChangeScene(scene);
+		}
 	}
 }
 

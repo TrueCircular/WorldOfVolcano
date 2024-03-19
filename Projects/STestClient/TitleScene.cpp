@@ -8,6 +8,7 @@ void TitleScene::Init()
 	MANAGER_RESOURCES()->Init();
 
 	shared_ptr<Texture> tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"mainTitle", L"../../Resources/Texture/MainTitle2.png");
+	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"logo", L"../../Resources/Texture/logo.png");
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"skill_charge", L"../../Resources/Texture/Skill/skill_charge.jpg");
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"skill_shouting", L"../../Resources/Texture/Skill/skill_shouting.jpg");
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"HealthPotion", L"../../Resources/Texture/Item/Consumable/HealthPotion.png");

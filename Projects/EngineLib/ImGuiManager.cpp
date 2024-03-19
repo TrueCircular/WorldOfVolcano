@@ -43,6 +43,12 @@ void ImGuiManager::Init()
         ImGuiStyle& style = ImGui::GetStyle();
         style.Colors[ImGuiCol_Border] = ImVec4(0, 0, 0, 0);
     }
+    //Script-
+    {
+        scripts.push_back(L"이보시오 제가 보이는겁니까?\n제 이름은 마그니 브론즈 베어드라고 합니다.\n이곳은 오래전에 강림한 라그나로스에 의해\n모든게 황폐화가 된 상태입니다..\n보시는 것처럼 저같은 영령만 떠돌아 다닐 뿐\n이미 인적은 끊긴지 오래지요");
+        scripts.push_back(L"당신같은 강한 용사만을 기다려왔다카우...");
+        scripts.push_back(L"부디 화산심장부에 들어가\n남작 게돈을 물리쳐주십시오.\n그 뒤 화산심장부 깊은 곳 라그나로스가\n봉인된 포탈 관문 앞에서 기다리겠습니다.");
+    }
 }
 
 void ImGuiManager::Update()
@@ -72,30 +78,43 @@ void ImGuiManager::Update()
             ImGui::Image(textureID, ImVec2(displaySize.x, displaySize.y)); // 텍스쳐의 크기를 조정할 수 있습니다.
             ImGui::End();
         }
-        //타이틀 텍스트
+        //텍스쳐
         {
-            float windowSizeX = 800;
-            float windowSizeY = 150;
-            // Set the window size to a fixed value
-            ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
-            ImGui::SetNextWindowPos(ImVec2(100, 50), ImGuiCond_Always);
-            float r = 200.0f / 255.0f;
-            float g = 15.0f / 255.0f;
-            float b = 15.0f / 255.0f;
-            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.0f));
-            ImGui::Begin("TitleWindow", &show_main_window, ImGuiWindowFlags_NoDecoration);
-            
-            ImGui::SetWindowFontScale(5.0f);
-            {
-                wchar_t buffer[256] = L"World of VVocano";
-                int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
-                char* charBuffer = new char[bufferSize];
-                WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
-                ImGui::TextColored(ImVec4(r, g, b, 1.0f), charBuffer);
-                delete[] charBuffer;
-            }
+            ImVec2 windowSize = ImVec2(1000.0f, 250.0f);
+            ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.0f));
+            ImGui::Begin("logo Window", &show_main_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMouseInputs);
+            shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"logo");
+            ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
+            ImGui::Image(textureID, windowSize); // 텍스쳐의 크기를 조정할 수 있습니다.
             ImGui::End();
             ImGui::PopStyleColor();
+        }
+        //타이틀 텍스트
+        {
+            //float windowSizeX = 800;
+            //float windowSizeY = 150;
+            //// Set the window size to a fixed value
+            //ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
+            //ImGui::SetNextWindowPos(ImVec2(100, 50), ImGuiCond_Always);
+            //float r = 200.0f / 255.0f;
+            //float g = 15.0f / 255.0f;
+            //float b = 15.0f / 255.0f;
+            //ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.0f));
+            //ImGui::Begin("TitleWindow", &show_main_window, ImGuiWindowFlags_NoDecoration);
+            //
+            //ImGui::SetWindowFontScale(5.0f);
+            //{
+            //    wchar_t buffer[256] = L"World of VVocano";
+            //    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+            //    char* charBuffer = new char[bufferSize];
+            //    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
+            //    ImGui::TextColored(ImVec4(r, g, b, 1.0f), charBuffer);
+            //    delete[] charBuffer;
+            //}
+            //ImGui::End();
+            //ImGui::PopStyleColor();
         }
         //UI버튼
         {
@@ -119,10 +138,15 @@ void ImGuiManager::Update()
                 float g = 52.0f / 255.0f;
                 float b = 48.0f / 255.0f;
                 ImVec4 buttonColor(r, g, b, 1.0f);
+                float hr = 29.0f / 255.0f;
+                float hg = 42.0f / 255.0f;
+                float hb = 38.0f / 255.0f;
+                ImVec4 buttonHoveredColor = ImVec4(hr, hg, hb, 1.0f);
                 ImGui::SetWindowFontScale(1.5f);
 
                 {
                     ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
                     wchar_t buffer[256] = L"게임시작";
                     int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
                     char* charBuffer = new char[bufferSize];
@@ -134,7 +158,7 @@ void ImGuiManager::Update()
                         show_all_window = true;
                     }
                     delete[] charBuffer;
-                    ImGui::PopStyleColor();
+                    ImGui::PopStyleColor(2);
                 }
                 ImGui::NewLine();
                 {
@@ -143,6 +167,7 @@ void ImGuiManager::Update()
                     char* charBuffer = new char[bufferSize];
                     WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
                     ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
 
                     shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"mainTitle");
                     ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
@@ -153,7 +178,7 @@ void ImGuiManager::Update()
                         // 그런건없다.
                     }
                     delete[] charBuffer;
-                    ImGui::PopStyleColor();
+                    ImGui::PopStyleColor(2);
                 }
                 ImGui::NewLine();
                 {
@@ -162,12 +187,13 @@ void ImGuiManager::Update()
                     char* charBuffer = new char[bufferSize];
                     WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
                     ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
                     if (ImGui::Button(charBuffer, buttonSize))
                     {
                         std::quick_exit(0);
                     }
                     delete[] charBuffer;
-                    ImGui::PopStyleColor();
+                    ImGui::PopStyleColor(2);
                 }
             }
             ImGui::PopStyleColor();
@@ -416,13 +442,13 @@ void ImGuiManager::Update()
             float windowPosY = displaySize.y - windowSizeY - 10.0f;
             float spacing = windowSizeX;
 
-            float r = 232.0f / 255.0f;
-            float g = 196.0f / 255.0f;
-            float b = 184.0f / 255.0f;
+            float r = 125.0f / 255.0f;
+            float g = 98.0f / 255.0f;
+            float b = 87.0f / 255.0f;
 
             //box
             {
-                ImGui::SetNextWindowSize(ImVec2(windowSizeX + 200, windowSizeY + 15), ImGuiCond_Always);
+                //ImGui::SetNextWindowSize(ImVec2(windowSizeX + 200, windowSizeY + 15), ImGuiCond_Always);
                 ImGui::SetNextWindowPos(ImVec2(windowPosX, windowPosY), ImGuiCond_Always);
                 ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
                 ImGui::Begin("box Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
@@ -436,14 +462,8 @@ void ImGuiManager::Update()
                 ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
                 ImGui::Begin("Skill1 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
                 shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"skill_charge");
-                Vec2 texSize = tex->GetSize();
-                ImVec2 imageSize = ImVec2(windowSizeX, windowSizeY);
-                if (texSize.x > imageSize.x || texSize.y > imageSize.y) {
-                    float scale = min(imageSize.x / texSize.x, imageSize.y / texSize.y);
-                    imageSize = ImVec2(texSize.x * scale, texSize.y * scale);
-                }
                 ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
-                ImGui::Image(textureID, imageSize);
+                ImGui::Image(textureID, ImVec2(windowSizeX, windowSizeY));
                 ImGui::End();
                 ImGui::PopStyleColor();
             }
@@ -482,6 +502,207 @@ void ImGuiManager::Update()
                 ImGui::Image(textureID, ImVec2(windowSizeX, windowSizeY));
                 ImGui::End();
                 ImGui::PopStyleColor();
+            }
+        }
+
+        //show_quest_window
+        if (show_quest_window)
+        {
+            ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+
+            {
+                {
+                    float windowSizeX = 220.0f;
+                    float windowSizeY = 220.0f;
+                    float windowPosX = displaySize.x - (windowSizeX + 10.0f);
+                    float windowPosY = 50.0f;
+
+                    float r = 50.0f / 255.0f;
+                    float g = 50.0f / 255.0f;
+                    float b = 50.0f / 255.0f;
+
+                    // Set the window size to a fixed value
+                    ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
+                    ImGui::SetNextWindowPos(ImVec2(windowPosX, windowPosY), ImGuiCond_Always);
+                    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.5f));
+                    ImGui::Begin("Quest Window", &show_quest_window, ImGuiWindowFlags_NoDecoration);
+                }
+
+                ImGui::SetWindowFontScale(1.5f);
+                {
+                    wchar_t buffer[256] = L"    임무";
+                    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+                    char* charBuffer = new char[bufferSize];
+                    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
+                    float r = 255.0f / 255.0f;
+                    float g = 210.0f / 255.0f;
+                    float b = 1.0f / 255.0f;
+                    ImGui::TextColored(ImVec4(r, g, b, 1.0f), charBuffer);
+                    delete[] charBuffer;
+                }
+
+                ImGui::SetWindowFontScale(1.0f);
+                {
+                    wchar_t buffer[256] = L"라그나로스 소환";
+                    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+                    char* charBuffer = new char[bufferSize];
+                    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
+                    float r = 255.0f / 255.0f;
+                    float g = 210.0f / 255.0f;
+                    float b = 1.0f / 255.0f;
+                    ImGui::TextColored(ImVec4(r, g, b, 1.0f), charBuffer);
+                    delete[] charBuffer;
+                }
+
+                ImGui::SetWindowFontScale(1.0f);
+                {
+                    wchar_t buffer[256];
+                    swprintf(buffer, 256, L"남작 게돈을 쓰러뜨려라!\n남작 게돈(%d/1)", geddonCount);
+                    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+                    char* charBuffer = new char[bufferSize];
+                    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
+                    float r = 255.0f / 255.0f;
+                    float g = 255.0f / 255.0f;
+                    float b = 255.0f / 255.0f;
+                    ImGui::TextColored(ImVec4(r, g, b, 1.0f), charBuffer);
+                    delete[] charBuffer;
+                }
+                ImGui::End();
+                ImGui::PopStyleColor();
+            }
+        }
+
+        if (show_dialogue_window) {
+            ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+            float windowSizeX = 500.0f;
+            float windowSizeY = 200.0f;
+            float windowPosX = displaySize.x / 2 - windowSizeX / 2;
+            float windowPosY = displaySize.y / 2 - windowSizeY / 2;
+            float r = 143.0f / 255.0f;
+            float g = 114.0f / 255.0f;
+            float b = 88.0f / 255.0f;
+
+            //이름표
+            {
+                ImGui::SetNextWindowSize(ImVec2(80, 50), ImGuiCond_Always);
+                ImGui::SetNextWindowPos(ImVec2(windowPosX, windowPosY - 60), ImGuiCond_Always);
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
+                ImGui::Begin("Name Window", &show_dialogue_window, ImGuiWindowFlags_NoDecoration);
+                ImGui::SetWindowFontScale(1.25f);
+                wchar_t buffer[256] = L"마그니";
+                int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+                char* charBuffer = new char[bufferSize];
+                WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
+                float r = 255.0f / 255.0f;
+                float g = 255.0f / 255.0f;
+                float b = 255.0f / 255.0f;
+                ImGui::TextColored(ImVec4(r, g, b, 1.0f), charBuffer);
+                delete[] charBuffer;
+                ImGui::End();
+                ImGui::PopStyleColor();
+            }
+
+            ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(windowPosX, windowPosY), ImGuiCond_Always);
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
+            ImGui::Begin("Dialogue Window", &show_dialogue_window, ImGuiWindowFlags_NoDecoration);
+
+            // 현재 출력 중인 스크립트
+            std::wstring& script = scripts[currentScriptIndex];
+
+            // 시간당 출력되는 글자 수를 고려하여 현재 시각에서 출력되어야 할 글자 수 계산
+            if (currentCharTime >= printTime)
+            {
+                if (currentCharIndex < script.size())
+                {
+                    ++currentCharIndex;
+                }
+                currentCharTime = 0.0f;
+            }
+            else
+            {
+                currentCharTime += MANAGER_TIME()->GetDeltaTime();
+            }
+
+            // 스크립트를 점진적으로 출력
+            std::wstring buffer;
+            for (int i = 0; i < currentCharIndex && i < script.size(); ++i) {
+                buffer += script[i];
+            }
+
+            // ImGui로 출력
+            ImGui::SetWindowFontScale(1.25f);
+            wchar_t charBuffer[256];
+            wcscpy_s(charBuffer, buffer.c_str());
+            int bufferSize = WideCharToMultiByte(CP_UTF8, 0, charBuffer, -1, nullptr, 0, nullptr, nullptr);
+            char* outBuffer = new char[bufferSize];
+            WideCharToMultiByte(CP_UTF8, 0, charBuffer, -1, outBuffer, bufferSize, nullptr, nullptr);
+            r = 255.0f / 255.0f;
+            g = 255.0f / 255.0f;
+            b = 255.0f / 255.0f;
+            ImGui::TextColored(ImVec4(r, g, b, 1.0f), "%s", outBuffer);
+
+            if (currentScriptIndex >= scripts.size() - 1 && currentCharIndex >= script.size()) {
+                ImVec2 buttonSize(100.0f, 30.0f);
+                float r = 208 / 255.0f;
+                float g = 171 / 255.0f;
+                float b = 156 / 255.0f;
+                ImVec4 buttonColor(r, g, b, 0.5f);
+                ImGui::NewLine();
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+                    wchar_t buffer[256] = L"예";
+                    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+                    char* charBuffer = new char[bufferSize];
+                    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
+                    if (ImGui::Button(charBuffer, buttonSize))
+                    {
+                        show_dialogue_window = false;
+                        show_quest_window = true;
+                        currentScriptIndex = 0;
+                        currentCharIndex = 0;
+                        currentCharTime = 0;
+                        _changeSceneQueue.push(true);
+                        
+                    }
+                    delete[] charBuffer;
+                    ImGui::PopStyleColor();
+                }
+                ImGui::SameLine();
+                {
+                    wchar_t buffer[256] = L"아니오";
+                    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+                    char* charBuffer = new char[bufferSize];
+                    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
+                    ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+                    if (ImGui::Button(charBuffer, buttonSize))
+                    {
+                        show_dialogue_window = false;
+                        currentScriptIndex = 0; // 스크립트 인덱스
+                        currentCharIndex = 0; // 글자 인덱스
+                        currentCharTime = 0;
+                    }
+                    delete[] charBuffer;
+                    ImGui::PopStyleColor();
+                }
+            }
+
+            ImGui::End();
+            ImGui::PopStyleColor();
+
+            if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::ENTER))
+            {
+                if (currentCharIndex < script.size())
+                {
+                    currentCharIndex = script.size();
+                    
+                }
+                else if (currentScriptIndex < scripts.size() - 1)
+                {
+                    currentCharIndex = 0;
+                    ++currentScriptIndex;
+                }
+                currentCharTime = 0.0f;
             }
         }
     }
@@ -531,6 +752,18 @@ int ImGuiManager::GetAttackQueueSize()
     {
         int queueSize = _rebirthQueue.size();
         _rebirthQueue.pop();
+        return queueSize;
+    }
+
+    return -1;
+}
+
+int ImGuiManager::GetChangeSceneQueueSize()
+{
+    if (_changeSceneQueue.empty() == false)
+    {
+        int queueSize = _changeSceneQueue.size();
+        _changeSceneQueue.pop();
         return queueSize;
     }
 

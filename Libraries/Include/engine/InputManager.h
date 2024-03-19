@@ -29,7 +29,8 @@ enum class KEY_TYPE
 	RBUTTON = VK_RBUTTON,
 	MBUTTON = VK_MBUTTON,
 	F12 = VK_F12,
-	PrintScreen = VK_SNAPSHOT
+	PrintScreen = VK_SNAPSHOT,
+	ENTER = VK_RETURN
 };
 
 enum class KEY_STATE

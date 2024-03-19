@@ -12,6 +12,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	desc.hWnd = NULL;
 	desc.width = 1280.0f;
 	desc.height = 720.0f;
+	//desc.width = 1920.0f;
+	//desc.height = 1080.0f;
 	desc.clearColor = Color(0.7f, 0.7f, 0.7f, 1.f);
 	desc.App = make_shared<Demo>();
 

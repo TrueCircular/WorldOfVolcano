@@ -507,7 +507,11 @@ void PlayerController::PlayerPicking()
 
 		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
 
-		if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
+		if (pickObj && pickObj->GetName() == L"MagniBronzebeard")
+		{
+			MANAGER_IMGUI()->BeginDialogue();
+		}
+		else if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
 		{
 			_isPicked = true;
 			_pickedObj = pickObj;

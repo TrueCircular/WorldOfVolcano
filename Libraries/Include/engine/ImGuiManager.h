@@ -30,7 +30,9 @@ public:
 	void UpdatePicked(bool isPicked, uint32 maxHp = 0, uint32 hp = 0, wstring name = L"");
 	void NotifyPlayerAlive(bool isAlive) { show_death_window = !isAlive;}
 	int GetAttackQueueSize();
+	int GetChangeSceneQueueSize();
 	bool CheckGameStart() { return _isGameStart; }
+	void BeginDialogue() { show_dialogue_window = true; }
 private:
 	//Player Stat
 	float _hp = 1.0f;
@@ -40,6 +42,7 @@ private:
 	float _pickedHp = 1.0f;
 	//Rebirth
 	queue<bool> _rebirthQueue;
+	queue<bool> _changeSceneQueue;
 	//메인 타이틀
 	bool _isGameStart = false;
 	shared_ptr<Texture> _mainTexture;
@@ -51,11 +54,18 @@ private:
 	bool show_picked_hp_window = false;
 	bool show_chat_window = true;
 	bool show_skill_window = true;
+	bool show_quest_window = false;
 	bool show_death_window = false;
 	bool show_dialogue_window = false;
 	bool show_nickname_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+	//퀘스트
+	int geddonCount = 0;
+	std::vector<std::wstring> scripts;
+	int currentScriptIndex = 0; // 스크립트 인덱스
+	int currentCharIndex = 0; // 글자 인덱스
+	float currentCharTime = 0;
+	float printTime = 0.1f;
 	//채팅 멤버
 	char buffer[256] = "";
 	char nameBuffer[256] = "";
