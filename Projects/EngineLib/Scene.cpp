@@ -47,7 +47,7 @@ void Scene::LateUpdate()
 	}
 	for (const auto& obj : _cameras)
 	{
-		if (obj->GetCamera())
+		if (obj->GetCamera() != nullptr)
 		{
 			obj->Update();
 		}

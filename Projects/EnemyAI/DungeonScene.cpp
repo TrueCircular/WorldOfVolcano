@@ -125,6 +125,7 @@ void DungeonScene::Init()
 
 
 	SetTerrain(_terrain);
+
 	//Camera
 	{
 		frustom = make_shared<FrustomCamera>();
@@ -143,11 +144,11 @@ void DungeonScene::Init()
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
 		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
-		_warrior->AddComponent(make_shared<PlayerController>());
-		_warrior->Start();
-		//_warrior->GetTransform()->SetLocalPosition(spawnPos);
-		_warrior->GetTransform()->SetLocalPosition(Vec3(-44.f,0.f,277.f));
+		_warrior->SetCharacterController(make_shared<PlayerController>());
+		_warrior->SetSpwanPosition(Vec3(-44.f, 0.f, 277.f));
+		_warrior->GetTransform()->SetLocalPosition(Vec3(-44.f, 0.f, 277.f));
 		_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
+		_warrior->Start();
 
 		Add(_warrior);
 		AddShadow(_warrior);
@@ -202,10 +203,18 @@ void DungeonScene::Init()
 
 	//monster
 	{
+		auto height = make_shared<HeightGetter>();
+		height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+		Vec3 spwanPos = Vec3(103, 0, 240);
+		spwanPos.y = height->GetHeight(spwanPos);
+
+
 		auto baronGeddon = make_shared<BaronGeddon>();
 		baronGeddon->Awake();
+		baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+		baronGeddon->SetSpwanPosition(spwanPos);
 		baronGeddon->Start();
-		baronGeddon->GetTransform()->SetPosition(Vec3(103,0,240));
+		baronGeddon->GetTransform()->SetPosition(spwanPos);
 
 		Add(baronGeddon);
 	}

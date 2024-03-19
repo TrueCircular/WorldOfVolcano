@@ -3,6 +3,9 @@
 #include "BaseCollider.h"
 #include "SphereCollider.h"
 #include "BoxCollider.h"
+#include "CharacterController.h"
+#include "PlayerController.h"
+#include "AIController.h"
 
 void Unit::AddAnimation(const shared_ptr<Model>& com, wstring animOwner, wstring animName)
 {
@@ -31,6 +34,37 @@ void Unit::AddModelAndMaterial(const shared_ptr<Model>& com, wstring name)
 
 	com->ReadModel(MeshAdr);
 	com->ReadMaterial(MaterialAdr);
+}
+
+void Unit::SetSpwanPosition(const Vec3& spwanPos)
+{
+	auto playerCon = GetComponent<PlayerController>();
+	auto aiCon = GetComponent<AIController>();
+
+	if (playerCon != nullptr)
+	{
+		playerCon->SetSpwanPosition(spwanPos);
+	}
+	else if (aiCon != nullptr)
+	{
+		aiCon->SetSpwanPosition(spwanPos);
+	}
+}
+
+void Unit::SetCharacterController(const shared_ptr<CharacterController>& controller, AIType aiType)
+{
+	auto playerCon = dynamic_pointer_cast<PlayerController>(controller);
+	auto aiCon = dynamic_pointer_cast<AIController>(controller);
+
+	if (playerCon != nullptr)
+	{
+		AddComponent(playerCon);
+	}
+	else if (aiCon != nullptr)
+	{
+		aiCon->SetAIType(aiType);
+		AddComponent(aiCon);
+	}
 }
 
 void Unit::Awake()

@@ -593,11 +593,7 @@ int PlayerController::GetAttackQueueSize()
 	return -1;
 }
 
-void PlayerController::ReceiveEvent(const EventArgs& args)
-{
-}
-
-void PlayerController::DispatchEvent()
+void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage)
 {
 }
 

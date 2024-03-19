@@ -7,6 +7,9 @@
 
 BaronGeddon::BaronGeddon()
 {
+	_device = GRAPHICS()->GetDevice();
+	_deviceContext = GRAPHICS()->GetDeviceContext();
+	_objType = ObjectType::EnemyUnit;
 }
 
 BaronGeddon::~BaronGeddon()
@@ -15,34 +18,16 @@ BaronGeddon::~BaronGeddon()
 
 void BaronGeddon::CharacterInit()
 {
+	//Character Info
 	auto chinfo = make_shared<CharacterInfo>();
 	{
-		{
-			//CHARACTER_INFO saveInfo;
-			//saveInfo._name = L"BaronGeddon";
-			//saveInfo._hp = 80000;
-			//saveInfo._mp = 1000;
-			//saveInfo._atk = 250;
-			//saveInfo._def = 200;
-			//saveInfo._moveSpeed = 35;
-			//saveInfo._aggroLevel = 0;
-			//saveInfo._attackRange = 30;
-			//saveInfo._attackTime = 0.8f;
-			//saveInfo._traceRadius = 60.f;
-
-			//chinfo->SetDefaultCharacterInfo(saveInfo);
-			//wstring savePath = DATA_ADDR_UNIT;
-			//savePath += L"BaronGeddon/Information.xml";
-			//chinfo->SaveCharacterInformationFromFile(savePath);
-		}
-
 		wstring LoadPath = DATA_ADDR_UNIT;
 		LoadPath += L"BaronGeddon/Information.xml";
 		chinfo->LoadCharacterInformationFromFile(LoadPath);
 		AddComponent(chinfo);
 	}
 
-	//Character
+	//Character Model
 	{
 		_childModel = make_shared<GameObject>();
 
@@ -89,12 +74,6 @@ void BaronGeddon::CharacterInit()
 		auto collider = make_shared<SphereCollider>();
 		collider->SetRadius(35.f);
 		AddComponent(collider);
-	}
-
-	auto aiCon = make_shared<AIController>();
-	{
-		aiCon->SetAIType(AIType::EnemyUnit);
-		AddComponent(aiCon);
 	}
 
 	SetName(L"BaronGeddon");

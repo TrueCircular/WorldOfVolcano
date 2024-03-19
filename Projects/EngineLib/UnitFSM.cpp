@@ -4,12 +4,17 @@
 #include "CharacterInfo.h"
 #include <stdlib.h>
 #include <time.h>
+#include "HeightGetter.h"
 
 UnitFSMStand::UnitFSMStand()
 {
 }
 
 UnitFSMStand::~UnitFSMStand()
+{
+}
+
+void UnitFSMStand::SearchTraceTarget()
 {
 }
 
@@ -27,6 +32,7 @@ void UnitFSMStand::Enter(const shared_ptr<AIController>& controller)
 
 		if (_animator.lock() != nullptr)
 		{
+			_animator.lock()->SetFrameEnd(false);
 			_animator.lock()->SetNextAnimation(L"Stand");
 
 			_characterInfo = _controller.lock()->GetCharacterInfo();
@@ -50,8 +56,8 @@ void UnitFSMStand::Update()
 
 			for (const auto& target : _targetList)
 			{
-				Vec3 myPos = _transform.lock()->GetPosition();
-				Vec3 targetPos = target->GetTransform()->GetPosition();
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = target->GetTransform()->GetLocalPosition();
 				float Length = Vec3::Distance(myPos, targetPos);
 
 				//자신의 위치와 타겟 위치가 추적거리 안에 존재 할 경우 탐색
@@ -92,7 +98,7 @@ void UnitFSMStand::Update()
 						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
 						Out(UnitFSMState::Battle);
 					}
-					else if(minDistance <= _traceRadius)
+					else if (minDistance <= _traceRadius && minDistance > _attackRange)
 					{
 						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
 						Out(UnitFSMState::Trace);
@@ -107,25 +113,7 @@ void UnitFSMStand::Out(UnitFSMState transition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		switch (transition)
-		{
-		case UnitFSMState::Dead:
-		{
-			_controller.lock()->SetCurrentFsmState(UnitFSMState::Dead);
-		}break;
-		case UnitFSMState::Damaged:
-		{
-			_controller.lock()->SetCurrentFsmState(UnitFSMState::Damaged);
-		}break;
-		case UnitFSMState::Trace:
-		{
-			_controller.lock()->SetCurrentFsmState(UnitFSMState::Trace);
-		}break;
-		case UnitFSMState::Battle:
-		{
-			_controller.lock()->SetCurrentFsmState(UnitFSMState::Battle);
-		}break;
-		}
+		_controller.lock()->SetCurrentFsmState(transition);
 	}
 }
 
@@ -155,11 +143,13 @@ void UnitFSMTrace::Enter(const shared_ptr<AIController>& controller)
 
 		if (_animator.lock() != nullptr)
 		{
+			_animator.lock()->SetFrameEnd(false);
 			_animator.lock()->SetNextAnimation(L"Run");
 
 			_characterInfo = _controller.lock()->GetCharacterInfo();
 			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
 			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
+			_moveSpeed = _characterInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
 		}
 	}
 }
@@ -170,54 +160,60 @@ void UnitFSMTrace::Update()
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_transform.lock() != nullptr && _targetTransform.lock() != nullptr)
+		//자신의 위치에서 타겟방향으로 향하는 정규화 된 방향 벡터 계산(Normal Vector)
+		Vec3 myPos = _transform.lock()->GetLocalPosition();
+		Vec3 targetPos = _targetTransform.lock()->GetPosition();
+		targetPos.y = myPos.y;
+		Vec3 toTargetDir = targetPos - myPos;
+
+		//타겟 방향으로 회전
 		{
-			//자신의 위치에서 타겟방향으로 향하는 정규화 된 방향 벡터 계산(Normal Vector)
-			Vec3 myPos = _transform.lock()->GetPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetPosition();
-			Vec3 toTargetDir = targetPos - myPos;
-			toTargetDir.Normalize(toTargetDir);
-
-			//타겟 방향으로 회전
+			if (toTargetDir.Length() > 0)
 			{
-				Vec3 myForward = _transform.lock()->GetLookVector();
-				Vec3 myRight = _transform.lock()->GetRightVector();
-				Vec3 myUp = _transform.lock()->GetUpVector();
-
-				myRight.Normalize(myRight);
-				myForward.Normalize(myForward);
-
-				float dotAngle = myForward.Dot(toTargetDir);
-				float angle = acosf(dotAngle);
-
-				Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-				float LeftRight = cross.Dot(myUp);
-
-				if (LeftRight < 0)
+				toTargetDir.Normalize(toTargetDir);
 				{
-					angle = -angle;
+					Vec3 myForward = _transform.lock()->GetLookVector();
+					Vec3 myRight = _transform.lock()->GetRightVector();
+					Vec3 myUp = Vec3(0,1,0);
+
+					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+					float angle = acosf(dotAngle);
+
+					Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+					float LeftRight = cross.Dot(myUp);
+
+					if (LeftRight < 0)
+					{
+						angle = -angle;
+					}
+
+					angle = angle * _totargetRotationSpeed * _dt;
+
+					Vec3 myRot = _transform.lock()->GetLocalRotation();
+					myRot.y += angle;
+					_transform.lock()->SetLocalRotation(myRot);
 				}
-
-				angle = angle * _totargetRotationSpeed * _dt;
-
-				Vec3 myRot = _transform.lock()->GetLocalRotation();
-				myRot.y += angle;
-				_transform.lock()->SetLocalRotation(myRot);
 			}
+		}
 
-			//타겟 방향으로 이동 & Attack Range 체크 후 도달 시 Trasition
+		toTargetDir.Normalize(toTargetDir);
+
+		//타겟 방향으로 이동 & Attack Range 체크 후 도달 시 Trasition
+		{
+			Vec3 toTargetTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
+			_transform.lock()->SetPosition(toTargetTranslate);
+
+			Vec3 targetPos2 = _targetTransform.lock()->GetLocalPosition();
+
+			float distance = Vec3::Distance(toTargetTranslate, targetPos2);
+
+			if (distance <= _attackRange && distance <= _traceRadius)
 			{
-				Vec3 toTargetTranslate = myPos + (toTargetDir * 30.f * _dt);
-				_transform.lock()->SetPosition(toTargetTranslate);
-
-				Vec3 targetPos2 = _targetTransform.lock()->GetPosition();
-
-				float distance = Vec3::Distance(toTargetTranslate, targetPos2);
-
-				if (distance <= _attackRange)
-				{
-					Out(UnitFSMState::Battle);
-				}
+				Out(UnitFSMState::Battle);
+			}
+			else if (distance > _attackRange && distance > _traceRadius)
+			{
+				Out(UnitFSMState::MoveToSpwanPoint);
 			}
 		}
 	}
@@ -227,21 +223,7 @@ void UnitFSMTrace::Out(UnitFSMState transition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		switch (transition)
-		{
-		case UnitFSMState::Dead:
-		{
-			_controller.lock()->SetCurrentFsmState(UnitFSMState::Dead);
-		}break;
-		case UnitFSMState::MoveToSpwanPoint:
-		{
-			_controller.lock()->SetCurrentFsmState(UnitFSMState::MoveToSpwanPoint);
-		}break;
-		case UnitFSMState::Battle:
-		{
-			_controller.lock()->SetCurrentFsmState(UnitFSMState::Battle);
-		}break;
-		}
+		_controller.lock()->SetCurrentFsmState(transition);
 	}
 }
 
@@ -255,14 +237,96 @@ UnitFSMMoveToSpwanPoint::~UnitFSMMoveToSpwanPoint()
 
 void UnitFSMMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller)
 {
+	if (controller != nullptr)
+	{
+		_controller = controller;
+
+		if (_controller.lock()->GetTransform() != nullptr)
+			_transform = _controller.lock()->GetTransform();
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_animator.lock()->SetFrameEnd(false);
+			_animator.lock()->SetNextAnimation(L"Run");
+
+			_characterInfo = _controller.lock()->GetCharacterInfo();
+			_spwanPos = _controller.lock()->GetSpwanPosition();
+			_moveSpeed = _characterInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
+		}
+	}
+}
+
+void UnitFSMMoveToSpwanPoint::SearchTraceTarget()
+{
 }
 
 void UnitFSMMoveToSpwanPoint::Update()
 {
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		Vec3 myPos = _transform.lock()->GetLocalPosition();
+		_spwanPos.y = myPos.y;
+		Vec3 toTargetDir = _spwanPos - myPos;
+
+		//타겟 방향으로 회전
+		{
+			if (toTargetDir.Length() > 0)
+			{
+				toTargetDir.Normalize(toTargetDir);
+				{
+					Vec3 myForward = _transform.lock()->GetLookVector();
+					Vec3 myRight = _transform.lock()->GetRightVector();
+					Vec3 myUp = Vec3(0, 1, 0);
+
+					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+					float angle = acosf(dotAngle);
+
+					Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+					float LeftRight = cross.Dot(myUp);
+
+					if (LeftRight < 0)
+					{
+						angle = -angle;
+					}
+
+					angle = angle * _totargetRotationSpeed * _dt;
+
+					Vec3 myRot = _transform.lock()->GetLocalRotation();
+					myRot.y += angle;
+					_transform.lock()->SetLocalRotation(myRot);
+				}
+			}
+		}
+
+		toTargetDir.Normalize(toTargetDir);
+
+		float moveToLength = Vec3::Distance(myPos, _spwanPos);
+
+		if (moveToLength >= 1.f)
+		{
+			Vec3 toSpwanPosTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
+			_transform.lock()->SetLocalPosition(toSpwanPosTranslate);
+		}
+		else
+		{
+			_transform.lock()->SetLocalPosition(_spwanPos);
+			Out(UnitFSMState::Stand);
+		}
+	}
+
 }
 
 void UnitFSMMoveToSpwanPoint::Out(UnitFSMState transition)
 {
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmState(transition);
+	}
 }
 
 UnitFSMBattle::UnitFSMBattle()
@@ -290,6 +354,7 @@ void UnitFSMBattle::Enter(const shared_ptr<AIController>& controller)
 
 		if (_animator.lock() != nullptr)
 		{
+			_animator.lock()->SetFrameEnd(false);
 			_animator.lock()->SetNextAnimation(L"Battle");
 
 			_characterInfo = _controller.lock()->GetCharacterInfo();
@@ -307,40 +372,44 @@ void UnitFSMBattle::Update()
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
+		Vec3 myPos = _transform.lock()->GetLocalPosition();
+		Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+		targetPos.y = myPos.y;
+		Vec3 toTargetDir = targetPos - myPos;
+
 		//타겟 방향으로 회전
 		{
-			Vec3 myPos = _transform.lock()->GetPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetPosition();
-			Vec3 toTargetDir = targetPos - myPos;
-			toTargetDir.Normalize(toTargetDir);
-
-			Vec3 myForward = _transform.lock()->GetLookVector();
-			Vec3 myRight = _transform.lock()->GetRightVector();
-			Vec3 myUp = _transform.lock()->GetUpVector();
-
-			myRight.Normalize(myRight);
-			myForward.Normalize(myForward);
-
-			float dotAngle = myForward.Dot(toTargetDir);
-			float angle = acosf(dotAngle);
-
-			Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-			float LeftRight = cross.Dot(myUp);
-
-			if (LeftRight < 0)
+			if (toTargetDir.Length() > 0)
 			{
-				angle = -angle;
+				toTargetDir.Normalize(toTargetDir);
+				{
+					Vec3 myForward = _transform.lock()->GetLookVector();
+					Vec3 myRight = _transform.lock()->GetRightVector();
+					Vec3 myUp = Vec3(0, 1, 0);
+
+					myForward.Normalize();
+
+					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+					float angle = acosf(dotAngle);
+
+					Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+					float LeftRight = cross.Dot(myUp);
+
+					if (LeftRight < 0)
+					{
+						angle = -angle;
+					}
+
+					angle = angle * _totargetRotationSpeed * _dt;
+
+					Vec3 myRot = _transform.lock()->GetLocalRotation();
+					myRot.y += angle;
+					_transform.lock()->SetLocalRotation(myRot);
+				}
 			}
-
-			angle = angle * _totargetRotationSpeed * _dt;
-
-			Vec3 myRot = _transform.lock()->GetLocalRotation();
-			myRot.y += angle;
-			_transform.lock()->SetLocalRotation(myRot);
 		}
 
-		Vec3 myPos = _transform.lock()->GetPosition();
-		Vec3 targetPos = _targetTransform.lock()->GetPosition();
+		toTargetDir.Normalize(toTargetDir);
 		float distance = Vec3::Distance(myPos, targetPos);
 
 		if (distance <= _attackRange)
@@ -375,44 +444,9 @@ void UnitFSMBattle::Update()
 
 void UnitFSMBattle::Out(UnitFSMState transition)
 {
-	switch (transition)
+	if (_controller.lock() != nullptr)
 	{
-	case UnitFSMState::Stand:
-	{
-		_controller.lock()->SetCurrentFsmState(UnitFSMState::Stand);
-	}break;	
-	case UnitFSMState::Damaged:
-	{
-		_controller.lock()->SetCurrentFsmState(UnitFSMState::Damaged);
-	}break;	
-	case UnitFSMState::Dead:
-	{
-		_controller.lock()->SetCurrentFsmState(UnitFSMState::Dead);
-	}break;	
-	case UnitFSMState::Trace:
-	{
-		_controller.lock()->SetCurrentFsmState(UnitFSMState::Trace);
-	}break;	
-	case UnitFSMState::MoveToSpwanPoint:
-	{
-		_controller.lock()->SetCurrentFsmState(UnitFSMState::MoveToSpwanPoint);
-	}break;	
-	case UnitFSMState::Attack:
-	{
-		_controller.lock()->SetCurrentFsmState(UnitFSMState::Attack);
-	}break;
-	case UnitFSMState::Ability1:
-	{
-		_controller.lock()->SetCurrentFsmState(UnitFSMState::Ability1);
-	}break;
-	case UnitFSMState::Ability2:
-	{
-		_controller.lock()->SetCurrentFsmState(UnitFSMState::Ability2);
-	}break;
-	case UnitFSMState::Event:
-	{
-		_controller.lock()->SetCurrentFsmState(UnitFSMState::Event);
-	}break;
+		_controller.lock()->SetCurrentFsmState(transition);
 	}
 }
 
@@ -444,6 +478,8 @@ void UnitFSMAttack::Enter(const shared_ptr<AIController>& controller)
 
 		if (_animator.lock() != nullptr)
 		{
+			_animator.lock()->SetFrameEnd(false);
+
 			int randAttack = rand() % 2;
 
 			if (randAttack == 0)
@@ -458,7 +494,6 @@ void UnitFSMAttack::Enter(const shared_ptr<AIController>& controller)
 			_characterInfo = _controller.lock()->GetCharacterInfo();
 			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
 			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
-			_animator.lock()->SetFrameEnd(false);
 		}
 	}
 }
@@ -467,67 +502,57 @@ void UnitFSMAttack::Update()
 {
 	if (_controller.lock() != nullptr)
 	{
-		_dt = MANAGER_TIME()->GetDeltaTime();
-
-		//타겟 방향으로 회전
-		{
-			Vec3 myPos = _transform.lock()->GetPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetPosition();
-			Vec3 toTargetDir = targetPos - myPos;
-			toTargetDir.Normalize(toTargetDir);
-
-			Vec3 myForward = _transform.lock()->GetLookVector();
-			Vec3 myRight = _transform.lock()->GetRightVector();
-			Vec3 myUp = _transform.lock()->GetUpVector();
-
-			myRight.Normalize(myRight);
-			myForward.Normalize(myForward);
-
-			float dotAngle = myForward.Dot(toTargetDir);
-			float angle = acosf(dotAngle);
-
-			Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-			float LeftRight = cross.Dot(myUp);
-
-			if (LeftRight < 0)
-			{
-				angle = -angle;
-			}
-
-			angle = angle * _totargetRotationSpeed * _dt;
-
-			Vec3 myRot = _transform.lock()->GetLocalRotation();
-			myRot.y += angle;
-			_transform.lock()->SetLocalRotation(myRot);
-		}
-
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
 			Out(UnitFSMState::Battle);
+		}
+
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		Vec3 myPos = _transform.lock()->GetLocalPosition();
+		Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+		targetPos.y = myPos.y;
+		Vec3 toTargetDir = targetPos - myPos;
+
+		//타겟 방향으로 회전
+		{
+			if (toTargetDir.Length() > 0)
+			{
+				toTargetDir.Normalize(toTargetDir);
+				{
+					Vec3 myForward = _transform.lock()->GetLookVector();
+					Vec3 myRight = _transform.lock()->GetRightVector();
+					Vec3 myUp = Vec3(0, 1, 0);
+
+					myForward.Normalize();
+
+					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+					float angle = acosf(dotAngle);
+
+					Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+					float LeftRight = cross.Dot(myUp);
+
+					if (LeftRight < 0)
+					{
+						angle = -angle;
+					}
+
+					angle = angle * _totargetRotationSpeed * _dt;
+
+					Vec3 myRot = _transform.lock()->GetLocalRotation();
+					myRot.y += angle;
+					_transform.lock()->SetLocalRotation(myRot);
+				}
+			}
 		}
 	}
 }
 
 void UnitFSMAttack::Out(UnitFSMState transition)
 {
-	switch (transition)
-	{
-	case UnitFSMState::Stand:
+	if (_controller.lock() != nullptr)
 	{
 		_controller.lock()->SetCurrentFsmState(transition);
-	}break;
-	case UnitFSMState::Damaged:
-	{
-		_controller.lock()->SetCurrentFsmState(transition);
-	}break;
-	case UnitFSMState::Dead:
-	{
-		_controller.lock()->SetCurrentFsmState(transition);
-	}break;
-	case UnitFSMState::Battle:
-	{
-		_controller.lock()->SetCurrentFsmState(transition);
-	}break;
 	}
 }
 

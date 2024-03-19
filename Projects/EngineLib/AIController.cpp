@@ -209,16 +209,18 @@ void AIController::Start()
 
 void AIController::FixedUpdate()
 {
+
+}
+
+void AIController::Update()
+{
 	if (_heightGetterCom.lock())
 	{
 		Vec3 tempPos = _transform.lock()->GetLocalPosition();
 		tempPos.y = _heightGetterCom.lock()->GetHeight();
 		_transform.lock()->SetLocalPosition(tempPos);
 	}
-}
 
-void AIController::Update()
-{
 	switch (_type)
 	{
 	case AIType::PlayableUnit:

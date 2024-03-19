@@ -35,10 +35,12 @@ private:
 	float _jumpPower = 20.f;
 	shared_ptr<JumpFlag>		_jumpState;
 	shared_ptr<PlayerUnitState>	_currentState;
+public:
+	//State Flag
 	bool _isAttack = false;
 	bool _isBattle = false;
 	bool _isAlive = true;
-
+public:
 	//Pick
 	bool _isPicked = false;
 	CHARACTER_INFO _pickedInfo;
@@ -68,7 +70,6 @@ private:
 	weak_ptr<GameObject> _camera;
 	Vec3 _camPos;
 	Vec3 _camRot;
-	//Vec3 _playerRot;
 	float _camDist = 0.f;
 	float _camMinDist = 0.f;
 	float _camMaxDist = 0.f;
@@ -112,8 +113,8 @@ public:
 	//Sound
 	void SetSoundController(shared_ptr<PlayerSoundController> controller) { _sound = controller; };
 public:
-	void ReceiveEvent(const EventArgs& args);
-	void DispatchEvent();
+	//Event
+	virtual void TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage) override;
 public:
 	virtual void Start() override;
 	virtual void FixedUpdate() override;

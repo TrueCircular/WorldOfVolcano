@@ -16,10 +16,9 @@ public:
 	virtual ~AIController(){}
 private:
 	weak_ptr<HeightGetter>		_heightGetterCom;
-	weak_ptr<Transform>			_transform;
-	shared_ptr<Transform>		_targetTransform;
+	weak_ptr<Transform>		_transform;
+	weak_ptr<Transform>		_targetTransform;
 	Vec3						_targetPos;
-	Vec3						_spwanPos;
 	AIType						_type = AIType::None;
 	weak_ptr<CharacterInfo>		_characterInfo;
 	shared_ptr<JumpFlag>		_jumpState;
@@ -33,7 +32,7 @@ private:
 	bool _isAttack = false;
 	bool _isAlive = true;
 private:
-	weak_ptr<ModelAnimator>				_animator;
+	shared_ptr<ModelAnimator>			_animator;
 private:
 	//Player
 	shared_ptr<PlayerUnitState>			_currentPlayerState;
@@ -59,7 +58,6 @@ public:
 	void notifyEnemyDeath() { _isAlive = false; }
 	void SetTargetTransform(const shared_ptr<Transform> transform) { _targetTransform = transform; }
 	void SetCurrentFsmState(UnitFSMState state);
-	void SetSpwanPosition(const Vec3& position) { _spwanPos = position; }
 	//Animation Controll
 	bool SetAnimState(const PlayerAnimType& type);
 	bool SetAnimState(const EnemyAnimType& type);
@@ -78,16 +76,17 @@ public:
 	const bool& IsAttack() const { return _isAttack; }
 	const bool& IsTrace() const { return _isTrace; }
 	const bool& IsAlive() const { return _isAlive; }
-	const shared_ptr<Transform>& GetTargetTransform() const { return _targetTransform; }
-	const Vec3& GetSpwanPosition() const { return _spwanPos; }
+	const shared_ptr<Transform>& GetTargetTransform() const { return _targetTransform.lock(); }
+	const shared_ptr<HeightGetter>& GetHeightGetter() const { return _heightGetterCom.lock(); }
 	//Animation Controll
-	const shared_ptr<ModelAnimator>& GetAnimator() const { return _animator.lock(); }
+	const shared_ptr<ModelAnimator>& GetAnimator() const { return _animator; }
 	const shared_ptr<Transform>& GetTransform() const { return _transform.lock(); }
 	const shared_ptr<PlayerUnitState>& GetCurrentPlayerUnitState() const { return _currentPlayerState; }
 	const shared_ptr<EnemyUnitState>& GetCurrentEnemyUnitState() const { return _currentEnemyState; }
 	const PlayerAnimType& GetCurrentPlayerAnimType() const { return _currentPlayerAnimState->GetStateAnimtype(); }
 	const EnemyAnimType& GetCurrentEnemyAnimType() const { return _currentEnemyAnimState->GetStateAnimtype(); }
 public:
+	//Event
 	virtual void TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage) override;
 public:
 	virtual void Start() override;

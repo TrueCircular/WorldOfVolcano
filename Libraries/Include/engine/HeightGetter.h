@@ -12,6 +12,8 @@ public:
 public:
 	void Set(Terrain* terrain) { _terrain = terrain; }
 	float GetHeight();
+	float GetHeight(const Vec3& position);
+
 	virtual void FixedUpdate();
 	virtual void Update();
 	virtual void LateUpdate();
