@@ -104,6 +104,7 @@ EffectOutput StormModelVS(EffectModel input)
 float4 PS(EffectOutput input) : SV_TARGET
 {
     
+       
     RadialGradientExponetialDesc radialDesc1;
     RadialGradientExponetialDesc radialDesc2;
     VectorToRadialValueDesc radialdesc;
@@ -122,21 +123,22 @@ float4 PS(EffectOutput input) : SV_TARGET
     
     
     float2 radialuv = VectorToRadialValue(radialdesc);
-    float2 noiseuv1 =float2(0,1);
+    float2 noiseuv1 = float2(0, 1);
     float2 noisespeed = float2(0, -1);
     noisespeed = mul(noisespeed, input.time);
     noiseuv1 = mul(input.uv, noiseuv1);
     noiseuv1 = noiseuv1 + noisespeed;
     radialuv = radialuv + noiseuv1;
-    float4 alpha = NoiseMap.Sample(LinearSampler,radialuv);
+    float4 alpha = NoiseMap.Sample(LinearSampler, radialuv);
+    //return alpha;
     float density = pow(alpha.a, 1.0f);
     density = density * 0.3f;
     float2 realuv = input.uv + float2(density, density);
     
     
-    float radial1 = RadialGradientExponetial(realuv,radialDesc1);
-    float radial2 = RadialGradientExponetial(realuv,radialDesc2);
-    float radialValue = radial1 - radial2;
+    float radial1 = RadialGradientExponetial(realuv, radialDesc1);
+    float radial2 = RadialGradientExponetial(realuv, radialDesc2);
+    float radialValue = abs(radial1 - radial2);
     float4 finalColor = particleColor;
     float3 rgbcolor = lerp(float3(0, 0, 0), particleColor.rgb, radialValue);
     if (typeB1)
@@ -149,10 +151,11 @@ float4 PS(EffectOutput input) : SV_TARGET
     }
     float opacity = particleColor.a * radialValue;
     float total = finalColor.r + finalColor.g + finalColor.b;
-    if (total < opacity * 3)
-    {
-        return float4(0, 0, 0, 0);
-    }
+    //if (total < opacity * 3)
+    //{
+    finalColor.a = opacity;
+    //    return finalColor;
+    //}
     return finalColor;
 
 }
@@ -160,7 +163,7 @@ float4 PS(EffectOutput input) : SV_TARGET
 technique11 T0
 {
     PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, StormVS, PS)
-    PASS_RS_BS_VP(P1, CullBack, AlphaBlendState, StormModelVS, PS)
+    PASS_RS_BS_VP(P1, CullNone, AlphaBlendState, StormModelVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

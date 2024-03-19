@@ -25,6 +25,9 @@
 #include "Smoke3.h"
 #include "FireStorm.h"
 #include "FireBall.h"
+#include "Polar.h"
+#include "MagicCircle.h"
+#include "LineSpark.h"
 
 void BaseScene::Init()
 {
@@ -192,7 +195,7 @@ void BaseScene::Init()
 	}
 
 	shared_ptr<WarriorRoar> roar = make_shared<WarriorRoar>();
-	auto _waranimator=_warrior->GetChildByName(L"Model")->GetModelAnimator();
+	auto _waranimator = _warrior->GetChildByName(L"Model")->GetModelAnimator();
 	roar->SetAnimator(_waranimator);
 	shared_ptr<Clap> clap = make_shared<Clap>();
 	shared_ptr<Smoke1> smoke1 = make_shared<Smoke1>();
@@ -200,6 +203,9 @@ void BaseScene::Init()
 	shared_ptr<Smoke3> smoke3 = make_shared<Smoke3>();
 	shared_ptr<FireStorm> storm = make_shared<FireStorm>();
 	shared_ptr<FireBall> fireBall = make_shared<FireBall>();
+	shared_ptr<Polar> polar = make_shared<Polar>();
+	shared_ptr<MagicCircle> magicCircle = make_shared<MagicCircle>();
+	shared_ptr<LineSpark> lineSpark = make_shared<LineSpark>();
 	tempTargetTrans = make_shared<Transform>();
 	tempTargetTrans->SetLocalPosition(Vec3(0, 80, 0));
 	MANATER_PARTICLE()->AddManagingParticle(L"WarriorRoar", roar);
@@ -207,8 +213,19 @@ void BaseScene::Init()
 	MANATER_PARTICLE()->AddManagingParticle(L"Smoke1", smoke1);
 	MANATER_PARTICLE()->AddManagingParticle(L"Smoke2", smoke2);
 	MANATER_PARTICLE()->AddManagingParticle(L"Smoke3", smoke3);
-	MANATER_PARTICLE()->AddManagingParticle(L"FireStorm",storm);
+	MANATER_PARTICLE()->AddManagingParticle(L"FireStorm", storm);
 	MANATER_PARTICLE()->AddManagingParticle(L"FireBall", fireBall);
+	MANATER_PARTICLE()->AddManagingParticle(L"Polar", polar);
+	MANATER_PARTICLE()->AddManagingParticle(L"MagicCircle", magicCircle);
+	MANATER_PARTICLE()->AddManagingParticle(L"LineSpark", lineSpark);
+	{
+	shared_ptr<Transform> pos = make_shared<Transform>();
+	pos->SetParent(_warrior->GetChildByName(L"Model")->GetTransform());
+	pos->SetLocalPosition(Vec3(0, 5, 5));
+	pos->SetLocalScale(Vec3(50, 50, 50));
+	ParticleInstance instancedata(5, pos, nullptr,0,true);
+	polar->AddParticle(instancedata);
+	}
 	SpawnManager::GetInstance().Init();
 }
 void BaseScene::Start()

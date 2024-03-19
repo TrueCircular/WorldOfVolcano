@@ -119,6 +119,12 @@
     <ClCompile Include="LineSpark.cpp">
       <Filter>particle\ParticleObjects</Filter>
     </ClCompile>
+    <ClCompile Include="MagicCircle.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Polar.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -205,6 +211,12 @@
       <Filter>particle\ParticleObjects</Filter>
     </ClInclude>
     <ClInclude Include="LineSpark.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicCircle.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Polar.h">
       <Filter>particle\ParticleObjects</Filter>
     </ClInclude>
   </ItemGroup>

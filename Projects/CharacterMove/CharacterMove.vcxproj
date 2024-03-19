@@ -169,6 +169,7 @@
     <ClInclude Include="LavaFlow.h" />
     <ClInclude Include="LayerSplatter.h" />
     <ClInclude Include="LineSpark.h" />
+    <ClInclude Include="MagicCircle.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="ManagerCleaner.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="ObjectExporter.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Polar.h" />
     <ClInclude Include="QuadTreeBlock.h" />
     <ClInclude Include="ServerSession.h" />
     <ClInclude Include="Skybox.h" />
@@ -209,6 +211,7 @@
     <ClCompile Include="LavaFlow.cpp" />
     <ClCompile Include="LayerSplatter.cpp" />
     <ClCompile Include="LineSpark.cpp" />
+    <ClCompile Include="MagicCircle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
     <ClCompile Include="ManagerCleaner.cpp" />
@@ -221,6 +224,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Polar.cpp" />
     <ClCompile Include="QuadTreeBlock.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Smoke1.cpp" />
