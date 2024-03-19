@@ -80,6 +80,7 @@ EffectOutput StormVS(EffectMesh input)
 
 float4 PS(EffectOutput input) : SV_TARGET
 {
+//    return float4(1, 1, 1, 1);
     float alpha = 1.0;
     if (input.time > duration / 2)
     {
@@ -93,7 +94,7 @@ float4 PS(EffectOutput input) : SV_TARGET
     }
     float4 color = EffectMap.Sample(LinearSampler, input.uv);
     float c = (color.r + color.g + color.b);
-    if (c > 0.2)
+    if (c > 0.25)
     {
         color.r = pow(color.r, dynamicColor.r);
         color.g = pow(color.g, dynamicColor.g);
@@ -113,7 +114,9 @@ float4 PS(EffectOutput input) : SV_TARGET
 
 technique11 T0
 {
-    PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, StormVS, PS)
+
+    PASS_RS_BS_VPNOD(P0, CullBack, AlphaBlendState, StormVS, PS)
+    PASS_RS_BS_VP(P1, CullBack, AlphaBlendState, StormVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

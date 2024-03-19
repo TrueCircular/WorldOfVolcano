@@ -11,11 +11,13 @@ void FireBall::Update()
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
 			--i;
+			instanceCounter--;
+			continue;
 		}
 
 		if (instanceList[i].isTargeting) {
 			Matrix lookMat= Matrix::CreateLookAt(instanceList[i].particleTransform->GetLocalPosition(), instanceList[i].targetTransform->GetLocalPosition(),
-				instanceList[i].particleTransform->GetLookVector());
+				Vec3(0,1,0));
 			Quaternion qlookat;
 			Vec3 trans;
 			Vec3 scale;
@@ -24,9 +26,11 @@ void FireBall::Update()
 			//TODO Need To mul to Model abRotate;
 
 			//
-
+			rotate.x += ::XMConvertToRadians(90.f);
+			rotate.y += ::XMConvertToRadians(90.f);
+			//rotate.z += ::XMConvertToRadians(180.f);
 			instanceList[i].particleTransform->SetLocalRotation(rotate);
-			Vec3 velocity = instanceList[i].particleTransform->GetLocalPosition() - instanceList[i].targetTransform->GetLocalPosition();
+			Vec3 velocity = instanceList[i].targetTransform->GetLocalPosition() -instanceList[i].particleTransform->GetLocalPosition() ;
 			velocity.Normalize();
 			velocity = velocity* (instanceList[i].speed * MANAGER_TIME()->GetDeltaTime());
 			Vec3 pos = instanceList[i].particleTransform->GetLocalPosition();
@@ -38,10 +42,12 @@ void FireBall::Update()
 				auto iter = instanceList.begin() + i;
 				instanceList.erase(iter);
 				--i;
+				instanceCounter--;
+				continue;
 			}
 			instanceList[i].particleTransform->SetLocalPosition(pos);
 		}
-		instanceList[i].particleTransform->Update();
+		instanceList[i].particleTransform->UpdateTransform();
 		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
 	}
 
@@ -67,8 +73,8 @@ FireBall::FireBall()
 	particleModel = MANAGER_RESOURCES()->GetResource<Model>(L"QuadModel");
 	if (particleModel == nullptr) {
 		particleModel = make_shared<Model>();
-		wstring modelPath = RESOURCES_ADDR_ASSET_STATIC;
-		modelPath += L"quadModel.mesh";
+		wstring modelPath = RESOURCES_ADDR_MESH_STATIC;
+		modelPath += L"SM_ky_quads/SM_ky_quads.mesh";
 		particleModel->ReadModel(modelPath);
 	}
 	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"FireEffect");
@@ -80,7 +86,7 @@ FireBall::FireBall()
 	_colorDesc.subColor = Vec4(1, 1, 0, 1);
 	colorBuffer = shader->GetConstantBuffer("ColorBuffer");
 	colorData = make_shared<ConstantBuffer<ColorDesc>>();
-
+	colorData->CreateConstantBuffer();
 	noiseTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"NoiseMap18");
 	if (noiseTexture == nullptr) {
 		noiseTexture = make_shared<Texture>();
@@ -88,10 +94,10 @@ FireBall::FireBall()
 		MANAGER_RESOURCES()->AddResource(L"NoiseMap18", noiseTexture);
 	}
 	maskTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"FireMask");
-	if (noiseTexture == nullptr) {
-		noiseTexture = make_shared<Texture>();
-		noiseTexture->Load(L"../../Resources/Texture/Effect/T_ky_flare3.PNG");
-		MANAGER_RESOURCES()->AddResource(L"FireMask", noiseTexture);
+	if (maskTexture == nullptr) {
+		maskTexture = make_shared<Texture>();
+		maskTexture->Load(L"../../Resources/Texture/Effect/T_ky_flare3.PNG");
+		MANAGER_RESOURCES()->AddResource(L"FireMask", maskTexture);
 	}
 	noiseSRV = shader->GetSRV("FireNoise");
 	maskSRV = shader->GetSRV("FireMask");

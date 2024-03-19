@@ -70,14 +70,17 @@ EffectOutput StormVS(EffectMesh input)
 }
 float4 PS(EffectOutput input) : SV_TARGET
 {
-    
+
     float4 color = MaskMap.Sample(LinearSampler, input.uv);
     float alpha = pow(color.a, 1.0f);
     alpha = particleColor.a * alpha;
     float3 rgbcolor = color.rgb * particleColor.rgb;
     
     color = float4(rgbcolor, alpha);
-    
+    if (color.r + color.g + color.b < alpha / 1.5)
+    {
+        return float4(0, 0, 0, 0);
+    }
     return color;
 }
 

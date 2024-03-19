@@ -81,15 +81,20 @@ float4 PS(EffectOutput input) : SV_TARGET
         alpha = input.time / (duration / 2);
     }
     float4 color = EffectMap.Sample(LinearSampler, input.uv);
+    if (color.r + color.g + color.b < alpha * 1.3)
+    {
+        return float4(0, 0, 0, 0);
+    }
     color.r = pow(color.r, dynamicColor.r);
     color.g = pow(color.g, dynamicColor.g);
     color.b = pow(color.b, dynamicColor.b);
     float mulcolor = color.r + color.g;
     mulcolor = mulcolor + color.b;
-    float3 rgb = mul(particleColor.rgb, particleColor.a);
+    float3 rgb = lerp(color.rgb, particleColor.rgb, particleColor.a);
     rgb = mul(rgb, mulcolor);
     color = float4(rgb, alpha);
     
+
     return color;
 }
 

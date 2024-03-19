@@ -41,7 +41,14 @@ void WarriorRoar::Update()
 			--i;
 			continue;
 		}
-
+//		instanceList[i].particleTransform->UpdateTransform();
+		Vec3 scale = instanceList[i].particleTransform->GetLocalScale();
+		
+		scale.x = 0.1f+ instanceList[i].data.currentime*0.1;
+		scale.y = 0.1f+ instanceList[i].data.currentime * 0.1;
+		scale.z = 0.1f+ instanceList[i].data.currentime * 0.1;
+		instanceList[i].particleTransform->SetScale(scale);
+		instanceList[i].particleTransform->UpdateTransform();
 		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
 	}
 	instanceBuffer->ClearData();
@@ -67,13 +74,13 @@ void WarriorRoar::OnDestroy(ParticleInstance& instance)
 WarriorRoar::WarriorRoar()
 {
 	instanceBuffer = make_shared<ParticleInstancingBuffer>();
-	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
-//	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"WarriorRoar");
+//	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
+	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"WarriorRoar");
 	if (shader == nullptr) {
 		shader = make_shared<Shader>(L"WarriorRoar.fx");
 		MANAGER_RESOURCES()->AddResource<Shader>(L"WarriorRoar", shader);
 	}
-	_colorDesc.baseColor = Vec4(1, 0, 0, 1);
+	_colorDesc.baseColor = Vec4(1,0.5,0 , 1);
 	_colorDesc.subColor = Vec4(1, 1, 0, 1);
 	colorBuffer = shader->GetConstantBuffer("ColorBuffer");
 	colorData = make_shared<ConstantBuffer<ColorDesc>>();

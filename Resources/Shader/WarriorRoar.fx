@@ -143,7 +143,7 @@ matrix GetAnimationMatrix(EffectModel input)
 EffectOutput ModelVS(EffectModel input)
 {
 //    EffectModel outinput = input;
-//    outinput.position.xyz = mul(outinput.position.xyz, ((1 + input.time) * 3));
+//    outinput.position.xyz = mul(outinput.position.xyz, ((1 + input.time)));
   
     EffectOutput output;
     matrix m = GetAnimationMatrix(input);
@@ -164,20 +164,22 @@ float4 PS(EffectOutput input) : SV_TARGET
     ComputeNormalMapping(input.normal, input.tangent, input.uv);
     float4 origincolor = DiffuseMap.Sample(LinearSampler, input.uv);
     float4 color = ComputeLight(input.normal, input.uv, input.worldPosition);
-   //float4 mixcolor = color - origincolor;
-   //float paColor = mixcolor.r + mixcolor.g + mixcolor.b;
-   //if (paColor > 0)
-   //{
-   //    paColor = paColor / 3;
-   //}
-   //color = lerp(mixcolor, particleColor, paColor);
-   //color.a = paColor;
-    return origincolor;
+    float4 mixcolor = clamp(particleColor - origincolor,0,1);
+    mixcolor.a = 0.4f;
+    //float paColor = mixcolor.r + mixcolor.g + mixcolor.b;
+    //if (paColor > 0)
+    //{
+    //    paColor = paColor / 3;
+    //}
+    //color = lerp(mixcolor, particleColor, paColor);
+    //color.a = paColor;
+    return mixcolor;
 }
 
 technique11 T0
 {
     PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, ModelVS, PS)
+    PASS_VP(P1, ModelVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

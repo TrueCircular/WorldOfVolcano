@@ -71,12 +71,12 @@ EffectOutput StormVS(EffectMesh input)
 }
 float4 PS(EffectOutput input) : SV_TARGET
 {
-    float2 uBaseUV = float2(input.uv.x,0.0f);
+    float2 uBaseUV = float2(input.uv.x, 0.0f);
     float2 vBaseUV = float2(0.0f, input.uv.y);
 
     uBaseUV = mul(uBaseUV, LowParticleColor.b);
     vBaseUV = mul(vBaseUV, LowParticleColor.a);
-    float ubasetime = input.time*LowParticleColor.r;
+    float ubasetime = input.time * LowParticleColor.r;
     float vBasetime = input.time * LowParticleColor.g;
     uBaseUV = Panner(uBaseUV, float2(0, 1.0f), ubasetime);
     vBaseUV = Panner(vBaseUV, float2(1.0f, 0), vBasetime);
@@ -88,10 +88,10 @@ float4 PS(EffectOutput input) : SV_TARGET
     
     RadialGradientExponetialDesc desc;
     desc = Init_RadialGradientExponetialDesc();
-    desc.radius = 0.45f;
-    desc.density = 0.6f;
-    float3 rgbcolor = mul( particleColor.rgb, color.rgb);
-    float alpha = pow(color.a,2.0f);
+    desc.radius = 0.5f;
+    desc.density = 9;
+    float3 rgbcolor = mul(particleColor.rgb, color.rgb);
+    float alpha = pow(color.a, 2.0f);
     alpha = particleColor.a * alpha;
     float radialMask = RadialGradientExponetial(input.uv, desc);
     alpha = alpha * radialMask;

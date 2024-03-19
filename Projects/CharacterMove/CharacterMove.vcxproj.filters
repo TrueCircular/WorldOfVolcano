@@ -104,6 +104,21 @@
     <ClCompile Include="FireBall.cpp">
       <Filter>particle\ParticleObjects</Filter>
     </ClCompile>
+    <ClCompile Include="Clap.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Smoke1.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Smoke2.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Smoke3.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="LineSpark.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -175,6 +190,21 @@
       <Filter>particle\ParticleObjects</Filter>
     </ClInclude>
     <ClInclude Include="FireBall.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Clap.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Smoke1.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Smoke3.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Smoke2.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="LineSpark.h">
       <Filter>particle\ParticleObjects</Filter>
     </ClInclude>
   </ItemGroup>

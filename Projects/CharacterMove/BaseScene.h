@@ -20,6 +20,7 @@ class BaseScene : public Scene
 	shared_ptr<FrustomCamera> frustom;
 	//Spawn Pos
 	Vec3 spawnPos = Vec3(0, 25, 0);
+	shared_ptr<Transform> tempTargetTrans;
 	//obj
 	shared_ptr<Terrain> _terrain;
 	shared_ptr<QuadTreeTerrain> quadTreeTerrain;

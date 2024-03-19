@@ -112,11 +112,14 @@ inline ResourceType ResourceManager::GetResourceType()
 	if (std::is_same_v<T, Mesh>)
 		return ResourceType::Mesh;
 
+	if (std::is_same_v<T, Model>)
+		return ResourceType::Model;
+
 	if (std::is_same_v<T, Material>)
 		return ResourceType::Matertial;
 	if (std::is_same_v<T, Sounds>)
 		return ResourceType::Sounds;
-		
+
 	assert(false);
 	return ResourceType::None;
 }

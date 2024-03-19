@@ -70,35 +70,40 @@ EffectOutput StormVS(EffectMesh input)
 }
 float4 PS(EffectOutput input) : SV_TARGET
 {
-    float2 doubleUV = mul(input.uv,2.0f);
+   
+    float2 doubleUV = mul(input.uv, 2.0f);
     float2 pannedUV1 = Panner(doubleUV, float2(0.2f, 1.0f), input.time);
     float4 noisecolor = NoiseMap.Sample(LinearSampler, pannedUV1);
     float noiseScalar = noisecolor.r * 0.15f;
-
     float2 uvOffset = float2(-0.08866f, 0.8f);
     uvOffset = input.uv + uvOffset;
     
     uvOffset = uvOffset + float2(noiseScalar, noiseScalar);
     float4 color = MaskMap.Sample(LinearSampler, uvOffset);
-    
-    float rgbmixer = pow(color.b, 13.0f);
+    float rgbmixer = pow(color.b, 2.0f);
     float3 rgbcolor = mul(particleColor.rgb, rgbmixer);
     
     RadialGradientExponetialDesc desc;
     desc = Init_RadialGradientExponetialDesc();
     desc.radius = 0.4f;
-    noiseScalar= RadialGradientExponetial(input.uv,desc);
+    desc.center = float2(0.25f, 0.25f);
+//    desc.doInvert = true;
+    noiseScalar = RadialGradientExponetial(input.uv / 2, desc);
     noiseScalar = color.r * noiseScalar;
     noiseScalar = particleColor.a * noiseScalar;
-    color.rgb = rgbcolor;
+    color.rgb = 1 - rgbcolor;
     color.a = noiseScalar;
+    //if (noiseScalar < (color.r + color.g + color.b)/3)
+    //{
+    //    return float4(0, 0, 0, 0);
+    //}
     
     return color;
 }
 
 technique11 T0
 {
-    PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, StormVS, PS)
+    PASS_RS_BS_VP(P0, CullNone, AlphaBlendState, StormVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

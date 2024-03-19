@@ -11,9 +11,14 @@ void FireStorm::Update()
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
 			--i;
+			instanceCounter--;
+			continue;
 		}
 		Vec3 rotation = instanceList[i].particleTransform->GetLocalRotation();
-		rotation.x += (90.0f / PI) * (MANAGER_TIME()->GetDeltaTime());
+
+		rotation.x = ::XMConvertToRadians(90.f);
+		rotation.y = ::XMConvertToRadians(90.f);
+		rotation.z += (5.5f / PI) * (MANAGER_TIME()->GetDeltaTime());
 		instanceList[i].particleTransform->SetLocalRotation(rotation);
 		if (instanceList[i].isTargeting) {
 			Vec3 velocity = instanceList[i].particleTransform->GetLocalPosition() - instanceList[i].targetTransform->GetLocalPosition();
@@ -64,26 +69,27 @@ FireStorm::FireStorm()
 	particleModel = MANAGER_RESOURCES()->GetResource<Model>(L"Tornado");
 	if (particleModel == nullptr) {
 		particleModel = make_shared<Model>();
-		wstring modelPath = RESOURCES_ADDR_ASSET_STATIC;
-		modelPath += L"Tornado.mesh";
+		wstring modelPath = RESOURCES_ADDR_MESH_STATIC;
+		modelPath += L"SM_ky_tornado07/SM_ky_tornado07.mesh";
 		particleModel->ReadModel(modelPath);
+		MANAGER_RESOURCES()->AddResource<Model>(L"Tornado", particleModel);
 	}
 	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"StormEffect");
 	if (shader == nullptr) {
 		shader = make_shared<Shader>(L"Storm.fx");
 		MANAGER_RESOURCES()->AddResource<Shader>(L"StormEffect", shader);
 	}
-	_colorDesc.baseColor = Vec4(1, 0, 0, 1);
-	_colorDesc.subColor = Vec4(1, 1, 0, 1);
+	_colorDesc.baseColor = Vec4(1, 0.2, 0.2, 1);
+	_colorDesc.subColor = Vec4(0.8, 0.3, 0.3, 1);
 	colorBuffer= shader->GetConstantBuffer("ColorBuffer"); 
 	colorData = make_shared<ConstantBuffer<ColorDesc>>();
-
+	colorData->CreateConstantBuffer();
 	_fresneldesc.eyeLook = {};
 	_fresneldesc.eyePos = {};
 
 	fresnelBuffer = shader->GetConstantBuffer("FresnelBuffer");
 	fresnelData = make_shared<ConstantBuffer<FresnelDesc>>();
-
+	fresnelData->CreateConstantBuffer();
 	noiseTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"NoiseMap17");
 	if (noiseTexture == nullptr) {
 		noiseTexture = make_shared<Texture>();

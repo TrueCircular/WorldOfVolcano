@@ -117,8 +117,14 @@ void ParticleAnimRenderer::Render(vector<ParticleInstance>& data)
 	const auto& meshes = _animator->GetModel()->GetMeshes();
 	for (auto& mesh : meshes)
 	{
-		if (mesh->material)
-			mesh->material->Update();
+		if (mesh->material) {
+			auto mat = mesh->material;
+			auto originShader = mat->GetShader();
+			mat->SetShader(shader);
+			mat->Update();
+			mat->SetShader(originShader);
+		}
+		
 
 		// BoneIndex
 		shader->GetScalar("BoneIndex")->SetInt(mesh->boneIndex);
