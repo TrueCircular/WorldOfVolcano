@@ -179,7 +179,7 @@ void PlayerController::PlayerInput()
 
 		if (_sound)
 			_sound->PlaySound(_animState->GetStateAnimtype());
-	}
+
 
 
 	//Debug

@@ -249,14 +249,16 @@ struct EquipmentBoneIndexDesc
 	uint16 ShieldIndex = 0;
 };
 
-struct FresnelDesc {
+struct FresnelDesc 
+{
 	Vec4 eyePos;
 	Vec4 eyeLook;
 };
-struct ColorDesc {
+
+struct ColorDesc 
+{
 	Vec4 baseColor;
 	Vec4 subColor;
-};
 };
 
 struct AbilityDataDesc
