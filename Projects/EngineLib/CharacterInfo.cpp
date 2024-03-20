@@ -174,12 +174,7 @@ bool CharacterInfo::LoadCharacterInformationFromFile(const wstring& loadPath)
 			_defaultInfo._attackTime = tempInfo._attackTime;
 			_defaultInfo._traceRadius = tempInfo._traceRadius;
 
-			_info._name = _defaultInfo._name;
-			_info._hp = _defaultInfo._hp;
-			_info._maxHp = _defaultInfo._maxHp;
-			_info._mp = _defaultInfo._maxMp;
-			_info._atk = _defaultInfo._atk;
-			_info._def = _defaultInfo._def;
+			_info = _defaultInfo;
 		}
 	}
 
