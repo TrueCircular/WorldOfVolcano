@@ -21,7 +21,6 @@ void ParticleObj::DeleteInstance(ParticleInstance& data)
 
 void ParticleObj::Update()
 {
-
 	for (auto& c : instanceList) {
 		c.data.currentime+= MANAGER_TIME()->GetDeltaTime();
 		if (c.data.currentime > c.duration) {

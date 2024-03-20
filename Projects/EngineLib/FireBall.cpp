@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "FireBall.h"
-#include "engine/Utils.h"
+#include "Utils.h"
 
 void FireBall::Update()
 {

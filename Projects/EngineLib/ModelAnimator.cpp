@@ -11,7 +11,6 @@ ModelAnimator::ModelAnimator() : Super(ComponentType::ModelAnimator)
 ModelAnimator::ModelAnimator(shared_ptr<Shader> shader) : Super(ComponentType::ModelAnimator), _shader(shader)
 {
 	_tweenDesc = make_shared<TweenDesc>();
-
 }
 
 ModelAnimator::~ModelAnimator()
