@@ -25,6 +25,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{f75b717a-d2ea-4643-b65f-3bdc98c976d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader\Particle">
+      <UniqueIdentifier>{a0e464c5-fd91-4d60-9de8-fb6d1b3200ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">

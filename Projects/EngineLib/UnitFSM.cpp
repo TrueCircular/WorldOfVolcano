@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "HeightGetter.h"
+#include "Sounds.h"
 
 UnitFSMStand::UnitFSMStand()
 {
@@ -362,6 +363,7 @@ void UnitFSMBattle::Enter(const shared_ptr<AIController>& controller)
 			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
 			_attackTime = _characterInfo.lock()->GetDefaultCharacterInfo()._attackTime;
 			_attackTimeCal = 0.f;
+			_traceTime = 0.f;
 		}
 	}
 }
@@ -371,6 +373,7 @@ void UnitFSMBattle::Update()
 	if (_controller.lock() != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
+		_traceTime += _dt;
 
 		Vec3 myPos = _transform.lock()->GetLocalPosition();
 		Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
@@ -427,12 +430,17 @@ void UnitFSMBattle::Update()
 			//Attack Transition
 			{
 				if (_attackTimeCal >= _attackTime)
+				{
 					Out(UnitFSMState::Attack);
+				}
 			}
 		}
 		else if (distance > _attackRange && distance <= _traceRadius)
 		{
-			Out(UnitFSMState::Trace);
+			if (_traceTime + FLT_EPSILON > _traceWaitingTime)
+			{
+				Out(UnitFSMState::Trace);
+			}
 		}
 		else if (distance > _attackRange && distance > _traceRadius)
 		{
@@ -452,6 +460,41 @@ void UnitFSMBattle::Out(UnitFSMState transition)
 
 UnitFSMAttack::UnitFSMAttack()
 {
+	//Attack1 Sound
+	auto tempSound1 = MANAGER_RESOURCES()->GetResource<Sounds>(L"BaronGeddon_Attack1"); 
+	if (tempSound1 == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/BaronGeddon/BaronGeddon_Attack1.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(500);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"BaronGeddon_Attack1", sound);
+
+		_attack1Sound = sound->Clone();
+	}
+	else
+	{
+		_attack1Sound = tempSound1->Clone();
+		_attack1Sound->SetVolume(500);
+	}
+
+	//Attack2 Sound
+	auto tmepSound2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"BaronGeddon_Attack2");
+	if (tmepSound2 == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/BaronGeddon/BaronGeddon_Attack2.mp3";
+		sound->Load(soundPath);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"BaronGeddon_Attack2", sound);
+
+		_attack2Sound = sound->Clone();
+	}
+	else
+	{
+		_attack2Sound = tmepSound2->Clone();
+	}
 }
 
 UnitFSMAttack::~UnitFSMAttack()
@@ -485,10 +528,12 @@ void UnitFSMAttack::Enter(const shared_ptr<AIController>& controller)
 			if (randAttack == 0)
 			{
 				_animator.lock()->SetNextAnimation(L"Attack1");
+				_attack1Sound->Play(false);
 			}
 			else
 			{
 				_animator.lock()->SetNextAnimation(L"Attack2");
+				_attack2Sound->Play(false);
 			}
 
 			_characterInfo = _controller.lock()->GetCharacterInfo();

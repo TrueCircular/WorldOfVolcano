@@ -1,9 +1,12 @@
 #pragma once
 #include "AIController.h"
 
+#pragma region Forward Declaration
 class PlayableUnit;
 class CharacterInfo;
 class HeightGetter;
+class Sounds;
+#pragma endregion
 
 class UnitFSM
 {
@@ -11,10 +14,13 @@ public:
 	UnitFSM() {}
 	virtual ~UnitFSM() {}
 protected:
+	using TarceTargetList = unordered_set<shared_ptr<PlayableUnit>>;
+protected:
 	weak_ptr<Transform>		_transform;
 	weak_ptr<AIController>	_controller;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
+	TarceTargetList			_targetList;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller){}
 	virtual void Update(){}
@@ -23,14 +29,12 @@ public:
 
 class UnitFSMStand : public UnitFSM
 {
-	using TarceTargetList = unordered_set<shared_ptr<PlayableUnit>>;
 public:
 	UnitFSMStand();
 	virtual ~UnitFSMStand();
 private:
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
-	TarceTargetList			_targetList;
 private:
 	void SearchTraceTarget();
 public:
@@ -46,13 +50,12 @@ public:
 	UnitFSMTrace();
 	virtual ~UnitFSMTrace();
 private:
+	weak_ptr<Transform>		_targetTransform;
 	uint16					_moveSpeed = 0;
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 	float					_dt = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
-	TarceTargetList			_targetList;
-	weak_ptr<Transform>		_targetTransform;
 private:
 
 public:
@@ -63,7 +66,6 @@ public:
 
 class UnitFSMMoveToSpwanPoint : public UnitFSM
 {
-	using TarceTargetList = unordered_set<shared_ptr<PlayableUnit>>;
 public:
 	UnitFSMMoveToSpwanPoint();
 	virtual ~UnitFSMMoveToSpwanPoint();
@@ -73,7 +75,6 @@ private:
 	float				_totargetRotationSpeed = 5.0f;
 	uint16				_moveSpeed = 0;
 	Vec3				_spwanPos = Vec3(0.f);
-	TarceTargetList		_targetList;
 private:
 	void SearchTraceTarget();
 public:
@@ -88,13 +89,15 @@ public:
 	UnitFSMBattle();
 	virtual ~UnitFSMBattle();
 private:
+	weak_ptr<Transform>		_targetTransform;
 	float					_traceRadius = 0.f;
+	float					_traceTime = 0.f;
+	float					_traceWaitingTime = 0.75f;
+	float					_totargetRotationSpeed = 5.0f;
 	float					_attackRange = 0.f;
 	float					_attackTime = 0.f;
 	float					_attackTimeCal = 0.f;
 	float					_dt = 0.f;
-	float					_totargetRotationSpeed = 5.0f;
-	weak_ptr<Transform>		_targetTransform;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;
@@ -104,7 +107,7 @@ public:
 class UnitFSMAttack : public UnitFSM
 {
 public:
-	UnitFSMAttack();;
+	UnitFSMAttack();
 	virtual ~UnitFSMAttack();
 private:
 	float					_traceRadius = 0.f;
@@ -112,6 +115,9 @@ private:
 	float					_dt = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 	weak_ptr<Transform>		_targetTransform;
+private:
+	shared_ptr<Sounds>		_attack1Sound;
+	shared_ptr<Sounds>		_attack2Sound;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;

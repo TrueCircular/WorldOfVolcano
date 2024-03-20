@@ -107,7 +107,7 @@ void PlayerController::CameraMove()
 		{
 			_playerRot = _transform.lock()->GetLocalRotation();
 			float deltaX = _currentMousePos.x - _prevMousePos.x;
-			_playerRot.y += ::XMConvertToRadians(deltaX) * 10 * _dt;
+			_playerRot.y += ::XMConvertToRadians(deltaX) * 100 * _dt;
 			_transform.lock()->SetLocalRotation(_playerRot);
 
 			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);

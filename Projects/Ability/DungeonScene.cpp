@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "DungeonScene.h"
+
 #include "CameraMove.h"
 #include "LavaFlow.h"
 #include "StruectedLavaSprite.h"
@@ -15,7 +16,6 @@
 #include "ObjectExporter.h"
 #include "Demo.h"
 
-#include "DungeonScene.h"
 #include "BaseScene.h"
 #include "MainScene.h"
 

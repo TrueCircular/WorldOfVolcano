@@ -73,7 +73,7 @@ private:
 	float _camDist = 0.f;
 	float _camMinDist = 0.f;
 	float _camMaxDist = 0.f;
-	float _camSpeed = 500.f;
+	float _camSpeed = 1000.f;
 private:
 	//Sound
 	shared_ptr<PlayerSoundController> _sound = nullptr;

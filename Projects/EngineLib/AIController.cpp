@@ -3,8 +3,9 @@
 #include "HeightGetter.h"
 #include "CharacterInfo.h"
 #include "UnitFSM.h"
+#include "PlayableUnit.h"
 
-void AIController::InitAnimState()
+void AIController::InitState()
 {
 	switch (_type)
 	{
@@ -47,6 +48,9 @@ void AIController::InitAnimState()
 		//Ability2
 		_playerAnimStateList.push_back(make_shared<PlayerAnimAbility2>());
 
+		_currentPlayerState = make_shared<PlayerUnitState>();
+		*_currentPlayerState = PlayerUnitState::Stand;
+
 		_currentPlayerAnimState = _playerAnimStateList[0];
 		_currentPlayerAnimState->Enter(shared_from_this());
 	}break;
@@ -71,8 +75,6 @@ void AIController::InitAnimState()
 		_currentFsmState->Enter(shared_from_this());
 	}break;
 	}
-
-
 }
 
 void AIController::SetCurrentFsmState(UnitFSMState state)
@@ -139,26 +141,6 @@ bool AIController::SetAnimState(const PlayerAnimType& type)
 	return false;
 }
 
-bool AIController::SetAnimState(const EnemyAnimType& type)
-{
-	if (type == EnemyAnimType::None)
-	{
-		return false;
-	}
-	else
-	{
-		_currentEnemyAnimState->Out();
-		_currentEnemyAnimState = _enemyAnimStateList[static_cast<int>(type)];
-		if (_currentEnemyAnimState)
-		{
-			_currentEnemyAnimState->Enter(shared_from_this());
-			return true;
-		}
-	}
-
-	return false;
-}
-
 void AIController::TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage)
 {
 	auto characterInfo = sender->GetComponent<CharacterInfo>();
@@ -169,6 +151,63 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, uint16 damag
 
 	}
 
+}
+
+void AIController::SearchTraceTarget()
+{
+	_targetList = MANAGER_SCENE()->GetCurrentScene()->GetPlayableUnit();
+
+	if (_targetList.size() > 0)
+	{
+		//Taget 후보 결정
+		map<float, shared_ptr<PlayableUnit>> ToTargetList;
+
+		for (const auto& target : _targetList)
+		{
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = target->GetTransform()->GetLocalPosition();
+			float Length = Vec3::Distance(myPos, targetPos);
+
+			//자신의 위치와 타겟 위치가 추적거리 안에 존재 할 경우 탐색
+			if (Length <= _traceRadius)
+			{
+				ToTargetList.insert(make_pair(Length, target));
+			}
+		}
+
+		if (ToTargetList.size() > 0)
+		{
+			uint16 maxAggroPow = 0;
+			float minDistance = 0.f;
+			shared_ptr<PlayableUnit> FinalTarget;
+
+			//최종 타깃 계산
+			for (const auto& target : ToTargetList)
+			{
+				uint16 aggroPow = target.second->GetComponent<CharacterInfo>()->GetDefaultCharacterInfo()._aggroLevel;
+
+				if (aggroPow > maxAggroPow)
+				{
+					maxAggroPow = aggroPow;
+					minDistance = target.first;
+					FinalTarget = target.second;
+				}
+				else if (aggroPow == maxAggroPow && target.first < minDistance)
+				{
+					minDistance = target.first;
+					FinalTarget = target.second;
+				}
+			}
+
+			if (FinalTarget != nullptr)
+			{
+				if (minDistance <= _traceRadius)
+				{
+					SetTargetTransform(FinalTarget->GetTransform());
+				}
+			}
+		}
+	}
 }
 
 void AIController::Start()
@@ -190,21 +229,7 @@ void AIController::Start()
 		}
 	}
 
-	switch (_type)
-	{
-	case AIType::PlayableUnit:
-	{
-		_currentPlayerState = make_shared<PlayerUnitState>();
-		*_currentPlayerState = PlayerUnitState::Stand;
-	}break;
-	case AIType::EnemyUnit:
-	{
-		_currentEnemyState = make_shared<EnemyUnitState>();
-		*_currentEnemyState = EnemyUnitState::Stand;
-	}break;
-	}
-
-	InitAnimState();
+	InitState();
 }
 
 void AIController::FixedUpdate()
@@ -234,12 +259,6 @@ void AIController::Update()
 	}
 	break;
 	}
-
-	if (_aiSound)
-		_aiSound->PlaySound(GetCurrentPlayerAnimType());
-
-	if (_enemySound)
-		_enemySound->PlaySound(GetCurrentEnemyAnimType());
 }
 
 void AIController::LateUpdate()

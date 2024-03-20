@@ -44,10 +44,12 @@ void Unit::SetSpwanPosition(const Vec3& spwanPos)
 	if (playerCon != nullptr)
 	{
 		playerCon->SetSpwanPosition(spwanPos);
+		GetTransform()->SetLocalPosition(spwanPos);
 	}
 	else if (aiCon != nullptr)
 	{
 		aiCon->SetSpwanPosition(spwanPos);
+		GetTransform()->SetLocalPosition(spwanPos);
 	}
 }
 

@@ -199,6 +199,6 @@ void Graphics::RenderBegin()
 
 void Graphics::RenderEnd()
 {
-	HRESULT hr = _swapChain->Present(1, 0);
+	HRESULT hr = _swapChain->Present(g_gameDesc.vsync, 0);
 	CHECK(hr);
 }

@@ -14,6 +14,8 @@ Sounds::~Sounds()
 
 void Sounds::Load(const wstring& path)
 {
+	_soundPath = wstring(path);
+
 	if (g_fmSystem == nullptr) {
 		FMOD::System_Create(&g_fmSystem);
 		g_fmSystem->init(128, FMOD_INIT_NORMAL, 0);
@@ -25,7 +27,6 @@ void Sounds::Load(const wstring& path)
 	if (result != FMOD_OK) {
 		assert("ERROR FROM SOUNDCLASS FMOD");
 	}
-
 }
 FMOD::Channel* Sounds::Play(bool doLoop)
 {
@@ -91,7 +92,35 @@ void Sounds::Play3DEffect(Vec3* pos,Vec3 vel )
 	channel->set3DAttributes(&position, &velocity);
 	channel->setVolume(MANAGER_SOUND()->GetCurrentVolume());
 	MANAGER_SOUND()->AddChannel(pos, channel);
+}
 
+shared_ptr<Sounds> Sounds::Clone()
+{
+	if (_soundPath == L"")
+		return nullptr;
+
+	shared_ptr<Sounds> newSound = make_shared<Sounds>();
+
+	{
+		if (g_fmSystem == nullptr) {
+			FMOD::System_Create(&g_fmSystem);
+			g_fmSystem->init(128, FMOD_INIT_NORMAL, 0);
+
+		}
+
+		string multipath;
+
+		multipath.assign(_soundPath.begin(), _soundPath.end());
+		FMOD_RESULT result = g_fmSystem->createSound(multipath.c_str(), FMOD_DEFAULT, nullptr, &newSound->fm_Sound);
+		if (result != FMOD_OK) {
+			assert("ERROR FROM SOUNDCLASS FMOD");
+		}
+	}
+
+	newSound->_soundPath = _soundPath;
+	newSound->volume = volume;
+
+	return newSound;
 }
 
 //(Vec3 pos, Vec3 up, Vec3 forward, Vec3 velocity = { 1,1,1 })
