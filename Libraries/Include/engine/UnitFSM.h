@@ -16,13 +16,14 @@ public:
 protected:
 	using TarceTargetList = unordered_set<shared_ptr<PlayableUnit>>;
 protected:
+	weak_ptr<UnitStrategy>	_strategy;
 	weak_ptr<Transform>		_transform;
 	weak_ptr<AIController>	_controller;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
 	TarceTargetList			_targetList;
 public:
-	void SetStrategy();
+	void SetStrategy(const shared_ptr<UnitStrategy>& strategy) { _strategy = strategy; }
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller){}
 	virtual void Update(){}

@@ -16,7 +16,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;
-	virtual void Out(UnitFSMState transition) override;
+	virtual void Out(const wstring& transition) override;
 };
 
 class MoltenGaintDamaged : public DamagedStrategy
@@ -27,7 +27,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;
-	virtual void Out(UnitFSMState transition) override;
+	virtual void Out(const wstring& transition) override;
 };
 
 class MoltenGaintStun : public StunStrategy
@@ -38,7 +38,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;
-	virtual void Out(UnitFSMState transition) override;
+	virtual void Out(const wstring& transition) override;
 };
 
 class MoltenGaintDead : public DeadStrategy
@@ -49,5 +49,49 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;
-	virtual void Out(UnitFSMState transition) override;
+	virtual void Out(const wstring& transition) override;
+};
+
+class MoltenGaintTrace : public TraceStrategy
+{
+public:
+	MoltenGaintTrace();
+	virtual ~MoltenGaintTrace();
+public:
+	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Update() override;
+	virtual void Out(const wstring& transition) override;
+};
+
+class MoltenGaintMoveToSpwanPoint : public MoveToSpwanPointStrategy
+{
+public:
+	MoltenGaintMoveToSpwanPoint();
+	virtual ~MoltenGaintMoveToSpwanPoint();
+public:
+	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Update() override;
+	virtual void Out(const wstring& transition) override;
+};
+
+class MoltenGaintBattle : public BattleStrategy
+{
+public:
+	MoltenGaintBattle();
+	virtual ~MoltenGaintBattle();
+public:
+	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Update() override;
+	virtual void Out(const wstring& transition) override;
+};
+
+class MoltenGaintAttack : public AttackStrategy
+{
+public:
+	MoltenGaintAttack();
+	virtual ~MoltenGaintAttack();
+public:
+	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Update() override;
+	virtual void Out(const wstring& transition) override;
 };

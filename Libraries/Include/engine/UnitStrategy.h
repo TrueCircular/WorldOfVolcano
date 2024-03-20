@@ -10,9 +10,11 @@ public:
 	UnitStrategy() {}
 	virtual ~UnitStrategy() {}
 public:
+	wstring _name;
+public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class StandStrategy : public UnitStrategy
@@ -23,7 +25,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class DamagedStrategy : public UnitStrategy
@@ -34,7 +36,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class StunStrategy : public UnitStrategy
@@ -45,7 +47,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class DeadStrategy : public UnitStrategy
@@ -56,7 +58,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class TraceStrategy : public UnitStrategy
@@ -67,7 +69,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class MoveToSpwanPointStrategy : public UnitStrategy
@@ -78,7 +80,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class BattleStrategy : public UnitStrategy
@@ -89,7 +91,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class AttackStrategy : public UnitStrategy
@@ -100,7 +102,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class AbilityStrategy : public UnitStrategy
@@ -111,7 +113,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
 
 class EventStrategy : public UnitStrategy
@@ -122,5 +124,5 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
 	virtual void Update() = 0;
-	virtual void Out(UnitFSMState transition) = 0;
+	virtual void Out(const wstring& transition) = 0;
 };
