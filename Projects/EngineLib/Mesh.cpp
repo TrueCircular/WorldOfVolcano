@@ -20,6 +20,15 @@ void Mesh::CreateQuad()
 	GeometryHelper::CreateQuad(_geometry);
 	CreateBuffers();
 }
+void Mesh::CreateQuadPlain()
+{
+	//_geometry = make_shared<Geometry<VertexTextureNormalData>>();
+	_geometry = make_shared<Geometry<VertexTextureNormalTangentData>>();
+
+	GeometryHelper::CreateQuadPlain(_geometry);
+	CreateBuffers();
+}
+
 
 void Mesh::CreateCube()
 {

@@ -172,6 +172,8 @@ void PlayerController::PlayerInput()
 		PlayerPicking();
 		PlayerAttack();
 		PlayerMove();
+		PlayerAbility1();
+	}
 
 		_animState->Update();
 
@@ -442,6 +444,14 @@ void PlayerController::PlayerAttack()
 	{
 		_battleTimer = 0.f;
 		*_currentState = PlayerUnitState::Attack;
+	}
+}
+
+void PlayerController::PlayerAbility1()
+{
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::E))
+	{
+		*_currentState = PlayerUnitState::Ability1;
 	}
 }
 

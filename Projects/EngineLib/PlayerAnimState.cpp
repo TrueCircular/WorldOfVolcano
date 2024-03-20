@@ -101,6 +101,11 @@ bool PlayerAnimIdle::Update()
 			}
 			return true;
 		}break;
+		case PlayerUnitState::Ability1:
+		{
+			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
+			return true;
+		}
 		}
 	}
 	else if (_aiContoller.lock())
@@ -1935,12 +1940,26 @@ bool PlayerAnimAbility1::Enter(const shared_ptr<CharacterController>& playerCont
 
 bool PlayerAnimAbility1::Update()
 {
+	if (_contoller.lock() != nullptr)
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			_animator.lock()->SetFrameEnd(false);
+
+			if (_contoller.lock() != nullptr)
+				_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
+
+			return true;
+		}
+	}
+
 	return false;
 }
 
 bool PlayerAnimAbility1::Out()
 {
-	return false;
+
+	return true;
 }
 
 bool PlayerAnimAbility2::Enter(const shared_ptr<CharacterController>& playerController)

@@ -20,6 +20,7 @@ public:
 public:
 	//P N T Tangent
 	static void CreateQuad(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry);
+	static void CreateQuadPlain(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry);
 	static void CreateCube(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry);
 	static void CreateGrid(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry, int32 sizeX, int32 sizeZ);
 	static void CreateGridWithDistance(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry, int32 sizeX, int32 sizeZ, float distance);

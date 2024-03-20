@@ -100,6 +100,9 @@
     <Filter Include="04. Component\ItemData\Equipment\Warrior">
       <UniqueIdentifier>{b11f81a0-a762-4f8e-8a38-75c8bed4b3f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Component\Particle">
+      <UniqueIdentifier>{334a19d2-d11f-49b0-9e1e-44b9dfb835df}</UniqueIdentifier>
+    </Filter>
     <Filter Include="04. Component\FSM">
       <UniqueIdentifier>{6ee66613-00d8-4f97-95bc-5589b0d2b6de}</UniqueIdentifier>
     </Filter>
@@ -420,6 +423,18 @@
     <ClInclude Include="WarriorChargeData.h">
       <Filter>04. Component\Ability\Warrior</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleInstance.h">
+      <Filter>04. Component\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleObj.h">
+      <Filter>04. Component\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleRenderer.h">
+      <Filter>04. Component\Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -717,6 +732,18 @@
     </ClCompile>
     <ClCompile Include="WarriorChargeData.cpp">
       <Filter>04. Component\Ability\Warrior</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleInstance.cpp">
+      <Filter>04. Component\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleObj.cpp">
+      <Filter>04. Component\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleRenderer.cpp">
+      <Filter>04. Component\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleManager.cpp">
+      <Filter>02. Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

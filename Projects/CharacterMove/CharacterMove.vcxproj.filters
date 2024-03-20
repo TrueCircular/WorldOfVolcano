@@ -16,9 +16,6 @@
     <Filter Include="Scripts\Component">
       <UniqueIdentifier>{a9bcc220-f2c3-429f-ab45-248cc26ddb81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Network">
-      <UniqueIdentifier>{69604ea8-069e-4b22-82db-f69b1a90b75d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scripts\GameObject">
       <UniqueIdentifier>{45e30557-44d4-4c20-aed9-e53ffd6c3370}</UniqueIdentifier>
     </Filter>
@@ -33,6 +30,9 @@
     </Filter>
     <Filter Include="particle\ParticleObjects">
       <UniqueIdentifier>{1306ba67-d6c8-4638-ba5e-3d56c10585d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main\Network">
+      <UniqueIdentifier>{69604ea8-069e-4b22-82db-f69b1a90b75d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -49,7 +49,7 @@
       <Filter>Scripts\Component</Filter>
     </ClCompile>
     <ClCompile Include="ClientPacketHandler.cpp">
-      <Filter>Network</Filter>
+      <Filter>Main\Network</Filter>
     </ClCompile>
     <ClCompile Include="LavaFlow.cpp" />
     <ClCompile Include="LayerSplatter.cpp" />
@@ -95,19 +95,34 @@
     <ClCompile Include="TestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleObj.cpp">
-      <Filter>particle</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleManager.cpp">
-      <Filter>particle</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleInstance.cpp">
-      <Filter>particle</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleRenderer.cpp">
-      <Filter>particle</Filter>
-    </ClCompile>
     <ClCompile Include="FireStorm.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="WarriorRoar.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="FireBall.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Clap.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Smoke1.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Smoke2.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Smoke3.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="LineSpark.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="MagicCircle.cpp">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Polar.cpp">
       <Filter>particle\ParticleObjects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -125,10 +140,10 @@
       <Filter>Scripts\Component</Filter>
     </ClInclude>
     <ClInclude Include="ClientPacketHandler.h">
-      <Filter>Network</Filter>
+      <Filter>Main\Network</Filter>
     </ClInclude>
     <ClInclude Include="ServerSession.h">
-      <Filter>Network</Filter>
+      <Filter>Main\Network</Filter>
     </ClInclude>
     <ClInclude Include="LavaFlow.h" />
     <ClInclude Include="LayerSplatter.h" />
@@ -174,19 +189,34 @@
     <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleObj.h">
-      <Filter>particle</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleManager.h">
-      <Filter>particle</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleInstance.h">
-      <Filter>particle</Filter>
-    </ClInclude>
-    <ClInclude Include="ParticleRenderer.h">
-      <Filter>particle</Filter>
-    </ClInclude>
     <ClInclude Include="FireStorm.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="WarriorRoar.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="FireBall.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Clap.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Smoke1.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Smoke3.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Smoke2.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="LineSpark.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicCircle.h">
+      <Filter>particle\ParticleObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Polar.h">
       <Filter>particle\ParticleObjects</Filter>
     </ClInclude>
   </ItemGroup>
@@ -222,6 +252,45 @@
       <Filter>Shader\Effects</Filter>
     </FxCompile>
     <FxCompile Include="..\..\Resources\Shader\MagicCircle.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\EarthCrack.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\LineSpark.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\EarthCrackLegacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\WarriorRoar.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Polar.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\PolarLegacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke2.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke2Legacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\SmokeLegacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke3.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\LineSparkLegacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke3Legacy.fx">
       <Filter>Shader\Effects</Filter>
     </FxCompile>
   </ItemGroup>

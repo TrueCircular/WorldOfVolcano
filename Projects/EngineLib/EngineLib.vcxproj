@@ -203,6 +203,10 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="ImGuiManager.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemData.h" />
+    <ClInclude Include="ParticleInstance.h" />
+    <ClInclude Include="ParticleManager.h" />
+    <ClInclude Include="ParticleObj.h" />
+    <ClInclude Include="ParticleRenderer.h" />
     <ClInclude Include="PlayerAnimState.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CharacterController.h" />
@@ -308,6 +312,10 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="ImGuiManager.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="ItemData.cpp" />
+    <ClCompile Include="ParticleInstance.cpp" />
+    <ClCompile Include="ParticleManager.cpp" />
+    <ClCompile Include="ParticleObj.cpp" />
+    <ClCompile Include="ParticleRenderer.cpp" />
     <ClCompile Include="PlayerAnimState.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CharacterController.cpp" />

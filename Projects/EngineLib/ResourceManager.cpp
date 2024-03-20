@@ -59,6 +59,11 @@ void ResourceManager::CreateDefaultMesh()
 		shared_ptr<Mesh> mesh = make_shared<Mesh>();
 		mesh->CreateQuad();
 		AddResource(L"Quad", mesh);
+	} 
+	{
+		shared_ptr<Mesh> mesh = make_shared<Mesh>();
+		mesh->CreateQuadPlain();
+		AddResource(L"QuadPlain", mesh);
 	}
 	{
 		shared_ptr<Mesh> mesh = make_shared<Mesh>();

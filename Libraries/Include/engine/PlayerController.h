@@ -84,6 +84,7 @@ private:
 	void PlayerMove();
 	void PlayerJump();
 	void PlayerAttack();
+	void PlayerAbility1();
 	void PlayerPicking();
 	void PlayerTargetControll();
 	void KeyStateCheck();

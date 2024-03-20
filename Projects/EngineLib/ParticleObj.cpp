@@ -22,7 +22,7 @@ void ParticleObj::DeleteInstance(ParticleInstance& data)
 void ParticleObj::Update()
 {
 
-	for (auto c : instanceList) {
+	for (auto& c : instanceList) {
 		c.data.currentime+= MANAGER_TIME()->GetDeltaTime();
 		if (c.data.currentime > c.duration) {
 			if (c.isLoop) {
@@ -34,9 +34,13 @@ void ParticleObj::Update()
 		}
 		
 	}
+}
+
+void ParticleObj::LateUpdate()
+{
 	if (colorData) {
 		colorData->CopyData(_colorDesc);
-		if(colorBuffer)
-		colorBuffer->SetConstantBuffer(colorData->GetBuffer().Get());
+		if (colorBuffer)
+			colorBuffer->SetConstantBuffer(colorData->GetBuffer().Get());
 	}
 }

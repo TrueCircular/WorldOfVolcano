@@ -18,6 +18,17 @@
 #include "BaseScene.h"
 #include "MainScene.h"
 
+#include "WarriorRoar.h"
+#include "Clap.h"
+#include "Smoke1.h"
+#include "Smoke2.h"
+#include "Smoke3.h"
+#include "FireStorm.h"
+#include "FireBall.h"
+#include "Polar.h"
+#include "MagicCircle.h"
+#include "LineSpark.h"
+
 void BaseScene::Init()
 {
 	//리소스 매니저 초기화
@@ -151,7 +162,7 @@ void BaseScene::Init()
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();
 		_childCamera->SetName(L"Camera");
-		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Debug, ProjectionType::Perspective, 100.f);
+		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 100.f);
 		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}
@@ -183,6 +194,39 @@ void BaseScene::Init()
 		//	bgm->Play(true);
 	}
 
+	shared_ptr<WarriorRoar> roar = make_shared<WarriorRoar>();
+	auto _waranimator = _warrior->GetChildByName(L"Model")->GetModelAnimator();
+	roar->SetAnimator(_waranimator);
+	shared_ptr<Clap> clap = make_shared<Clap>();
+	shared_ptr<Smoke1> smoke1 = make_shared<Smoke1>();
+	shared_ptr<Smoke2> smoke2 = make_shared<Smoke2>();
+	shared_ptr<Smoke3> smoke3 = make_shared<Smoke3>();
+	shared_ptr<FireStorm> storm = make_shared<FireStorm>();
+	shared_ptr<FireBall> fireBall = make_shared<FireBall>();
+	shared_ptr<Polar> polar = make_shared<Polar>();
+	shared_ptr<MagicCircle> magicCircle = make_shared<MagicCircle>();
+	shared_ptr<LineSpark> lineSpark = make_shared<LineSpark>();
+	tempTargetTrans = make_shared<Transform>();
+	tempTargetTrans->SetLocalPosition(Vec3(0, 80, 0));
+	MANATER_PARTICLE()->AddManagingParticle(L"WarriorRoar", roar);
+	MANATER_PARTICLE()->AddManagingParticle(L"Clap", clap);
+	MANATER_PARTICLE()->AddManagingParticle(L"Smoke1", smoke1);
+	MANATER_PARTICLE()->AddManagingParticle(L"Smoke2", smoke2);
+	MANATER_PARTICLE()->AddManagingParticle(L"Smoke3", smoke3);
+	MANATER_PARTICLE()->AddManagingParticle(L"FireStorm", storm);
+	MANATER_PARTICLE()->AddManagingParticle(L"FireBall", fireBall);
+	MANATER_PARTICLE()->AddManagingParticle(L"Polar", polar);
+	MANATER_PARTICLE()->AddManagingParticle(L"MagicCircle", magicCircle);
+	MANATER_PARTICLE()->AddManagingParticle(L"LineSpark", lineSpark);
+	{
+	shared_ptr<Transform> pos = make_shared<Transform>();
+	pos->SetParent(_warrior->GetTransform());
+	pos->SetLocalPosition(Vec3(-1, 8,3));
+	pos->SetLocalRotation(Vec3(::XMConvertToRadians(90), ::XMConvertToRadians(90),::XMConvertToRadians(-90)));
+	pos->SetLocalScale(Vec3(1.5, 1.5, 1.5));
+	ParticleInstance instancedata(5, pos, nullptr,0,true);
+	polar->AddParticle(instancedata);
+	}
 	SpawnManager::GetInstance().Init();
 }
 void BaseScene::Start()
@@ -290,11 +334,71 @@ void BaseScene::Update()
 
 	//skyBox->Update();
 	DamageIndicator::GetInstance().Frame();
-
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	scene->SetSceneName(L"DungeonScene");
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::E)) {
+		auto roarParticle = MANATER_PARTICLE()->GetParticleFromName(L"WarriorRoar");
+		shared_ptr<Transform> pos = make_shared<Transform>();
+		pos->SetParent(_warrior->GetChildByName(L"Model")->GetTransform());
+		ParticleInstance instancedata(1.2,pos, nullptr, 0);
+		auto _tweenDesc = _warrior->GetChildByName(L"Model")->GetModelAnimator()->GetTweenDesc();
+		roarParticle->AddParticle(instancedata,_tweenDesc);
+		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Clap");
+		shared_ptr<Transform> pos2 = make_shared<Transform>();
+		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		pos2->SetScale(Vec3(100,100,100));
+		ParticleInstance instancedata2(1.6, pos2, nullptr, 0);
+		clapParticle->AddParticle(instancedata2);
 
-	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
+	}	
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::C)) {
+		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke1");
+		shared_ptr<Transform> pos2 = make_shared<Transform>();
+		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		pos2->SetScale(Vec3(100, 100, 100));
+		ParticleInstance instancedata2(3, pos2, nullptr, 0);
+		clapParticle->AddParticle(instancedata2);
+
+	}
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::A)) {
+		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke2");
+		shared_ptr<Transform> pos2 = make_shared<Transform>();
+		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		pos2->SetScale(Vec3(100, 100, 100));
+		ParticleInstance instancedata2(3, pos2, nullptr, 0);
+		clapParticle->AddParticle(instancedata2);
+
+	}
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::D)) {
+		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke3");
+		shared_ptr<Transform> pos2 = make_shared<Transform>();
+		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		pos2->SetScale(Vec3(100, 100, 100));
+		ParticleInstance instancedata2(3, pos2, nullptr, 0);
+		clapParticle->AddParticle(instancedata2);
+
+	}
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::W)) {
+		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"FireStorm");
+		shared_ptr<Transform> pos2 = make_shared<Transform>();
+		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		pos2->SetScale(Vec3(1, 1, 1));
+		ParticleInstance instancedata2(3, pos2, nullptr, 0);
+		clapParticle->AddParticle(instancedata2);
+
+	}	
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::Z)) {
+		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"FireBall");
+		shared_ptr<Transform> pos2 = make_shared<Transform>();
+		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		pos2->SetScale(Vec3(1, 1, 1));
+		ParticleInstance instancedata2(3, pos2, tempTargetTrans, 100,true);
+		clapParticle->AddParticle(instancedata2);
+
+	}
+
+	MANATER_PARTICLE()->Update();
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::Q))
 	{
 		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
 		SpawnManager::GetInstance().Reset(name);
@@ -310,4 +414,5 @@ void BaseScene::LateUpdate()
 	quadTreeTerrain->Update();
 
 	DamageIndicator::GetInstance().Render();
+	MANATER_PARTICLE()->Render();
 }

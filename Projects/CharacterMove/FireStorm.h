@@ -1,5 +1,4 @@
 #pragma once
-#include "ParticleObj.h"
 class FireStorm : public ParticleObj
 {
 private:
@@ -10,6 +9,7 @@ private:
 	shared_ptr<Texture> noiseTexture;
 	shared_ptr<ConstantBuffer<FresnelDesc>> fresnelData;
 	ComPtr<ID3DX11EffectConstantBuffer> fresnelBuffer;
+
 	FresnelDesc _fresneldesc;
 public:
 	virtual void Update() override;

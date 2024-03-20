@@ -29,7 +29,7 @@ void ParticleMeshRenderer::Render(vector<ParticleInstance>& data)
 	_mesh->GetIndexBuffer()->PushData();
 	buffer->PushData();
 
-	shader->DrawIndexedInstanced(0, 0, _mesh->GetIndexBuffer()->GetCount(), buffer->GetCount());
+	shader->DrawIndexedInstanced(0, _pass, _mesh->GetIndexBuffer()->GetCount(), buffer->GetCount());
 }
 
 
@@ -68,8 +68,6 @@ void ParticleStaticRenderer::Render(vector<ParticleInstance>& data)
 	const auto& meshes = _model->GetMeshes();
 	for (auto& mesh : meshes)
 	{
-		if (mesh->material)
-			mesh->material->Update();
 
 		//Bone Index
 		shader->GetScalar("BoneIndex")->SetInt(mesh->boneIndex);
@@ -78,7 +76,7 @@ void ParticleStaticRenderer::Render(vector<ParticleInstance>& data)
 		mesh->indexBuffer->PushData();
 		buffer->PushData();
 
-		shader->DrawIndexedInstanced(0, 0, mesh->indexBuffer->GetCount(), buffer->GetCount());
+		shader->DrawIndexedInstanced(0, _pass, mesh->indexBuffer->GetCount(), buffer->GetCount());
 	}
 
 }
@@ -89,11 +87,8 @@ void ParticleAnimRenderer::Render(vector<ParticleInstance>& data)
 	if (_animator == nullptr)
 		return;
 
-	for (auto pData : data)
+	for (auto& pData : data)
 	{
-		ParticleInstanceData insdata;
-
-
 		buffer->AddData(pData.data);
 	}
 	// GlobalData
@@ -122,8 +117,14 @@ void ParticleAnimRenderer::Render(vector<ParticleInstance>& data)
 	const auto& meshes = _animator->GetModel()->GetMeshes();
 	for (auto& mesh : meshes)
 	{
-		if (mesh->material)
-			mesh->material->Update();
+		if (mesh->material) {
+			auto mat = mesh->material;
+			auto originShader = mat->GetShader();
+			mat->SetShader(shader);
+			mat->Update();
+			mat->SetShader(originShader);
+		}
+		
 
 		// BoneIndex
 		shader->GetScalar("BoneIndex")->SetInt(mesh->boneIndex);
@@ -132,6 +133,6 @@ void ParticleAnimRenderer::Render(vector<ParticleInstance>& data)
 		mesh->indexBuffer->PushData();
 
 		buffer->PushData();
-		shader->DrawIndexedInstanced(0, 0, mesh->indexBuffer->GetCount(), buffer->GetCount());
+		shader->DrawIndexedInstanced(0, _pass, mesh->indexBuffer->GetCount(), buffer->GetCount());
 	}
 }

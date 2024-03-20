@@ -2,6 +2,7 @@
 #include "ParticleInstance.h"
 #include "ParticleRenderer.h"
 
+class ColorDesc;
 
 class ParticleObj
 {
@@ -26,10 +27,11 @@ public:
 	UINT GetCountofInstance() { return instanceCounter; };
 public:
 	virtual void AddParticle(ParticleInstance& data);
+	virtual void AddParticle(ParticleInstance& data, shared_ptr<TweenDesc> desc) {};
 	virtual void DeleteInstance(ParticleInstance& data);
 	
 	virtual void Update();
-	virtual void LateUpdate()=0;
+	virtual void LateUpdate();
 
 	virtual void OnDestroy(ParticleInstance& instance)=0;
 };

@@ -4,6 +4,11 @@
 #include "Light.fx"
 #include "EffectBase.fx"
 
+
+#define MAX_MODEL_TRANSFORMS 250
+#define MAX_MODEL_KEYFRAMES 250
+#define MAX_MODEL_INSTANCE 500
+
 BlendState AlphaBlendState
 {
     BlendEnable[0] = true;
@@ -33,6 +38,24 @@ struct EffectMesh
     matrix world : INST;
     float time : INSTTIME;
 };
+struct EffectModel
+{
+    float4 position : POSITION;
+    float2 uv : TEXCOORD;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float4 blendIndices : BLEND_INDICES;
+    float4 blendWeights : BLEND_WEIGHTS;
+    uint instanceID : SV_INSTANCEID;
+    matrix world : INST;
+    float time : INSTTIME;
+};
+cbuffer BoneBuffer
+{
+    matrix BoneTransform[MAX_MODEL_TRANSFORMS];
+};
+uint BoneIndex;
+
 struct EffectOutput
 {
     float4 position : SV_POSITION;
@@ -57,6 +80,26 @@ EffectOutput StormVS(EffectMesh input)
     EffectOutput output;
     
    // output.position = mul(input.position, W);
+    output.position = mul(input.position, input.world);
+    output.worldPosition = output.position;
+    output.position = mul(output.position, VP);
+    float4x4 normalmat = VInv;
+    normalmat._41_42_43 = 0;
+    normalmat._44 = 1;
+    output.normal = normalize(mul(input.normal, normalmat));
+    
+    float3 Incident = normalize(output.worldPosition - eyePos.xyz);
+    output.reflect = Reflect(Incident, output.normal);
+    output.uv = input.uv;
+    output.time = input.time;
+    return output;
+}
+EffectOutput StormModelVS(EffectModel input)
+{
+    EffectOutput output;
+    
+   // output.position = mul(input.position, W);
+    output.position = mul(input.position, BoneTransform[BoneIndex]);
     output.position = mul(input.position, input.world);
     output.worldPosition = output.position;
     output.position = mul(output.position, VP);
@@ -176,6 +219,7 @@ float4 PS(EffectOutput input) : SV_TARGET
 technique11 T0
 {
     PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, StormVS, PS)
+    PASS_RS_BS_VP(P1, CullBack, AlphaBlendState, StormModelVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

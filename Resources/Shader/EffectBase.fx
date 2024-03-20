@@ -76,7 +76,7 @@ RadialGradientExponetialDesc Init_RadialGradientExponetialDesc()
     desc.center = float2(0.5f, 0.5f);
     desc.radius = 0.5f;
     desc.density = 2.33;
-    desc.doInvert = true;
+    desc.doInvert = false;
     
     return desc;
 }
