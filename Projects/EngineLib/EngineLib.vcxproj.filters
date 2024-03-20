@@ -58,9 +58,6 @@
     <Filter Include="04. Component\Colision">
       <UniqueIdentifier>{fa4b7f4d-a8f7-44b8-afca-ccfc8a9e6278}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. Component\Player">
-      <UniqueIdentifier>{ecb2a4f5-82c6-4049-aeca-b390ada6136b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\Item">
       <UniqueIdentifier>{97e872cd-cf84-487d-bb20-38bde4e90fab}</UniqueIdentifier>
     </Filter>
@@ -117,6 +114,9 @@
     </Filter>
     <Filter Include="04. Component\Ability\Ragnaros">
       <UniqueIdentifier>{c5b75787-4151-4a50-9e9e-e1300016a730}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Character">
+      <UniqueIdentifier>{ecb2a4f5-82c6-4049-aeca-b390ada6136b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -336,7 +336,7 @@
       <Filter>00. Engine\Resource</Filter>
     </ClInclude>
     <ClInclude Include="EquipmentSlot.h">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClInclude>
     <ClInclude Include="ConsumableItem.h">
       <Filter>03. GameObject\Item\Consumable</Filter>
@@ -402,7 +402,7 @@
       <Filter>04. Component\FSM</Filter>
     </ClInclude>
     <ClInclude Include="AbilitySlot.h">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClInclude>
     <ClInclude Include="Ability.h">
       <Filter>04. Component\Ability</Filter>
@@ -435,7 +435,7 @@
       <Filter>02. Managers</Filter>
     </ClInclude>
     <ClInclude Include="CharacterInfo.h">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -640,7 +640,7 @@
     </ClCompile>
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EquipmentSlot.cpp">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClCompile>
     <ClCompile Include="ConsumableItem.cpp">
       <Filter>03. GameObject\Item\Consumable</Filter>
@@ -712,7 +712,7 @@
       <Filter>04. Component\FSM</Filter>
     </ClCompile>
     <ClCompile Include="AbilitySlot.cpp">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClCompile>
     <ClCompile Include="Ability.cpp">
       <Filter>04. Component\Ability</Filter>
@@ -745,7 +745,7 @@
       <Filter>02. Managers</Filter>
     </ClCompile>
     <ClCompile Include="CharacterInfo.cpp">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
