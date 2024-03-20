@@ -12,7 +12,7 @@ public:
 	virtual void Update() override;
 	virtual void LateUpdate() override;
 
-	virtual void OnDestroy(ParticleInstance& instance) override;
+	virtual void OnDestroy(shared_ptr<ParticleInstance>& instance) override;
 public:
 	Smoke2();
 	~Smoke2();

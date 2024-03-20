@@ -7,7 +7,7 @@ void FireBall::Update()
 	ParticleObj::Update();
 
 	for (int i = 0; i < instanceList.size(); ++i) {
-		if (instanceList[i].isDestroy) {
+		if (instanceList[i]->isDestroy) {
 			OnDestroy(instanceList[i]);
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
@@ -16,8 +16,8 @@ void FireBall::Update()
 			continue;
 		}
 
-		if (instanceList[i].isTargeting) {
-			Matrix lookMat= Matrix::CreateLookAt(instanceList[i].particleTransform->GetLocalPosition(), instanceList[i].targetTransform->GetLocalPosition(),
+		if (instanceList[i]->isTargeting) {
+			Matrix lookMat= Matrix::CreateLookAt(instanceList[i]->particleTransform->GetLocalPosition(), instanceList[i]->targetTransform->GetLocalPosition(),
 				Vec3(0,1,0));
 			Quaternion qlookat;
 			Vec3 trans;
@@ -30,15 +30,15 @@ void FireBall::Update()
 			rotate.x += ::XMConvertToRadians(90.f);
 			rotate.y += ::XMConvertToRadians(90.f);
 			//rotate.z += ::XMConvertToRadians(180.f);
-			instanceList[i].particleTransform->SetLocalRotation(rotate);
-			Vec3 velocity = instanceList[i].targetTransform->GetLocalPosition() -instanceList[i].particleTransform->GetLocalPosition() ;
+			instanceList[i]->particleTransform->SetLocalRotation(rotate);
+			Vec3 velocity = instanceList[i]->targetTransform->GetLocalPosition() -instanceList[i]->particleTransform->GetLocalPosition() ;
 			velocity.Normalize();
-			velocity = velocity* (instanceList[i].speed * MANAGER_TIME()->GetDeltaTime());
-			Vec3 pos = instanceList[i].particleTransform->GetLocalPosition();
+			velocity = velocity* (instanceList[i]->speed * MANAGER_TIME()->GetDeltaTime());
+			Vec3 pos = instanceList[i]->particleTransform->GetLocalPosition();
 			pos += velocity;
-			Vec3 targetPos = instanceList[i].targetTransform->GetLocalPosition();
+			Vec3 targetPos = instanceList[i]->targetTransform->GetLocalPosition();
 			float distance = Vec3::Distance(pos,targetPos);
-			if (distance < instanceList[i].speed) {
+			if (distance < instanceList[i]->speed) {
 				OnDestroy(instanceList[i]);
 				auto iter = instanceList.begin() + i;
 				instanceList.erase(iter);
@@ -46,10 +46,10 @@ void FireBall::Update()
 				instanceCounter--;
 				continue;
 			}
-			instanceList[i].particleTransform->SetLocalPosition(pos);
+			instanceList[i]->particleTransform->SetLocalPosition(pos);
 		}
-		instanceList[i].particleTransform->UpdateTransform();
-		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
+		instanceList[i]->particleTransform->UpdateTransform();
+		instanceList[i]->data.world = instanceList[i]->particleTransform->GetWorldMatrix();
 	}
 
 }
@@ -64,7 +64,7 @@ void FireBall::LateUpdate()
 	
 }
 
-void FireBall::OnDestroy(ParticleInstance& instance)
+void FireBall::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
 }
 

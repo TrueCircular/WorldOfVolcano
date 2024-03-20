@@ -7,7 +7,7 @@ void Polar::Update()
 	ParticleObj::Update();
 
 	for (int i = 0; i < instanceList.size(); ++i) {
-		if (instanceList[i].isDestroy) {
+		if (instanceList[i]->isDestroy) {
 			OnDestroy(instanceList[i]);
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
@@ -16,8 +16,8 @@ void Polar::Update()
 			continue;
 		}
 
-		instanceList[i].particleTransform->UpdateTransform();
-		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
+		instanceList[i]->particleTransform->UpdateTransform();
+		instanceList[i]->data.world = instanceList[i]->particleTransform->GetWorldMatrix();
 	}
 
 }
@@ -31,7 +31,7 @@ void Polar::LateUpdate()
 
 }
 
-void Polar::OnDestroy(ParticleInstance& instance)
+void Polar::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
 }
 

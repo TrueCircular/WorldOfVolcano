@@ -31,7 +31,12 @@ struct ParticleInstance
 		speed = speedVel;
 		isLoop = loop;
 	};
-
+public:
+	void Reset() {
+		data.currentime = 0.0f;
+		data.world = Matrix::Identity;
+		isDestroy = false;
+	}
 };
 
 class ParticleInstancingBuffer

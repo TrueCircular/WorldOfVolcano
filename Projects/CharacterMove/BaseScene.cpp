@@ -18,16 +18,16 @@
 #include "BaseScene.h"
 #include "MainScene.h"
 
-#include "WarriorRoar.h"
-#include "Clap.h"
-#include "Smoke1.h"
-#include "Smoke2.h"
-#include "Smoke3.h"
-#include "FireStorm.h"
-#include "FireBall.h"
-#include "Polar.h"
-#include "MagicCircle.h"
-#include "LineSpark.h"
+#include "engine/WarriorRoar.h"
+#include "engine/Clap.h"
+#include "engine/Smoke1.h"
+#include "engine/Smoke2.h"
+#include "engine/Smoke3.h"
+#include "engine/FireStorm.h"
+#include "engine/FireBall.h"
+#include "engine/Polar.h"
+#include "engine/MagicCircle.h"
+#include "engine/LineSpark.h"
 
 void BaseScene::Init()
 {
@@ -224,7 +224,7 @@ void BaseScene::Init()
 	pos->SetLocalPosition(Vec3(-1, 8,3));
 	pos->SetLocalRotation(Vec3(::XMConvertToRadians(90), ::XMConvertToRadians(90),::XMConvertToRadians(-90)));
 	pos->SetLocalScale(Vec3(1.5, 1.5, 1.5));
-	ParticleInstance instancedata(5, pos, nullptr,0,true);
+	shared_ptr<ParticleInstance> instancedata = make_shared<ParticleInstance>(5, pos, nullptr, 0, true);
 	polar->AddParticle(instancedata);
 	}
 	SpawnManager::GetInstance().Init();
@@ -340,14 +340,14 @@ void BaseScene::Update()
 		auto roarParticle = MANATER_PARTICLE()->GetParticleFromName(L"WarriorRoar");
 		shared_ptr<Transform> pos = make_shared<Transform>();
 		pos->SetParent(_warrior->GetChildByName(L"Model")->GetTransform());
-		ParticleInstance instancedata(1.2,pos, nullptr, 0);
+		shared_ptr<ParticleInstance>  instancedata = make_shared<ParticleInstance>(1.2,pos, nullptr, 0);
 		auto _tweenDesc = _warrior->GetChildByName(L"Model")->GetModelAnimator()->GetTweenDesc();
 		roarParticle->AddParticle(instancedata,_tweenDesc);
 		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Clap");
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
 		pos2->SetScale(Vec3(100,100,100));
-		ParticleInstance instancedata2(1.6, pos2, nullptr, 0);
+		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(1.6, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
 
 	}	
@@ -356,7 +356,7 @@ void BaseScene::Update()
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
 		pos2->SetScale(Vec3(100, 100, 100));
-		ParticleInstance instancedata2(3, pos2, nullptr, 0);
+		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
 
 	}
@@ -365,7 +365,7 @@ void BaseScene::Update()
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
 		pos2->SetScale(Vec3(100, 100, 100));
-		ParticleInstance instancedata2(3, pos2, nullptr, 0);
+		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
 
 	}
@@ -374,7 +374,7 @@ void BaseScene::Update()
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
 		pos2->SetScale(Vec3(100, 100, 100));
-		ParticleInstance instancedata2(3, pos2, nullptr, 0);
+		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
 
 	}
@@ -383,7 +383,7 @@ void BaseScene::Update()
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
 		pos2->SetScale(Vec3(1, 1, 1));
-		ParticleInstance instancedata2(3, pos2, nullptr, 0);
+		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
 
 	}	
@@ -392,7 +392,7 @@ void BaseScene::Update()
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
 		pos2->SetScale(Vec3(1, 1, 1));
-		ParticleInstance instancedata2(3, pos2, tempTargetTrans, 100,true);
+		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, tempTargetTrans, 100,true);
 		clapParticle->AddParticle(instancedata2);
 
 	}

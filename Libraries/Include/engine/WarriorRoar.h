@@ -11,14 +11,14 @@ private:
 	vector<shared_ptr<TweenDesc>> eachTweenData;
 private:
 	void RemoveTweenData(int index);
-	virtual void AddParticle(ParticleInstance& data) override {};
+	virtual void AddParticle(shared_ptr<ParticleInstance> data) override {};
 public:
-	virtual void AddParticle(ParticleInstance& data, shared_ptr<TweenDesc> desc);
+	virtual void AddParticle(shared_ptr<ParticleInstance> data, shared_ptr<TweenDesc> desc);
 	void AddTweenData(shared_ptr<TweenDesc> tweenData);
 	void SetAnimator(shared_ptr<ModelAnimator> _animator);
 	virtual void Update() override;
 	virtual void LateUpdate() override;
-	virtual void OnDestroy(ParticleInstance& instance) override;
+	virtual void OnDestroy(shared_ptr<ParticleInstance>& instance) override;
 	
 	WarriorRoar();
 	~WarriorRoar();

@@ -6,7 +6,7 @@ void Smoke3::Update()
 	ParticleObj::Update();
 
 	for (int i = 0; i < instanceList.size(); ++i) {
-		if (instanceList[i].isDestroy) {
+		if (instanceList[i]->isDestroy) {
 			OnDestroy(instanceList[i]);
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
@@ -14,7 +14,7 @@ void Smoke3::Update()
 			--i;
 			continue;
 		}
-		Vec3 insPos = instanceList[i].particleTransform->GetPosition();
+		Vec3 insPos = instanceList[i]->particleTransform->GetPosition();
 		auto look = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraLookVector();
 		Matrix billmat = Matrix::CreateBillboard(insPos, MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraPosition(), MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraUpVector(), &look);
 
@@ -22,7 +22,7 @@ void Smoke3::Update()
 		Vec3 deScale;
 		Quaternion deRot;
 		billmat.Decompose(deScale, deRot, dePos);
-		Vec3 scales = instanceList[i].particleTransform->GetScale();
+		Vec3 scales = instanceList[i]->particleTransform->GetScale();
 		Matrix scaleMat = Matrix::CreateScale(scales);
 		Matrix rotate = Matrix::CreateFromQuaternion(deRot);
 		Matrix transmat = Matrix::CreateTranslation(insPos);
@@ -31,7 +31,7 @@ void Smoke3::Update()
 		tempMat *= rotate;
 		tempMat *= transmat;
 
-		instanceList[i].data.world = tempMat;
+		instanceList[i]->data.world = tempMat;
 	}
 	instanceBuffer->ClearData();
 }
@@ -46,7 +46,7 @@ void Smoke3::LateUpdate()
 	meshRenderer->Render(instanceList);
 }
 
-void Smoke3::OnDestroy(ParticleInstance& instance)
+void Smoke3::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
 }
 
