@@ -267,7 +267,7 @@
     <ClInclude Include="MetaData.h">
       <Filter>03. GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="GameFactory.h">
+    <ClInclude Include="StrategyFactory.h">
       <Filter>06. Utils</Filter>
     </ClInclude>
     <ClInclude Include="Warrior.h">
@@ -619,7 +619,7 @@
     <ClCompile Include="MetaData.cpp">
       <Filter>03. GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="GameFactory.cpp">
+    <ClCompile Include="StrategyFactory.cpp">
       <Filter>06. Utils</Filter>
     </ClCompile>
     <ClCompile Include="Warrior.cpp">

@@ -227,7 +227,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="EnginePch.h" />
     <ClInclude Include="FileUtils.h" />
     <ClInclude Include="FrustomCamera.h" />
-    <ClInclude Include="GameFactory.h" />
+    <ClInclude Include="StrategyFactory.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="GeometryHelper.h" />
@@ -347,7 +347,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="EnemyUnit.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="FrustomCamera.cpp" />
-    <ClCompile Include="GameFactory.cpp" />
+    <ClCompile Include="StrategyFactory.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GeometryHelper.cpp" />
