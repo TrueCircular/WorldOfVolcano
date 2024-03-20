@@ -25,7 +25,7 @@ ParticleManager* ParticleManager::GetInstance()
 
 void ParticleManager::Update()
 {
-	for (auto c : particleList) {
+	for (auto& c : particleList) {
 		if (c.second->GetCountofInstance() != 0) {
 			c.second->Update();
 		}
@@ -34,7 +34,7 @@ void ParticleManager::Update()
 
 void ParticleManager::Render()
 {
-	for (auto c : particleList) {
+	for (auto& c : particleList) {
 		if(c.second->GetCountofInstance()!=0){
 			c.second->LateUpdate();
 		}

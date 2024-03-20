@@ -58,9 +58,6 @@
     <Filter Include="04. Component\Colision">
       <UniqueIdentifier>{fa4b7f4d-a8f7-44b8-afca-ccfc8a9e6278}</UniqueIdentifier>
     </Filter>
-    <Filter Include="04. Component\Player">
-      <UniqueIdentifier>{ecb2a4f5-82c6-4049-aeca-b390ada6136b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03. GameObject\Item">
       <UniqueIdentifier>{97e872cd-cf84-487d-bb20-38bde4e90fab}</UniqueIdentifier>
     </Filter>
@@ -117,6 +114,12 @@
     </Filter>
     <Filter Include="04. Component\Ability\Ragnaros">
       <UniqueIdentifier>{c5b75787-4151-4a50-9e9e-e1300016a730}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Character">
+      <UniqueIdentifier>{ecb2a4f5-82c6-4049-aeca-b390ada6136b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Particle">
+      <UniqueIdentifier>{8a58d2e5-0ffc-49ab-81d7-923e73baa142}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -336,7 +339,7 @@
       <Filter>00. Engine\Resource</Filter>
     </ClInclude>
     <ClInclude Include="EquipmentSlot.h">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClInclude>
     <ClInclude Include="ConsumableItem.h">
       <Filter>03. GameObject\Item\Consumable</Filter>
@@ -402,7 +405,7 @@
       <Filter>04. Component\FSM</Filter>
     </ClInclude>
     <ClInclude Include="AbilitySlot.h">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClInclude>
     <ClInclude Include="Ability.h">
       <Filter>04. Component\Ability</Filter>
@@ -411,9 +414,6 @@
       <Filter>04. Component\Ability</Filter>
     </ClInclude>
     <ClInclude Include="WarriorCharge.h">
-      <Filter>04. Component\Ability\Warrior</Filter>
-    </ClInclude>
-    <ClInclude Include="WarriorRoar.h">
       <Filter>04. Component\Ability\Warrior</Filter>
     </ClInclude>
     <ClInclude Include="WarriorRoarData.h">
@@ -435,7 +435,37 @@
       <Filter>02. Managers</Filter>
     </ClInclude>
     <ClInclude Include="CharacterInfo.h">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="WarriorRoar.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Clap.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="FireBall.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="FireStorm.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="LineSpark.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicCircle.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Polar.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Smoke1.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Smoke2.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="Smoke3.h">
+      <Filter>07. Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -640,7 +670,7 @@
     </ClCompile>
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EquipmentSlot.cpp">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClCompile>
     <ClCompile Include="ConsumableItem.cpp">
       <Filter>03. GameObject\Item\Consumable</Filter>
@@ -712,7 +742,7 @@
       <Filter>04. Component\FSM</Filter>
     </ClCompile>
     <ClCompile Include="AbilitySlot.cpp">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
     </ClCompile>
     <ClCompile Include="Ability.cpp">
       <Filter>04. Component\Ability</Filter>
@@ -721,9 +751,6 @@
       <Filter>04. Component\Ability</Filter>
     </ClCompile>
     <ClCompile Include="WarriorCharge.cpp">
-      <Filter>04. Component\Ability\Warrior</Filter>
-    </ClCompile>
-    <ClCompile Include="WarriorRoar.cpp">
       <Filter>04. Component\Ability\Warrior</Filter>
     </ClCompile>
     <ClCompile Include="WarriorRoarData.cpp">
@@ -745,7 +772,37 @@
       <Filter>02. Managers</Filter>
     </ClCompile>
     <ClCompile Include="CharacterInfo.cpp">
-      <Filter>04. Component\Player</Filter>
+      <Filter>04. Component\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="WarriorRoar.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Clap.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="FireBall.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="FireStorm.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="LineSpark.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="MagicCircle.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Polar.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Smoke1.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Smoke2.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="Smoke3.cpp">
+      <Filter>07. Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

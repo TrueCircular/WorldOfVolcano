@@ -33,7 +33,7 @@ void CharacterInfo::UpdateAddInformation(const shared_ptr<ItemData>& data, const
 	else
 	{
 		int tempHP = _addInfo._AddHP -= data->GetItemInfo().HP;
-		if (tempHP < 0)
+		if (tempHP <= 0)
 		{
 			_addInfo._AddHP = 0;
 		}
@@ -43,7 +43,7 @@ void CharacterInfo::UpdateAddInformation(const shared_ptr<ItemData>& data, const
 		}
 
 		int tempMP = _addInfo._AddMP -= data->GetItemInfo().MP;
-		if (tempMP < 0)
+		if (tempMP <= 0)
 		{
 			_addInfo._AddMP = 0;
 		}
@@ -53,7 +53,7 @@ void CharacterInfo::UpdateAddInformation(const shared_ptr<ItemData>& data, const
 		}
 
 		int tempATK = _addInfo._AddATK -= data->GetItemInfo().ATK;
-		if (tempATK < 0)
+		if (tempATK <= 0)
 		{
 			_addInfo._AddATK = 0;
 		}
@@ -63,7 +63,7 @@ void CharacterInfo::UpdateAddInformation(const shared_ptr<ItemData>& data, const
 		}
 		
 		int tempDEF = _addInfo._AddDEF -= data->GetItemInfo().DEF;
-		if (tempDEF < 0)
+		if (tempDEF <= 0)
 		{
 			_addInfo._AddDEF = 0;
 		}

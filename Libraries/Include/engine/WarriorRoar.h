@@ -1,12 +1,34 @@
 #pragma once
-#include "Ability.h"
-
-class WarriorRoar : public Ability
+class WarriorRoar: public ParticleObj
 {
+private:
+	shared_ptr<ModelAnimator> particleAnimator;
+
+	ComPtr<ID3DX11EffectShaderResourceVariable> maskSRV;
+	shared_ptr<Texture> maskTexture;
+
+	InstancedTweenDesc instanceTweenDesc;
+	vector<shared_ptr<TweenDesc>> eachTweenData;
+private:
+	void RemoveTweenData(int index);
+	virtual void AddParticle(shared_ptr<ParticleInstance> data) override {};
 public:
+	virtual void AddParticle(shared_ptr<ParticleInstance> data, shared_ptr<TweenDesc> desc);
+	void AddTweenData(shared_ptr<TweenDesc> tweenData);
+	void SetAnimator(shared_ptr<ModelAnimator> _animator);
+	virtual void Update() override;
+	virtual void LateUpdate() override;
+	virtual void OnDestroy(shared_ptr<ParticleInstance>& instance) override;
+	
 	WarriorRoar();
-	virtual ~WarriorRoar();
-public:
-	virtual void Execute() override;
+	~WarriorRoar();
 };
+
+//if (gameObject->GetModelAnimator() == nullptr)
+//{
+//	gameObject->GetChildByName(L"Model")->GetModelAnimator()->UpdateTweenData();
+//	tweenDesc->tweens[i] = *gameObject->GetChildByName(L"Model")->GetModelAnimator()->GetTweenDesc();
+//	data.world = gameObject->GetChildByName(L"Model")->GetTransform()->GetWorldMatrix();
+//
+//}
 
