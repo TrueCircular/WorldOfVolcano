@@ -6,7 +6,7 @@ void FireStorm::Update()
 	ParticleObj::Update();
 
 	for (int i = 0; i < instanceList.size(); ++i) {
-		if (instanceList[i].isDestroy) {
+		if (instanceList[i]->isDestroy) {
 			OnDestroy(instanceList[i]);
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
@@ -14,30 +14,30 @@ void FireStorm::Update()
 			instanceCounter--;
 			continue;
 		}
-		Vec3 rotation = instanceList[i].particleTransform->GetLocalRotation();
+		Vec3 rotation = instanceList[i]->particleTransform->GetLocalRotation();
 
 		rotation.x = ::XMConvertToRadians(90.f);
 		rotation.y = ::XMConvertToRadians(90.f);
 		rotation.z += (5.5f / PI) * (MANAGER_TIME()->GetDeltaTime());
-		instanceList[i].particleTransform->SetLocalRotation(rotation);
-		if (instanceList[i].isTargeting) {
-			Vec3 velocity = instanceList[i].particleTransform->GetLocalPosition() - instanceList[i].targetTransform->GetLocalPosition();
+		instanceList[i]->particleTransform->SetLocalRotation(rotation);
+		if (instanceList[i]->isTargeting) {
+			Vec3 velocity = instanceList[i]->particleTransform->GetLocalPosition() - instanceList[i]->targetTransform->GetLocalPosition();
 			velocity.Normalize();
-			velocity = velocity* (instanceList[i].speed * MANAGER_TIME()->GetDeltaTime());
-			Vec3 pos = instanceList[i].particleTransform->GetLocalPosition();
+			velocity = velocity* (instanceList[i]->speed * MANAGER_TIME()->GetDeltaTime());
+			Vec3 pos = instanceList[i]->particleTransform->GetLocalPosition();
 			pos += velocity;
-			//Vec3 targetPos = instanceList[i].targetTransform->GetLocalPosition();
+			//Vec3 targetPos = instanceList[i]->targetTransform->GetLocalPosition();
 			//float distance = Vec3::Distance(pos,targetPos);
-			//if (distance < instanceList[i].speed) {
+			//if (distance < instanceList[i]->speed) {
 			//	OnDestroy(instanceList[i]);
 			//	auto iter = instanceList.begin() + i;
 			//	instanceList.erase(iter);
 			//	--i;
 			//}
-			instanceList[i].particleTransform->SetLocalPosition(pos);
+			instanceList[i]->particleTransform->SetLocalPosition(pos);
 		}
-		instanceList[i].particleTransform->Update();
-		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
+		instanceList[i]->particleTransform->Update();
+		instanceList[i]->data.world = instanceList[i]->particleTransform->GetWorldMatrix();
 	}
 	instanceBuffer->ClearData();
 }
@@ -59,7 +59,7 @@ void FireStorm::LateUpdate()
 	staticRenderer->Render(instanceList);
 }
 
-void FireStorm::OnDestroy(ParticleInstance& instance)
+void FireStorm::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
 }
 

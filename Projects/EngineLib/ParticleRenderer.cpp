@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ParticleRenderer.h"
 
-void ParticleMeshRenderer::Render(vector<ParticleInstance>& data)
+void ParticleMeshRenderer::Render(vector<shared_ptr<ParticleInstance>>& data)
 {
 
 	shader->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
@@ -17,10 +17,10 @@ void ParticleMeshRenderer::Render(vector<ParticleInstance>& data)
 	{
 
 		ParticleInstanceData insdata;
-		
 
-		buffer->AddData(pdata.data);
-	
+
+		buffer->AddData(pdata->data);
+
 
 	}
 
@@ -33,7 +33,7 @@ void ParticleMeshRenderer::Render(vector<ParticleInstance>& data)
 }
 
 
-void ParticleStaticRenderer::Render(vector<ParticleInstance>& data)
+void ParticleStaticRenderer::Render(vector<shared_ptr<ParticleInstance>>& data)
 {
 	if (_model == nullptr)
 		return;
@@ -55,14 +55,14 @@ void ParticleStaticRenderer::Render(vector<ParticleInstance>& data)
 		shader->PushLightData(lightObj->GetLight()->GetLightDesc());
 	}
 	shader->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
-	
+
 
 	for (auto pData : data)
 	{
 		ParticleInstanceData insdata;
 
 
-		buffer->AddData(pData.data);
+		buffer->AddData(pData->data);
 	}
 
 	const auto& meshes = _model->GetMeshes();
@@ -82,14 +82,14 @@ void ParticleStaticRenderer::Render(vector<ParticleInstance>& data)
 }
 
 //DONOT USE SINGLE MUST USE WITH OTHER RealPlaying Characters
-void ParticleAnimRenderer::Render(vector<ParticleInstance>& data)
+void ParticleAnimRenderer::Render(vector<shared_ptr<ParticleInstance>>& data)
 {
 	if (_animator == nullptr)
 		return;
 
 	for (auto& pData : data)
 	{
-		buffer->AddData(pData.data);
+		buffer->AddData(pData->data);
 	}
 	// GlobalData
 	shader->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);

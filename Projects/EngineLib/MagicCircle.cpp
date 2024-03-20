@@ -7,7 +7,7 @@ void MagicCircle::Update()
 	ParticleObj::Update();
 
 	for (int i = 0; i < instanceList.size(); ++i) {
-		if (instanceList[i].isDestroy) {
+		if (instanceList[i]->isDestroy) {
 			OnDestroy(instanceList[i]);
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
@@ -16,7 +16,7 @@ void MagicCircle::Update()
 			continue;
 		}
 
-		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
+		instanceList[i]->data.world = instanceList[i]->particleTransform->GetWorldMatrix();
 	}
 	instanceBuffer->ClearData();
 }
@@ -32,7 +32,7 @@ void MagicCircle::LateUpdate()
 	meshRenderer->Render(instanceList);
 }
 
-void MagicCircle::OnDestroy(ParticleInstance& instance)
+void MagicCircle::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
 }
 

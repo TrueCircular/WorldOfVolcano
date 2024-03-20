@@ -6,7 +6,7 @@ void Clap::Update()
 	ParticleObj::Update();
 
 	for (int i = 0; i < instanceList.size(); ++i) {
-		if (instanceList[i].isDestroy) {
+		if (instanceList[i]->isDestroy) {
 			OnDestroy(instanceList[i]);
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
@@ -15,7 +15,7 @@ void Clap::Update()
 			continue;
 		}
 
-		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
+		instanceList[i]->data.world = instanceList[i]->particleTransform->GetWorldMatrix();
 	}
 	instanceBuffer->ClearData();
 }
@@ -25,12 +25,12 @@ void Clap::LateUpdate()
 	ParticleObj::LateUpdate();
 
 	if(!instanceList.empty())
-	auto ctimes = shader->GetScalar("duration")->SetFloat(instanceList[0].duration);
+	auto ctimes = shader->GetScalar("duration")->SetFloat(instanceList[0]->duration);
 	quakeSRV->SetResource(quakeTexture->GetTexture().Get());
 	meshRenderer->Render(instanceList);
 }
 
-void Clap::OnDestroy(ParticleInstance& instance)
+void Clap::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
 }
 

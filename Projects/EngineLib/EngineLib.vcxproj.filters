@@ -437,6 +437,9 @@
     <ClInclude Include="CharacterInfo.h">
       <Filter>04. Component\Character</Filter>
     </ClInclude>
+    <ClInclude Include="WarriorRoar.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
     <ClInclude Include="Clap.h">
       <Filter>07. Particle</Filter>
     </ClInclude>
@@ -455,16 +458,13 @@
     <ClInclude Include="Polar.h">
       <Filter>07. Particle</Filter>
     </ClInclude>
+    <ClInclude Include="Smoke1.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
     <ClInclude Include="Smoke2.h">
       <Filter>07. Particle</Filter>
     </ClInclude>
     <ClInclude Include="Smoke3.h">
-      <Filter>07. Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="Smoke1.h">
-      <Filter>07. Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="WarriorRoar.h">
       <Filter>07. Particle</Filter>
     </ClInclude>
   </ItemGroup>
@@ -774,6 +774,9 @@
     <ClCompile Include="CharacterInfo.cpp">
       <Filter>04. Component\Character</Filter>
     </ClCompile>
+    <ClCompile Include="WarriorRoar.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
     <ClCompile Include="Clap.cpp">
       <Filter>07. Particle</Filter>
     </ClCompile>
@@ -792,16 +795,13 @@
     <ClCompile Include="Polar.cpp">
       <Filter>07. Particle</Filter>
     </ClCompile>
+    <ClCompile Include="Smoke1.cpp">
+      <Filter>07. Particle</Filter>
+    </ClCompile>
     <ClCompile Include="Smoke2.cpp">
       <Filter>07. Particle</Filter>
     </ClCompile>
     <ClCompile Include="Smoke3.cpp">
-      <Filter>07. Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="Smoke1.cpp">
-      <Filter>07. Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="WarriorRoar.cpp">
       <Filter>07. Particle</Filter>
     </ClCompile>
   </ItemGroup>

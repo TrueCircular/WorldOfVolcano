@@ -95,36 +95,6 @@
     <ClCompile Include="TestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="FireStorm.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="WarriorRoar.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="FireBall.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Clap.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Smoke1.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Smoke2.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Smoke3.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="LineSpark.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="MagicCircle.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="Polar.cpp">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -188,36 +158,6 @@
     </ClInclude>
     <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="FireStorm.h">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="WarriorRoar.h">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="FireBall.h">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Clap.h">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Smoke1.h">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Smoke3.h">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Smoke2.h">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="LineSpark.h">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="MagicCircle.h">
-      <Filter>particle\ParticleObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="Polar.h">
-      <Filter>particle\ParticleObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

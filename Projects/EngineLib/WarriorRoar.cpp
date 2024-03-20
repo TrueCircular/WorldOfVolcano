@@ -7,7 +7,7 @@ void WarriorRoar::RemoveTweenData(int index)
 	eachTweenData.erase(iter);
 }
 
-void WarriorRoar::AddParticle(ParticleInstance& data, shared_ptr<TweenDesc> desc)
+void WarriorRoar::AddParticle(shared_ptr<ParticleInstance> data, shared_ptr<TweenDesc> desc)
 {
 	instanceList.push_back(data);
 	AddTweenData(desc);
@@ -32,7 +32,7 @@ void WarriorRoar::Update()
 	ParticleObj::Update();
 
 	for (int i = 0; i < instanceList.size(); ++i) {
-		if (instanceList[i].isDestroy) {
+		if (instanceList[i]->isDestroy) {
 			OnDestroy(instanceList[i]);
 			RemoveTweenData(i);
 			auto iter = instanceList.begin() + i;
@@ -41,15 +41,15 @@ void WarriorRoar::Update()
 			--i;
 			continue;
 		}
-//		instanceList[i].particleTransform->UpdateTransform();
-		Vec3 scale = instanceList[i].particleTransform->GetLocalScale();
+//		instanceList[i]->particleTransform->UpdateTransform();
+		Vec3 scale = instanceList[i]->particleTransform->GetLocalScale();
 		
-		scale.x = 0.1f+ instanceList[i].data.currentime*0.1;
-		scale.y = 0.1f+ instanceList[i].data.currentime * 0.1;
-		scale.z = 0.1f+ instanceList[i].data.currentime * 0.1;
-		instanceList[i].particleTransform->SetScale(scale);
-		instanceList[i].particleTransform->UpdateTransform();
-		instanceList[i].data.world = instanceList[i].particleTransform->GetWorldMatrix();
+		scale.x = 0.1f+ instanceList[i]->data.currentime*0.1;
+		scale.y = 0.1f+ instanceList[i]->data.currentime * 0.1;
+		scale.z = 0.1f+ instanceList[i]->data.currentime * 0.1;
+		instanceList[i]->particleTransform->SetScale(scale);
+		instanceList[i]->particleTransform->UpdateTransform();
+		instanceList[i]->data.world = instanceList[i]->particleTransform->GetWorldMatrix();
 	}
 	instanceBuffer->ClearData();
 }
@@ -66,7 +66,7 @@ void WarriorRoar::LateUpdate()
 	
 }
 
-void WarriorRoar::OnDestroy(ParticleInstance& instance)
+void WarriorRoar::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
 
 }
