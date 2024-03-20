@@ -220,9 +220,10 @@ void BaseScene::Init()
 	MANATER_PARTICLE()->AddManagingParticle(L"LineSpark", lineSpark);
 	{
 	shared_ptr<Transform> pos = make_shared<Transform>();
-	pos->SetParent(_warrior->GetChildByName(L"Model")->GetTransform());
-	pos->SetLocalPosition(Vec3(0, 5, 5));
-	pos->SetLocalScale(Vec3(50, 50, 50));
+	pos->SetParent(_warrior->GetTransform());
+	pos->SetLocalPosition(Vec3(-1, 8,3));
+	pos->SetLocalRotation(Vec3(::XMConvertToRadians(90), ::XMConvertToRadians(90),::XMConvertToRadians(-90)));
+	pos->SetLocalScale(Vec3(1.5, 1.5, 1.5));
 	ParticleInstance instancedata(5, pos, nullptr,0,true);
 	polar->AddParticle(instancedata);
 	}

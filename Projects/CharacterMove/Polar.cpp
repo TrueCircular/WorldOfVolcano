@@ -50,7 +50,7 @@ Polar::Polar()
 		shader = make_shared<Shader>(L"Polar.fx");
 		MANAGER_RESOURCES()->AddResource<Shader>(L"Polar", shader);
 	}
-	_colorDesc.baseColor = Vec4(1, 0, 0, 1);
+	_colorDesc.baseColor = Vec4(1, 1, 1, 1);
 	_colorDesc.subColor = Vec4(1, 1, 0, 1);
 	colorBuffer = shader->GetConstantBuffer("ColorBuffer");
 	colorData = make_shared<ConstantBuffer<ColorDesc>>();
