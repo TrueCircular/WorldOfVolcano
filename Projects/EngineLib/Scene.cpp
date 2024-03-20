@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "BaseCollider.h"
 #include "FrustomCamera.h"
+#include "PlayableUnit.h"
+#include "EnemyUnit.h"
 
 void Scene::Init() {};
 
@@ -45,7 +47,7 @@ void Scene::LateUpdate()
 	}
 	for (const auto& obj : _cameras)
 	{
-		if (obj->GetCamera())
+		if (obj->GetCamera() != nullptr)
 		{
 			obj->Update();
 		}
@@ -65,7 +67,6 @@ void Scene::ShadowUpdate()
 }
 void Scene::Add(shared_ptr<GameObject> object)
 {
-
 	if (object->GetCamera() != nullptr)
 	{
 		_cameras.insert(object);
@@ -78,6 +79,23 @@ void Scene::Add(shared_ptr<GameObject> object)
 
 	if (object->GetCamera() == nullptr && object->GetLight() == nullptr)
 	{
+		if (object->GetObjectType() == ObjectType::PlayableUnit)
+		{
+			auto obj = dynamic_pointer_cast<PlayableUnit>(object);
+			if (obj != nullptr)
+			{
+				_playableUnits.insert(obj);
+			}
+		}
+		else if (object->GetObjectType() == ObjectType::EnemyUnit)
+		{
+			auto obj = dynamic_pointer_cast<EnemyUnit>(object);
+			if (obj != nullptr)
+			{
+				_enemyUnits.insert(obj);
+			}
+		}
+
 		_objects.insert(object);
 	}
 }

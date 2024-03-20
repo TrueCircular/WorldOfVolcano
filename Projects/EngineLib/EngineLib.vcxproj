@@ -174,6 +174,9 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Ability.h" />
+    <ClInclude Include="AbilityData.h" />
+    <ClInclude Include="AbilitySlot.h" />
     <ClInclude Include="AIController.h" />
     <ClInclude Include="AncientBelt.h" />
     <ClInclude Include="AncientBeltData.h" />
@@ -254,6 +257,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="Sounds.h" />
     <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="SpringArm.h" />
+    <ClInclude Include="StaticCollider.h" />
     <ClInclude Include="Structs.h" />
     <ClInclude Include="Technique.h" />
     <ClInclude Include="Terrain.h" />
@@ -263,13 +267,21 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Unit.h" />
+    <ClInclude Include="UnitFSM.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexData.h" />
     <ClInclude Include="Viewport.h" />
     <ClInclude Include="Warrior.h" />
+    <ClInclude Include="WarriorCharge.h" />
+    <ClInclude Include="WarriorChargeData.h" />
+    <ClInclude Include="WarriorRoar.h" />
+    <ClInclude Include="WarriorRoarData.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Ability.cpp" />
+    <ClCompile Include="AbilityData.cpp" />
+    <ClCompile Include="AbilitySlot.cpp" />
     <ClCompile Include="AIController.cpp" />
     <ClCompile Include="AncientBelt.cpp" />
     <ClCompile Include="AncientBeltData.cpp" />
@@ -353,6 +365,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="Sounds.cpp" />
     <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="SpringArm.cpp" />
+    <ClCompile Include="StaticCollider.cpp" />
     <ClCompile Include="Structs.cpp" />
     <ClCompile Include="Technique.cpp" />
     <ClCompile Include="Terrain.cpp" />
@@ -364,11 +377,16 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     </ClCompile>
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Unit.cpp" />
+    <ClCompile Include="UnitFSM.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexData.cpp" />
     <ClCompile Include="Viewport.cpp" />
     <ClCompile Include="Warrior.cpp" />
+    <ClCompile Include="WarriorCharge.cpp" />
+    <ClCompile Include="WarriorChargeData.cpp" />
+    <ClCompile Include="WarriorRoar.cpp" />
+    <ClCompile Include="WarriorRoarData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl" />

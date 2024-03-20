@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ImGuiManager.h"
+#include "CharacterInfo.h"
 
 ImGuiManager* ImGuiManager::_instance = nullptr;
 
@@ -369,6 +370,17 @@ void ImGuiManager::UpdatePicked(bool isPicked, uint32 maxHp, uint32 hp, wstring 
     int bufferSize = WideCharToMultiByte(CP_UTF8, 0, name.c_str(), -1, nullptr, 0, nullptr, nullptr);
     _name = new char[bufferSize];
     WideCharToMultiByte(CP_UTF8, 0, name.c_str(), -1, _name, bufferSize, nullptr, nullptr);
+}
+
+void ImGuiManager::UpdatePicked(bool isPicked, const shared_ptr<CharacterInfo>& info)
+{
+    //auto infomation = info->get
+    //show_picked_hp_window = isPicked;
+    //_pickedHp = static_cast<float>(hp) / static_cast<float>(maxHp);
+
+    //int bufferSize = WideCharToMultiByte(CP_UTF8, 0, name.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    //_name = new char[bufferSize];
+    //WideCharToMultiByte(CP_UTF8, 0, name.c_str(), -1, _name, bufferSize, nullptr, nullptr);
 }
 
 int ImGuiManager::GetAttackQueueSize()

@@ -11,6 +11,13 @@ float HeightGetter::GetHeight()
 	return _height;
 }
 
+float HeightGetter::GetHeight(const Vec3& position)
+{
+	_height = _terrain->GetHeight(position.x, position.z);
+
+	return _height;
+}
+
 void HeightGetter::FixedUpdate()
 {
 

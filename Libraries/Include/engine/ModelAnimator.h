@@ -45,7 +45,6 @@ public:
 	void RenderInstancing(shared_ptr<class InstancingBuffer>& buffer);
 	void RenderInstancingShadow(shared_ptr<class InstancingBuffer>& buffer,ShadowViewDesc& desc);
 	InstanceID GetInstanceID();
-
 public:
 	void SetPlay(bool play) { _isPlay = play; }
 	bool GetPlay() const { return _isPlay; }
@@ -55,6 +54,8 @@ public:
 	void SetFrameEnd(bool fr) { _isFrameEnd = fr; }
 	const shared_ptr<Model>& GetModel() const { return _model; }
 	vector<AnimTransform>& GetAnimTransform();
+	const shared_ptr<ModelAnimation>& GetCurrentAnimation() const { return _currentAnim; }
+	const shared_ptr<ModelAnimation>& GetNextAnimation() const { return _nextAnim; }
 public:
 	KeyframeDesc& GetKeyFrame() { return _keyFrameDesc; }
 	const shared_ptr<TweenDesc>& GetTweenDesc() { return _tweenDesc; }

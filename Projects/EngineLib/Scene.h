@@ -2,6 +2,8 @@
 
 class GameObject;
 class Terrain;
+class PlayableUnit;
+class EnemyUnit;
 
 class Scene
 {
@@ -18,6 +20,8 @@ public:
 	virtual void Remove(shared_ptr<GameObject> object);
 public:
 	unordered_set<shared_ptr<GameObject>> GetObjects() { return _objects; }
+	unordered_set<shared_ptr<PlayableUnit>>& GetPlayableUnit() { return _playableUnits; }
+	unordered_set <shared_ptr<EnemyUnit>>& GetEnemyUnits() { return _enemyUnits; }
 	unordered_set<shared_ptr<GameObject>> GetShadowObjects() { return _shadowobjects; }
 	shared_ptr<GameObject> GetCamera() { return _cameras.empty() ? nullptr : *_cameras.begin(); }
 	shared_ptr<GameObject> GetLight() { return _lights.empty() ? nullptr : *_lights.begin(); }
@@ -28,8 +32,10 @@ public:
 	void SetSceneName(wstring sceneName) { _sceneName = sceneName; }
 protected:
 	wstring _sceneName;
-	unordered_set<shared_ptr<GameObject>> _objects;
-	unordered_set<shared_ptr<GameObject>> _shadowobjects;
+	unordered_set<shared_ptr<GameObject>>	_objects;
+	unordered_set<shared_ptr<PlayableUnit>> _playableUnits;
+	unordered_set<shared_ptr<EnemyUnit>>	_enemyUnits;
+	unordered_set<shared_ptr<GameObject>>	_shadowobjects;
 	// Cache Camera
 	unordered_set<shared_ptr<GameObject>> _cameras;
 	// Cache Light

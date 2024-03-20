@@ -17,8 +17,7 @@ AncientRShoulderData::~AncientRShoulderData()
 
 bool AncientRShoulderData::ItemEffectToSelf(bool active)
 {
-	if (_itemOwnerUnitInfo.lock() == nullptr ||
-		_itemInfo.Name == L"")
+	if (_itemOwnerUnitInfo.lock() == nullptr)
 	{
 		return false;
 	}
@@ -26,25 +25,11 @@ bool AncientRShoulderData::ItemEffectToSelf(bool active)
 	{
 		if (active)
 		{
-			if (_isApply == false)
-			{
-				auto tempinfo = _itemOwnerUnitInfo.lock()->GetAddCharacterInfo();
-				tempinfo._AddHP += _itemInfo.HP;
-				tempinfo._AddMP += _itemInfo.MP;
-				tempinfo._AddATK += _itemInfo.ATK;
-				tempinfo._AddDEF += _itemInfo.DEF;
-			}
+			_itemOwnerUnitInfo.lock()->UpdateAddInformation(shared_from_this(), true);
 		}
 		else
 		{
-			if (_isApply == true)
-			{
-				auto tempinfo = _itemOwnerUnitInfo.lock()->GetAddCharacterInfo();
-				tempinfo._AddHP -= _itemInfo.HP;
-				tempinfo._AddMP -= _itemInfo.MP;
-				tempinfo._AddATK -= _itemInfo.ATK;
-				tempinfo._AddDEF -= _itemInfo.DEF;
-			}
+			_itemOwnerUnitInfo.lock()->UpdateAddInformation(shared_from_this(), false);
 		}
 	}
 

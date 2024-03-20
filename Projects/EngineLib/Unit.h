@@ -4,6 +4,7 @@
 class BaseCollider;
 class BoxCollider;
 class SphereCollider;
+class CharacterController;
 
 class Unit : public GameObject
 {
@@ -18,6 +19,9 @@ protected:
 	virtual void CharacterInit() {};
 	void AddAnimation(const shared_ptr<Model>& com, wstring animOwner, wstring animName);
 	void AddModelAndMaterial(const shared_ptr<Model>& com, wstring name);
+public:
+	void SetSpwanPosition(const Vec3& spwanPos);
+	void SetCharacterController(const shared_ptr<CharacterController>& controller, AIType aiType = AIType::PlayableUnit);
 public:
 	virtual void Awake() override;
 	virtual void Start() override;

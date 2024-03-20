@@ -42,6 +42,7 @@ public:
 	bool GetActive() { return _isActive; }
 	void SetName(wstring name);
 	wstring GetName();
+	const ObjectType& GetObjectType() const { return _objType; }
 public:
 	void SetParent(const shared_ptr<GameObject>& parent);
 	void AddChild(const shared_ptr<GameObject>& child);

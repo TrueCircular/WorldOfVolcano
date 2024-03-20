@@ -155,6 +155,22 @@ enum class EnemyAnimType
 	None
 };
 
+enum class UnitFSMState
+{
+	None,
+	Stand,
+	Damaged,
+	Dead,
+	Trace,
+	MoveToSpwanPoint,
+	Battle,
+	Attack,
+	Ability1,
+	Ability2,
+	Event,
+	End
+};
+
 //Collision Type
 enum class ColliderType
 {
@@ -187,3 +203,11 @@ enum class UsableItemType : uint8
 	End
 };
 
+//Ability Type
+enum class AbilityType : uint8
+{
+	None,
+	Individual,
+	Multiple,
+	End
+};

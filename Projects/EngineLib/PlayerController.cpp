@@ -169,13 +169,16 @@ void PlayerController::PlayerInput()
 {
 	if (_isAlive == true)
 	{
+		PlayerPicking();
+		PlayerAttack();
 		PlayerMove();
+
+		_animState->Update();
+
+		if (_sound)
+			_sound->PlaySound(_animState->GetStateAnimtype());
 	}
 
-	_animState->Update();
-
-	if (_sound)
-		_sound->PlaySound(_animState->GetStateAnimtype());
 
 	//Debug
 	//{
@@ -260,9 +263,6 @@ void PlayerController::PlayerMove()
 	{
 		_currentSpeed = _defaultSpeed;
 	}
-
-	PlayerPicking();
-	PlayerAttack();
 
 	if (_isAttack == false)
 	{
@@ -447,9 +447,29 @@ void PlayerController::PlayerAttack()
 
 void PlayerController::PlayerPicking()
 {
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::LBUTTON))
+	{
+		int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
+		int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
+
+		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
+
+		if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
+		{
+			_isPicked = true;
+			_pickedObj = pickObj;
+		}
+		else
+		{
+			MANAGER_IMGUI()->UpdatePicked(false);
+			_isPicked = false;
+		}
+	}
+
 	if (_isPicked)
 	{
-		_pickedInfo = _pickedObj->GetComponent<CharacterInfo>()->GetCharacterInfo();
+		_pickedInfo = _pickedObj->GetComponent<CharacterInfo>()->GetDefaultCharacterInfo();
+
 		MANAGER_IMGUI()->UpdatePicked(true, _pickedInfo._maxHp, _pickedInfo._hp, _pickedObj->GetName());
 		if (_pickedInfo._hp == 0)
 		{
@@ -483,6 +503,10 @@ void PlayerController::PlayerPicking()
 			}
 		}
 	}
+}
+
+void PlayerController::PlayerTargetControll()
+{
 
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::LBUTTON))
 	{
@@ -491,17 +515,13 @@ void PlayerController::PlayerPicking()
 
 		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
 
-		if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
+		if (pickObj != nullptr && pickObj->GetObjectType() == ObjectType::EnemyUnit)
 		{
-			_isPicked = true;
-			_pickedObj = pickObj;
-		}
-		else
-		{
-			MANAGER_IMGUI()->UpdatePicked(false);
-			_isPicked = false;
+			MANAGER_IMGUI()->UpdatePicked(true);
+
 		}
 	}
+
 }
 
 void PlayerController::KeyStateCheck()
@@ -592,11 +612,7 @@ int PlayerController::GetAttackQueueSize()
 	return -1;
 }
 
-void PlayerController::ReceiveEvent(const EventArgs& args)
-{
-}
-
-void PlayerController::DispatchEvent()
+void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage)
 {
 }
 
@@ -630,7 +646,6 @@ void PlayerController::FixedUpdate()
 	if (_isAlive == false)
 	{
 		_isBattle = false;
-
 	}
 
 	if (_isBattle)

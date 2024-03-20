@@ -21,7 +21,6 @@ public:
 	virtual bool Update() { return false; }
 	virtual bool Out() { return false; }
 	EnemyAnimType GetStateAnimtype() { return _animType; }
-
 };
 
 class EnemyAnimStand : public EnemyAnimState

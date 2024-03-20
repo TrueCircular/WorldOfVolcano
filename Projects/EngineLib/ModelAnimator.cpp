@@ -184,13 +184,12 @@ void ModelAnimator::UpdateTweenData()
 			{
 				if (_currentAnim)
 				{
-					if (_tweenDesc->current.currentFrame >= _currentAnim->duration)
+					if (_tweenDesc->current.currentFrame == _currentAnim->duration-1)
 					{
 						_isFrameEnd = true;
 						_tweenDesc->current.currentFrame = 0;
 						_tweenDesc->current.nextFrame = 1;
 					}
-
 
 					_tweenDesc->current.sumTime += MANAGER_TIME()->GetDeltaTime();
 					_timePerFrame = 1 / (_currentAnim->frameRate * _tweenDesc->current.speed);
@@ -213,7 +212,6 @@ void ModelAnimator::UpdateTweenData()
 
 				if (_tweenDesc->tweenRatio > 1.f + FLT_EPSILON)
 				{
-					_tweenDesc->ClearCurrentAnim();
 					_tweenDesc->current = _tweenDesc->next;
 					_currentAnim = _nextAnim;
 					_nextAnim = nullptr;
@@ -261,7 +259,7 @@ bool ModelAnimator::SetNextAnimation(wstring animName)
 		{
 			_nextAnim = anim;
 			_tweenDesc->next.animIndex = num;
-			_tweenDesc->tweenDuration = 1.f / _nextAnim->frameCount + FLT_EPSILON;
+			_tweenDesc->tweenDuration = 1.f / _nextAnim->frameCount;
 
 			return true;
 		}

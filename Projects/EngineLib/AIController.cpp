@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "AIController.h"
 #include "HeightGetter.h"
+#include "CharacterInfo.h"
+#include "UnitFSM.h"
 
 void AIController::InitAnimState()
 {
@@ -50,36 +52,69 @@ void AIController::InitAnimState()
 	}break;
 	case AIType::EnemyUnit:
 	{
-		//Stand
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimStand>());
-		//Walk
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimWalk>());
-		//Run
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimRun>());
-		//Damaged
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimDamaged>());
-		//Death
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimDeath>());
+		//Stand 0
+		_fsmList.push_back(make_shared<UnitFSMStand>());
+		//Trace 1
+		_fsmList.push_back(make_shared<UnitFSMTrace>());
+		//MoveToSpwanPoint
+		_fsmList.push_back(make_shared<UnitFSMMoveToSpwanPoint>());
 		//Battle
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimBattle>());
-		//Attack1
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimAttack1>());
-		//Attack2
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimAttack2>());
-		//Casting
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimCasting>());
+		_fsmList.push_back(make_shared<UnitFSMBattle>());
+		//Attack
+		_fsmList.push_back(make_shared<UnitFSMAttack>());
 		//Ability1
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimAbility1>());
+		_fsmList.push_back(make_shared<UnitFSMAbility1>());
 		//Ability2
-		_enemyAnimStateList.push_back(make_shared<EnemyAnimAbility2>());
+		_fsmList.push_back(make_shared<UnitFSMAbility2>());
 
-		//Default Stand
-		_currentEnemyAnimState = _enemyAnimStateList[0];
-		_currentEnemyAnimState->Enter(shared_from_this());
+		_currentFsmState = _fsmList[0];
+		_currentFsmState->Enter(shared_from_this());
 	}break;
 	}
 
 
+}
+
+void AIController::SetCurrentFsmState(UnitFSMState state)
+{
+	switch (state)
+	{
+	case UnitFSMState::Stand:
+	{
+		_currentFsmState = _fsmList[0];
+		_currentFsmState->Enter(shared_from_this());
+	}break;
+	case UnitFSMState::Trace:
+	{
+		_currentFsmState = _fsmList[1];
+		_currentFsmState->Enter(shared_from_this());
+	}break;	
+	case UnitFSMState::MoveToSpwanPoint:
+	{
+		_currentFsmState = _fsmList[2];
+		_currentFsmState->Enter(shared_from_this());
+	}break;	
+	case UnitFSMState::Battle:
+	{
+		_currentFsmState = _fsmList[3];
+		_currentFsmState->Enter(shared_from_this());
+	}break;
+	case UnitFSMState::Attack:
+	{
+		_currentFsmState = _fsmList[4];
+		_currentFsmState->Enter(shared_from_this());
+	}break;	
+	case UnitFSMState::Ability1:
+	{
+		_currentFsmState = _fsmList[5];
+		_currentFsmState->Enter(shared_from_this());
+	}break;
+	case UnitFSMState::Ability2:
+	{
+		_currentFsmState = _fsmList[6];
+		_currentFsmState->Enter(shared_from_this());
+	}break;
+	}
 }
 
 bool AIController::SetAnimState(const PlayerAnimType& type)
@@ -124,12 +159,25 @@ bool AIController::SetAnimState(const EnemyAnimType& type)
 	return false;
 }
 
+void AIController::TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage)
+{
+	auto characterInfo = sender->GetComponent<CharacterInfo>();
+
+	if (characterInfo != nullptr)
+	{
+		//characterInfo->GetAddCharacterInfo
+
+	}
+
+}
+
 void AIController::Start()
 {
 	{
 		_transform = GetGameObject()->GetTransform();
 		_animator = GetGameObject()->GetChildByName(L"Model")->GetModelAnimator();
 		_jumpState = make_shared<JumpFlag>();
+		_characterInfo = GetGameObject()->GetComponent<CharacterInfo>();
 	}
 
 	_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
@@ -161,19 +209,7 @@ void AIController::Start()
 
 void AIController::FixedUpdate()
 {
-	switch (_type)
-	{
-	case AIType::PlayableUnit:
-	{
-		_currentPlayerAnimState->Update();
-	}
-	break;
-	case AIType::EnemyUnit:
-	{
-		_currentEnemyAnimState->Update();
-	}
-	break;
-	}
+
 }
 
 void AIController::Update()
@@ -184,12 +220,26 @@ void AIController::Update()
 		tempPos.y = _heightGetterCom.lock()->GetHeight();
 		_transform.lock()->SetLocalPosition(tempPos);
 	}
+
+	switch (_type)
+	{
+	case AIType::PlayableUnit:
+	{
+		_currentPlayerAnimState->Update();
+	}
+	break;
+	case AIType::EnemyUnit:
+	{
+		_currentFsmState->Update();
+	}
+	break;
+	}
+
 	if (_aiSound)
 		_aiSound->PlaySound(GetCurrentPlayerAnimType());
 
 	if (_enemySound)
 		_enemySound->PlaySound(GetCurrentEnemyAnimType());
-
 }
 
 void AIController::LateUpdate()

@@ -2,6 +2,7 @@
 #include "CharacterInfo.h"
 #include <filesystem>
 #include "Utils.h"
+#include "ItemData.h"
 
 CharacterInfo::CharacterInfo()
 {
@@ -15,6 +16,63 @@ CharacterInfo::~CharacterInfo()
 
 void CharacterInfo::InitInformation()
 {
+}
+
+void CharacterInfo::UpdateAddInformation(const shared_ptr<ItemData>& data, const bool& equip)
+{
+	if (data == nullptr)
+		return;
+
+	if (equip)
+	{
+		_addInfo._AddHP += data->GetItemInfo().HP;
+		_addInfo._AddMP += data->GetItemInfo().MP;
+		_addInfo._AddATK += data->GetItemInfo().ATK;
+		_addInfo._AddDEF += data->GetItemInfo().DEF;
+	}
+	else
+	{
+		int tempHP = _addInfo._AddHP -= data->GetItemInfo().HP;
+		if (tempHP < 0)
+		{
+			_addInfo._AddHP = 0;
+		}
+		else
+		{
+			_addInfo._AddHP -= data->GetItemInfo().HP;
+		}
+
+		int tempMP = _addInfo._AddMP -= data->GetItemInfo().MP;
+		if (tempMP < 0)
+		{
+			_addInfo._AddMP = 0;
+		}
+		else
+		{
+			_addInfo._AddMP -= data->GetItemInfo().MP;
+		}
+
+		int tempATK = _addInfo._AddATK -= data->GetItemInfo().ATK;
+		if (tempATK < 0)
+		{
+			_addInfo._AddATK = 0;
+		}
+		else
+		{
+			_addInfo._AddATK -= data->GetItemInfo().ATK;
+		}
+		
+		int tempDEF = _addInfo._AddDEF -= data->GetItemInfo().DEF;
+		if (tempDEF < 0)
+		{
+			_addInfo._AddDEF = 0;
+		}
+		else
+		{
+			_addInfo._AddDEF -= data->GetItemInfo().DEF;
+		}
+	}
+
 }
 
 bool CharacterInfo::LoadCharacterInformationFromFile(const wstring& loadPath)
@@ -98,16 +156,30 @@ bool CharacterInfo::LoadCharacterInformationFromFile(const wstring& loadPath)
 			element->QueryFloatText(&attackTime);
 			tempInfo._attackTime = attackTime;
 
+			//TraceRadius
+			element = node->FirstChildElement("TraceRadius");
+			float TraceRadius = 0;
+			element->QueryFloatText(&TraceRadius);
+			tempInfo._traceRadius = TraceRadius;
 
-			_info._name = tempInfo._name;
-			_info._hp = tempInfo._hp;
-			_info._maxHp = tempInfo._maxHp;
-			_info._atk = tempInfo._atk;
-			_info._def = tempInfo._def;
-			_info._moveSpeed = tempInfo._moveSpeed;
-			_info._aggroLevel = tempInfo._aggroLevel;
-			_info._attackRange = tempInfo._attackRange;
-			_info._attackTime = tempInfo._attackTime;
+
+			_defaultInfo._name = tempInfo._name;
+			_defaultInfo._hp = tempInfo._hp;
+			_defaultInfo._maxHp = tempInfo._maxHp;
+			_defaultInfo._atk = tempInfo._atk;
+			_defaultInfo._def = tempInfo._def;
+			_defaultInfo._moveSpeed = tempInfo._moveSpeed;
+			_defaultInfo._aggroLevel = tempInfo._aggroLevel;
+			_defaultInfo._attackRange = tempInfo._attackRange;
+			_defaultInfo._attackTime = tempInfo._attackTime;
+			_defaultInfo._traceRadius = tempInfo._traceRadius;
+
+			_info._name = _defaultInfo._name;
+			_info._hp = _defaultInfo._hp;
+			_info._maxHp = _defaultInfo._maxHp;
+			_info._mp = _defaultInfo._maxMp;
+			_info._atk = _defaultInfo._atk;
+			_info._def = _defaultInfo._def;
 		}
 	}
 
@@ -128,39 +200,43 @@ bool CharacterInfo::SaveCharacterInformationFromFile(const wstring& savePath)
         document->InsertFirstChild(node);
 
 		::XMLElement* element = document->NewElement("Name");
-		element->SetText(Utils::ToString(_info._name).c_str());
+		element->SetText(Utils::ToString(_defaultInfo._name).c_str());
 		node->InsertEndChild(element);
 
 		element = document->NewElement("HP");
-		element->SetText(_info._hp);
+		element->SetText(_defaultInfo._hp);
 		node->InsertEndChild(element);
 
 		element = document->NewElement("MP");
-		element->SetText(_info._mp);
+		element->SetText(_defaultInfo._mp);
 		node->InsertEndChild(element);
 
 		element = document->NewElement("ATK");
-		element->SetText(_info._atk);
+		element->SetText(_defaultInfo._atk);
 		node->InsertEndChild(element);
 
 		element = document->NewElement("DEF");
-		element->SetText(_info._def);
+		element->SetText(_defaultInfo._def);
 		node->InsertEndChild(element);
 
 		element = document->NewElement("MoveSpeed");
-		element->SetText(_info._moveSpeed);
+		element->SetText(_defaultInfo._moveSpeed);
 		node->InsertEndChild(element);
 
 		element = document->NewElement("AggroPow");
-		element->SetText(_info._aggroLevel);
+		element->SetText(_defaultInfo._aggroLevel);
 		node->InsertEndChild(element);
 
 		element = document->NewElement("AttackRange");
-		element->SetText(_info._attackRange);
+		element->SetText(_defaultInfo._attackRange);
 		node->InsertEndChild(element);
 
 		element = document->NewElement("AttackTime");
-		element->SetText(_info._attackTime);
+		element->SetText(_defaultInfo._attackTime);
+		node->InsertEndChild(element);
+
+		element = document->NewElement("TraceRadius");
+		element->SetText(_defaultInfo._traceRadius);
 		node->InsertEndChild(element);
     }
 
