@@ -1,7 +1,6 @@
 #pragma once
 #include "CharacterController.h"
 #include "PlayerAnimState.h"
-#include "EnemyAnimState.h"
 #include "PlayerSoundController.h"
 #include "EnemySoundController.h"
 

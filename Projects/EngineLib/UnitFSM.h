@@ -1,10 +1,10 @@
 #pragma once
 #include "AIController.h"
+#include "UnitStrategy.h"
 
 #pragma region Forward Declaration
 class PlayableUnit;
 class CharacterInfo;
-class HeightGetter;
 class Sounds;
 #pragma endregion
 
@@ -16,11 +16,14 @@ public:
 protected:
 	using TarceTargetList = unordered_set<shared_ptr<PlayableUnit>>;
 protected:
+	weak_ptr<UnitStrategy>	_strategy;
 	weak_ptr<Transform>		_transform;
 	weak_ptr<AIController>	_controller;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
 	TarceTargetList			_targetList;
+public:
+	void SetStrategy(const shared_ptr<UnitStrategy>& strategy) { _strategy = strategy; }
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller){}
 	virtual void Update(){}
@@ -124,22 +127,11 @@ public:
 	virtual void Out(UnitFSMState transition) override;
 };
 
-class UnitFSMAbility1 : public UnitFSM
+class UnitFSMAbility : public UnitFSM
 {
 public:
-	UnitFSMAbility1();
-	virtual ~UnitFSMAbility1();
-public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
-	virtual void Update() override;
-	virtual void Out(UnitFSMState transition) override;
-};
-
-class UnitFSMAbility2 : public UnitFSM
-{
-public:
-	UnitFSMAbility2();
-	virtual ~UnitFSMAbility2();
+	UnitFSMAbility();
+	virtual ~UnitFSMAbility();
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller) override;
 	virtual void Update() override;

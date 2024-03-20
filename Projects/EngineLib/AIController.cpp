@@ -66,10 +66,9 @@ void AIController::InitState()
 		_fsmList.push_back(make_shared<UnitFSMBattle>());
 		//Attack
 		_fsmList.push_back(make_shared<UnitFSMAttack>());
-		//Ability1
-		_fsmList.push_back(make_shared<UnitFSMAbility1>());
-		//Ability2
-		_fsmList.push_back(make_shared<UnitFSMAbility2>());
+		//Ability
+		_fsmList.push_back(make_shared<UnitFSMAbility>());
+
 
 		_currentFsmState = _fsmList[0];
 		_currentFsmState->Enter(shared_from_this());
@@ -106,14 +105,9 @@ void AIController::SetCurrentFsmState(UnitFSMState state)
 		_currentFsmState = _fsmList[4];
 		_currentFsmState->Enter(shared_from_this());
 	}break;	
-	case UnitFSMState::Ability1:
+	case UnitFSMState::Ability:
 	{
 		_currentFsmState = _fsmList[5];
-		_currentFsmState->Enter(shared_from_this());
-	}break;
-	case UnitFSMState::Ability2:
-	{
-		_currentFsmState = _fsmList[6];
 		_currentFsmState->Enter(shared_from_this());
 	}break;
 	}
@@ -201,10 +195,7 @@ void AIController::SearchTraceTarget()
 
 			if (FinalTarget != nullptr)
 			{
-				if (minDistance <= _traceRadius)
-				{
-					SetTargetTransform(FinalTarget->GetTransform());
-				}
+				SetTargetTransform(FinalTarget->GetTransform());
 			}
 		}
 	}

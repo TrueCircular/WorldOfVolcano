@@ -160,13 +160,13 @@ enum class UnitFSMState
 	None,
 	Stand,
 	Damaged,
+	Stun,
 	Dead,
 	Trace,
 	MoveToSpwanPoint,
 	Battle,
 	Attack,
-	Ability1,
-	Ability2,
+	Ability,
 	Event,
 	End
 };

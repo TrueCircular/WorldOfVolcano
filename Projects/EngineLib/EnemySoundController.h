@@ -1,5 +1,4 @@
 #pragma once
-#include "EnemyAnimState.h"
 class Transform;
 
 class EnemySoundController : public MonoBehaviour

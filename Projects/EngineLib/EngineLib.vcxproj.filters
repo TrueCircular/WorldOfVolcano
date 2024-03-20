@@ -121,6 +121,30 @@
     <Filter Include="07. Particle">
       <UniqueIdentifier>{8a58d2e5-0ffc-49ab-81d7-923e73baa142}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Component\FSM\Pattern">
+      <UniqueIdentifier>{df8d92f9-3cd1-43a0-848a-a63c92a14a2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\FSM\Pattern\Normal">
+      <UniqueIdentifier>{12d3a68d-52f6-454c-bf34-582608c6ae2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\FSM\Pattern\Normal\CoreHound">
+      <UniqueIdentifier>{ae0e9b62-e85c-4d56-909e-23d56d563c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\FSM\Pattern\Normal\MoltenGaint">
+      <UniqueIdentifier>{c9bb7faf-242f-4bfc-9e1d-03c0f92aca3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\FSM\Pattern\Elite">
+      <UniqueIdentifier>{7b6e6d38-8e11-4aaf-8458-bf551a2c2051}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\FSM\Pattern\Elite\BaronGeddon">
+      <UniqueIdentifier>{4859985a-0565-46b4-ad47-42369a181ada}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\FSM\Pattern\Boss">
+      <UniqueIdentifier>{c7fb2e9b-8502-40d2-8f6e-2104adf07f74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\FSM\Pattern\Boss\Ragnaros">
+      <UniqueIdentifier>{b638fe95-0eee-4be9-b378-6fc706bb0f98}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -307,9 +331,6 @@
     <ClInclude Include="ShadowManager.h">
       <Filter>02. Managers</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyAnimState.h">
-      <Filter>04. Component\Controller</Filter>
-    </ClInclude>
     <ClInclude Include="Viewport.h">
       <Filter>01. Graphics</Filter>
     </ClInclude>
@@ -466,6 +487,21 @@
     </ClInclude>
     <ClInclude Include="Smoke3.h">
       <Filter>07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitStrategy.h">
+      <Filter>04. Component\FSM\Pattern</Filter>
+    </ClInclude>
+    <ClInclude Include="BaronGeddonPattern.h">
+      <Filter>04. Component\FSM\Pattern\Elite\BaronGeddon</Filter>
+    </ClInclude>
+    <ClInclude Include="RagnarosPattern.h">
+      <Filter>04. Component\FSM\Pattern\Boss\Ragnaros</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreHoundPattern.h">
+      <Filter>04. Component\FSM\Pattern\Normal\CoreHound</Filter>
+    </ClInclude>
+    <ClInclude Include="MoltenGaintPattern.h">
+      <Filter>04. Component\FSM\Pattern\Normal\MoltenGaint</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -644,9 +680,6 @@
     <ClCompile Include="ShadowManager.cpp">
       <Filter>02. Managers</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyAnimState.cpp">
-      <Filter>04. Component\Controller</Filter>
-    </ClCompile>
     <ClCompile Include="Viewport.cpp">
       <Filter>01. Graphics</Filter>
     </ClCompile>
@@ -803,6 +836,21 @@
     </ClCompile>
     <ClCompile Include="Smoke3.cpp">
       <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitStrategy.cpp">
+      <Filter>04. Component\FSM\Pattern</Filter>
+    </ClCompile>
+    <ClCompile Include="BaronGeddonPattern.cpp">
+      <Filter>04. Component\FSM\Pattern\Elite\BaronGeddon</Filter>
+    </ClCompile>
+    <ClCompile Include="RagnarosPattern.cpp">
+      <Filter>04. Component\FSM\Pattern\Boss\Ragnaros</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreHoundPattern.cpp">
+      <Filter>04. Component\FSM\Pattern\Normal\CoreHound</Filter>
+    </ClCompile>
+    <ClCompile Include="MoltenGaintPattern.cpp">
+      <Filter>04. Component\FSM\Pattern\Normal\MoltenGaint</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

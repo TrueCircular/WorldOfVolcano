@@ -1,10 +1,9 @@
 #include "pch.h"
 #include "UnitFSM.h"
-#include "PlayableUnit.h"
-#include "CharacterInfo.h"
 #include <stdlib.h>
 #include <time.h>
-#include "HeightGetter.h"
+#include "PlayableUnit.h"
+#include "CharacterInfo.h"
 #include "Sounds.h"
 
 UnitFSMStand::UnitFSMStand()
@@ -601,50 +600,24 @@ void UnitFSMAttack::Out(UnitFSMState transition)
 	}
 }
 
-UnitFSMAbility1::UnitFSMAbility1()
+UnitFSMAbility::UnitFSMAbility()
 {
 }
 
-UnitFSMAbility1::~UnitFSMAbility1()
+UnitFSMAbility::~UnitFSMAbility()
 {
 }
 
-void UnitFSMAbility1::Enter(const shared_ptr<AIController>& controller)
-{
-
-}
-
-void UnitFSMAbility1::Update()
+void UnitFSMAbility::Enter(const shared_ptr<AIController>& controller)
 {
 
 }
 
-void UnitFSMAbility1::Out(UnitFSMState transition)
+void UnitFSMAbility::Update()
 {
 
 }
 
-UnitFSMAbility2::UnitFSMAbility2()
+void UnitFSMAbility::Out(UnitFSMState transition)
 {
-
-}
-
-UnitFSMAbility2::~UnitFSMAbility2()
-{
-
-}
-
-void UnitFSMAbility2::Enter(const shared_ptr<AIController>& controller)
-{
-
-}
-
-void UnitFSMAbility2::Update()
-{
-
-}
-
-void UnitFSMAbility2::Out(UnitFSMState transition)
-{
-
 }

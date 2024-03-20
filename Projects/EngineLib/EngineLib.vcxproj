@@ -191,11 +191,13 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="AncientSword.h" />
     <ClInclude Include="AncientSwordData.h" />
     <ClInclude Include="BaronGeddon.h" />
+    <ClInclude Include="BaronGeddonPattern.h" />
     <ClInclude Include="BaseCollider.h" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="CharacterInfo.h" />
     <ClInclude Include="Clap.h" />
     <ClInclude Include="ConsumableItem.h" />
+    <ClInclude Include="CoreHoundPattern.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="EnemySoundController.h" />
     <ClInclude Include="EquipmentSlot.h" />
@@ -208,6 +210,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="ItemData.h" />
     <ClInclude Include="LineSpark.h" />
     <ClInclude Include="MagicCircle.h" />
+    <ClInclude Include="MoltenGaintPattern.h" />
     <ClInclude Include="ParticleInstance.h" />
     <ClInclude Include="ParticleManager.h" />
     <ClInclude Include="ParticleObj.h" />
@@ -220,7 +223,6 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="CGame.h" />
     <ClInclude Include="CoreHound.h" />
-    <ClInclude Include="EnemyAnimState.h" />
     <ClInclude Include="EnemyUnit.h" />
     <ClInclude Include="EnginePch.h" />
     <ClInclude Include="FileUtils.h" />
@@ -254,6 +256,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="PlayerSoundController.h" />
     <ClInclude Include="Polar.h" />
+    <ClInclude Include="RagnarosPattern.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="ResourceBase.h" />
@@ -281,6 +284,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="Types.h" />
     <ClInclude Include="Unit.h" />
     <ClInclude Include="UnitFSM.h" />
+    <ClInclude Include="UnitStrategy.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexData.h" />
@@ -309,11 +313,13 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="AncientSword.cpp" />
     <ClCompile Include="AncientSwordData.cpp" />
     <ClCompile Include="BaronGeddon.cpp" />
+    <ClCompile Include="BaronGeddonPattern.cpp" />
     <ClCompile Include="BaseCollider.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="CharacterInfo.cpp" />
     <ClCompile Include="Clap.cpp" />
     <ClCompile Include="ConsumableItem.cpp" />
+    <ClCompile Include="CoreHoundPattern.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EnemySoundController.cpp" />
     <ClCompile Include="EquipmentSlot.cpp" />
@@ -326,6 +332,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="ItemData.cpp" />
     <ClCompile Include="LineSpark.cpp" />
     <ClCompile Include="MagicCircle.cpp" />
+    <ClCompile Include="MoltenGaintPattern.cpp" />
     <ClCompile Include="ParticleInstance.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
     <ClCompile Include="ParticleObj.cpp" />
@@ -337,7 +344,6 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="CGame.cpp" />
     <ClCompile Include="CoreHound.cpp" />
-    <ClCompile Include="EnemyAnimState.cpp" />
     <ClCompile Include="EnemyUnit.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="FrustomCamera.cpp" />
@@ -375,6 +381,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="PlayerSoundController.cpp" />
     <ClCompile Include="Polar.cpp" />
+    <ClCompile Include="RagnarosPattern.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
@@ -404,6 +411,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Unit.cpp" />
     <ClCompile Include="UnitFSM.cpp" />
+    <ClCompile Include="UnitStrategy.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexData.cpp" />
