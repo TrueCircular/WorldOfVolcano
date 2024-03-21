@@ -112,6 +112,7 @@ void BaseScene::Init()
 		}
 		fog_obj->AddComponent(tempModelRenderer);
 		fog_obj->GetOrAddTransform()->SetLocalPosition(Vec3(0, 0, 0));
+		fog_obj->GetTransform()->SetLocalScale(Vec3(5, 5, 5));
 	}
 	fog_obj->Awake();
 	Add(fog_obj);
@@ -138,6 +139,30 @@ void BaseScene::Init()
 	quadTreeTerrain->Set(_terrain, 3);
 	quadTreeTerrain->Start();
 
+
+	heightMapDesc.heightFilename = L"HeightMapOutLine";
+	heightMapDesc.heightFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"testOutLine.bmp";
+	heightMapDesc.shaderFilePath = L"SplattingMapping.fx";
+	//heightMapDesc.shaderFilePath = L"TerrainMapping.fx";
+	heightMapDesc.shaderFilename = L"HeightMapShaderDungeon";
+	heightMapDesc.textureFilename = L"HeightMapTextureDungeon";
+	heightMapDesc.textureFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"020.bmp";
+	heightMapDesc.meshKey = L"TerrainMeshOutLine";
+	heightMapDesc.distance = 20;
+	heightMapDesc.heightScale = 20;
+	heightMapDesc.row = 253;
+	heightMapDesc.col = 253;
+
+	_terrainOutLine = make_shared<Terrain>(heightMapDesc);
+	_terrainOutLine->Awake();
+	_terrainOutLine->AddComponent(make_shared<MeshRenderer>());
+	_terrainOutLine->Start();
+	quadTreeTerrainOutLine = make_shared<QuadTreeTerrain>();
+	quadTreeTerrainOutLine->Set(_terrainOutLine, 3);
+	quadTreeTerrainOutLine->Start();
+
+
+
 	SplatterDesc spDesc{};
 	spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
 	spDesc.texPath[1] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsashcracks.png";
@@ -151,6 +176,25 @@ void BaseScene::Init()
 	splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderBase"));
 	quadTreeTerrain->AddSplatter(splatter);
 	SetTerrain(_terrain);
+
+	//SplatterDesc spDesc{};
+	//spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
+	//spDesc.texPath[1] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsashcracks.png";
+	//spDesc.texPath[2] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppscharcoal01.png";
+	//spDesc.texName[0] = L"Splat1Dungeon";
+	//spDesc.texName[1] = L"Splat2Dungeon";
+	//spDesc.texName[2] = L"Splat3Dungeon";
+	//spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"dungeon1alpha.bmp";
+	//spDesc.alphaName = L"SplatAlphaDungeon";
+	//splatter = make_shared<LayerSplatter>();
+	//splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderDungeon"));
+
+	quadTreeTerrain->AddSplatter(splatter);
+	spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"testalphaOutLine.bmp";
+	spDesc.alphaName = L"SplatAlphaBaseOutLine";
+	splatterOutLine = make_shared<LayerSplatter>();
+	splatterOutLine->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderDungeon"));
+	quadTreeTerrainOutLine->AddSplatter(splatterOutLine);
 
 	//Camera
 	{
@@ -186,12 +230,13 @@ void BaseScene::Init()
 		shared_ptr<Sounds> bgm = make_shared<Sounds>();
 		wstring bgmpath = RESOURCES_ADDR_SOUND;
 		bgmpath += L"Scene/Lobby.mp3";
+		bgm->SetVolume(0.5);
 		bgm->Load(bgmpath);
 		MANAGER_RESOURCES()->AddResource<Sounds>(L"Lobby", bgm);
-		//auto chs = bgm->Play(true);
-		//}
-		//else {
-		//	bgm->Play(true);
+		auto chs = bgm->Play(true);
+		}
+		else {
+			bgm->Play(true);
 	}
 
 	shared_ptr<WarriorRoar> roar = make_shared<WarriorRoar>();
@@ -245,7 +290,7 @@ void BaseScene::Start()
 void BaseScene::Update()
 {
 	quadTreeTerrain->Frame((*frustom->frustomBox.get()));
-	MANAGER_SOUND()->Update();
+	quadTreeTerrainOutLine->Frame((*frustom->frustomBox.get()));
 	MANAGER_SHADOW()->StartShadow();
 	_terrain->GetMeshRenderer()->SetPass(1);
 	_terrain->GetMeshRenderer()->ShadowUpdate();
@@ -263,7 +308,7 @@ void BaseScene::Update()
 		sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
 		sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
 		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
-		sendInfo._spawnMapId = SpawnManager::GetInstance().GetSpawnMapId();
+		//sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapId();
 
 		//Alive
 		if (sendInfo._isAlive == false)
@@ -432,7 +477,9 @@ void BaseScene::LateUpdate()
 
 	Scene::LateUpdate();
 	quadTreeTerrain->Update();
+	quadTreeTerrainOutLine->Update();
 
+	MANAGER_SOUND()->Update();
 	DamageIndicator::GetInstance().Render();
 	MANATER_PARTICLE()->Render();
 }

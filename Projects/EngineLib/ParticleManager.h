@@ -11,6 +11,8 @@ public:
 	void Update();
 	void Render();
 	void AddManagingParticle(wstring name, shared_ptr<ParticleObj> ParticleObj);
+	void Clear();
+	void ClearList();
 	shared_ptr<ParticleObj> GetParticleFromName(wstring name);
 private:
 	map<wstring,shared_ptr<ParticleObj>>particleList;

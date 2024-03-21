@@ -2,7 +2,7 @@
 #include "engine\\FrustomCamera.h"
 #include "QuadTreeBlock.h"
 #include "Skybox.h"
-//Character
+
 #include "Character.h"
 #include "Player.h"
 #include "ClientPacketHandler.h"
@@ -14,20 +14,16 @@
 
 class Unit;
 
-class BaseScene : public Scene
+class BossScene : public Scene
 {
 	//Map
 	shared_ptr<FrustomCamera> frustom;
 	//Spawn Pos
-	Vec3 spawnPos = Vec3(0, 25, 0);
-	shared_ptr<Transform> tempTargetTrans;
+	Vec3 spawnPos = Vec3(0,0,0);
 	//obj
 	shared_ptr<Terrain> _terrain;
-	shared_ptr<Terrain> _terrainOutLine;
 	shared_ptr<QuadTreeTerrain> quadTreeTerrain;
-	shared_ptr<QuadTreeTerrain> quadTreeTerrainOutLine;
 	shared_ptr<LayerSplatter> splatter;
-	shared_ptr<LayerSplatter> splatterOutLine;
 
 	//Shader
 	shared_ptr<Shader>	_shader;
@@ -45,6 +41,7 @@ class BaseScene : public Scene
 	bool _isdisv = false;
 	//camera
 	shared_ptr<GameObject> _childCamera;
+
 	//Camera
 	shared_ptr<GameObject> _camera;
 public:
@@ -53,4 +50,5 @@ public:
 	virtual void Update();
 	virtual void LateUpdate();
 };
+
 

@@ -26,6 +26,7 @@ public:
 	~ParticleObj() {};
 	UINT GetCountofInstance() { return instanceCounter; };
 public:
+	virtual void Clear();
 	virtual void AddParticle(shared_ptr<ParticleInstance> data);
 	virtual void AddParticle(shared_ptr<ParticleInstance> data, shared_ptr<TweenDesc> desc) {};
 	virtual void DeleteInstance(shared_ptr<ParticleInstance>& data);
