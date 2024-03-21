@@ -11,13 +11,15 @@ void MagicCircle::Update()
 			OnDestroy(instanceList[i]);
 			auto iter = instanceList.begin() + i;
 			instanceList.erase(iter);
-			instanceCounter--;
 			--i;
+			instanceCounter--;
 			continue;
 		}
 
+		instanceList[i]->particleTransform->UpdateTransform();
 		instanceList[i]->data.world = instanceList[i]->particleTransform->GetWorldMatrix();
 	}
+	
 	instanceBuffer->ClearData();
 }
 
@@ -44,7 +46,7 @@ MagicCircle::MagicCircle()
 	shader = MANAGER_RESOURCES()->GetResource<Shader>(L"MagicCircleEffect");
 	if (shader == nullptr) {
 		shader = make_shared<Shader>(L"MagicCircle.fx");
-		MANAGER_RESOURCES()->AddResource<Shader>(L"MagicCircle", shader);
+		MANAGER_RESOURCES()->AddResource<Shader>(L"MagicCircleEffect", shader);
 	}
 	_colorDesc.baseColor = Vec4(1, 0.2, 0.2, 1);
 	_colorDesc.subColor = Vec4(1, 1, 0, 1);
@@ -59,8 +61,8 @@ MagicCircle::MagicCircle()
 		MANAGER_RESOURCES()->AddResource(L"MagicCircle", circleTexture);
 	}
 
-	circleSRV = shader->GetSRV("EffectMap");
-	NoiseSRV = shader->GetSRV("EffectMap");
+	circleSRV = shader->GetSRV("SpellImage");
+	NoiseSRV = shader->GetSRV("NoiseImage");
 	meshRenderer = make_shared<ParticleMeshRenderer>();
 	meshRenderer->SetMesh(particleMesh);
 	meshRenderer->SetShader(shader);

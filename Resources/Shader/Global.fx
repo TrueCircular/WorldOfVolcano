@@ -106,6 +106,7 @@ SamplerState LinearSampler
     AddressU = Wrap;
     AddressV = Wrap;
     AddressW = Wrap;
+    ComparisonFunc = ALWAYS;
 };
 
 SamplerState PointSampler

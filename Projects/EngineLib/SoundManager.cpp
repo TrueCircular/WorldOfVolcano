@@ -73,8 +73,8 @@ void SoundManager::Update()
 			continue;
 		}
 		FMOD_VECTOR vel = { 1,1,1 };
-		Vec3 cpos = soundTransform->GetLocalPosition() - *managed_channels[i].first;
-		float sound = soundVolume/ cpos.Length();
+		Vec3 cpos = soundTransform->GetLocalPosition() - *managed_channels[i].first.pos; 
+		float sound = (managed_channels[i].first.soundVol *soundVolume)/ cpos.Length();
 		if (sound >= 1)sound = 1;
 
 		FMOD_VECTOR pos = { cpos.x, cpos.y, cpos.z };

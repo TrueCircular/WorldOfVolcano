@@ -46,8 +46,8 @@ EffectOutput CircleVS(EffectMesh input)
 {
     EffectOutput output;
     
-    output.position = mul(input.position, W);
-    //output.position = mul(input.position, input.world);
+    //output.position = mul(input.position, W);
+    output.position = mul(input.position, input.world);
     output.worldPosition = output.position;
     output.position = mul(output.position, VP);
     
@@ -109,7 +109,7 @@ float4 PS(EffectOutput input) : SV_TARGET
 
 technique11 T0
 {
-    PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, CircleVS, PS)
+    PASS_RS_BS_VP(P0, CullNone, AlphaBlendState, CircleVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

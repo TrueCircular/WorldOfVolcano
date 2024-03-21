@@ -12,6 +12,7 @@ Texture2D NoiseMap;
 
 BlendState AlphaBlendState
 {
+    AlphaToCoverageEnable = true;
     BlendEnable[0] = true;
     SrcBlend = SRC_ALPHA;
     DestBlend = INV_SRC_ALPHA;

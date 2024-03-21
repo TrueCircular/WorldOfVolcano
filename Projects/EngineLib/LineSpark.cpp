@@ -14,6 +14,7 @@ void LineSpark::Update()
 			--i;
 			continue;
 		}
+		instanceList[i]->particleTransform->UpdateTransform();
 		Vec3 insPos = instanceList[i]->particleTransform->GetPosition();
 		auto look = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraLookVector();
 		Matrix billmat = Matrix::CreateBillboard(insPos, MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraPosition(), MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraUpVector(), &look);
@@ -41,7 +42,7 @@ void LineSpark::LateUpdate()
 	ParticleObj::LateUpdate();
 
 	if (!instanceList.empty())
-		//auto ctimes = shader->GetScalar("duration")->SetFloat(instanceList[0].duration);
+		auto ctimes = shader->GetScalar("duration")->SetFloat(instanceList[0]->duration);
 		smokeSRV->SetResource(smokeTexture->GetTexture().Get());
 	meshRenderer->Render(instanceList);
 }
@@ -60,8 +61,8 @@ LineSpark::LineSpark()
 		shader = make_shared<Shader>(L"LineSpark.fx");
 		MANAGER_RESOURCES()->AddResource<Shader>(L"LineSpark", shader);
 	}
-	_colorDesc.baseColor = Vec4(1, 1, 1, 1);
-	_colorDesc.subColor = Vec4(1, 1, 0, 1);
+	_colorDesc.baseColor = Vec4(1, 0.8, 0.2, 1);
+	_colorDesc.subColor = Vec4(1, 1, 1, 1);
 	colorBuffer = shader->GetConstantBuffer("ColorBuffer");
 	colorData = make_shared<ConstantBuffer<ColorDesc>>();
 	colorData->CreateConstantBuffer();
