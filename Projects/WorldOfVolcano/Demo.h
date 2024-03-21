@@ -1,9 +1,5 @@
 #pragma once
 #include "engine/IExecute.h"
-#include "BaseScene.h"
-#include "DungeonScene.h"
-#include "MainScene.h"
-
 
 class Demo : public IExecute
 {

@@ -468,7 +468,7 @@ void PlayerController::PlayerPicking()
 		{
 			MANAGER_IMGUI()->BeginDialogue();
 		}
-		if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
+		else if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
 		{
 			_isPicked = true;
 			_pickedObj = pickObj;
@@ -478,7 +478,6 @@ void PlayerController::PlayerPicking()
 			MANAGER_IMGUI()->UpdatePicked(false);
 			_isPicked = false;
 		}
-
 	}
 
 	if (_isPicked)

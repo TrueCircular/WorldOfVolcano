@@ -34,12 +34,12 @@ int main()
 			});
 	}
 
-	GSessionManager.GenerateMobList();
+	//GSessionManager.GenerateMobList();
 
 	//SendBuffer
 	GThreadManager->Launch([=]()
 		{
-			while (true)
+			/*while (true)
 			{
 				TIMER().update();
 				GameServerAI gameAI;
@@ -51,7 +51,7 @@ int main()
 				GSessionManager.CheckAndResetMonster();
 
 				this_thread::sleep_for(100ms);
-			}
+			}*/
 		});
 
 	while (true)

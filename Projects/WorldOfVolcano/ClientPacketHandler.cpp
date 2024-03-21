@@ -33,6 +33,35 @@ void ClientPacketHandler::HandlePacket(BYTE* buffer, int32 len)
 	}
 }
 
+Player_INFO CopyPacketPlayerInfo(const PACKET_Player_INFO& playerInfo, wstring name) {
+	Player_INFO realPlayerInfo;
+	realPlayerInfo._name = name;
+	realPlayerInfo._instanceId = playerInfo._instanceId;
+	realPlayerInfo._spawnMapType = playerInfo._spawnMapType;
+	realPlayerInfo._maxHp = playerInfo._maxHp;
+	realPlayerInfo._maxMp = playerInfo._maxMp;
+	realPlayerInfo._hp = playerInfo._hp;
+	realPlayerInfo._mp = playerInfo._mp;
+	realPlayerInfo._atk = playerInfo._atk;
+	realPlayerInfo._def = playerInfo._def;
+	realPlayerInfo._moveSpeed = playerInfo._moveSpeed;
+	realPlayerInfo._aggroLevel = playerInfo._aggroLevel;
+	realPlayerInfo._attackRange = playerInfo._attackRange;
+	realPlayerInfo._attackTime = playerInfo._attackTime;
+	realPlayerInfo._traceRadius = playerInfo._traceRadius;
+	realPlayerInfo._pos = playerInfo._pos;
+	realPlayerInfo._Rotate = playerInfo._Rotate;
+	realPlayerInfo._isAlive = playerInfo._isAlive;
+	realPlayerInfo._isAttack = playerInfo._isAttack;
+	realPlayerInfo._isBattle = playerInfo._isBattle;
+	realPlayerInfo._timeStamp = playerInfo._timeStamp;
+	realPlayerInfo._uid = playerInfo._uid;
+	realPlayerInfo._isOnline = playerInfo._isOnline;
+	realPlayerInfo._animState = playerInfo._animState;
+	realPlayerInfo._jumpFlag = playerInfo._jumpFlag;
+	return realPlayerInfo;
+}
+
 void ClientPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 {
 	BufferReader br(buffer, len);
@@ -40,20 +69,28 @@ void ClientPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 	PacketHeader header;
 	br >> header;
 
-	Player_INFO userInfo;
+	PACKET_Player_INFO userInfo;
 	br >> userInfo;
+
+	wstring name;
+	uint16 nameLen;
+	br >> nameLen;
+	name.resize(nameLen);
+	br.Read((void*)name.data(), nameLen * sizeof(WCHAR));
 
 	std::lock_guard<std::mutex> lock(_mutex);
 
 	if (_userInfo._uid == userInfo._uid)
 	{
-		_userInfo = userInfo;
+		Player_INFO realUserInfo = CopyPacketPlayerInfo(userInfo, name);
+		_userInfo = realUserInfo;
 		MANAGER_IMGUI()->UpdateHp(_userInfo._maxHp, _userInfo._hp);
 	}
 
 	if (header.other == false)
 	{
-		_userInfo = userInfo;
+		Player_INFO realUserInfo = CopyPacketPlayerInfo(userInfo, name);
+		_userInfo = realUserInfo;
 		MANAGER_IMGUI()->UpdateHp(_userInfo._maxHp, _userInfo._hp);
 		//cout << "your uid : " << userInfo._uid << endl;
 		//cout << "position : ( " << userInfo._pos.x << ", " << userInfo._pos.y << ", " << userInfo._pos.z << " )" << endl;
@@ -65,11 +102,13 @@ void ClientPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 
 		if (it != otherUserInfoMap.end()) {
 			// 이미 존재하는 키에 해당하는 값을 수정
-			it->second = userInfo;
+			Player_INFO realUserInfo = CopyPacketPlayerInfo(userInfo, name);
+			it->second = realUserInfo;
 		}
 		else {
 			// 존재하지 않는 경우, 새로운 값을 삽입
-			Player_INFO otherUserInfo = userInfo;
+			Player_INFO realUserInfo = CopyPacketPlayerInfo(userInfo, name);
+			Player_INFO otherUserInfo = realUserInfo;
 			otherUserInfo._isOnline = true;
 			cout << "other uid : " << userInfo._uid << endl;
 			cout << "other position : ( " << userInfo._pos.x << ", " << userInfo._pos.y << ", " << userInfo._pos.z << " )" << endl;
@@ -80,29 +119,29 @@ void ClientPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 
 void ClientPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 {
-	BufferReader br(buffer, len);
+	//BufferReader br(buffer, len);
 
-	PacketHeader header;
-	br >> header;
+	//PacketHeader header;
+	//br >> header;
 
-	MONSTER_INFO mobInfo;
-	//br의 커서가 끝에 도달할때까지 계속 뽑아냄
-	std::lock_guard<std::mutex> lock(_mutex);
+	//MONSTER_INFO mobInfo;
+	////br의 커서가 끝에 도달할때까지 계속 뽑아냄
+	//std::lock_guard<std::mutex> lock(_mutex);
 
-	while (br.ReadSize() < br.Size())
-	{
-		br >> mobInfo;
+	//while (br.ReadSize() < br.Size())
+	//{
+	//	br >> mobInfo;
 
-		auto it = _mobInfoList.find(mobInfo._instanceId);
-		if (it != _mobInfoList.end())
-		{
-			it->second = mobInfo;
-		}
-		else
-		{
-			_mobInfoList.insert(make_pair(mobInfo._instanceId, mobInfo));
-		}
-	}
+	//	auto it = _mobInfoList.find(mobInfo._instanceId);
+	//	if (it != _mobInfoList.end())
+	//	{
+	//		it->second = mobInfo;
+	//	}
+	//	else
+	//	{
+	//		_mobInfoList.insert(make_pair(mobInfo._instanceId, mobInfo));
+	//	}
+	//}
 }
 void ClientPacketHandler::Handle_MESSAGE(BYTE* buffer, int32 len)
 {
@@ -137,7 +176,36 @@ void ClientPacketHandler::Handle_USER_DISCONNECT(BYTE* buffer, int32 len)
 		it->second._isOnline = false;
 	}
 }
-SendBufferRef ClientPacketHandler::Make_USER_INFO(Player_INFO userInfo)
+
+PACKET_Player_INFO CopyPlayerInfo(const Player_INFO& playerInfo) {
+	PACKET_Player_INFO sendPlayerInfo;
+	sendPlayerInfo._instanceId = playerInfo._instanceId;
+	sendPlayerInfo._spawnMapType = playerInfo._spawnMapType;
+	sendPlayerInfo._maxHp = playerInfo._maxHp;
+	sendPlayerInfo._maxMp = playerInfo._maxMp;
+	sendPlayerInfo._hp = playerInfo._hp;
+	sendPlayerInfo._mp = playerInfo._mp;
+	sendPlayerInfo._atk = playerInfo._atk;
+	sendPlayerInfo._def = playerInfo._def;
+	sendPlayerInfo._moveSpeed = playerInfo._moveSpeed;
+	sendPlayerInfo._aggroLevel = playerInfo._aggroLevel;
+	sendPlayerInfo._attackRange = playerInfo._attackRange;
+	sendPlayerInfo._attackTime = playerInfo._attackTime;
+	sendPlayerInfo._traceRadius = playerInfo._traceRadius;
+	sendPlayerInfo._pos = playerInfo._pos;
+	sendPlayerInfo._Rotate = playerInfo._Rotate;
+	sendPlayerInfo._isAlive = playerInfo._isAlive;
+	sendPlayerInfo._isAttack = playerInfo._isAttack;
+	sendPlayerInfo._isBattle = playerInfo._isBattle;
+	sendPlayerInfo._timeStamp = playerInfo._timeStamp;
+	sendPlayerInfo._uid = playerInfo._uid;
+	sendPlayerInfo._isOnline = playerInfo._isOnline;
+	sendPlayerInfo._animState = playerInfo._animState;
+	sendPlayerInfo._jumpFlag = playerInfo._jumpFlag;
+	return sendPlayerInfo;
+}
+
+SendBufferRef ClientPacketHandler::Make_USER_INFO(Player_INFO userInfo, wstring name)
 {
 	std::lock_guard<std::mutex> lock(_mutex);
 
@@ -145,7 +213,12 @@ SendBufferRef ClientPacketHandler::Make_USER_INFO(Player_INFO userInfo)
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
 	PacketHeader* header = bw.Reserve<PacketHeader>();
 
-	bw << userInfo;
+	PACKET_Player_INFO sendUserInfo = CopyPlayerInfo(userInfo);
+
+	bw << sendUserInfo;
+
+	bw << (uint16)name.size();
+	bw.Write((void*)name.data(), name.size() * sizeof(WCHAR));
 
 	header->size = bw.WriteSize();
 	header->id = PACKET_USER_INFO;

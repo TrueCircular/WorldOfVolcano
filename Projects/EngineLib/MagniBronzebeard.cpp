@@ -42,11 +42,14 @@ void MagniBronzebeard::CharacterInit()
 		rot.y -= ::XMConvertToRadians(90.f);
 		_childModel->GetTransform()->SetLocalRotation(rot);
 		_childModel->GetTransform()->SetLocalPosition(Vec3(0, 0, 0));
+		_childModel->GetTransform()->SetLocalPosition(Vec3(0.1f));
 	}
-	AddComponent(make_shared<SphereCollider>());
+	auto collider = make_shared<SphereCollider>();
+	collider->SetRadius(30.f);
+	collider->SetOffset(Vec3(0, 10.f, 0));
+	AddComponent(collider);
 	SetName(L"MagniBronzebeard");
 	AddChild(_childModel);
-	GetTransform()->SetScale(Vec3(0.1f));
 
 	{
 		auto height = make_shared<HeightGetter>();

@@ -8,12 +8,12 @@ void GameSessionManager::Add(GameSessionRef session)
 {
 	WRITE_LOCK;
 	//새 유저 등록
-	Player_INFO userInfo;
+	PACKET_Player_INFO userInfo;
 	userInfo._uid = sessionIdCount; //session에 배정된 id send
 	userInfo._pos = { 0.f, 0.f, 0.f };
 	userInfo._isOnline = true;
 	_userInfoList.insert(make_pair(sessionIdCount, userInfo));
-	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, false);
+	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, L"noname", false);
 	session->Send(sendBuffer);
 	session->SetSessionId(sessionIdCount++);
 	_sessions.insert(session);
@@ -42,7 +42,7 @@ void GameSessionManager::Broadcast(SendBufferRef sendBuffer)
 	}
 }
 
-void GameSessionManager::UpdateUserInfo(Player_INFO info)
+void GameSessionManager::UpdateUserInfo(PACKET_Player_INFO info)
 {
 	auto it = _userInfoList.find(info._uid);
 	if (it != _userInfoList.end())
@@ -95,7 +95,7 @@ void GameSessionManager::UpdateMobInfo(MONSTER_INFO info)
 	}
 }
 
-void GameSessionManager::EnemyIsAttack(Player_INFO& target, MONSTER_INFO& enemy)
+void GameSessionManager::EnemyIsAttack(PACKET_Player_INFO& target, MONSTER_INFO& enemy)
 {
 	WRITE_LOCK
 		if (attackTimer > attackTime)
@@ -114,7 +114,7 @@ void GameSessionManager::EnemyIsAttack(Player_INFO& target, MONSTER_INFO& enemy)
 				if (session->GetSessionId() == target._uid)
 				{
 					cout << "attack for " << target._uid << endl;
-					SendBufferRef sendbuffer = ServerPacketHandler::Make_USER_INFO(target, false);
+					SendBufferRef sendbuffer = ServerPacketHandler::Make_USER_INFO(target, L"noname", false);
 					session->Send(sendbuffer);
 					break;
 				}
@@ -143,49 +143,5 @@ void GameSessionManager::CheckAndResetMonster()
 	{
 		GSessionManager.ClearMobInfoList();
 		GSessionManager.GenerateMobList();
-	}
-}
-
-void GameSessionManager::DamageCalculate(Player_INFO atkInfo, uint32 tgtId, SkillType skillType)
-{
-	auto it = _mobInfoList.find(tgtId);
-
-	if (it != _mobInfoList.end())
-	{
-		if (atkInfo._atk >= it->second._hp) //막타
-		{
-			it->second._hp = 0;
-			it->second._isAlive = false;
-		}
-		else
-		{
-			it->second._hp -= atkInfo._atk;
-		}
-
-		UpdateMobInfo(it->second);
-	}
-}
-
-void GameSessionManager::BattleCalculate(Player_INFO atkInfo, uint32 tgtId, SkillType skillType)
-{
-	switch (skillType)
-	{
-	case SkillType::NormalAttack:
-		DamageCalculate(atkInfo, tgtId, skillType);
-		break;
-	case SkillType::WhirlWind:
-		break;
-	case SkillType::IceArrow:
-		break;
-	case SkillType::Blizzard:
-		break;
-	case SkillType::Test_AllAttack:
-		for (const auto& pair : _mobInfoList)
-		{
-			DamageCalculate(atkInfo, pair.first, skillType);
-		}
-		break;
-	default:
-		break;
 	}
 }

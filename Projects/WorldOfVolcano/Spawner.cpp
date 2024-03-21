@@ -3,6 +3,7 @@
 
 #include "engine/EnemySoundController.h"
 #include "engine/PlayerSoundController.h"
+#include "engine\EquipmentSlot.h"
 using namespace std::chrono;
 
 Vec3 interpolate(double alpha, Vec3 targetPos, Vec3 prePos) {
@@ -42,19 +43,19 @@ void Spawner::Init()
 
 	if (name == L"BaseScene")
 	{
-		_spawnMapId = 0;
+		_spawnMapType = MapType::Lobby;
 	}
 
 	if (name == L"DungeonScene")
 	{
-		_spawnMapId = 1;
+		_spawnMapType = MapType::Dungeon;
 	}
 }
 
 void Spawner::Update()
 {
 	SpawnOtherPlayers();
-	SpawnMonsters();
+	//SpawnMonsters();
 }
 
 void Spawner::SpawnOtherPlayer(uint64 uid, Vec3 spawnPos)
@@ -95,34 +96,28 @@ void Spawner::SpawnOtherPlayer(uint64 uid, Vec3 spawnPos)
 void Spawner::SpawnOtherPlayers()
 {
 	for (const auto& pair : ClientPacketHandler::Instance().GetOtherUserInfoMap()) {
-		//if (pair.second._spawnMapType != _spawnMapId)
-		//{
-		//	//내 Map정보가 아니면 스킵
-		//	auto it = _monsters.find(pair.first);
+		if (pair.second._spawnMapType != _spawnMapType)
+		{
+			//내 Map정보가 아니면 스킵
+			auto it = _otherPlayers.find(pair.first);
 
-		//	if (it != _monsters.end())
-		//	{
-		//		MANAGER_SCENE()->GetCurrentScene()->Remove(it->second);
-		//	}
+			if (it != _otherPlayers.end())
+			{
+				MANAGER_SCENE()->GetCurrentScene()->Remove(it->second);
+			}
 
-		//	continue;
-		//}
-
-		//if (pair.second._spawnMapType == _spawnMapId)
-		//{
-		//	cout << "sdf";
-		//}
+			continue;
+		}
 		//다른플레이어 위치 동기화
 		auto it = _otherPlayers.find(pair.first);
 		// it : first : uint64 / second : shared_ptr<LSkinningModel>
 		if (it != _otherPlayers.end())
 		{
-			
-
 			// 다른플레이어가 이미 있다.
 			if (pair.second._isOnline == false)
 			{
 				//접속중이 아니라면 다른플레이어 목록에서 삭제
+				MANAGER_SCENE()->GetCurrentScene()->Remove(it->second);
 				_otherPlayers.erase(it);
 				ClientPacketHandler::Instance().EraseOtherUserInfoMap(pair.first);
 				//주의 : 이거 삭제한 이후로 얘 건들면 nullptr 뜰걸로 예상됨
@@ -138,7 +133,6 @@ void Spawner::SpawnOtherPlayers()
 				Vec3 rot = it->second->GetTransform()->GetLocalRotation();
 
 				Vec3 direction = target - pos;
-				direction.y = 0.0f; // Height가 알아서 설정해주므로 0
 				pos += interpolate(alpha, direction, Vec3(0.0f, 0.0f, 0.0f)) * pair.second._moveSpeed * MANAGER_TIME()->GetDeltaTime();
 
 				//회전 보간 계산
@@ -202,23 +196,18 @@ void Spawner::SpawnMonster(uint64 uid, uint32 monsterId, Vec3 spawnPos)
 void Spawner::SpawnMonsters()
 {
 	for (const auto& pair : ClientPacketHandler::Instance().GetMobInfoList()) {
-		//if (pair.second._spawnMapType != _spawnMapId)
-		//{
-		//	//내 Map정보가 아니면 스킵
-		//	auto it = _monsters.find(pair.first);
+		if (pair.second._spawnMapType != _spawnMapType)
+		{
+			//내 Map정보가 아니면 스킵
+			auto it = _monsters.find(pair.first);
 
-		//	if (it != _monsters.end())
-		//	{
-		//		MANAGER_SCENE()->GetCurrentScene()->Remove(it->second);
-		//	}
-		//	
-		//	continue;
-		//}
+			if (it != _monsters.end())
+			{
+				MANAGER_SCENE()->GetCurrentScene()->Remove(it->second);
+			}
 
-		//if (pair.second._spawnMapType == _spawnMapId)
-		//{
-		//	cout << "sdf";
-		//}
+			continue;
+		}
 
 		auto it = _monsters.find(pair.first);
 
@@ -230,7 +219,7 @@ void Spawner::SpawnMonsters()
 			{
 				//주의 : 이거 삭제한 이후로 얘 건들면 nullptr 뜰걸로 예상됨
 				it->second->GetComponent<AIController>()->notifyEnemyDeath();
-				//it->second->GetComponent<AIController>()->SetUnitState(EnemyUnitState::Death);
+				//it->second->GetComponent<AIController>()->SetUnitState(PlayerUnitState::Death); <- 동작수정
 				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
 
 				_monsters.erase(it);
@@ -265,7 +254,7 @@ void Spawner::SpawnMonsters()
 
 				it->second->GetTransform()->SetPosition(pos);
 				it->second->GetTransform()->SetLocalRotation(targetRot);
-				//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState);
+				//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState); <- 동작수정
 				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
 			}
 		}
@@ -292,13 +281,13 @@ void Spawner::Reset()
 		}
 	}
 
-	for (auto pair : _monsters)
+	/*for (auto pair : _monsters)
 	{
 		std::shared_ptr<GameObject> gameObject = pair.second;
 		if (gameObject) {
 			MANAGER_SCENE()->GetCurrentScene()->Remove(gameObject);
 		}
-	}
+	}*/
 
 	_otherPlayers.clear();
 	_monsters.clear();

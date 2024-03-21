@@ -17,7 +17,9 @@ bool SphereCollider::Intersects(const Ray& ray, OUT float& distance)
 
 void SphereCollider::Update()
 {
-	_boundingSphere.Center = GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition();
+	_sphereCenter = GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition();
+	_sphereCenter += _offset;
+	_boundingSphere.Center = _sphereCenter;
 	_sphereWeight = GetGameObject()->GetTransform()->GetScale();
 	_boundingSphere.Radius = _radius * max(max(_sphereWeight.x, _sphereWeight.y), _sphereWeight.z);
 }

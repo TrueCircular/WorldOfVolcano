@@ -199,13 +199,6 @@ void AIController::FixedUpdate()
 
 void AIController::Update()
 {
-	if (_heightGetterCom.lock())
-	{
-		Vec3 tempPos = _transform.lock()->GetLocalPosition();
-		tempPos.y = _heightGetterCom.lock()->GetHeight();
-		_transform.lock()->SetLocalPosition(tempPos);
-	}
-
 	if (_jumpState->isJump == false)
 	{
 		if (_heightGetterCom.lock())

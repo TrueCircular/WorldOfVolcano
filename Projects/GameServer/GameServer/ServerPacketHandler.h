@@ -77,20 +77,22 @@ struct JumpFlag
 	bool isJump = false;
 };
 
-struct CHARACTER_INFO
+struct PACKET_CHARACTER_INFO
 {
+	//wstring _name;
 	uint32 _instanceId = 0;
-	MapType _spawnMapType = MapType::Lobby;
-	//wstring _name;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+	MapType _spawnMapType = MapType::Lobby;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 	uint32 _maxHp = 1000;
 	uint32 _maxMp = 1000;
 	uint32 _hp = 1000;
 	uint32 _mp = 1000;
 	uint16 _atk = 100;
-	//uint16 _def = 100;
+	uint16 _def = 100;
 	uint16 _moveSpeed = 10;
 	uint16 _aggroLevel = 100;
 	float _attackRange = 15.0f;
+	float _attackTime = 0.8f;
+	float _traceRadius = 0.f;
 	Vec3 _pos = { 0.0f, 0.0f, 0.0f };
 	Vec3 _Rotate = { 0.0f, 0.0f, 0.0f };
 	bool _isAlive = true;
@@ -104,7 +106,7 @@ struct MESSAGE
 	char _messageBox[50];
 };
 
-struct Player_INFO : public CHARACTER_INFO
+struct PACKET_Player_INFO : public PACKET_CHARACTER_INFO
 {
 	uint32 _uid = 0;
 	bool _isOnline = false;
@@ -112,7 +114,7 @@ struct Player_INFO : public CHARACTER_INFO
 	JumpFlag _jumpFlag;
 };
 
-struct MONSTER_INFO : public CHARACTER_INFO
+struct MONSTER_INFO : public PACKET_CHARACTER_INFO
 {
 	uint32 _monsterId = 0;
 	Vec3 _targetPos = { 0.f, 0.f, 0.f };
@@ -130,7 +132,7 @@ public:
 	static void Handle_BATTLE(BYTE* buffer, int32 len);
 
 	static SendBufferRef Make_USER_CONNECT();
-	static SendBufferRef Make_USER_INFO(Player_INFO userInfo, bool otherPacket);
+	static SendBufferRef Make_USER_INFO(PACKET_Player_INFO userInfo, wstring name, bool otherPacket);
 	static SendBufferRef Make_MONSTER_INFO(map<uint32, MONSTER_INFO> mobInfo);
 	static SendBufferRef Make_USER_DISCONNECT(uint64 uid);
 	static SendBufferRef Make_MESSAGE(MESSAGE message);
