@@ -97,6 +97,9 @@
     <Filter Include="04. Component\ItemData\Equipment\Warrior">
       <UniqueIdentifier>{b11f81a0-a762-4f8e-8a38-75c8bed4b3f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03. GameObject\Unit\NpcUnit">
+      <UniqueIdentifier>{00e2f8eb-dcfa-42cf-adcc-e5edcc8d8d0c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="04. Component\Particle">
       <UniqueIdentifier>{334a19d2-d11f-49b0-9e1e-44b9dfb835df}</UniqueIdentifier>
     </Filter>
@@ -509,6 +512,12 @@
     <ClInclude Include="Ragnaros.h">
       <Filter>03. GameObject\Unit\EnemyUnit</Filter>
     </ClInclude>
+    <ClInclude Include="MagniBronzebeard.h">
+      <Filter>03. GameObject\Unit\NpcUnit</Filter>
+    </ClInclude>
+    <ClInclude Include="NpcUnit.h">
+      <Filter>03. GameObject\Unit\NpcUnit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -863,6 +872,12 @@
     </ClCompile>
     <ClCompile Include="Ragnaros.cpp">
       <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClCompile>
+    <ClCompile Include="MagniBronzebeard.cpp">
+      <Filter>03. GameObject\Unit\NpcUnit</Filter>
+    </ClCompile>
+    <ClCompile Include="NpcUnit.cpp">
+      <Filter>03. GameObject\Unit\NpcUnit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

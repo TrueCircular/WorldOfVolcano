@@ -8,7 +8,7 @@ void GameSessionManager::Add(GameSessionRef session)
 {
 	WRITE_LOCK;
 	//새 유저 등록
-	Player_INFO userInfo; 
+	Player_INFO userInfo;
 	userInfo._uid = sessionIdCount; //session에 배정된 id send
 	userInfo._pos = { 0.f, 0.f, 0.f };
 	userInfo._isOnline = true;
@@ -27,7 +27,7 @@ void GameSessionManager::Remove(GameSessionRef session)
 	{
 		_userInfoList.erase(it);
 	}
-	
+
 	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_DISCONNECT(session->GetSessionId());
 	Broadcast(sendBuffer);
 	_sessions.erase(session);
@@ -53,29 +53,6 @@ void GameSessionManager::UpdateUserInfo(Player_INFO info)
 
 void GameSessionManager::GenerateMobList()
 {
-	
-
-	//for (int id = 0; id < 2; ++id)
-	//{
-	//	// 랜덤 숫자 생성기 생성
-	//	std::random_device rd;
-	//	std::mt19937 gen(rd());
-	//	std::uniform_real_distribution<float> distributionX(-50, 50.0f);
-	//	std::uniform_real_distribution<float> distributionZ(-50, 50.0f);
-
-	//	MONSTER_INFO c0;
-
-	//	// 지정된 범위 내에서 x 및 z에 대한 무작위 값 설정
-	//	c0._instanceId = id;
-	//	c0._pos = { distributionX(gen), 25.0f, distributionZ(gen) };
-	//	c0._spawnMapId = 0;
-	//	cout << "x : " << c0._pos.x << ", z : " << c0._pos.z << "mapId: " << c0._spawnMapId << endl;
-
-	//	_mobInfoList.insert(make_pair(id, c0));
-	//}
-
-	
-
 	ObjectExporter exporter;
 	exporter.OpenFile(L"MobDungeon.dat");
 	for (int id = 0; id < exporter.enemyListforServer.size(); ++id)
@@ -86,7 +63,7 @@ void GameSessionManager::GenerateMobList()
 		mobInfo._instanceId = id;
 		wstring name = exporter.enemyListforServer[id].first;
 		mobInfo._pos = exporter.enemyListforServer[id].second;
-		mobInfo._spawnMapId = Dungeon;
+		mobInfo._spawnMapType = MapType::Dungeon;
 
 		// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon
 		if (name == L"CoreHound")
@@ -100,12 +77,10 @@ void GameSessionManager::GenerateMobList()
 		if (name == L"BaronGeddon")
 		{
 			mobInfo._monsterId = 2;
-			mobInfo._maxHp = 10000;
-			mobInfo._hp = 10000;
+			mobInfo._maxHp = 1000;
+			mobInfo._hp = 1000;
 			mobInfo._atk = 200;
 		}
-
-		cout << "x : " << mobInfo._pos.x << ", z : " << mobInfo._pos.z << "mapId: " << mobInfo._spawnMapId << endl;
 
 		_mobInfoList.insert(make_pair(id, mobInfo));
 	}
@@ -123,32 +98,94 @@ void GameSessionManager::UpdateMobInfo(MONSTER_INFO info)
 void GameSessionManager::EnemyIsAttack(Player_INFO& target, MONSTER_INFO& enemy)
 {
 	WRITE_LOCK
-	if (attackTimer > attackTime)
-	{
-		if (enemy._atk >= target._hp) //막타
+		if (attackTimer > attackTime)
 		{
-			target._hp = 0;
-			target._isAlive = false;
+			if (enemy._atk >= target._hp) //막타
+			{
+				target._hp = 0;
+				target._isAlive = false;
+			}
+			else
+			{
+				target._hp -= enemy._atk;
+			}
+
+			for (const auto& session : GSessionManager.GetSessionsRef()) {
+				if (session->GetSessionId() == target._uid)
+				{
+					cout << "attack for " << target._uid << endl;
+					SendBufferRef sendbuffer = ServerPacketHandler::Make_USER_INFO(target, false);
+					session->Send(sendbuffer);
+					break;
+				}
+			}
+
+			attackTimer = 0.0f;
 		}
 		else
 		{
-			target._hp -= enemy._atk;
+			attackTimer += TIMER().getDeltaTime();
 		}
+}
 
-		for (const auto& session : GSessionManager.GetSessionsRef()) {
-			if (session->GetSessionId() == target._uid)
-			{
-				cout << "attack for " << target._uid << endl;
-				SendBufferRef sendbuffer = ServerPacketHandler::Make_USER_INFO(target, false);
-				session->Send(sendbuffer);
-				break;
-			}
+void GameSessionManager::CheckAndResetMonster()
+{
+	bool isDungeon = false;
+	for (const auto& user : _userInfoList) {
+		if (user.second._spawnMapType == MapType::Dungeon)
+		{
+			isDungeon = true;
 		}
-
-		attackTimer = 0.0f;
 	}
-	else
+
+	if (_userInfoList.empty() == false &&
+		isDungeon == false)
 	{
-		attackTimer += TIMER().getDeltaTime();
+		GSessionManager.ClearMobInfoList();
+		GSessionManager.GenerateMobList();
+	}
+}
+
+void GameSessionManager::DamageCalculate(Player_INFO atkInfo, uint32 tgtId, SkillType skillType)
+{
+	auto it = _mobInfoList.find(tgtId);
+
+	if (it != _mobInfoList.end())
+	{
+		if (atkInfo._atk >= it->second._hp) //막타
+		{
+			it->second._hp = 0;
+			it->second._isAlive = false;
+		}
+		else
+		{
+			it->second._hp -= atkInfo._atk;
+		}
+
+		UpdateMobInfo(it->second);
+	}
+}
+
+void GameSessionManager::BattleCalculate(Player_INFO atkInfo, uint32 tgtId, SkillType skillType)
+{
+	switch (skillType)
+	{
+	case SkillType::NormalAttack:
+		DamageCalculate(atkInfo, tgtId, skillType);
+		break;
+	case SkillType::WhirlWind:
+		break;
+	case SkillType::IceArrow:
+		break;
+	case SkillType::Blizzard:
+		break;
+	case SkillType::Test_AllAttack:
+		for (const auto& pair : _mobInfoList)
+		{
+			DamageCalculate(atkInfo, pair.first, skillType);
+		}
+		break;
+	default:
+		break;
 	}
 }

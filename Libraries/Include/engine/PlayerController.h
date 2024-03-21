@@ -45,7 +45,7 @@ public:
 	bool _isPicked = false;
 	CHARACTER_INFO _pickedInfo;
 	shared_ptr<GameObject> _pickedObj;
-	queue<CHARACTER_INFO> _attackQueue;
+	queue<SkillType> _attackQueue;
 
 	float _battleTime = 15.f;
 	float _battleTimer = 0.f;
@@ -110,6 +110,7 @@ public:
 	const bool& IsBattle() const { return _isBattle; }
 	void NotifyPlayerAlive(bool isAlive);
 	const CHARACTER_INFO& GetPickedInfo() const { return _pickedInfo; }
+	SkillType GetFrontAttackQueue();
 	int GetAttackQueueSize();
 public:
 	//Sound
