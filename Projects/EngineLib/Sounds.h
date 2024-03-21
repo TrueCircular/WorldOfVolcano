@@ -10,9 +10,7 @@ class Sounds : public ResourceBase
 	using Super = ResourceBase;
 
 	//need each n files to create;
-	FMOD::Sound* fm_Sound;
 	wstring _soundPath;
-	float volume=100;
 	FMOD::Sound* fm_Sound=nullptr;
 	float volume=1;
 	float volumeMultiply = 1;
