@@ -527,7 +527,7 @@ MoltenGiantAttack::MoltenGiantAttack()
 		wstring soundPath = RESOURCES_ADDR_SOUND;
 		soundPath += L"Character/Enemy/MoltenGiant/MoltenGiant_Attack1.mp3";
 		sound->Load(soundPath);
-		sound->SetVolume(200);
+		sound->SetVolume(50);
 		MANAGER_RESOURCES()->AddResource<Sounds>(L"MoltenGiant_Attack1", sound);
 
 		_attack1Sound = sound->Clone();
@@ -545,7 +545,7 @@ MoltenGiantAttack::MoltenGiantAttack()
 		wstring soundPath = RESOURCES_ADDR_SOUND;
 		soundPath += L"Character/Enemy/MoltenGiant/MoltenGiant_Attack2.mp3";
 		sound->Load(soundPath);
-		sound->SetVolume(200);
+		sound->SetVolume(50);
 		MANAGER_RESOURCES()->AddResource<Sounds>(L"MoltenGiant_Attack2", sound);
 
 		_attack2Sound = sound->Clone();
