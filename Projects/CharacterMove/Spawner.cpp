@@ -230,7 +230,7 @@ void Spawner::SpawnMonsters()
 			{
 				//주의 : 이거 삭제한 이후로 얘 건들면 nullptr 뜰걸로 예상됨
 				it->second->GetComponent<AIController>()->notifyEnemyDeath();
-				it->second->GetComponent<AIController>()->SetUnitState(EnemyUnitState::Death);
+//				it->second->GetComponent<AIController>()->SetUnitState(EnemyUnitState::Death);
 				it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
 
 				_monsters.erase(it);
@@ -265,7 +265,7 @@ void Spawner::SpawnMonsters()
 
 				it->second->GetTransform()->SetPosition(pos);
 				it->second->GetTransform()->SetLocalRotation(targetRot);
-				it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState);
+//				it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState);
 				it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
 			}
 		}

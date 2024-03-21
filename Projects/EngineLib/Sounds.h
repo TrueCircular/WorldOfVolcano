@@ -26,6 +26,5 @@ public:
 	
 	void SetVolume(float vol) {volume = vol; };
 	float GetVolume() { return volume; };
-	void SetVolume(float vol) {volume = vol;};
 	shared_ptr<Sounds> Clone();
 };

@@ -97,7 +97,6 @@ void Sounds::Play3DEffect(Vec3* pos,Vec3 vel )
 	float currvol = (volume * MANAGER_SOUND()->GetCurrentVolume());
 	channel->setVolume(currvol);
 	MANAGER_SOUND()->AddChannel(volume, pos, channel);
-	MANAGER_SOUND()->AddChannel(pos, channel);
 }
 
 shared_ptr<Sounds> Sounds::Clone()
