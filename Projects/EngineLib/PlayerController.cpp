@@ -464,6 +464,10 @@ void PlayerController::PlayerPicking()
 
 		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
 
+		if (pickObj && pickObj->GetName() == L"MagniBronzebeard")
+		{
+			MANAGER_IMGUI()->BeginDialogue();
+		}
 		if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
 		{
 			_isPicked = true;
@@ -474,11 +478,7 @@ void PlayerController::PlayerPicking()
 			MANAGER_IMGUI()->UpdatePicked(false);
 			_isPicked = false;
 		}
-		if (pickObj && pickObj->GetName() == L"MagniBronzebeard")
-		{
-			MANAGER_IMGUI()->BeginDialogue();
-		}
-		else if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
+
 	}
 
 	if (_isPicked)
@@ -509,7 +509,7 @@ void PlayerController::PlayerPicking()
 				{
 					if (_isAttack == false)
 					{
-						_attackQueue.push(SkillType::NormalAttack);
+						//_attackQueue.push(SkillType::NormalAttack);
 					}
 					_isAttack = true;
 					_isBattle = true;
@@ -518,6 +518,7 @@ void PlayerController::PlayerPicking()
 			}
 		}
 	}
+}
 
 void PlayerController::PlayerTargetControll()
 {
@@ -614,24 +615,12 @@ void PlayerController::NotifyPlayerAlive(bool isAlive)
 	}
 }
 
-SkillType PlayerController::GetFrontAttackQueue()
-{
-	if (_attackQueue.empty() == false)
-	{
-		SkillType result = _attackQueue.front();
-		_attackQueue.pop();
-		return result;
-	}
-
-	return SkillType::NormalAttack;
-}
-
 int PlayerController::GetAttackQueueSize()
 {
-	if (_attackQueue.empty() == false)
-	{
-		return _attackQueue.size();
-	}
+	//if (_attackQueue.empty() == false)
+	//{
+	//	return _attackQueue.size();
+	//}
 
 	return -1;
 }

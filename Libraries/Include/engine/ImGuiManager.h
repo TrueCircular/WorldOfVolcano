@@ -52,7 +52,7 @@ private:
 	shared_ptr<Texture> _mainTexture;
 	//전체 윈도우 활성화 여부
 	bool show_all_window = false;
-	bool show_main_window = true;
+	bool show_main_window = false;
 	//윈도우 활성화 여부
 	bool show_hp_window = true;
 	bool show_picked_hp_window = false;

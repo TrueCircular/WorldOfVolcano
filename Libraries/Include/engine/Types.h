@@ -202,7 +202,6 @@ enum class UsableItemType : uint8
 	Priest,
 	End
 };
-
 //Map Type
 enum class MapType
 {
@@ -211,7 +210,6 @@ enum class MapType
 	Dungeon,
 	BossRoom
 };
-
 //Ability Type
 enum class AbilityType : uint8
 {
