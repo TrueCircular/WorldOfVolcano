@@ -69,8 +69,8 @@ void ImGuiManager::Update()
         ImVec2 displaySize = ImGui::GetIO().DisplaySize;
         //텍스쳐
         {
-            ImGui::SetNextWindowSize(ImVec2(displaySize.x, displaySize.y), ImGuiCond_Always);
-            ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+            ImGui::SetNextWindowSize(ImVec2(displaySize.x + 100.0f, displaySize.y + 100.0f), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(-10.0f, -10.0f), ImGuiCond_Always);
             //ImGui::Begin("Texture Window", &show_main_window, ImGuiWindowFlags_NoDecoration);
             ImGui::Begin("Texture Window", &show_main_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMouseInputs);
             shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"mainTitle");
@@ -394,7 +394,7 @@ void ImGuiManager::Update()
                 float b = 156 / 255.0f;
                 ImVec4 buttonColor(r, g, b, 0.5f);
                 {
-                    ImGui::SameLine((ImGui::GetWindowWidth() / 2 - buttonSize.x / 2) * 0.5f);
+                    ImGui::SameLine((ImGui::GetWindowWidth() / 2 - buttonSize.x / 2));
                     ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
                     wchar_t buffer[256] = L"예";
                     int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
@@ -413,20 +413,6 @@ void ImGuiManager::Update()
                     delete[] charBuffer;
                     ImGui::PopStyleColor();
                 }
-                ImGui::SameLine();
-                {
-                    wchar_t buffer[256] = L"아니오";
-                    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
-                    char* charBuffer = new char[bufferSize];
-                    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
-                    ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
-                    if (ImGui::Button(charBuffer, buttonSize))
-                    {
-                        // 그런건없다.
-                    }
-                    delete[] charBuffer;
-                    ImGui::PopStyleColor();
-                }
             }
             ImGui::PopStyleColor();
             ImGui::End();
@@ -436,34 +422,27 @@ void ImGuiManager::Update()
         if (show_skill_window)
         {
             ImVec2 displaySize = ImGui::GetIO().DisplaySize;
-            float windowSizeX = 64.0f;
-            float windowSizeY = 64.0f;
-            float windowPosX = displaySize.x / 2 - 100.0f;
-            float windowPosY = displaySize.y - windowSizeY - 10.0f;
+            float windowSizeX = 64.0f + 17.0f;
+            float windowSizeY = 64.0f + 17.0f;
+            float ImageSizeX = 64.0f;
+            float ImageSizeY = 64.0f;
+            float windowPosX = displaySize.x / 2 - (windowSizeX * 4) / 2;
+            float windowPosY = displaySize.y - windowSizeY;
             float spacing = windowSizeX;
 
             float r = 125.0f / 255.0f;
             float g = 98.0f / 255.0f;
             float b = 87.0f / 255.0f;
 
-            //box
-            {
-                //ImGui::SetNextWindowSize(ImVec2(windowSizeX + 200, windowSizeY + 15), ImGuiCond_Always);
-                ImGui::SetNextWindowPos(ImVec2(windowPosX, windowPosY), ImGuiCond_Always);
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
-                ImGui::Begin("box Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
-                ImGui::End();
-                ImGui::PopStyleColor();
-            }
             //Skill1
             {
                 ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
                 ImGui::SetNextWindowPos(ImVec2(windowPosX, windowPosY), ImGuiCond_Always);
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
                 ImGui::Begin("Skill1 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
                 shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"skill_charge");
                 ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
-                ImGui::Image(textureID, ImVec2(windowSizeX, windowSizeY));
+                ImGui::Image(textureID, ImVec2(ImageSizeX, ImageSizeY));
                 ImGui::End();
                 ImGui::PopStyleColor();
             }
@@ -471,11 +450,11 @@ void ImGuiManager::Update()
             {
                 ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
                 ImGui::SetNextWindowPos(ImVec2(windowPosX + spacing, windowPosY), ImGuiCond_Always);
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
                 ImGui::Begin("Skill2 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
                 shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"skill_shouting");
                 ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
-                ImGui::Image(textureID, ImVec2(windowSizeX, windowSizeY));
+                ImGui::Image(textureID, ImVec2(ImageSizeX, ImageSizeY));
                 ImGui::End();
                 ImGui::PopStyleColor();
             }
@@ -483,11 +462,11 @@ void ImGuiManager::Update()
             {
                 ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
                 ImGui::SetNextWindowPos(ImVec2(windowPosX + spacing * 2, windowPosY), ImGuiCond_Always);
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
                 ImGui::Begin("Skill3 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
                 shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"HealthPotion");
                 ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
-                ImGui::Image(textureID, ImVec2(windowSizeX, windowSizeY));
+                ImGui::Image(textureID, ImVec2(ImageSizeX, ImageSizeY));
                 ImGui::End();
                 ImGui::PopStyleColor();
             }
@@ -495,11 +474,11 @@ void ImGuiManager::Update()
             {
                 ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
                 ImGui::SetNextWindowPos(ImVec2(windowPosX + spacing * 3, windowPosY), ImGuiCond_Always);
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
                 ImGui::Begin("Skill4 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
                 shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"ManaPotion");
                 ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
-                ImGui::Image(textureID, ImVec2(windowSizeX, windowSizeY));
+                ImGui::Image(textureID, ImVec2(ImageSizeX, ImageSizeY));
                 ImGui::End();
                 ImGui::PopStyleColor();
             }
@@ -530,7 +509,7 @@ void ImGuiManager::Update()
 
                 ImGui::SetWindowFontScale(1.5f);
                 {
-                    wchar_t buffer[256] = L"    임무";
+                    wchar_t buffer[256] = L" Quest";
                     int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
                     char* charBuffer = new char[bufferSize];
                     WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
@@ -649,6 +628,8 @@ void ImGuiManager::Update()
                 float b = 156 / 255.0f;
                 ImVec4 buttonColor(r, g, b, 0.5f);
                 ImGui::NewLine();
+                ImGui::NewLine();
+                ImGui::SameLine((ImGui::GetWindowWidth() / 2 - buttonSize.x));
                 {
                     ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
                     wchar_t buffer[256] = L"예";

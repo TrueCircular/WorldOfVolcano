@@ -65,7 +65,7 @@ private:
 	int currentScriptIndex = 0; // 스크립트 인덱스
 	int currentCharIndex = 0; // 글자 인덱스
 	float currentCharTime = 0;
-	float printTime = 0.1f;
+	float printTime = 0.05f;
 	//채팅 멤버
 	char buffer[256] = "";
 	char nameBuffer[256] = "";
