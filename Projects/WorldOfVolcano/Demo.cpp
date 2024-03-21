@@ -31,7 +31,11 @@ void Demo::Init(){
 		);
 	}
 
+	//리소스 매니저 초기화
 	MANAGER_RESOURCES()->Init();
+
+	//사운드 매니저 초기화
+	MANAGER_SOUND()->Init();
 
 	shared_ptr<Texture> tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"mainTitle", L"../../Resources/Texture/MainTitle2.png");
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"logo", L"../../Resources/Texture/logo.png");

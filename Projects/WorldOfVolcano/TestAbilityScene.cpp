@@ -24,12 +24,6 @@
 
 void TestAbilityScene::Init()
 {
-	//리소스 매니저 초기화
-	MANAGER_RESOURCES()->Init();
-
-	//사운드 매니저 초기화
-	MANAGER_SOUND()->Init();
-
 	//light
 	{
 		auto light = make_shared<GameObject>();
