@@ -183,7 +183,7 @@ void ModelAnimator::UpdateTweenData()
 			{
 				if (_currentAnim)
 				{
-					if (_tweenDesc->current.currentFrame == _currentAnim->duration-1)
+					if (_tweenDesc->current.currentFrame == _currentAnim->duration)
 					{
 						_isFrameEnd = true;
 						_tweenDesc->current.currentFrame = 0;

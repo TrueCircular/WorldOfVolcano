@@ -40,6 +40,8 @@ void BaronGeddon::CharacterInit()
 			AddAnimation(model, L"BaronGeddon", L"Battle");
 			AddAnimation(model, L"BaronGeddon", L"Attack1");
 			AddAnimation(model, L"BaronGeddon", L"Attack2");
+			AddAnimation(model, L"BaronGeddon", L"Casting");
+			AddAnimation(model, L"BaronGeddon", L"Ability");
 		}
 		const auto& shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
 		shared_ptr<ModelAnimator> tempAnimator = make_shared<ModelAnimator>(shader);

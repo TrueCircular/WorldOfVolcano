@@ -92,7 +92,7 @@ void BaronGeddonStand::Update()
 
 				if (FinalTarget != nullptr)
 				{
-					if (minDistance <= _attackRange && minDistance <= _traceRadius)
+					if (minDistance <= _attackRange)
 					{
 						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
 						Out(L"BaronGeddonBattle");
@@ -136,27 +136,6 @@ void BaronGeddonDamaged::Update()
 void BaronGeddonDamaged::Out(const wstring& transition)
 {
 
-}
-
-BaronGeddonStun::BaronGeddonStun()
-{
-	_name = L"BaronGeddonStun";
-}
-
-BaronGeddonStun::~BaronGeddonStun()
-{
-}
-
-void BaronGeddonStun::Enter(const shared_ptr<AIController>& controller)
-{
-}
-
-void BaronGeddonStun::Update()
-{
-}
-
-void BaronGeddonStun::Out(const wstring& transition)
-{
 }
 
 BaronGeddonDead::BaronGeddonDead()
@@ -528,7 +507,7 @@ BaronGeddonAttack::BaronGeddonAttack()
 		wstring soundPath = RESOURCES_ADDR_SOUND;
 		soundPath += L"Character/Enemy/BaronGeddon/BaronGeddon_Attack1.mp3";
 		sound->Load(soundPath);
-		sound->SetVolume(500);
+		sound->SetVolume(100);
 		MANAGER_RESOURCES()->AddResource<Sounds>(L"BaronGeddon_Attack1", sound);
 
 		_attack1Sound = sound->Clone();
@@ -536,7 +515,6 @@ BaronGeddonAttack::BaronGeddonAttack()
 	else
 	{
 		_attack1Sound = tempSound1->Clone();
-		_attack1Sound->SetVolume(500);
 	}
 
 	//Attack2 Sound
@@ -547,6 +525,7 @@ BaronGeddonAttack::BaronGeddonAttack()
 		wstring soundPath = RESOURCES_ADDR_SOUND;
 		soundPath += L"Character/Enemy/BaronGeddon/BaronGeddon_Attack2.mp3";
 		sound->Load(soundPath);
+		sound->SetVolume(100);
 		MANAGER_RESOURCES()->AddResource<Sounds>(L"BaronGeddon_Attack2", sound);
 
 		_attack2Sound = sound->Clone();

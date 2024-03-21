@@ -14,8 +14,6 @@
 
 Warrior::Warrior()
 {
-	_device = GRAPHICS()->GetDevice();
-	_deviceContext = GRAPHICS()->GetDeviceContext();
 	_objType = ObjectType::PlayableUnit;
 }
 

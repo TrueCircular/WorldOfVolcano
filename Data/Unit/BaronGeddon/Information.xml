@@ -8,5 +8,5 @@
     <AggroPow>0</AggroPow>
     <AttackRange>40</AttackRange>
     <AttackTime>1.5</AttackTime>
-    <TraceRadius>80</TraceRadius>
+    <TraceRadius>100</TraceRadius>
 </CharacterInfo>

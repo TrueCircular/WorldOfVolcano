@@ -39,17 +39,6 @@ public:
 	virtual void Out(const wstring& transition) override;
 };
 
-class BaronGeddonStun : public StunStrategy
-{
-public:
-	BaronGeddonStun();
-	virtual ~BaronGeddonStun();
-public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
-	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
-};
-
 class BaronGeddonDead : public DeadStrategy
 {
 public:

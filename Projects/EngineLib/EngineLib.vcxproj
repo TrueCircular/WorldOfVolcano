@@ -210,8 +210,8 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="ItemData.h" />
     <ClInclude Include="LineSpark.h" />
     <ClInclude Include="MagicCircle.h" />
-    <ClInclude Include="MoltenGaint.h" />
-    <ClInclude Include="MoltenGaintPattern.h" />
+    <ClInclude Include="MoltenGiant.h" />
+    <ClInclude Include="MoltenGiantPattern.h" />
     <ClInclude Include="ParticleInstance.h" />
     <ClInclude Include="ParticleManager.h" />
     <ClInclude Include="ParticleObj.h" />
@@ -336,8 +336,8 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="ItemData.cpp" />
     <ClCompile Include="LineSpark.cpp" />
     <ClCompile Include="MagicCircle.cpp" />
-    <ClCompile Include="MoltenGaint.cpp" />
-    <ClCompile Include="MoltenGaintPattern.cpp" />
+    <ClCompile Include="MoltenGiant.cpp" />
+    <ClCompile Include="MoltenGiantPattern.cpp" />
     <ClCompile Include="ParticleInstance.cpp" />
     <ClCompile Include="ParticleManager.cpp" />
     <ClCompile Include="ParticleObj.cpp" />

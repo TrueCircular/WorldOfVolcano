@@ -1,0 +1,12 @@
+<CharacterInfo>
+    <Name>CoreHound</Name>
+    <HP>12000</HP>
+    <MP>500</MP>
+    <ATK>1200</ATK>
+    <DEF>250</DEF>
+    <MoveSpeed>35</MoveSpeed>
+    <AggroPow>0</AggroPow>
+    <AttackRange>40</AttackRange>
+    <AttackTime>1.5</AttackTime>
+    <TraceRadius>80</TraceRadius>
+</CharacterInfo>

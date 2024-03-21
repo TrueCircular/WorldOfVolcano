@@ -2,6 +2,6 @@
 #include "StrategyFactory.h"
 
 #include "CoreHound.h"
-#include "MoltenGaint.h"
+#include "MoltenGiant.h"
 #include "BaronGeddon.h"
 #include "Ragnaros.h"
