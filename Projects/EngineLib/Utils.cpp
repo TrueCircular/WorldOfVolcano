@@ -19,6 +19,9 @@ bool Utils::StartsWith(std::wstring str, std::wstring comp)
 	return false;
 }
 
+float Utils::Randstep(float fmin, float fmax) {
+	return (float)fmin + ((float)fmax - (float)fmin) * rand() / RAND_MAX;
+}
 void Utils::Replace(OUT string& str, string comp, string rep)
 {
 	string temp = str;

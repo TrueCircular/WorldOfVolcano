@@ -357,6 +357,18 @@ void BaseScene::Update()
 		pos2->SetScale(Vec3(100,100,100));
 		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(1.6, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
+		for (int i = 0; i < 5; ++i) {
+			auto SparkParticle = MANATER_PARTICLE()->GetParticleFromName(L"LineSpark");
+			shared_ptr<Transform> pos3 = make_shared<Transform>();
+			Vec3 refpos = _warrior->GetTransform()->GetLocalPosition();
+			float x = Utils::Randstep(-30, 30);
+			float y = Utils::Randstep(0, 30);
+			float z = Utils::Randstep(-30, 30);
+			pos3->SetScale(Vec3(10, 10, 10));
+			pos3->SetLocalPosition(Vec3(refpos.x+x, refpos.y+y, refpos.z+z));
+			shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(1.6, pos3, nullptr, 0);
+			SparkParticle->AddParticle(instancedata2);
+		}
 
 	}	
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::C)) {

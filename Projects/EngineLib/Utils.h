@@ -16,6 +16,8 @@ public:
 	static std::wstring ToWString(std::string value);
 	static std::string ToString(std::wstring value);
 
+	static float Randstep(float min, float max);
+
 	static void ScreenShot(ComPtr<ID3D11DeviceContext> context, const wstring& fileName);
 	static Vec3 QuadToYawPitchRoll(Quaternion& q) {
 		float sqw = q.w * q.w;
