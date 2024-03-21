@@ -2,12 +2,17 @@
 #include "Sounds.h"
 #include <list>
 
+
 class SoundManager
 {
+	struct SoundRef  {
+		Vec3* pos;
+		float soundVol;
+	};
 //	list<pair<wstring,FMOD::Channel*>> channelList;
 	shared_ptr<Transform> soundTransform;
 	FMOD_VECTOR prevPos = {1,1,1};
-	vector <pair<Vec3*, FMOD::Channel*>> managed_channels;
+	vector <pair<SoundRef, FMOD::Channel*>> managed_channels;
 	vector <FMOD::Channel*> managed_2Dchannels;
 	static SoundManager* _instance;
 	float soundVolume=1;
@@ -24,8 +29,11 @@ public:
 	void SetTransForm(shared_ptr<Transform> refTransform) {
 		soundTransform = refTransform;
 	}
-	void AddChannel(Vec3* pos,FMOD::Channel* channel) {
-		managed_channels.push_back(make_pair(pos,channel));
+	void AddChannel(float refvol,Vec3* pos,FMOD::Channel* channel) {
+		SoundRef ref;
+		ref.soundVol = refvol;
+		ref.pos = pos;
+		managed_channels.push_back(make_pair(ref,channel));
 	}
 	void AddChannel(FMOD::Channel* channel) {
 		managed_2Dchannels.push_back(channel);

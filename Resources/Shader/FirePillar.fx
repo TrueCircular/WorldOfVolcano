@@ -10,6 +10,7 @@
 
 BlendState AlphaBlendState
 {
+    AlphaToCoverageEnable = true;
     BlendEnable[0] = true;
     SrcBlend = SRC_ALPHA;
     DestBlend = INV_SRC_ALPHA;
@@ -183,7 +184,8 @@ float4 PS(EffectOutput input) : SV_TARGET
 technique11 T0
 {
     PASS_RS_BS_VP(P0, CullBack, AlphaBlendState, PillarVS, PS)
-    PASS_RS_BS_VPNOD(P1, CullNone, AlphaBlendState, PillarModelVS, PS)
+    PASS_RS_BS_VP(P1, CullNone, AlphaBlendState, PillarModelVS, PS)
+//    PASS_RS_BS_VPNOD(P1, CullNone, AlphaBlendState, PillarModelVS, PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

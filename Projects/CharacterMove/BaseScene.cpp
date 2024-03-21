@@ -211,8 +211,8 @@ void BaseScene::Init()
 	MANATER_PARTICLE()->AddManagingParticle(L"WarriorRoar", roar);
 	MANATER_PARTICLE()->AddManagingParticle(L"Clap", clap);
 	MANATER_PARTICLE()->AddManagingParticle(L"Smoke1", smoke1);
-	MANATER_PARTICLE()->AddManagingParticle(L"Smoke2", smoke2);
 	MANATER_PARTICLE()->AddManagingParticle(L"Smoke3", smoke3);
+	MANATER_PARTICLE()->AddManagingParticle(L"Smoke2", smoke2);
 	MANATER_PARTICLE()->AddManagingParticle(L"FireStorm", storm);
 	MANATER_PARTICLE()->AddManagingParticle(L"FireBall", fireBall);
 	MANATER_PARTICLE()->AddManagingParticle(L"Polar", polar);
@@ -226,7 +226,15 @@ void BaseScene::Init()
 	pos->SetLocalScale(Vec3(1.5, 1.5, 1.5));
 	shared_ptr<ParticleInstance> instancedata = make_shared<ParticleInstance>(5, pos, nullptr, 0, true);
 	polar->AddParticle(instancedata);
-	}
+	} 
+	//{
+	//	shared_ptr<Transform> pos2 = make_shared<Transform>();
+	//	pos2->SetParent(_warrior->GetTransform());
+	//	pos2->SetLocalPosition(Vec3(0,0.2,0));
+	//	pos2->SetLocalScale(Vec3(20,20,20));
+	//	shared_ptr<ParticleInstance> instancedata = make_shared<ParticleInstance>(5, pos2, nullptr, 0, true);
+	//	magicCircle->AddParticle(instancedata);
+	//}
 	SpawnManager::GetInstance().Init();
 }
 void BaseScene::Start()
