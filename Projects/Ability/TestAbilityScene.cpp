@@ -20,6 +20,7 @@
 #include "engine/PlayerController.h"
 #include "engine/AIController.h"
 #include "engine/Utils.h"
+#include "engine/StrategyFactory.h"
 
 void TestAbilityScene::Init()
 {
@@ -150,10 +151,10 @@ void TestAbilityScene::Init()
 				Vec3 spwanPos = Vec3(103, 0, 240);
 				spwanPos.y = height->GetHeight(spwanPos);
 
-
 				auto baronGeddon = make_shared<BaronGeddon>();
 				baronGeddon->Awake();
 				baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+				baronGeddon->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
 				baronGeddon->SetSpwanPosition(spwanPos);
 				baronGeddon->Start();
 

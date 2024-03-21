@@ -7,8 +7,6 @@
 
 BaronGeddon::BaronGeddon()
 {
-	_device = GRAPHICS()->GetDevice();
-	_deviceContext = GRAPHICS()->GetDeviceContext();
 	_objType = ObjectType::EnemyUnit;
 }
 

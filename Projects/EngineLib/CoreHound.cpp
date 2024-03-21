@@ -5,6 +5,7 @@
 
 CoreHound::CoreHound()
 {
+	_objType = ObjectType::EnemyUnit;
 }
 
 CoreHound::~CoreHound()

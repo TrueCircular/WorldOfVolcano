@@ -56,60 +56,28 @@ void AIController::InitState()
 	}break;
 	case AIType::EnemyUnit:
 	{
-		//Stand 0
-		_fsmList.push_back(make_shared<UnitFSMStand>());
-		//Trace 1
-		_fsmList.push_back(make_shared<UnitFSMTrace>());
-		//MoveToSpwanPoint
-		_fsmList.push_back(make_shared<UnitFSMMoveToSpwanPoint>());
-		//Battle
-		_fsmList.push_back(make_shared<UnitFSMBattle>());
-		//Attack
-		_fsmList.push_back(make_shared<UnitFSMAttack>());
-		//Ability
-		_fsmList.push_back(make_shared<UnitFSMAbility>());
-
-
-		_currentFsmState = _fsmList[0];
-		_currentFsmState->Enter(shared_from_this());
+		_unitFsm->SetStrategy(_unitStrategyList[0]);
+		_unitFsm->Enter(shared_from_this());
 	}break;
 	}
 }
 
-void AIController::SetCurrentFsmState(UnitFSMState state)
+void AIController::SetCurrentFsmStrategy(const wstring& transition)
 {
-	switch (state)
+	if (_unitStrategyList.size() <= 0)
 	{
-	case UnitFSMState::Stand:
+		return;
+	}
+	else
 	{
-		_currentFsmState = _fsmList[0];
-		_currentFsmState->Enter(shared_from_this());
-	}break;
-	case UnitFSMState::Trace:
-	{
-		_currentFsmState = _fsmList[1];
-		_currentFsmState->Enter(shared_from_this());
-	}break;	
-	case UnitFSMState::MoveToSpwanPoint:
-	{
-		_currentFsmState = _fsmList[2];
-		_currentFsmState->Enter(shared_from_this());
-	}break;	
-	case UnitFSMState::Battle:
-	{
-		_currentFsmState = _fsmList[3];
-		_currentFsmState->Enter(shared_from_this());
-	}break;
-	case UnitFSMState::Attack:
-	{
-		_currentFsmState = _fsmList[4];
-		_currentFsmState->Enter(shared_from_this());
-	}break;	
-	case UnitFSMState::Ability:
-	{
-		_currentFsmState = _fsmList[5];
-		_currentFsmState->Enter(shared_from_this());
-	}break;
+		for (const auto& strategy : _unitStrategyList)
+		{
+			if (strategy->_name == transition)
+			{
+				_unitFsm->SetStrategy(strategy);
+				_unitFsm->Enter(shared_from_this());
+			}
+		}
 	}
 }
 
@@ -208,6 +176,7 @@ void AIController::Start()
 		_animator = GetGameObject()->GetChildByName(L"Model")->GetModelAnimator();
 		_jumpState = make_shared<JumpFlag>();
 		_characterInfo = GetGameObject()->GetComponent<CharacterInfo>();
+		_unitFsm = make_shared<UnitFSM>();
 	}
 
 	_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
@@ -246,7 +215,7 @@ void AIController::Update()
 	break;
 	case AIType::EnemyUnit:
 	{
-		_currentFsmState->Update();
+		_unitFsm->Update();
 	}
 	break;
 	}

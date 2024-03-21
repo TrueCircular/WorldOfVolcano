@@ -3,6 +3,7 @@
 #include "PlayerAnimState.h"
 #include "PlayerSoundController.h"
 #include "EnemySoundController.h"
+#include "UnitStrategy.h"
 
 class HeightGetter;
 class CharacterInfo;
@@ -33,8 +34,8 @@ private:
 	Vec3						_targetPos = Vec3(0.f);
 	float						_traceRadius = 0.f;
 private:
-	shared_ptr<UnitFSM>			_currentFsmState;
-	vector<shared_ptr<UnitFSM>>	_fsmList;
+	shared_ptr<UnitFSM>					_unitFsm;
+	vector<shared_ptr<UnitStrategy>>	_unitStrategyList;
 private:
 	//Player
 	shared_ptr<PlayerUnitState>			_currentPlayerState;
@@ -54,7 +55,8 @@ public:
 	void SetAIType(AIType type) { _type = type; }
 	void notifyEnemyDeath() { _isAlive = false; }
 	void SetTargetTransform(const shared_ptr<Transform> transform) { _targetTransform = transform; }
-	void SetCurrentFsmState(UnitFSMState state);
+	void SetCurrentFsmStrategy(const wstring& transition);
+	void SetFsmStrategyList(const vector<shared_ptr<UnitStrategy>>& strategyList) { _unitStrategyList = strategyList; }
 	//Animation Controll
 	bool SetAnimState(const PlayerAnimType& type);
 	void SetUnitState(const PlayerUnitState& state) { *_currentPlayerState = state; }

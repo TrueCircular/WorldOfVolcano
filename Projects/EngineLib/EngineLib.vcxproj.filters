@@ -503,6 +503,12 @@
     <ClInclude Include="MoltenGaintPattern.h">
       <Filter>04. Component\FSM\Pattern\Normal\MoltenGaint</Filter>
     </ClInclude>
+    <ClInclude Include="MoltenGaint.h">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClInclude>
+    <ClInclude Include="Ragnaros.h">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -851,6 +857,12 @@
     </ClCompile>
     <ClCompile Include="MoltenGaintPattern.cpp">
       <Filter>04. Component\FSM\Pattern\Normal\MoltenGaint</Filter>
+    </ClCompile>
+    <ClCompile Include="MoltenGaint.cpp">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
+    </ClCompile>
+    <ClCompile Include="Ragnaros.cpp">
+      <Filter>03. GameObject\Unit\EnemyUnit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
