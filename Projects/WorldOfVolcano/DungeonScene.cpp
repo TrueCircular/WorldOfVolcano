@@ -212,40 +212,8 @@ void DungeonScene::Update()
 		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
 		sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
 
-		//Alive
-		if (sendInfo._isAlive == false)
-		{
-			_warrior->GetComponent<PlayerController>()->NotifyPlayerAlive(false);
-			MANAGER_IMGUI()->NotifyPlayerAlive(false);
-		}
-
-		//Rebirth
-		{
-			int size = MANAGER_IMGUI()->GetAttackQueueSize();
-			if (size > 0)
-			{
-				sendInfo._isAlive = true;
-				sendInfo._hp = sendInfo._maxHp;
-				sendInfo._pos = spawnPos;
-				_warrior->GetTransform()->SetLocalPosition(spawnPos);
-				_warrior->GetComponent<PlayerController>()->NotifyPlayerAlive(true);
-				MANAGER_IMGUI()->NotifyPlayerAlive(true);
-			}
-		}
-
-		//Attack1
-		{
-			/*int size = _warrior->GetComponent<PlayerController>()->GetAttackQueueSize();
-			if (size > 0)
-			{
-				uint32 targetId = _warrior->GetComponent<PlayerController>()->GetPickedInfo()._instanceId;
-				_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId);
-				_service->Broadcast(_sendBuffer);
-			}*/
-		}
-
 		//SendBuffer
-		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, L"noname");
+		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
 	}
 
 	SpawnManager::GetInstance().Update();

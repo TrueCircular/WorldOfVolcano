@@ -92,31 +92,7 @@ void ImGuiManager::Update()
             ImGui::End();
             ImGui::PopStyleColor();
         }
-        //타이틀 텍스트
-        {
-            //float windowSizeX = 800;
-            //float windowSizeY = 150;
-            //// Set the window size to a fixed value
-            //ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
-            //ImGui::SetNextWindowPos(ImVec2(100, 50), ImGuiCond_Always);
-            //float r = 200.0f / 255.0f;
-            //float g = 15.0f / 255.0f;
-            //float b = 15.0f / 255.0f;
-            //ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.0f));
-            //ImGui::Begin("TitleWindow", &show_main_window, ImGuiWindowFlags_NoDecoration);
-            //
-            //ImGui::SetWindowFontScale(5.0f);
-            //{
-            //    wchar_t buffer[256] = L"World of VVocano";
-            //    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
-            //    char* charBuffer = new char[bufferSize];
-            //    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
-            //    ImGui::TextColored(ImVec4(r, g, b, 1.0f), charBuffer);
-            //    delete[] charBuffer;
-            //}
-            //ImGui::End();
-            //ImGui::PopStyleColor();
-        }
+
         //UI버튼
         {
             float windowSizeX = 500;
@@ -404,7 +380,7 @@ void ImGuiManager::Update()
                     if (ImGui::Button(charBuffer, buttonSize))
                     {
                         //TODO
-                        for (int i = 0; i < 10; ++i)
+                        for (int i = 0; i < 1; ++i)
                         {
                             _rebirthQueue.push(true);
                         }
@@ -737,18 +713,6 @@ void ImGuiManager::UpdatePicked(bool isPicked, const shared_ptr<CharacterInfo>& 
     //int bufferSize = WideCharToMultiByte(CP_UTF8, 0, name.c_str(), -1, nullptr, 0, nullptr, nullptr);
     //_name = new char[bufferSize];
     //WideCharToMultiByte(CP_UTF8, 0, name.c_str(), -1, _name, bufferSize, nullptr, nullptr);
-}
-
-int ImGuiManager::GetAttackQueueSize()
-{
-    if (_rebirthQueue.empty() == false)
-    {
-        int queueSize = _rebirthQueue.size();
-        _rebirthQueue.pop();
-        return queueSize;
-    }
-
-    return -1;
 }
 
 int ImGuiManager::GetChangeSceneQueueSize()

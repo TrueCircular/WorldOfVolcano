@@ -84,16 +84,12 @@ void ClientPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 	{
 		Player_INFO realUserInfo = CopyPacketPlayerInfo(userInfo, name);
 		_userInfo = realUserInfo;
-		MANAGER_IMGUI()->UpdateHp(_userInfo._maxHp, _userInfo._hp);
 	}
 
 	if (header.other == false)
 	{
 		Player_INFO realUserInfo = CopyPacketPlayerInfo(userInfo, name);
 		_userInfo = realUserInfo;
-		MANAGER_IMGUI()->UpdateHp(_userInfo._maxHp, _userInfo._hp);
-		//cout << "your uid : " << userInfo._uid << endl;
-		//cout << "position : ( " << userInfo._pos.x << ", " << userInfo._pos.y << ", " << userInfo._pos.z << " )" << endl;
 	}
 	else if (_userInfo._uid != userInfo._uid)
 	{

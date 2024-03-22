@@ -13,7 +13,7 @@ void GameSessionManager::Add(GameSessionRef session)
 	userInfo._pos = { 0.f, 0.f, 0.f };
 	userInfo._isOnline = true;
 	_userInfoList.insert(make_pair(sessionIdCount, userInfo));
-	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, L"noname", false);
+	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, L"tauren", false);
 	session->Send(sendBuffer);
 	session->SetSessionId(sessionIdCount++);
 	_sessions.insert(session);
