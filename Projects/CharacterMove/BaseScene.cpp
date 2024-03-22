@@ -28,7 +28,7 @@
 #include "engine/Polar.h"
 #include "engine/MagicCircle.h"
 #include "engine/LineSpark.h"
-
+#include "engine/ShineHelper.h"
 void BaseScene::Init()
 {
 	//리소스 매니저 초기화
@@ -238,7 +238,7 @@ void BaseScene::Init()
 		else {
 			bgm->Play(true);
 	}
-
+	MANATER_PARTICLE()->ClearList();
 	shared_ptr<WarriorRoar> roar = make_shared<WarriorRoar>();
 	auto _waranimator = _warrior->GetChildByName(L"Model")->GetModelAnimator();
 	roar->SetAnimator(_waranimator);
@@ -253,6 +253,8 @@ void BaseScene::Init()
 	shared_ptr<LineSpark> lineSpark = make_shared<LineSpark>();
 	tempTargetTrans = make_shared<Transform>();
 	tempTargetTrans->SetLocalPosition(Vec3(0, 80, 0));
+	shared_ptr<ShineHelper> sparkHelper = make_shared<ShineHelper>();
+	MANATER_PARTICLE()->AddManagingParticle(L"SparkHelper", sparkHelper);
 	MANATER_PARTICLE()->AddManagingParticle(L"WarriorRoar", roar);
 	MANATER_PARTICLE()->AddManagingParticle(L"Clap", clap);
 	MANATER_PARTICLE()->AddManagingParticle(L"Smoke1", smoke1);
@@ -263,15 +265,15 @@ void BaseScene::Init()
 	MANATER_PARTICLE()->AddManagingParticle(L"Polar", polar);
 	MANATER_PARTICLE()->AddManagingParticle(L"MagicCircle", magicCircle);
 	MANATER_PARTICLE()->AddManagingParticle(L"LineSpark", lineSpark);
-	{
-	shared_ptr<Transform> pos = make_shared<Transform>();
-	pos->SetParent(_warrior->GetTransform());
-	pos->SetLocalPosition(Vec3(-1, 8,3));
-	pos->SetLocalRotation(Vec3(::XMConvertToRadians(90), ::XMConvertToRadians(90),::XMConvertToRadians(-90)));
-	pos->SetLocalScale(Vec3(1.5, 1.5, 1.5));
-	shared_ptr<ParticleInstance> instancedata = make_shared<ParticleInstance>(5, pos, nullptr, 0, true);
-	polar->AddParticle(instancedata);
-	} 
+	//{
+	//shared_ptr<Transform> pos = make_shared<Transform>();
+	//pos->SetParent(_warrior->GetTransform());
+	//pos->SetLocalPosition(Vec3(-1, 8,3));
+	//pos->SetLocalRotation(Vec3(::XMConvertToRadians(90), ::XMConvertToRadians(90),::XMConvertToRadians(-90)));
+	//pos->SetLocalScale(Vec3(1.5, 1.5, 1.5));
+	//shared_ptr<ParticleInstance> instancedata = make_shared<ParticleInstance>(5, pos, nullptr, 0, true);
+	//polar->AddParticle(instancedata);
+	//} 
 	//{
 	//	shared_ptr<Transform> pos2 = make_shared<Transform>();
 	//	pos2->SetParent(_warrior->GetTransform());
@@ -402,18 +404,20 @@ void BaseScene::Update()
 		pos2->SetScale(Vec3(100,100,100));
 		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(1.6, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
-		for (int i = 0; i < 5; ++i) {
-			auto SparkParticle = MANATER_PARTICLE()->GetParticleFromName(L"LineSpark");
-			shared_ptr<Transform> pos3 = make_shared<Transform>();
-			Vec3 refpos = _warrior->GetTransform()->GetLocalPosition();
-			float x = Utils::Randstep(-30, 30);
-			float y = Utils::Randstep(0, 30);
-			float z = Utils::Randstep(-30, 30);
-			pos3->SetScale(Vec3(10, 10, 10));
-			pos3->SetLocalPosition(Vec3(refpos.x+x, refpos.y+y, refpos.z+z));
-			shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(1.6, pos3, nullptr, 0);
-			SparkParticle->AddParticle(instancedata2);
-		}
+		auto helper = MANATER_PARTICLE()->GetParticleFromName(L"SparkHelper");
+		helper->AddParticle(instancedata2);
+		//for (int i = 0; i < 5; ++i) {
+		//	auto SparkParticle = MANATER_PARTICLE()->GetParticleFromName(L"LineSpark");
+		//	shared_ptr<Transform> pos3 = make_shared<Transform>();
+		//	Vec3 refpos = _warrior->GetTransform()->GetLocalPosition();
+		//	float x = Utils::Randstep(-30, 30);
+		//	float y = Utils::Randstep(0, 30);
+		//	float z = Utils::Randstep(-30, 30);
+		//	pos3->SetScale(Vec3(10, 10, 10));
+		//	pos3->SetLocalPosition(Vec3(refpos.x+x, refpos.y+y, refpos.z+z));
+		//	shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(1.6, pos3, nullptr, 0);
+		//	SparkParticle->AddParticle(instancedata2);
+		//}
 
 	}	
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::C)) {

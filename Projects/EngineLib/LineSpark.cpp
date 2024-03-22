@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "LineSpark.h"
-
+#include "Utils.h"
 void LineSpark::Update()
 {
 	ParticleObj::Update();
@@ -23,8 +23,11 @@ void LineSpark::Update()
 		Vec3 deScale;
 		Quaternion deRot;
 		billmat.Decompose(deScale, deRot, dePos);
+		Vec3 rotatevec=Utils::QuadToYawPitchRoll(deRot);
+		deRot=Quaternion::CreateFromYawPitchRoll(rotatevec.x, 0, 0);
 		Vec3 scales = instanceList[i]->particleTransform->GetScale();
 		Matrix scaleMat = Matrix::CreateScale(scales);
+//		Matrix rotate = Matrix::CreateRotationX(rotatevec.x);
 		Matrix rotate = Matrix::CreateFromQuaternion(deRot);
 		Matrix transmat = Matrix::CreateTranslation(insPos);
 		Matrix tempMat;
