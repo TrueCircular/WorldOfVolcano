@@ -32,6 +32,8 @@ public:
 	void UpdatePicked(bool isPicked, uint32 maxHp = 0, uint32 hp = 0, wstring name = L"");
 	void UpdatePicked(bool isPicked, const shared_ptr<CharacterInfo>& info);
 
+	void NotifyPlayerAlive(bool isAlive) { show_death_window = !isAlive;}
+	int GetAttackQueueSize();
 	int GetChangeSceneQueueSize();
 	bool CheckGameStart() { return _isGameStart; }
 	void BeginDialogue() { show_dialogue_window = true; }

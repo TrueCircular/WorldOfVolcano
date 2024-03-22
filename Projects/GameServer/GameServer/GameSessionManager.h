@@ -33,6 +33,7 @@ public:
 	void UpdateMobInfo(MONSTER_INFO info);
 	void ClearMobInfoList() { _mobInfoList.clear(); }
 	void EnemyIsAttack(PACKET_Player_INFO& target, MONSTER_INFO& enemy);
+
 	void CheckAndResetMonster();
 private:
 	float attackTime = 1.5f;

@@ -508,7 +508,7 @@ void PlayerController::PlayerPicking()
 				{
 					if (_isAttack == false)
 					{
-						//공격 구현 필요
+						//_attackQueue.push(SkillType::NormalAttack);
 					}
 					_isAttack = true;
 					_isBattle = true;
