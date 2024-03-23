@@ -43,12 +43,12 @@ void Unit::SetSpwanPosition(const Vec3& spwanPos)
 
 	if (playerCon != nullptr)
 	{
-		playerCon->SetSpwanPosition(spwanPos);
+		playerCon->SetSpawnPosition(spwanPos);
 		GetTransform()->SetLocalPosition(spwanPos);
 	}
 	else if (aiCon != nullptr)
 	{
-		aiCon->SetSpwanPosition(spwanPos);
+		aiCon->SetSpawnPosition(spwanPos);
 		GetTransform()->SetLocalPosition(spwanPos);
 	}
 }
@@ -60,12 +60,12 @@ void Unit::SetCharacterController(const shared_ptr<CharacterController>& control
 
 	if (playerCon != nullptr)
 	{
-		AddComponent(playerCon);
+		AddComponent(controller);
 	}
 	else if (aiCon != nullptr)
 	{
-		aiCon->SetAIType(aiType);
-		AddComponent(aiCon);
+		controller->SetAIType(aiType);
+		AddComponent(controller);
 	}
 }
 

@@ -20,14 +20,11 @@ private:
 	weak_ptr<ModelAnimator>		_animator;
 	weak_ptr<Transform>			_transform;
 	weak_ptr<CharacterInfo>		_characterInfo;
-	AIType						_type = AIType::None;
 	shared_ptr<JumpFlag>		_jumpState;
 	float _defaultSpeed = 0.f;
 	float _currentSpeed = 0.f;
 	float _slowSpeed = 0.f;
 	bool _isSlow = false;
-	bool _isAttack = false;
-	bool _isAlive = true;
 private:
 	weak_ptr<Transform>			_targetTransform;
 	TarceTargetList				_targetList;
@@ -50,12 +47,10 @@ private:
 public:
 	//Setter
 	//State Controll
-	void SetIsAttack(bool attack) { _isAttack = attack; }
 	void SetJumpState(const JumpFlag& jumpFlag) { *_jumpState = jumpFlag; }
-	void SetAIType(AIType type) { _type = type; }
 	void notifyEnemyDeath() { _isAlive = false; }
 	void SetTargetTransform(const shared_ptr<Transform> transform) { _targetTransform = transform; }
-	void SetCurrentFsmStrategy(const wstring& transition);
+	void SetCurrentFsmStrategy(const wstring& preTransition, const wstring& nextTransition);
 	void SetFsmStrategyList(const vector<shared_ptr<UnitStrategy>>& strategyList) { _unitStrategyList = strategyList; }
 	//Animation Controll
 	bool SetAnimState(const PlayerAnimType& type);
@@ -72,15 +67,15 @@ public:
 	const shared_ptr<JumpFlag>& GetJumpState() const { return _jumpState; }
 	const float& GetDefaultSpeed() const { return _defaultSpeed; }
 	const float& GetCurrentSpeed() const { return _currentSpeed; }
-	const bool& IsAttack() const { return _isAttack; }
-	const bool& IsAlive() const { return _isAlive; }
+	const shared_ptr<UnitFSM>& GetUnitFsm() const { return _unitFsm; }
 	//Animation Controll
 	const shared_ptr<ModelAnimator>& GetAnimator() const { return _animator.lock(); }
 	const shared_ptr<PlayerUnitState>& GetCurrentPlayerUnitState() const { return _currentPlayerState; }
 	const PlayerAnimType& GetCurrentPlayerAnimType() const { return _currentPlayerAnimState->GetStateAnimtype(); }
 public:
 	//Event
-	virtual void TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage) override;
+	virtual void TakeDamage(const shared_ptr<GameObject>& sender, float damage) override;
+	virtual void DeadEvent() override;
 	void SearchTraceTarget();
 public:
 	virtual void Start() override;

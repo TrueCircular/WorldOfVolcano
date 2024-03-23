@@ -23,9 +23,9 @@ private:
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class BaronGeddonDamaged : public DamagedStrategy
@@ -33,21 +33,13 @@ class BaronGeddonDamaged : public DamagedStrategy
 public:
 	BaronGeddonDamaged();
 	virtual ~BaronGeddonDamaged();
+private:
+	weak_ptr<AIController>	_controller;
+	weak_ptr<ModelAnimator>	_animator;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
-};
-
-class BaronGeddonStun : public StunStrategy
-{
-public:
-	BaronGeddonStun();
-	virtual ~BaronGeddonStun();
-public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
-	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class BaronGeddonDead : public DeadStrategy
@@ -56,9 +48,9 @@ public:
 	BaronGeddonDead();
 	virtual ~BaronGeddonDead();
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class BaronGeddonTrace : public TraceStrategy
@@ -78,9 +70,9 @@ private:
 	float					_attackRange = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class BaronGeddonMoveToSpwanPoint : public MoveToSpwanPointStrategy
@@ -99,9 +91,9 @@ private:
 	float					_traceRadius = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class BaronGeddonBattle : public BattleStrategy
@@ -124,9 +116,9 @@ private:
 	float					_attackRange = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class BaronGeddonAttack : public AttackStrategy
@@ -147,9 +139,9 @@ private:
 	float					_traceRadius = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class BaronGeddonAbility : public AbilityStrategy
@@ -158,7 +150,7 @@ public:
 	BaronGeddonAbility();
 	virtual ~BaronGeddonAbility();
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };

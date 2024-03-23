@@ -100,10 +100,13 @@ void InstancingManager::RenderModelRenderer(vector<shared_ptr<GameObject>>& game
 			for (int32 i = 0; i < vec.size(); i++)
 			{
 				const shared_ptr<GameObject>& gameObject = vec[i];
-				InstancingData data;
-				data.world = gameObject->GetTransform()->GetWorldMatrix();
+				if (gameObject->GetActive())
+				{
+					InstancingData data;
+					data.world = gameObject->GetTransform()->GetWorldMatrix();
 
-				AddData(instanceId, data);
+					AddData(instanceId, data);
+				}
 			}
 
 			shared_ptr<InstancingBuffer>& buffer = _buffers[instanceId];
@@ -153,26 +156,28 @@ void InstancingManager::RenderAnimRenderer(vector<shared_ptr<GameObject>>& gameO
 			for (int32 i = 0; i < vec.size(); i++)
 			{
 				const shared_ptr<GameObject>& gameObject = vec[i];
-				InstancingData data;
-				data.world = gameObject->GetTransform()->GetWorldMatrix();
-
-
-				// INSTANCING
-				if (gameObject->GetModelAnimator() == nullptr)
+				if (gameObject->GetActive())
 				{
-					gameObject->GetChildByName(L"Model")->GetModelAnimator()->UpdateTweenData();
-					tweenDesc->tweens[i] = *gameObject->GetChildByName(L"Model")->GetModelAnimator()->GetTweenDesc();
-					data.world = gameObject->GetChildByName(L"Model")->GetTransform()->GetWorldMatrix();
+					InstancingData data;
+					data.world = gameObject->GetTransform()->GetWorldMatrix();
 
+
+					// INSTANCING
+					if (gameObject->GetModelAnimator() == nullptr)
+					{
+						gameObject->GetChildByName(L"Model")->GetModelAnimator()->UpdateTweenData();
+						tweenDesc->tweens[i] = *gameObject->GetChildByName(L"Model")->GetModelAnimator()->GetTweenDesc();
+						data.world = gameObject->GetChildByName(L"Model")->GetTransform()->GetWorldMatrix();
+
+					}
+					else
+					{
+						gameObject->GetModelAnimator()->UpdateTweenData();
+						tweenDesc->tweens[i] = *gameObject->GetModelAnimator()->GetTweenDesc();
+
+					}
+					AddData(instanceId, data);
 				}
-				else
-				{
-					gameObject->GetModelAnimator()->UpdateTweenData();
-					tweenDesc->tweens[i] = *gameObject->GetModelAnimator()->GetTweenDesc();
-
-				}
-				AddData(instanceId, data);
-
 			}
 
 			if (vec[0]->GetModelAnimator() == nullptr)

@@ -57,12 +57,12 @@ void AIController::InitState()
 	case AIType::EnemyUnit:
 	{
 		_unitFsm->SetStrategy(_unitStrategyList[0]);
-		_unitFsm->Enter(shared_from_this());
+		_unitFsm->Enter(shared_from_this(), _unitStrategyList[0]->_name);
 	}break;
 	}
 }
 
-void AIController::SetCurrentFsmStrategy(const wstring& transition)
+void AIController::SetCurrentFsmStrategy(const wstring& preTransition, const wstring& nextTransition)
 {
 	if (_unitStrategyList.size() <= 0)
 	{
@@ -72,10 +72,10 @@ void AIController::SetCurrentFsmStrategy(const wstring& transition)
 	{
 		for (const auto& strategy : _unitStrategyList)
 		{
-			if (strategy->_name == transition)
+			if (strategy->_name == nextTransition)
 			{
 				_unitFsm->SetStrategy(strategy);
-				_unitFsm->Enter(shared_from_this());
+				_unitFsm->Enter(shared_from_this(), preTransition);
 			}
 		}
 	}
@@ -103,16 +103,77 @@ bool AIController::SetAnimState(const PlayerAnimType& type)
 	return false;
 }
 
-void AIController::TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage)
+void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage)
 {
-	auto characterInfo = sender->GetComponent<CharacterInfo>();
+	if (_characterInfo.lock() == nullptr)
+		return;
 
-	if (characterInfo != nullptr)
+	//Damage Calculate
 	{
-		//characterInfo->GetAddCharacterInfo
+		auto myInfo = _characterInfo.lock()->GetCharacterInfo();
+		float defEff= pow(myInfo._def* log(2), 0.5) * 3;
+		float calDamage = damage * (1 - defEff/100);
+		float finalHp = myInfo._hp - calDamage;
 
+		if (finalHp < 1.f + FLT_EPSILON)
+		{
+			finalHp = 0;
+			myInfo._hp = (uint32)finalHp;
+			_characterInfo.lock()->SetCharacterInfo(myInfo);
+			for (auto& st : _unitStrategyList)
+			{
+				if (st->_type == UnitStrategyType::Dead)
+				{
+					SetCurrentFsmStrategy(_unitFsm->GetStrategyName(), st->_name);
+				}
+			}
+		}
+		else
+		{
+			myInfo._hp = (uint32)finalHp;
+			_characterInfo.lock()->SetCharacterInfo(myInfo);
+		}
 	}
 
+	if (_type == AIType::PlayableUnit)
+	{
+		if (_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::Attack1 ||
+			_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::Attack2 ||
+			_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::Ability1 ||
+			_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::Ability2 ||
+			_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::JumpStart ||
+			_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::JumpFall ||
+			_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::JumpEnd ||
+			_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::Death ||
+			_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::Casting ||
+			_currentPlayerAnimState->GetStateAnimtype() != PlayerAnimType::Damaged)
+		{
+			*_currentPlayerState = PlayerUnitState::Damaged;
+		}
+	}
+	else if (_type == AIType::EnemyUnit)
+	{
+		for (auto& st : _unitStrategyList)
+		{
+			if (st->_type == UnitStrategyType::Damaged)
+			{
+				if (_unitFsm->GetStrategy()->_type != UnitStrategyType::Damaged &&
+					_unitFsm->GetStrategy()->_type != UnitStrategyType::Stun &&
+					_unitFsm->GetStrategy()->_type != UnitStrategyType::Dead &&
+					_unitFsm->GetStrategy()->_type != UnitStrategyType::Event &&
+					_unitFsm->GetStrategy()->_type != UnitStrategyType::Attack &&
+					_unitFsm->GetStrategy()->_type != UnitStrategyType::Ability)
+				{
+					SetCurrentFsmStrategy(_unitFsm->GetStrategyName(), st->_name);
+				}
+			}
+		}
+	}
+}
+
+void AIController::DeadEvent()
+{
+	GetGameObject()->SetActive(false);
 }
 
 void AIController::SearchTraceTarget()
@@ -194,11 +255,11 @@ void AIController::Start()
 
 void AIController::FixedUpdate()
 {
+	if (_isAlive == false)
+	{
+		DeadEvent();
+	}
 
-}
-
-void AIController::Update()
-{
 	if (_heightGetterCom.lock())
 	{
 		Vec3 tempPos = _transform.lock()->GetLocalPosition();
@@ -228,6 +289,11 @@ void AIController::Update()
 	}
 	break;
 	}
+}
+
+void AIController::Update()
+{
+
 }
 void AIController::LateUpdate()
 {

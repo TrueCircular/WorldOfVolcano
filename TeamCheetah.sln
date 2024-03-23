@@ -35,6 +35,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "STestClient", "Projects\STe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WorldOfVolcano", "Projects\WorldOfVolcano\WorldOfVolcano.vcxproj", "{A0F2C70B-9827-468B-94D1-BC444F0D4850}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Ability2", "Projects\Ability2\Ability2.vcxproj", "{45FC8FD1-62AF-4D25-88E8-817158715F48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -123,6 +125,14 @@ Global
 		{A0F2C70B-9827-468B-94D1-BC444F0D4850}.Release|x64.Build.0 = Release|x64
 		{A0F2C70B-9827-468B-94D1-BC444F0D4850}.Release|x86.ActiveCfg = Release|Win32
 		{A0F2C70B-9827-468B-94D1-BC444F0D4850}.Release|x86.Build.0 = Release|Win32
+		{45FC8FD1-62AF-4D25-88E8-817158715F48}.Debug|x64.ActiveCfg = Debug|x64
+		{45FC8FD1-62AF-4D25-88E8-817158715F48}.Debug|x64.Build.0 = Debug|x64
+		{45FC8FD1-62AF-4D25-88E8-817158715F48}.Debug|x86.ActiveCfg = Debug|Win32
+		{45FC8FD1-62AF-4D25-88E8-817158715F48}.Debug|x86.Build.0 = Debug|Win32
+		{45FC8FD1-62AF-4D25-88E8-817158715F48}.Release|x64.ActiveCfg = Release|x64
+		{45FC8FD1-62AF-4D25-88E8-817158715F48}.Release|x64.Build.0 = Release|x64
+		{45FC8FD1-62AF-4D25-88E8-817158715F48}.Release|x86.ActiveCfg = Release|Win32
+		{45FC8FD1-62AF-4D25-88E8-817158715F48}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +150,7 @@ Global
 		{28AD9BF3-DF4C-476E-A5FF-0C27A93DBD07} = {72070B66-C377-489C-A9DF-42514021721D}
 		{7B1BBAE0-668A-4A32-BE3B-3D0AB1907254} = {72070B66-C377-489C-A9DF-42514021721D}
 		{A0F2C70B-9827-468B-94D1-BC444F0D4850} = {8DD853BA-FBFD-4F80-9DC7-82B4EFF7196E}
+		{45FC8FD1-62AF-4D25-88E8-817158715F48} = {72070B66-C377-489C-A9DF-42514021721D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4983060C-B398-4026-85DA-0E060E22D851}

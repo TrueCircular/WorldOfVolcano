@@ -134,7 +134,7 @@ shared_ptr<GameObject> Scene::Pick(int32 screenX, int32 screenY)
 
 	for (auto& gameobject : objects)
 	{
-		if (gameobject->GetCollider() == nullptr)
+		if (gameobject->GetCollider() == nullptr || gameobject->GetActive() == false)
 			continue;
 		else
 		{

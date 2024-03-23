@@ -165,12 +165,11 @@ void TestAbilityScene::Init()
 			wstring bgmpath = RESOURCES_ADDR_SOUND;
 			bgmpath += L"Scene/Dungeon.mp3";
 			bgm->Load(bgmpath);
-			bgm->SetVolume(10);
+			bgm->SetVolume(0.5f);
 			MANAGER_RESOURCES()->AddResource<Sounds>(L"DungeonBGM", bgm);
 			bgm->Play(true);
 		}
 		else {
-			bgm->SetVolume(10);
 			bgm->Play(true);
 		}
 	}

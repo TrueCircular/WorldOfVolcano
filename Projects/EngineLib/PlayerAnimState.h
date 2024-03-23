@@ -4,6 +4,7 @@
 class CharacterController;
 class PlayerController;
 class AIController;
+class Sounds;
 struct JumpFlag;
 #pragma endregion
 
@@ -15,21 +16,22 @@ protected:
 	weak_ptr<AIController>			_aiContoller;
 	weak_ptr<ModelAnimator>			_animator;
 	weak_ptr<PlayerUnitState>		_playerState;
-	PlayerAnimType					_stateAnim = PlayerAnimType::None;
+	PlayerAnimType					_stateAnim;
 public:
-	PlayerAnimState() {};
+	PlayerAnimState() { _stateAnim = PlayerAnimType::None; };
 	virtual ~PlayerAnimState() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) = 0;
-	virtual bool Update() = 0;
+	virtual bool Update();
 	virtual bool Out() = 0;
 	PlayerAnimType& GetStateAnimtype() { return _stateAnim; }
 };
 
 class PlayerAnimIdle : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimIdle() {};
+	PlayerAnimIdle() { _stateAnim = PlayerAnimType::Stand; };
 	virtual ~PlayerAnimIdle() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -39,8 +41,9 @@ public:
 
 class PlayerAnimFrontWalk : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimFrontWalk() {};
+	PlayerAnimFrontWalk() { _stateAnim = PlayerAnimType::FrontWalk; };
 	virtual ~PlayerAnimFrontWalk() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -50,8 +53,9 @@ public:
 
 class PlayerAnimBackWalk : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimBackWalk() {};
+	PlayerAnimBackWalk() { _stateAnim = PlayerAnimType::BackWalk; };
 	virtual ~PlayerAnimBackWalk() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -61,8 +65,9 @@ public:
 
 class PlayerAnimFrontRun : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimFrontRun() {};
+	PlayerAnimFrontRun() { _stateAnim = PlayerAnimType::FrontRun; };
 	virtual ~PlayerAnimFrontRun() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -72,8 +77,9 @@ public:
 
 class PlayerAnimBackRun : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimBackRun() {};
+	PlayerAnimBackRun() { _stateAnim = PlayerAnimType::BackRun; };
 	virtual ~PlayerAnimBackRun() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -83,10 +89,11 @@ public:
 
 class PlayerAnimJumpStart : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 private:
 	weak_ptr<JumpFlag> _jumpState;
 public:
-	PlayerAnimJumpStart() {};
+	PlayerAnimJumpStart() { _stateAnim = PlayerAnimType::JumpStart; };
 	virtual ~PlayerAnimJumpStart() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -96,10 +103,11 @@ public:
 
 class PlayerAnimJumpFall : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 private:
 	weak_ptr<JumpFlag> _jumpState;
 public:
-	PlayerAnimJumpFall() {};
+	PlayerAnimJumpFall() { _stateAnim = PlayerAnimType::JumpFall; };
 	virtual ~PlayerAnimJumpFall() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -109,10 +117,11 @@ public:
 
 class PlayerAnimJumpEnd : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 private:
 	weak_ptr<JumpFlag> _jumpState;
 public:
-	PlayerAnimJumpEnd() {};
+	PlayerAnimJumpEnd() { _stateAnim = PlayerAnimType::JumpEnd; };
 	virtual ~PlayerAnimJumpEnd() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -122,8 +131,9 @@ public:
 
 class PlayerAnimStun : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimStun() {};
+	PlayerAnimStun() { _stateAnim = PlayerAnimType::Stun; };
 	virtual ~PlayerAnimStun() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -133,8 +143,9 @@ public:
 
 class PlayerAnimLoot : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimLoot() {};
+	PlayerAnimLoot() { _stateAnim = PlayerAnimType::Loot; };
 	virtual ~PlayerAnimLoot() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -144,9 +155,12 @@ public:
 
 class PlayerAnimDamaged : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimDamaged() {};
+	PlayerAnimDamaged();
 	virtual ~PlayerAnimDamaged() {};
+private:
+	shared_ptr<Sounds> _damagedSound;
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
 	virtual bool Update() override;
@@ -155,9 +169,12 @@ public:
 
 class PlayerAnimDeath : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimDeath() {};
+	PlayerAnimDeath();
 	virtual ~PlayerAnimDeath() {};
+private:
+	shared_ptr<Sounds> _deathSound;
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
 	virtual bool Update() override;
@@ -166,8 +183,9 @@ public:
 
 class PlayerAnimBattle : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimBattle() {};
+	PlayerAnimBattle() { _stateAnim = PlayerAnimType::Battle; };
 	virtual ~PlayerAnimBattle() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -177,9 +195,12 @@ public:
 
 class PlayerAnimAttack1 : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimAttack1() {};
+	PlayerAnimAttack1();
 	virtual ~PlayerAnimAttack1() {};
+private:
+	shared_ptr<Sounds> _attackSound;
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
 	virtual bool Update() override;
@@ -188,9 +209,12 @@ public:
 
 class PlayerAnimAttack2 : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimAttack2() {};
+	PlayerAnimAttack2();
 	virtual ~PlayerAnimAttack2() {};
+private:
+	shared_ptr<Sounds> _attackSound;
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
 	virtual bool Update() override;
@@ -199,8 +223,9 @@ public:
 
 class PlayerAnimCasting : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimCasting() {};
+	PlayerAnimCasting() { _stateAnim = PlayerAnimType::Casting; };
 	virtual ~PlayerAnimCasting() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
@@ -210,9 +235,12 @@ public:
 
 class PlayerAnimAbility1 : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimAbility1() {};
+	PlayerAnimAbility1();
 	virtual ~PlayerAnimAbility1() {};
+private:
+	shared_ptr<Sounds> _abilitySound;
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
 	virtual bool Update() override;
@@ -221,8 +249,9 @@ public:
 
 class PlayerAnimAbility2 : public PlayerAnimState
 {
+	using Super = PlayerAnimState;
 public:
-	PlayerAnimAbility2() {};
+	PlayerAnimAbility2() { _stateAnim = PlayerAnimType::Ability2; };
 	virtual ~PlayerAnimAbility2() {};
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;

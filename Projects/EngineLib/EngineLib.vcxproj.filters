@@ -506,10 +506,10 @@
     <ClInclude Include="CoreHoundPattern.h">
       <Filter>04. Component\FSM\Pattern\Normal\CoreHound</Filter>
     </ClInclude>
-    <ClInclude Include="MoltenGaintPattern.h">
+    <ClInclude Include="MoltenGiantPattern.h">
       <Filter>04. Component\FSM\Pattern\Normal\MoltenGaint</Filter>
     </ClInclude>
-    <ClInclude Include="MoltenGaint.h">
+    <ClInclude Include="MoltenGiant.h">
       <Filter>03. GameObject\Unit\EnemyUnit</Filter>
     </ClInclude>
     <ClInclude Include="Ragnaros.h">
@@ -873,10 +873,10 @@
     <ClCompile Include="CoreHoundPattern.cpp">
       <Filter>04. Component\FSM\Pattern\Normal\CoreHound</Filter>
     </ClCompile>
-    <ClCompile Include="MoltenGaintPattern.cpp">
+    <ClCompile Include="MoltenGiantPattern.cpp">
       <Filter>04. Component\FSM\Pattern\Normal\MoltenGaint</Filter>
     </ClCompile>
-    <ClCompile Include="MoltenGaint.cpp">
+    <ClCompile Include="MoltenGiant.cpp">
       <Filter>03. GameObject\Unit\EnemyUnit</Filter>
     </ClCompile>
     <ClCompile Include="Ragnaros.cpp">

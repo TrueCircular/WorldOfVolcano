@@ -1,13 +1,13 @@
 #pragma once
 #include "UnitStrategy.h"
 #include "CoreHoundPattern.h"
-#include "MoltenGaintPattern.h"
+#include "MoltenGiantPattern.h"
 #include "BaronGeddonPattern.h"
 #include "RagnarosPattern.h"
 
 #pragma region Forward Declaration
 class CoreHound;
-class MoltenGaint;
+class MoltenGiant;
 class BaronGeddon;
 class Ragnaros;
 #pragma endregion
@@ -32,9 +32,6 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 		auto damaged = make_shared<CoreHoundDamaged>();
 		strategyList.push_back(damaged);
 
-		auto stun = make_shared<CoreHoundStun>();
-		strategyList.push_back(stun);
-
 		auto dead = make_shared<CoreHoundDead>();
 		strategyList.push_back(dead);
 
@@ -50,30 +47,30 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 		auto attack = make_shared<CoreHoundAttack>();
 		strategyList.push_back(attack);
 	}
-	else if (std::is_same_v<T, MoltenGaint>)
+	else if (std::is_same_v<T, MoltenGiant>)
 	{
-		auto stand = make_shared<MoltenGaintStand>();
+		auto stand = make_shared<MoltenGiantStand>();
 		strategyList.push_back(stand);
 
-		auto damaged = make_shared<MoltenGaintDamaged>();
+		auto damaged = make_shared<MoltenGiantDamaged>();
 		strategyList.push_back(damaged);
 
-		auto stun = make_shared<MoltenGaintStun>();
+		auto stun = make_shared<MoltenGiantStun>();
 		strategyList.push_back(stun);
 
-		auto dead = make_shared<MoltenGaintDead>();
+		auto dead = make_shared<MoltenGiantDead>();
 		strategyList.push_back(dead);
 
-		auto trace = make_shared<MoltenGaintTrace>();
+		auto trace = make_shared<MoltenGiantTrace>();
 		strategyList.push_back(trace);
 
-		auto moveToSpwanPoint = make_shared<MoltenGaintMoveToSpwanPoint>();
+		auto moveToSpwanPoint = make_shared<MoltenGiantMoveToSpwanPoint>();
 		strategyList.push_back(moveToSpwanPoint);
 
-		auto battle = make_shared<MoltenGaintBattle>();
+		auto battle = make_shared<MoltenGiantBattle>();
 		strategyList.push_back(battle);
 
-		auto attack = make_shared<MoltenGaintAttack>();
+		auto attack = make_shared<MoltenGiantAttack>();
 		strategyList.push_back(attack);
 	}
 	else if (std::is_same_v<T, BaronGeddon>)
@@ -83,9 +80,6 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 
 		auto damaged = make_shared<BaronGeddonDamaged>();
 		strategyList.push_back(damaged);
-
-		auto stun = make_shared<BaronGeddonStun>();
-		strategyList.push_back(stun);
 
 		auto dead = make_shared<BaronGeddonDead>();
 		strategyList.push_back(dead);
@@ -110,9 +104,6 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 		auto stand = make_shared<RagnarosStand>();
 		strategyList.push_back(stand);
 
-		auto damaged = make_shared<RagnarosDamaged>();
-		strategyList.push_back(damaged);
-
 		auto stun = make_shared<RagnarosStun>();
 		strategyList.push_back(stun);
 
@@ -121,9 +112,6 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 
 		auto trace = make_shared<RagnarosTrace>();
 		strategyList.push_back(trace);
-
-		auto moveToSpwanPoint = make_shared<RagnarosMoveToSpwanPoint>();
-		strategyList.push_back(moveToSpwanPoint);
 
 		auto battle = make_shared<RagnarosBattle>();
 		strategyList.push_back(battle);

@@ -7,122 +7,124 @@ class AIController;
 class UnitStrategy
 {
 public:
-	UnitStrategy() {}
+	UnitStrategy() { _type = UnitStrategyType::None; }
 	virtual ~UnitStrategy() {}
 public:
-	wstring _name;
+	wstring			 _name;
+	wstring			 _prevTransition;
+	UnitStrategyType _type;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) = 0;
 	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Out(const wstring& nextTransition) = 0;
 };
 
 class StandStrategy : public UnitStrategy
 {
 public:
-	StandStrategy() {}
+	StandStrategy() { _type = UnitStrategyType::Stand; }
 	virtual ~StandStrategy(){}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override {}
+	virtual void Update() override {}
+	virtual void Out(const wstring& nextTransition) override {}
 };
 
 class DamagedStrategy : public UnitStrategy
 {
 public:
-	DamagedStrategy() {}
+	DamagedStrategy() { _type = UnitStrategyType::Damaged; }
 	virtual ~DamagedStrategy() {}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override {}
+	virtual void Update() override {}
+	virtual void Out(const wstring& nextTransition) override {}
 };
 
 class StunStrategy : public UnitStrategy
 {
 public:
-	StunStrategy() {}
+	StunStrategy() { _type = UnitStrategyType::Stun; }
 	virtual ~StunStrategy() {}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override {}
+	virtual void Update() override {}
+	virtual void Out(const wstring& nextTransition) override {}
 };
 
 class DeadStrategy : public UnitStrategy
 {
 public:
-	DeadStrategy() {}
+	DeadStrategy() { _type = UnitStrategyType::Dead; }
 	virtual ~DeadStrategy() {}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override {}
+	virtual void Update() override {}
+	virtual void Out(const wstring& nextTransition) override {}
 };
 
 class TraceStrategy : public UnitStrategy
 {
 public:
-	TraceStrategy() {}
+	TraceStrategy() { _type = UnitStrategyType::Trace; }
 	virtual ~TraceStrategy() {}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override {}
+	virtual void Update() override {}
+	virtual void Out(const wstring& nextTransition) override {}
 };
 
 class MoveToSpwanPointStrategy : public UnitStrategy
 {
 public:
-	MoveToSpwanPointStrategy() {}
+	MoveToSpwanPointStrategy() { _type = UnitStrategyType::MoveToSpwanPoint; }
 	virtual ~MoveToSpwanPointStrategy() {}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override {}
+	virtual void Update() override {}
+	virtual void Out(const wstring& nextTransition) override {}
 };
 
 class BattleStrategy : public UnitStrategy
 {
 public:
-	BattleStrategy() {}
+	BattleStrategy() { _type = UnitStrategyType::Battle; }
 	virtual ~BattleStrategy() {}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override {}
+	virtual void Update() override {}
+	virtual void Out(const wstring& nextTransition) override {}
 };
 
 class AttackStrategy : public UnitStrategy
 {
 public:
-	AttackStrategy() {}
+	AttackStrategy() { _type = UnitStrategyType::Attack; }
 	virtual ~AttackStrategy() {}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override {}
+	virtual void Update() override {}
+	virtual void Out(const wstring& nextTransition) override {}
 };
 
 class AbilityStrategy : public UnitStrategy
 {
 public:
-	AbilityStrategy() {}
+	AbilityStrategy() { _type = UnitStrategyType::Ability; }
 	virtual ~AbilityStrategy() {}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override {}
+	virtual void Update() override {}
+	virtual void Out(const wstring& nextTransition) override {}
 };
 
 class EventStrategy : public UnitStrategy
 {
 public:
-	EventStrategy() {}
+	EventStrategy() { _type = UnitStrategyType::Event; }
 	virtual ~EventStrategy() {}
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) = 0;
-	virtual void Update() = 0;
-	virtual void Out(const wstring& transition) = 0;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override{}
+	virtual void Update() override{}
+	virtual void Out(const wstring& nextTransition) override{}
 };

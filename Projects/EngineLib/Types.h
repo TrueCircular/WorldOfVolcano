@@ -155,7 +155,7 @@ enum class EnemyAnimType
 	None
 };
 
-enum class UnitFSMState
+enum class UnitStrategyType
 {
 	None,
 	Stand,
