@@ -424,13 +424,18 @@ void BaseScene::Update()
 
 	}	
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::C)) {
-		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke1");
+		//auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke1");
+		//shared_ptr<Transform> pos2 = make_shared<Transform>();
+		//pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		//pos2->SetScale(Vec3(100, 100, 100));
+		//shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
+		//clapParticle->AddParticle(instancedata2);
+		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Explode");
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
 		pos2->SetScale(Vec3(100, 100, 100));
 		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
-
 	}
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::A)) {
 		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke2");
