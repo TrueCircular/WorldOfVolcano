@@ -201,6 +201,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="EnemySoundController.h" />
     <ClInclude Include="EquipmentSlot.h" />
+    <ClInclude Include="Exlode.h" />
     <ClInclude Include="FireBall.h" />
     <ClInclude Include="FireStorm.h" />
     <ClInclude Include="GUIInterface.h" />
@@ -231,6 +232,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="FileUtils.h" />
     <ClInclude Include="FrustomCamera.h" />
     <ClInclude Include="Ragnaros.h" />
+    <ClInclude Include="ShineHelper.h" />
     <ClInclude Include="StrategyFactory.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Geometry.h" />
@@ -327,6 +329,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EnemySoundController.cpp" />
     <ClCompile Include="EquipmentSlot.cpp" />
+    <ClCompile Include="Exlode.cpp" />
     <ClCompile Include="FireBall.cpp" />
     <ClCompile Include="FireStorm.cpp" />
     <ClCompile Include="GUIInterface.cpp" />
@@ -355,6 +358,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="FrustomCamera.cpp" />
     <ClCompile Include="Ragnaros.cpp" />
+    <ClCompile Include="ShineHelper.cpp" />
     <ClCompile Include="StrategyFactory.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Geometry.cpp" />

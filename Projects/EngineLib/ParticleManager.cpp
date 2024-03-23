@@ -52,6 +52,21 @@ void ParticleManager::AddManagingParticle(wstring name,shared_ptr<ParticleObj> P
 	}
 }
 
+void ParticleManager::Clear()
+{
+	for (auto& c : particleList) {
+		c.second->Clear();
+	}
+}
+
+void ParticleManager::ClearList()
+{
+	for (auto& c : particleList) {
+		c.second->Clear();
+	}
+	particleList.clear();
+}
+
 shared_ptr<ParticleObj> ParticleManager::GetParticleFromName(wstring name)
 {
 	auto iter = particleList.find(name);

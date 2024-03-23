@@ -85,7 +85,7 @@ shared_ptr<Plain> PlainHeightAdder::Set(HeightPlainInfo plainInfo)
 	auto _geo = refmesh->GetGeo();
 	auto& geoVertices = _geo->GetVertices();
 	for (int i = 0; i < geoVertices.size(); ++i) {
-		const_cast<PlainVector&>(geoVertices)[i].position.y = (float)heightList[i];
+		const_cast<PlainVector&>(geoVertices)[i].position.y = (float)heightList[i] * plainInfo.heightScale;
 	}
 	auto refIndexList = _geo->GetIndices();
 	for (int j = 0; j < refIndexList.size(); j += 3) {

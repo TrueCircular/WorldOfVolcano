@@ -10,6 +10,8 @@
 
 Texture2D NoiseMap;
 Texture2D MaskMap;
+float duration;
+
 BlendState AlphaBlendState
 {
     AlphaToCoverageEnable = true;
@@ -71,7 +73,7 @@ EffectOutput StormVS(EffectMesh input)
 }
 float4 PS(EffectOutput input) : SV_TARGET
 {
-   
+
     float2 doubleUV = mul(input.uv, 2.0f);
     float2 pannedUV1 = Panner(doubleUV, float2(0.2f, 1.0f), input.time);
     float4 noisecolor = NoiseMap.Sample(LinearSampler, pannedUV1);
@@ -94,6 +96,15 @@ float4 PS(EffectOutput input) : SV_TARGET
     noiseScalar = particleColor.a * noiseScalar;
     color.rgb = 1 - rgbcolor;
     color.a = noiseScalar;
+    if (duration > 0.00001)
+    {
+        float fadealpha = (duration / 2) / input.time;
+        if (fadealpha > 1)
+        {
+            fadealpha = 1;
+        }
+        color.a = color.a * fadealpha;
+    }
     //if (noiseScalar < (color.r + color.g + color.b)/3)
     //{
     //    return float4(0, 0, 0, 0);

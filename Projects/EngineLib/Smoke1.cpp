@@ -14,6 +14,15 @@ void Smoke1::Update()
 			--i;
 			continue;
 		}
+		if (instanceList[i]->isTargeting) {
+			Vec3 velocity = instanceList[i]->targetTransform->GetLocalPosition() - instanceList[i]->particleTransform->GetLocalPosition();
+			velocity.Normalize();
+			velocity = velocity * (instanceList[i]->speed * MANAGER_TIME()->GetDeltaTime());
+			Vec3 pos = instanceList[i]->particleTransform->GetLocalPosition();
+			pos += velocity;
+
+			instanceList[i]->particleTransform->SetLocalPosition(pos);
+		}
 		Vec3 insPos= instanceList[i]->particleTransform->GetPosition();
 		auto look = MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraLookVector();
 		Matrix billmat = Matrix::CreateBillboard(insPos, MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraPosition(), MANAGER_SCENE()->GetCurrentScene()->GetCamera()->GetCamera()->GetCameraUpVector(), &look);
@@ -41,7 +50,7 @@ void Smoke1::LateUpdate()
 	ParticleObj::LateUpdate();
 
 	if (!instanceList.empty())
-		//auto ctimes = shader->GetScalar("duration")->SetFloat(instanceList[0].duration);
+		auto ctimes = shader->GetScalar("duration")->SetFloat(instanceList[0]->duration);
 	noiseSRV->SetResource(noiseTexture->GetTexture().Get());
 	smokeSRV->SetResource(smokeTexture->GetTexture().Get());
 	meshRenderer->Render(instanceList);

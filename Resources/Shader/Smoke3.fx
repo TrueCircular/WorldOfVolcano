@@ -9,6 +9,7 @@
 #define MAX_MODEL_INSTANCE 500
 
 Texture2D MaskMap;
+float duration;
 
 BlendState AlphaBlendState
 {
@@ -81,6 +82,14 @@ float4 PS(EffectOutput input) : SV_TARGET
     if (color.r + color.g + color.b < alpha / 1.5)
     {
         return float4(0, 0, 0, 0);
+    }
+        {
+        float fadealpha = (duration / 2) / input.time;
+        if (fadealpha > 1)
+        {
+            fadealpha = 1;
+        }
+        color.a = color.a * fadealpha;
     }
     return color;
 }

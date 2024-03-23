@@ -1,6 +1,16 @@
 #include "pch.h"
 #include "ParticleObj.h"
 
+void ParticleObj::Clear()
+{
+	for (int i = 0; i < instanceList.size(); ++i) {
+		auto iter = instanceList.begin() + i;
+		instanceList.erase(iter);
+		--i;
+		--instanceCounter;
+	}
+}
+
 void ParticleObj::AddParticle(shared_ptr<ParticleInstance> data)
 {
 	instanceList.push_back(data);

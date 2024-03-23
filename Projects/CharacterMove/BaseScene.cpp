@@ -28,7 +28,8 @@
 #include "engine/Polar.h"
 #include "engine/MagicCircle.h"
 #include "engine/LineSpark.h"
-
+#include "engine/ShineHelper.h"
+#include "engine/Exlode.h"
 void BaseScene::Init()
 {
 	//리소스 매니저 초기화
@@ -112,6 +113,7 @@ void BaseScene::Init()
 		}
 		fog_obj->AddComponent(tempModelRenderer);
 		fog_obj->GetOrAddTransform()->SetLocalPosition(Vec3(0, 0, 0));
+		fog_obj->GetTransform()->SetLocalScale(Vec3(5, 5, 5));
 	}
 	fog_obj->Awake();
 	Add(fog_obj);
@@ -138,6 +140,30 @@ void BaseScene::Init()
 	quadTreeTerrain->Set(_terrain, 3);
 	quadTreeTerrain->Start();
 
+
+	heightMapDesc.heightFilename = L"HeightMapOutLine";
+	heightMapDesc.heightFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"testOutLine.bmp";
+	heightMapDesc.shaderFilePath = L"SplattingMapping.fx";
+	//heightMapDesc.shaderFilePath = L"TerrainMapping.fx";
+	heightMapDesc.shaderFilename = L"HeightMapShaderDungeon";
+	heightMapDesc.textureFilename = L"HeightMapTextureDungeon";
+	heightMapDesc.textureFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"020.bmp";
+	heightMapDesc.meshKey = L"TerrainMeshOutLine";
+	heightMapDesc.distance = 20;
+	heightMapDesc.heightScale = 20;
+	heightMapDesc.row = 253;
+	heightMapDesc.col = 253;
+
+	_terrainOutLine = make_shared<Terrain>(heightMapDesc);
+	_terrainOutLine->Awake();
+	_terrainOutLine->AddComponent(make_shared<MeshRenderer>());
+	_terrainOutLine->Start();
+	quadTreeTerrainOutLine = make_shared<QuadTreeTerrain>();
+	quadTreeTerrainOutLine->Set(_terrainOutLine, 3);
+	quadTreeTerrainOutLine->Start();
+
+
+
 	SplatterDesc spDesc{};
 	spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
 	spDesc.texPath[1] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsashcracks.png";
@@ -151,6 +177,25 @@ void BaseScene::Init()
 	splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderBase"));
 	quadTreeTerrain->AddSplatter(splatter);
 	SetTerrain(_terrain);
+
+	//SplatterDesc spDesc{};
+	//spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
+	//spDesc.texPath[1] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsashcracks.png";
+	//spDesc.texPath[2] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppscharcoal01.png";
+	//spDesc.texName[0] = L"Splat1Dungeon";
+	//spDesc.texName[1] = L"Splat2Dungeon";
+	//spDesc.texName[2] = L"Splat3Dungeon";
+	//spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"dungeon1alpha.bmp";
+	//spDesc.alphaName = L"SplatAlphaDungeon";
+	//splatter = make_shared<LayerSplatter>();
+	//splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderDungeon"));
+
+	quadTreeTerrain->AddSplatter(splatter);
+	spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"testalphaOutLine.bmp";
+	spDesc.alphaName = L"SplatAlphaBaseOutLine";
+	splatterOutLine = make_shared<LayerSplatter>();
+	splatterOutLine->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderDungeon"));
+	quadTreeTerrainOutLine->AddSplatter(splatterOutLine);
 
 	//Camera
 	{
@@ -186,14 +231,15 @@ void BaseScene::Init()
 		shared_ptr<Sounds> bgm = make_shared<Sounds>();
 		wstring bgmpath = RESOURCES_ADDR_SOUND;
 		bgmpath += L"Scene/Lobby.mp3";
+		bgm->SetVolume(0.5);
 		bgm->Load(bgmpath);
 		MANAGER_RESOURCES()->AddResource<Sounds>(L"Lobby", bgm);
-		//auto chs = bgm->Play(true);
-		//}
-		//else {
-		//	bgm->Play(true);
+		auto chs = bgm->Play(true);
+		}
+		else {
+			bgm->Play(true);
 	}
-
+	MANATER_PARTICLE()->ClearList();
 	shared_ptr<WarriorRoar> roar = make_shared<WarriorRoar>();
 	auto _waranimator = _warrior->GetChildByName(L"Model")->GetModelAnimator();
 	roar->SetAnimator(_waranimator);
@@ -206,8 +252,12 @@ void BaseScene::Init()
 	shared_ptr<Polar> polar = make_shared<Polar>();
 	shared_ptr<MagicCircle> magicCircle = make_shared<MagicCircle>();
 	shared_ptr<LineSpark> lineSpark = make_shared<LineSpark>();
+	shared_ptr<Exlode> explode = make_shared<Exlode>();
 	tempTargetTrans = make_shared<Transform>();
 	tempTargetTrans->SetLocalPosition(Vec3(0, 80, 0));
+	shared_ptr<ShineHelper> sparkHelper = make_shared<ShineHelper>();
+	MANATER_PARTICLE()->AddManagingParticle(L"Explode", explode);
+	MANATER_PARTICLE()->AddManagingParticle(L"SparkHelper", sparkHelper);
 	MANATER_PARTICLE()->AddManagingParticle(L"WarriorRoar", roar);
 	MANATER_PARTICLE()->AddManagingParticle(L"Clap", clap);
 	MANATER_PARTICLE()->AddManagingParticle(L"Smoke1", smoke1);
@@ -218,15 +268,15 @@ void BaseScene::Init()
 	MANATER_PARTICLE()->AddManagingParticle(L"Polar", polar);
 	MANATER_PARTICLE()->AddManagingParticle(L"MagicCircle", magicCircle);
 	MANATER_PARTICLE()->AddManagingParticle(L"LineSpark", lineSpark);
-	{
-	shared_ptr<Transform> pos = make_shared<Transform>();
-	pos->SetParent(_warrior->GetTransform());
-	pos->SetLocalPosition(Vec3(-1, 8,3));
-	pos->SetLocalRotation(Vec3(::XMConvertToRadians(90), ::XMConvertToRadians(90),::XMConvertToRadians(-90)));
-	pos->SetLocalScale(Vec3(1.5, 1.5, 1.5));
-	shared_ptr<ParticleInstance> instancedata = make_shared<ParticleInstance>(5, pos, nullptr, 0, true);
-	polar->AddParticle(instancedata);
-	} 
+	//{
+	//shared_ptr<Transform> pos = make_shared<Transform>();
+	//pos->SetParent(_warrior->GetTransform());
+	//pos->SetLocalPosition(Vec3(-1, 8,3));
+	//pos->SetLocalRotation(Vec3(::XMConvertToRadians(90), ::XMConvertToRadians(90),::XMConvertToRadians(-90)));
+	//pos->SetLocalScale(Vec3(1.5, 1.5, 1.5));
+	//shared_ptr<ParticleInstance> instancedata = make_shared<ParticleInstance>(5, pos, nullptr, 0, true);
+	//polar->AddParticle(instancedata);
+	//} 
 	//{
 	//	shared_ptr<Transform> pos2 = make_shared<Transform>();
 	//	pos2->SetParent(_warrior->GetTransform());
@@ -245,7 +295,7 @@ void BaseScene::Start()
 void BaseScene::Update()
 {
 	quadTreeTerrain->Frame((*frustom->frustomBox.get()));
-	MANAGER_SOUND()->Update();
+	quadTreeTerrainOutLine->Frame((*frustom->frustomBox.get()));
 	MANAGER_SHADOW()->StartShadow();
 	_terrain->GetMeshRenderer()->SetPass(1);
 	_terrain->GetMeshRenderer()->ShadowUpdate();
@@ -263,7 +313,7 @@ void BaseScene::Update()
 		sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
 		sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
 		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
-		sendInfo._spawnMapId = SpawnManager::GetInstance().GetSpawnMapId();
+		//sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapId();
 
 		//Alive
 		if (sendInfo._isAlive == false)
@@ -357,28 +407,35 @@ void BaseScene::Update()
 		pos2->SetScale(Vec3(100,100,100));
 		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(1.6, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
-		for (int i = 0; i < 5; ++i) {
-			auto SparkParticle = MANATER_PARTICLE()->GetParticleFromName(L"LineSpark");
-			shared_ptr<Transform> pos3 = make_shared<Transform>();
-			Vec3 refpos = _warrior->GetTransform()->GetLocalPosition();
-			float x = Utils::Randstep(-30, 30);
-			float y = Utils::Randstep(0, 30);
-			float z = Utils::Randstep(-30, 30);
-			pos3->SetScale(Vec3(10, 10, 10));
-			pos3->SetLocalPosition(Vec3(refpos.x+x, refpos.y+y, refpos.z+z));
-			shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(1.6, pos3, nullptr, 0);
-			SparkParticle->AddParticle(instancedata2);
-		}
+		auto helper = MANATER_PARTICLE()->GetParticleFromName(L"SparkHelper");
+		helper->AddParticle(instancedata2);
+		//for (int i = 0; i < 5; ++i) {
+		//	auto SparkParticle = MANATER_PARTICLE()->GetParticleFromName(L"LineSpark");
+		//	shared_ptr<Transform> pos3 = make_shared<Transform>();
+		//	Vec3 refpos = _warrior->GetTransform()->GetLocalPosition();
+		//	float x = Utils::Randstep(-30, 30);
+		//	float y = Utils::Randstep(0, 30);
+		//	float z = Utils::Randstep(-30, 30);
+		//	pos3->SetScale(Vec3(10, 10, 10));
+		//	pos3->SetLocalPosition(Vec3(refpos.x+x, refpos.y+y, refpos.z+z));
+		//	shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(1.6, pos3, nullptr, 0);
+		//	SparkParticle->AddParticle(instancedata2);
+		//}
 
 	}	
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::C)) {
-		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke1");
+		//auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke1");
+		//shared_ptr<Transform> pos2 = make_shared<Transform>();
+		//pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		//pos2->SetScale(Vec3(100, 100, 100));
+		//shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
+		//clapParticle->AddParticle(instancedata2);
+		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Explode");
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
 		pos2->SetScale(Vec3(100, 100, 100));
 		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
 		clapParticle->AddParticle(instancedata2);
-
 	}
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::A)) {
 		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke2");
@@ -411,8 +468,10 @@ void BaseScene::Update()
 		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"FireBall");
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		pos2->SetLocalRotation(_warrior->GetTransform()->GetLocalRotation());
 		pos2->SetScale(Vec3(1, 1, 1));
 		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, tempTargetTrans, 100,true);
+		instancedata2->parentTransform = _warrior->GetTransform();
 		clapParticle->AddParticle(instancedata2);
 
 	}
@@ -432,7 +491,9 @@ void BaseScene::LateUpdate()
 
 	Scene::LateUpdate();
 	quadTreeTerrain->Update();
+	quadTreeTerrainOutLine->Update();
 
+	MANAGER_SOUND()->Update();
 	DamageIndicator::GetInstance().Render();
 	MANATER_PARTICLE()->Render();
 }

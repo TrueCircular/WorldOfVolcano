@@ -7,8 +7,8 @@ using PlainPointerVector = vector<VertexTextureNormalTangentData*>;
 struct Plaininfo {
 	UINT col;
 	UINT row;
-	float distance;
-	float heightScale;
+	float distance=1;
+	float heightScale=1;
 	 std::wstring shaderFilePath;
 	 std::wstring shaderFilename;
 	 std::wstring textureFilePath;

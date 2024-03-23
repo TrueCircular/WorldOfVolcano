@@ -148,6 +148,9 @@
     <Filter Include="04. Component\FSM\Pattern\Boss\Ragnaros">
       <UniqueIdentifier>{b638fe95-0eee-4be9-b378-6fc706bb0f98}</UniqueIdentifier>
     </Filter>
+    <Filter Include="07. Particle\ParticleHelper">
+      <UniqueIdentifier>{c0ca38e5-c9be-43a9-8afd-d6bd26d1ee5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -518,6 +521,12 @@
     <ClInclude Include="NpcUnit.h">
       <Filter>03. GameObject\Unit\NpcUnit</Filter>
     </ClInclude>
+    <ClInclude Include="Exlode.h">
+      <Filter>07. Particle\ParticleHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="ShineHelper.h">
+      <Filter>07. Particle\ParticleHelper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -878,6 +887,12 @@
     </ClCompile>
     <ClCompile Include="NpcUnit.cpp">
       <Filter>03. GameObject\Unit\NpcUnit</Filter>
+    </ClCompile>
+    <ClCompile Include="Exlode.cpp">
+      <Filter>07. Particle\ParticleHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="ShineHelper.cpp">
+      <Filter>07. Particle\ParticleHelper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

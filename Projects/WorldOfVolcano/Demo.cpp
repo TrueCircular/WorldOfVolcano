@@ -56,7 +56,7 @@ void Demo::Init(){
 	////shared_ptr<Scene> scene = make_shared<MainScene>();
 	//MANAGER_SCENE()->ChangeScene(scene);
 
-	shared_ptr<Scene> scene = make_shared<TestAbilityScene>();
+	shared_ptr<Scene> scene = make_shared<BossScene>();
 	scene->SetSceneName(L"TestAbility");
 	MANAGER_SCENE()->ChangeScene(scene);
 }
