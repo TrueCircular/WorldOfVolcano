@@ -44,6 +44,14 @@ struct PACKET_Player_INFO : public PACKET_CHARACTER_INFO
 	JumpFlag _jumpFlag;
 };
 
+struct PACKET_Mob_INFO : public PACKET_CHARACTER_INFO
+{
+	uint32 _monsterId = 0;
+	Vec3 _targetPos = { 0.f, 0.f, 0.f };
+	bool _isMove = false;
+	EnemyUnitState _animState = EnemyUnitState::Stand;
+};
+
 class ClientPacketHandler
 {
 public:
@@ -59,7 +67,7 @@ public:
 	void Handle_USER_DISCONNECT(BYTE* buffer, int32 len);
 
 	SendBufferRef Make_USER_INFO(Player_INFO userInfo, wstring name);
-	SendBufferRef Make_MONSTER_INFO(MONSTER_INFO info);
+	SendBufferRef Make_MONSTER_INFO(MONSTER_INFO info, wstring name);
 	SendBufferRef Make_MESSAGE(MESSAGE message);
 	SendBufferRef Make_BATTLE(Player_INFO attackerInfo, uint32 targerId);
 

@@ -57,7 +57,7 @@ void GameSessionManager::GenerateMobList()
 	exporter.OpenFile(L"MobDungeon.dat");
 	for (int id = 0; id < exporter.enemyListforServer.size(); ++id)
 	{
-		MONSTER_INFO mobInfo;
+		PACKET_Mob_INFO mobInfo;
 
 		// 지정된 범위 내에서 x 및 z에 대한 무작위 값 설정
 		mobInfo._instanceId = id;
@@ -86,7 +86,7 @@ void GameSessionManager::GenerateMobList()
 	}
 }
 
-void GameSessionManager::UpdateMobInfo(MONSTER_INFO info)
+void GameSessionManager::UpdateMobInfo(PACKET_Mob_INFO info)
 {
 	auto it = _mobInfoList.find(info._instanceId);
 	if (it != _mobInfoList.end())
@@ -95,7 +95,7 @@ void GameSessionManager::UpdateMobInfo(MONSTER_INFO info)
 	}
 }
 
-void GameSessionManager::EnemyIsAttack(PACKET_Player_INFO& target, MONSTER_INFO& enemy)
+void GameSessionManager::EnemyIsAttack(PACKET_Player_INFO& target, PACKET_Mob_INFO& enemy)
 {
 	WRITE_LOCK
 		if (attackTimer > attackTime)

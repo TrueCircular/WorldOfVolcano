@@ -4,6 +4,8 @@
 #include "engine/EnemySoundController.h"
 #include "engine/PlayerSoundController.h"
 #include "engine\EquipmentSlot.h"
+#include "engine/StrategyFactory.h"
+
 using namespace std::chrono;
 
 Vec3 interpolate(double alpha, Vec3 targetPos, Vec3 prePos) {
@@ -50,12 +52,17 @@ void Spawner::Init()
 	{
 		_spawnMapType = MapType::Dungeon;
 	}
+
+	if (name == L"BossScene")
+	{
+		_spawnMapType = MapType::BossRoom;
+	}
 }
 
 void Spawner::Update()
 {
 	SpawnOtherPlayers();
-	//SpawnMonsters();
+	SpawnMonsters();
 }
 
 void Spawner::SpawnOtherPlayer(uint64 uid, Vec3 spawnPos)
@@ -162,34 +169,58 @@ void Spawner::SpawnMonster(uint64 uid, uint32 monsterId, Vec3 spawnPos)
 #pragma region Initialize
 	shared_ptr<Shader> _shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
 
-	// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon
+	// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon    3. Ragnaros
 	shared_ptr<EnemyUnit> _chr;
 	switch (monsterId)
 	{
 	case 0:
-		_chr = make_shared<CoreHound>();
+		_chr = make_shared<BaronGeddon>();
 		break;
 	case 1:
-		_chr = make_shared<CoreHound>();
+		_chr = make_shared<BaronGeddon>();
 		break;
 	case 2:
 		_chr = make_shared<BaronGeddon>();
 		break;
+	case 3:
+		_chr = make_shared<BaronGeddon>();
+		break;
 	default:
-		_chr = make_shared<CoreHound>();
+		_chr = make_shared<BaronGeddon>();
 		break;
 	}
-	_chr->Awake();
-	_aiCon = make_shared<AIController>();
-	_aiCon->SetAIType(AIType::EnemyUnit);
-	_chr->AddComponent(_aiCon);
-	_chr->AddComponent(make_shared<CharacterInfo>());
-	_chr->Start();
-	_chr->GetTransform()->SetLocalPosition(spawnPos);
 
-	_monsters.insert(std::make_pair(uid, _chr)); //map에 모델과 식별id 추가
-	MANAGER_SCENE()->GetCurrentScene()->Add(_chr);
-	MANAGER_SCENE()->GetCurrentScene()->AddShadow(_chr);
+	//Init
+	{
+		_chr->Awake();
+		_chr->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+
+		switch (monsterId)
+		{
+		case 0:
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+			break;
+		case 1:
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+			break;
+		case 2:
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+			break;
+		case 3:
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+			break;
+		default:
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+			break;
+		}
+
+		_chr->SetSpwanPosition(spawnPos);
+		_chr->Start();
+
+		_monsters.insert(std::make_pair(uid, _chr)); //map에 모델과 식별id 추가
+		MANAGER_SCENE()->GetCurrentScene()->Add(_chr);
+		MANAGER_SCENE()->GetCurrentScene()->AddShadow(_chr);
+	}
 #pragma endregion
 }
 
@@ -227,8 +258,8 @@ void Spawner::SpawnMonsters()
 			}
 			else
 			{
-				// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
-				auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
+				/// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
+				/*auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
 				auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
 				double alpha = fmin(1.0, durationSec / 1.0);
 
@@ -247,15 +278,15 @@ void Spawner::SpawnMonsters()
 
 				//회전 보간 계산
 				Vec3 targetRot = pair.second._Rotate;
-				/*Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
+				Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
 				Quaternion endRotation = Quaternion::CreateFromYawPitchRoll(targetRot.y, 0.0f, 0.0f);
 				Quaternion calcRot = Quaternion::Slerp(startRotation, endRotation, alpha);
-				rot.y = QuatToEulerAngleY(calcRot);*/
+				rot.y = QuatToEulerAngleY(calcRot);
 
 				it->second->GetTransform()->SetPosition(pos);
 				it->second->GetTransform()->SetLocalRotation(targetRot);
 				//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState); <- 동작수정
-				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
+				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);*/
 			}
 		}
 		else
@@ -281,13 +312,13 @@ void Spawner::Reset()
 		}
 	}
 
-	/*for (auto pair : _monsters)
+	for (auto pair : _monsters)
 	{
 		std::shared_ptr<GameObject> gameObject = pair.second;
 		if (gameObject) {
 			MANAGER_SCENE()->GetCurrentScene()->Remove(gameObject);
 		}
-	}*/
+	}
 
 	_otherPlayers.clear();
 	_monsters.clear();

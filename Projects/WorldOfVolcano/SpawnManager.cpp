@@ -50,6 +50,11 @@ MapType SpawnManager::GetSpawnMapType()
     if (name == L"DungeonScene")
     {
         return MapType::Dungeon;
-    } 
+    }
+
+    if (name == L"BossScene")
+    {
+        return MapType::BossRoom;
+    }
 }
 

@@ -60,8 +60,14 @@ void ServerPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 	PacketHeader header;
 	br >> header;
 
-	MONSTER_INFO info;
+	PACKET_Mob_INFO info;
 	br >> info;
+
+	wstring name;
+	uint16 nameLen;
+	br >> nameLen;
+	name.resize(nameLen);
+	br.Read((void*)name.data(), nameLen * sizeof(WCHAR));
 
 	GSessionManager.UpdateMobInfo(info);
 }
@@ -118,7 +124,7 @@ SendBufferRef ServerPacketHandler::Make_USER_INFO(PACKET_Player_INFO userInfo, w
 	return sendBuffer;
 }
 
-SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint32, MONSTER_INFO> charaInfo)
+SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint32, PACKET_Mob_INFO> charaInfo)
 {
 	SendBufferRef sendBuffer = GSendBufferManager->Open(4096); //4kb
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
@@ -126,9 +132,9 @@ SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint32, MONSTER_INFO> c
 
 	for (const auto& pair : charaInfo) {
 		uint64 id = pair.first;
-		MONSTER_INFO info = pair.second;
+		PACKET_Mob_INFO info = pair.second;
 		info._timeStamp = TIMER().getCurrentTime();
-
+		
 		bw << info;
 	}
 

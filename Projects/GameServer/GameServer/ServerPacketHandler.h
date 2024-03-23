@@ -114,7 +114,7 @@ struct PACKET_Player_INFO : public PACKET_CHARACTER_INFO
 	JumpFlag _jumpFlag;
 };
 
-struct MONSTER_INFO : public PACKET_CHARACTER_INFO
+struct PACKET_Mob_INFO : public PACKET_CHARACTER_INFO
 {
 	uint32 _monsterId = 0;
 	Vec3 _targetPos = { 0.f, 0.f, 0.f };
@@ -133,7 +133,7 @@ public:
 
 	static SendBufferRef Make_USER_CONNECT();
 	static SendBufferRef Make_USER_INFO(PACKET_Player_INFO userInfo, wstring name, bool otherPacket);
-	static SendBufferRef Make_MONSTER_INFO(map<uint32, MONSTER_INFO> mobInfo);
+	static SendBufferRef Make_MONSTER_INFO(map<uint32, PACKET_Mob_INFO> mobInfo);
 	static SendBufferRef Make_USER_DISCONNECT(uint64 uid);
 	static SendBufferRef Make_MESSAGE(MESSAGE message);
 };

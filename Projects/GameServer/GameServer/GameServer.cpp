@@ -34,16 +34,14 @@ int main()
 			});
 	}
 
-	//GSessionManager.GenerateMobList();
+	GSessionManager.GenerateMobList();
 
 	//SendBuffer
 	GThreadManager->Launch([=]()
 		{
-			/*while (true)
+			while (true)
 			{
 				TIMER().update();
-				GameServerAI gameAI;
-				gameAI.Update();
 
 				SendBufferRef sendBuffer = ServerPacketHandler::Make_MONSTER_INFO(GSessionManager.GetMobInfoList());
 				GSessionManager.Broadcast(sendBuffer);
@@ -51,7 +49,7 @@ int main()
 				GSessionManager.CheckAndResetMonster();
 
 				this_thread::sleep_for(100ms);
-			}*/
+			}
 		});
 
 	while (true)

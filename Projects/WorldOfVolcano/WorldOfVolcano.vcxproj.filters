@@ -89,6 +89,9 @@
     <ClCompile Include="TestAbilityScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="BossScene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -151,6 +154,9 @@
       <Filter>Scripts\GameObject</Filter>
     </ClInclude>
     <ClInclude Include="TestAbilityScene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="BossScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>

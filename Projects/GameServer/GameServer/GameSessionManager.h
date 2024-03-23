@@ -29,10 +29,10 @@ public:
 	void UpdateUserInfo(PACKET_Player_INFO info);
 	//∏ÛΩ∫≈Õ
 	void GenerateMobList();
-	map<uint32, MONSTER_INFO>& GetMobInfoList() { return _mobInfoList; }
-	void UpdateMobInfo(MONSTER_INFO info);
+	map<uint32, PACKET_Mob_INFO>& GetMobInfoList() { return _mobInfoList; }
+	void UpdateMobInfo(PACKET_Mob_INFO info);
 	void ClearMobInfoList() { _mobInfoList.clear(); }
-	void EnemyIsAttack(PACKET_Player_INFO& target, MONSTER_INFO& enemy);
+	void EnemyIsAttack(PACKET_Player_INFO& target, PACKET_Mob_INFO& enemy);
 
 	void CheckAndResetMonster();
 private:
@@ -44,7 +44,7 @@ private:
 private:
 	uint64 sessionIdCount = 0;
 private:
-	map<uint32, MONSTER_INFO> _mobInfoList;
+	map<uint32, PACKET_Mob_INFO> _mobInfoList;
 	map<uint32, PACKET_Player_INFO> _userInfoList;
 };
 

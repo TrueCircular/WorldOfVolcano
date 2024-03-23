@@ -255,7 +255,7 @@ void BaseScene::Update()
 		}
 
 		//SendBuffer
-		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, L"noname");
+		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
 	}
 
 	SpawnManager::GetInstance().Update();

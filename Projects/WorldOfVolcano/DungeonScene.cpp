@@ -3,6 +3,7 @@
 
 //Scene Include
 #include "Demo.h"
+#include "BossScene.h"
 //Script Include
 #include "LavaFlow.h"
 #include "StruectedLavaSprite.h"
@@ -141,7 +142,7 @@ void DungeonScene::Init()
 			_warrior = make_shared<Warrior>();
 			_warrior->Awake();
 			_warrior->SetCharacterController(make_shared<PlayerController>());
-			_warrior->SetSpwanPosition(Vec3(-44.f, 0.f, 277.f));
+			_warrior->SetSpwanPosition(spawnPos);
 			_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
 			_warrior->Start();
 
@@ -154,7 +155,7 @@ void DungeonScene::Init()
 		{
 			//baronGeddon
 			{
-				auto height = make_shared<HeightGetter>();
+				/*auto height = make_shared<HeightGetter>();
 				height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
 				Vec3 spwanPos = Vec3(103, 0, 240);
 				spwanPos.y = height->GetHeight(spwanPos);
@@ -166,7 +167,7 @@ void DungeonScene::Init()
 				baronGeddon->SetSpwanPosition(spwanPos);
 				baronGeddon->Start();
 
-				Add(baronGeddon);
+				Add(baronGeddon);*/
 			}
 		}
 	}
@@ -245,7 +246,7 @@ void DungeonScene::Update()
 		}
 
 		//SendBuffer
-		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, L"noname");
+		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
 	}
 
 	SpawnManager::GetInstance().Update();
@@ -305,6 +306,16 @@ void DungeonScene::Update()
 		OutputDebugString(Pstring.c_str());
 	}
 
+	shared_ptr<Scene> scene = make_shared<BossScene>();
+	scene->SetSceneName(L"BossScene");
+
+	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
+	{
+		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
+		SpawnManager::GetInstance().Reset(name);
+		SpawnManager::GetInstance().EraseSpawnerMap(name);
+		MANAGER_SCENE()->ChangeScene(scene);
+	}
 }
 
 void DungeonScene::LateUpdate()
