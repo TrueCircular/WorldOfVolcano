@@ -17,28 +17,37 @@ void FireBall::Update()
 		}
 
 		if (instanceList[i]->isTargeting) {
-			Matrix lookMat= Matrix::CreateLookAt(instanceList[i]->particleTransform->GetLocalPosition(), instanceList[i]->targetTransform->GetLocalPosition(),
-				Vec3(0,1,0));
-			Quaternion qlookat;
-			Vec3 trans;
-			Vec3 scale;
-			lookMat.Decompose(scale, qlookat,trans );
-			Vec3 rotate = Utils::QuadToYawPitchRoll(qlookat); //Yaw,Pitch,Roll;
-			//TODO Need To mul to Model abRotate;
-
-			//
-			rotate.x += ::XMConvertToRadians(90.f);
-			rotate.y += ::XMConvertToRadians(90.f);
-			//rotate.z += ::XMConvertToRadians(180.f);
-			instanceList[i]->particleTransform->SetLocalRotation(rotate);
-			Vec3 velocity = instanceList[i]->targetTransform->GetLocalPosition() -instanceList[i]->particleTransform->GetLocalPosition() ;
+			Vec3 velocity = instanceList[i]->targetTransform->GetLocalPosition() - instanceList[i]->particleTransform->GetLocalPosition();
 			velocity.Normalize();
+			//Vec3 up(0,1,0);
+			//if (instanceList[i]->parentTransform) {
+			//	up = instanceList[i]->parentTransform->GetLookVector();
+			//}
+//			Quaternion::
+			//Matrix lookMat= Matrix::CreateLookAt(instanceList[i]->particleTransform->GetLocalPosition(), instanceList[i]->targetTransform->GetLocalPosition(),
+			//	up);
+			//Quaternion qlookat;
+			//Vec3 trans;
+			//Vec3 scale;
+			//lookMat.Decompose(scale, qlookat,trans );
+			//Vec3 rotate;// = Utils::QuadToYawPitchRoll(qlookat); //Yaw,Pitch,Roll;
+			////TODO Need To mul to Model abRotate;
+			//
+			////
+			//rotate.x += ::XMConvertToRadians(90.f);
+			////rotate.y += ::XMConvertToRadians(90.f);
+			//rotate.z = 0;
+			//
+			//Quaternion qut = Quaternion::CreateFromYawPitchRoll(90,90,0);
+			//qlookat = Quaternion::Concatenate(qlookat, qut);
+			//rotate =	Utils::QuadToYawPitchRoll(qlookat);
+			//instanceList[i]->particleTransform->SetLocalRotation(rotate);
 			velocity = velocity* (instanceList[i]->speed * MANAGER_TIME()->GetDeltaTime());
 			Vec3 pos = instanceList[i]->particleTransform->GetLocalPosition();
 			pos += velocity;
 			Vec3 targetPos = instanceList[i]->targetTransform->GetLocalPosition();
 			float distance = Vec3::Distance(pos,targetPos);
-			if (distance < instanceList[i]->speed) {
+			if (distance  < instanceList[i]->speed * MANAGER_TIME()->GetDeltaTime()) {
 				OnDestroy(instanceList[i]);
 				auto iter = instanceList.begin() + i;
 				instanceList.erase(iter);
@@ -66,6 +75,42 @@ void FireBall::LateUpdate()
 
 void FireBall::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
+}
+
+void FireBall::AddParticle(shared_ptr<ParticleInstance> data)
+{
+
+	Vec3 rotate =data->particleTransform->GetLocalRotation();
+	rotate.x += ::XMConvertToRadians(180);
+	//Vec3 a = data->particleTransform->GetLocalPosition();
+	//Vec3 b = data->targetTransform->GetLocalPosition();
+	//Vec2 ax(a.x, a.y);
+	//Vec2 bx(b.x, b.y);
+	//
+	//float dot=ax.Dot(bx);
+	//float v1 = sqrt(ax.x*ax.x + ax.y*ax.y);
+	//float v2 = sqrt(bx.x * bx.x + bx.y * bx.y);
+	//float angle = acos(dot / (v1 * v2));
+	//auto Cr = [](Vec2& a, Vec2& b) {
+	//	return a.x * b.y - a.y * b.x;
+	//};
+	//int direction = (Cr(ax,bx) >0) ? 1 : (Cr(ax,bx) < 0) ? -1 : 0;
+	//if (direction < 0) {
+
+	//	rotate.x -= 2 - angle;
+	//}
+	//else
+	//{
+
+	//	rotate.x -= 2 - angle;
+	//}
+	data->particleTransform->SetLocalRotation(rotate);
+	{
+		instanceList.push_back(data);
+		++instanceCounter;
+	}
+
+	//
 }
 
 FireBall::FireBall()

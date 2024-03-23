@@ -15,6 +15,7 @@ public:
 	virtual void Update() override;
 	virtual void LateUpdate() override;
 	virtual void OnDestroy(shared_ptr<ParticleInstance>& instance) override;
+	virtual void AddParticle(shared_ptr<ParticleInstance> data) override;
 public:
 	FireBall();
 	~FireBall();

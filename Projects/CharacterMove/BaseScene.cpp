@@ -29,6 +29,7 @@
 #include "engine/MagicCircle.h"
 #include "engine/LineSpark.h"
 #include "engine/ShineHelper.h"
+#include "engine/Exlode.h"
 void BaseScene::Init()
 {
 	//리소스 매니저 초기화
@@ -251,9 +252,11 @@ void BaseScene::Init()
 	shared_ptr<Polar> polar = make_shared<Polar>();
 	shared_ptr<MagicCircle> magicCircle = make_shared<MagicCircle>();
 	shared_ptr<LineSpark> lineSpark = make_shared<LineSpark>();
+	shared_ptr<Exlode> explode = make_shared<Exlode>();
 	tempTargetTrans = make_shared<Transform>();
 	tempTargetTrans->SetLocalPosition(Vec3(0, 80, 0));
 	shared_ptr<ShineHelper> sparkHelper = make_shared<ShineHelper>();
+	MANATER_PARTICLE()->AddManagingParticle(L"Explode", explode);
 	MANATER_PARTICLE()->AddManagingParticle(L"SparkHelper", sparkHelper);
 	MANATER_PARTICLE()->AddManagingParticle(L"WarriorRoar", roar);
 	MANATER_PARTICLE()->AddManagingParticle(L"Clap", clap);
@@ -460,8 +463,10 @@ void BaseScene::Update()
 		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"FireBall");
 		shared_ptr<Transform> pos2 = make_shared<Transform>();
 		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		pos2->SetLocalRotation(_warrior->GetTransform()->GetLocalRotation());
 		pos2->SetScale(Vec3(1, 1, 1));
 		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, tempTargetTrans, 100,true);
+		instancedata2->parentTransform = _warrior->GetTransform();
 		clapParticle->AddParticle(instancedata2);
 
 	}

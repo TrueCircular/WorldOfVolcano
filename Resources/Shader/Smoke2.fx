@@ -10,6 +10,7 @@
 
 Texture2D NoiseMap;
 Texture2D MaskMap;
+float duration;
 
 BlendState AlphaBlendState
 {
@@ -98,6 +99,15 @@ float4 PS(EffectOutput input) : SV_TARGET
     alpha = alpha * radialMask;
     color.rgb = rgbcolor;
     color.a = alpha;
+    if (duration > 0.00001)
+    {
+        float fadealpha = (duration / 2) /input.time ;
+        if (fadealpha > 1)
+        {
+            fadealpha = 1;
+        }
+        color.a = color.a * fadealpha;
+    }
     return color;
     
 }

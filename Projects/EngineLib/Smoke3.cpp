@@ -41,7 +41,7 @@ void Smoke3::LateUpdate()
 	ParticleObj::LateUpdate();
 
 	if (!instanceList.empty())
-		//auto ctimes = shader->GetScalar("duration")->SetFloat(instanceList[0].duration);
+		auto ctimes = shader->GetScalar("duration")->SetFloat(instanceList[0]->duration);
 	smokeSRV->SetResource(smokeTexture->GetTexture().Get());
 	meshRenderer->Render(instanceList);
 }
