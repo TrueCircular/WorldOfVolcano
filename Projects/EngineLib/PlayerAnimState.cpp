@@ -6,51 +6,27 @@
 #include "stdlib.h"
 #include "time.h"
 #include <float.h>
+#include "Sounds.h"
 
-bool PlayerAnimIdle::Enter(const shared_ptr<CharacterController>& playerController)
-{
-	if (dynamic_pointer_cast<PlayerController>(playerController))
-	{
-		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
-	}
-	else
-	{
-		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
-	}
-
-	_stateAnim = PlayerAnimType::Stand;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
-	_animator.lock()->SetNextAnimation(L"Stand");
-
-	return true;
-}
-
-bool PlayerAnimIdle::Update()
+bool PlayerAnimState::Update()
 {
 	if (_contoller.lock())
 	{
 		switch (*_playerState.lock())
 		{
+		case PlayerUnitState::Stand:
+		{
+			_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
+			return true;
+		}break;
 		case PlayerUnitState::FrontMove:
 		case PlayerUnitState::FrontRightMove:
 		case PlayerUnitState::FrontLeftMove:
 		case PlayerUnitState::RightMove:
 		case PlayerUnitState::LeftMove:
 		{
-			if (_contoller.lock()->GetCurrentSpeed() < _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_contoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
+			_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
+			return true;
 		}break;
 		case PlayerUnitState::BackMove:
 		case PlayerUnitState::BackRightMove:
@@ -79,6 +55,11 @@ bool PlayerAnimIdle::Update()
 			_contoller.lock()->SetAnimState(PlayerAnimType::Death);
 			return true;
 		}break;
+		case PlayerUnitState::Damaged:
+		{
+			_contoller.lock()->SetAnimState(PlayerAnimType::Damaged);
+			return true;
+		}break;
 		case PlayerUnitState::Battle:
 		{
 			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
@@ -106,28 +87,30 @@ bool PlayerAnimIdle::Update()
 			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
 			return true;
 		}
+		case PlayerUnitState::Ability2:
+		{
+			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
+			return true;
+		}
 		}
 	}
 	else if (_aiContoller.lock())
 	{
 		switch (*_playerState.lock())
 		{
+		case PlayerUnitState::Stand:
+		{
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
+			return true;
+		}break;
 		case PlayerUnitState::FrontMove:
 		case PlayerUnitState::FrontRightMove:
 		case PlayerUnitState::FrontLeftMove:
 		case PlayerUnitState::RightMove:
 		case PlayerUnitState::LeftMove:
 		{
-			if (_aiContoller.lock()->GetCurrentSpeed() < _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_aiContoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
+			return true;
 		}break;
 		case PlayerUnitState::BackMove:
 		case PlayerUnitState::BackRightMove:
@@ -156,6 +139,11 @@ bool PlayerAnimIdle::Update()
 			_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
 			return true;
 		}break;
+		case PlayerUnitState::Damaged:
+		{
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Damaged);
+			return true;
+		}break;
 		case PlayerUnitState::Battle:
 		{
 			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
@@ -178,6 +166,54 @@ bool PlayerAnimIdle::Update()
 			}
 			return true;
 		}break;
+		case PlayerUnitState::Ability1:
+		{
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
+			return true;
+		}
+		case PlayerUnitState::Ability2:
+		{
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
+			return true;
+		}
+		}
+	}
+
+	return false;
+}
+
+
+bool PlayerAnimIdle::Enter(const shared_ptr<CharacterController>& playerController)
+{
+	if (dynamic_pointer_cast<PlayerController>(playerController))
+	{
+		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
+		_animator = _contoller.lock()->GetAnimator();
+		_playerState = _contoller.lock()->GetCurrentUnitState();
+	}
+	else
+	{
+		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
+		_animator = _aiContoller.lock()->GetAnimator();
+		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+	}
+
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
+	_animator.lock()->SetNextAnimation(L"Stand");
+
+	return true;
+}
+
+bool PlayerAnimIdle::Update()
+{
+	if (_playerState.lock() != nullptr)
+	{
+		if (*_playerState.lock() != PlayerUnitState::Stand)
+		{
+			Super::Update();
 		}
 	}
 
@@ -186,9 +222,7 @@ bool PlayerAnimIdle::Update()
 
 bool PlayerAnimIdle::Out()
 {
-	//_animator.lock()->GetTweenDesc().ClearCurrentAnim();
-
-	return true;
+	return false;
 }
 
 bool PlayerAnimFrontWalk::Enter(const shared_ptr<CharacterController>& playerController)
@@ -206,8 +240,10 @@ bool PlayerAnimFrontWalk::Enter(const shared_ptr<CharacterController>& playerCon
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::FrontWalk;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"Walk");
 
 	return true;
@@ -215,151 +251,13 @@ bool PlayerAnimFrontWalk::Enter(const shared_ptr<CharacterController>& playerCon
 
 bool PlayerAnimFrontWalk::Update()
 {
-	if (_contoller.lock())
+	if (_playerState.lock() != nullptr)
 	{
-		switch (*_playerState.lock())
+		if (*_playerState.lock() != PlayerUnitState::FrontMove ||
+			*_playerState.lock() != PlayerUnitState::FrontLeftMove ||
+			*_playerState.lock() != PlayerUnitState::FrontRightMove)
 		{
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		{
-			if (_contoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-		case PlayerUnitState::Stand:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
-		}
-	}
-	else if (_aiContoller.lock())
-	{
-		switch (*_playerState.lock())
-		{
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		{
-			if (_aiContoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-		case PlayerUnitState::Stand:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
+			Super::Update();
 		}
 	}
 
@@ -386,8 +284,10 @@ bool PlayerAnimBackWalk::Enter(const shared_ptr<CharacterController>& playerCont
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::BackWalk;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"BackWalk");
 
 	return true;
@@ -395,163 +295,11 @@ bool PlayerAnimBackWalk::Enter(const shared_ptr<CharacterController>& playerCont
 
 bool PlayerAnimBackWalk::Update()
 {
-	if (_contoller.lock())
+	if (_playerState.lock() != nullptr)
 	{
-		switch (*_playerState.lock())
+		if (*_playerState.lock() != PlayerUnitState::BackMove)
 		{
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		case PlayerUnitState::RightMove:
-		case PlayerUnitState::LeftMove:
-		{
-			if (_contoller.lock()->GetCurrentSpeed() < _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_contoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-			}
-			else
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-		case PlayerUnitState::Stand:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
-		}
-	}
-	else if (_aiContoller.lock())
-	{
-		switch (*_playerState.lock())
-		{
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		{
-			if (_aiContoller.lock()->GetCurrentSpeed() < _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_aiContoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-		case PlayerUnitState::Stand:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
+			Super::Update();
 		}
 	}
 
@@ -578,8 +326,10 @@ bool PlayerAnimFrontRun::Enter(const shared_ptr<CharacterController>& playerCont
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::FrontRun;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"FrontRun");
 
 	return true;
@@ -587,147 +337,15 @@ bool PlayerAnimFrontRun::Enter(const shared_ptr<CharacterController>& playerCont
 
 bool PlayerAnimFrontRun::Update()
 {
-	if (_contoller.lock())
+	if (_playerState.lock() != nullptr)
 	{
-		switch (*_playerState.lock())
+		if (*_playerState.lock() != PlayerUnitState::FrontMove &&
+			*_playerState.lock() != PlayerUnitState::FrontLeftMove &&
+			*_playerState.lock() != PlayerUnitState::FrontRightMove &&
+			*_playerState.lock() != PlayerUnitState::RightMove &&
+			*_playerState.lock() != PlayerUnitState::LeftMove)
 		{
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-
-			return true;
-		}break;
-		case PlayerUnitState::BackMove:
-		case PlayerUnitState::BackRightMove:
-		case PlayerUnitState::BackLeftMove:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-			return true;
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-		case PlayerUnitState::Stand:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}
-		}
-	}
-	else if (_aiContoller.lock())
-	{
-		switch (*_playerState.lock())
-		{
-		case PlayerUnitState::BackMove:
-		case PlayerUnitState::BackRightMove:
-		case PlayerUnitState::BackLeftMove:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-			return true;
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-
-		case PlayerUnitState::Stand:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}
+			Super::Update();
 		}
 	}
 
@@ -754,8 +372,10 @@ bool PlayerAnimBackRun::Enter(const shared_ptr<CharacterController>& playerContr
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::BackRun;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"BackRun");
 
 	return true;
@@ -763,166 +383,13 @@ bool PlayerAnimBackRun::Enter(const shared_ptr<CharacterController>& playerContr
 
 bool PlayerAnimBackRun::Update()
 {
-	if (_contoller.lock())
+	if (_playerState.lock() != nullptr)
 	{
-		switch (*_playerState.lock())
+		if (*_playerState.lock() != PlayerUnitState::BackMove &&
+			*_playerState.lock() != PlayerUnitState::BackRightMove &&
+			*_playerState.lock() != PlayerUnitState::BackLeftMove)
 		{
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		case PlayerUnitState::RightMove:
-		case PlayerUnitState::LeftMove:
-		{
-			if (_contoller.lock()->GetCurrentSpeed() < _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_contoller.lock()->GetCurrentSpeed()+ FLT_EPSILON >= _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-		case PlayerUnitState::Stand:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
-		}
-	}
-	else if (_aiContoller.lock())
-	{
-		switch (*_playerState.lock())
-		{
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		case PlayerUnitState::RightMove:
-		case PlayerUnitState::LeftMove:
-		{
-			if (_aiContoller.lock()->GetCurrentSpeed() < _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_aiContoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-		case PlayerUnitState::Stand:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
+			Super::Update();
 		}
 	}
 
@@ -942,7 +409,6 @@ bool PlayerAnimJumpStart::Enter(const shared_ptr<CharacterController>& playerCon
 		_animator = _contoller.lock()->GetAnimator();
 		_playerState = _contoller.lock()->GetCurrentUnitState();
 		_jumpState = _contoller.lock()->GetJumpState();
-
 	}
 	else
 	{
@@ -950,11 +416,12 @@ bool PlayerAnimJumpStart::Enter(const shared_ptr<CharacterController>& playerCon
 		_animator = _aiContoller.lock()->GetAnimator();
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 		_jumpState = _aiContoller.lock()->GetJumpState();
-
 	}
 
-	_stateAnim = PlayerAnimType::JumpStart;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"JumpStart");
 
 	return true;
@@ -1010,8 +477,10 @@ bool PlayerAnimJumpFall::Enter(const shared_ptr<CharacterController>& playerCont
 		_jumpState = _aiContoller.lock()->GetJumpState();
 	}
 
-	_stateAnim = PlayerAnimType::JumpFall;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"JumpFall");
 
 	return true;
@@ -1025,9 +494,7 @@ bool PlayerAnimJumpFall::Update()
 		{
 			if (_jumpState.lock()->isJumEnd)
 			{
-
 				_contoller.lock()->SetAnimState(PlayerAnimType::JumpEnd);
-
 				return true;
 			}
 		}
@@ -1038,9 +505,7 @@ bool PlayerAnimJumpFall::Update()
 		{
 			if (_jumpState.lock()->isJumEnd)
 			{
-
 				_aiContoller.lock()->SetAnimState(PlayerAnimType::JumpEnd);
-
 				return true;
 			}
 		}
@@ -1071,10 +536,10 @@ bool PlayerAnimJumpEnd::Enter(const shared_ptr<CharacterController>& playerContr
 		_jumpState = _aiContoller.lock()->GetJumpState();
 	}
 
-	_stateAnim = PlayerAnimType::JumpEnd;
-	//_animator.lock()->GetTweenDesc()->ClearCurrentAnim();
-	//_animator.lock()->SetCurrentAnimation(L"JumpEnd");
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"JumpEnd");
 
 	return true;
@@ -1088,119 +553,7 @@ bool PlayerAnimJumpEnd::Update()
 		{
 			if (_jumpState.lock()->isJump == false)
 			{
-				switch (*_playerState.lock())
-				{
-				case PlayerUnitState::Stand:
-				{
-					_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
-					return true;
-				}break;
-				case PlayerUnitState::FrontMove:
-				case PlayerUnitState::FrontRightMove:
-				case PlayerUnitState::FrontLeftMove:
-				case PlayerUnitState::RightMove:
-				case PlayerUnitState::LeftMove:
-				{
-					if (_contoller.lock()->GetCurrentSpeed() < _contoller.lock()->GetDefaultSpeed())
-					{
-						_contoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-						return true;
-					}
-					else if (_contoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _contoller.lock()->GetDefaultSpeed())
-					{
-						_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-						return true;
-					}
-				}break;
-				case PlayerUnitState::BackMove:
-				case PlayerUnitState::BackRightMove:
-				case PlayerUnitState::BackLeftMove:
-				{
-					_contoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-					return true;
-				}break;
-				case PlayerUnitState::Stun:
-				{
-					_contoller.lock()->SetAnimState(PlayerAnimType::Stun);
-					return true;
-				}break;
-				case PlayerUnitState::Loot:
-				{
-					_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
-					return true;
-				}break;
-				case PlayerUnitState::Death:
-				{
-					_contoller.lock()->SetAnimState(PlayerAnimType::Death);
-					return true;
-				}break;
-				case PlayerUnitState::Battle:
-				{
-					_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
-					return true;
-				}break;
-				}
-			}
-		}
-	}
-	else if (_aiContoller.lock())
-	{
-		if (_jumpState.lock())
-		{
-			if (_jumpState.lock()->isJump == false)
-			{
-				switch (*_playerState.lock())
-				{
-				case PlayerUnitState::Stand:
-				{
-					_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
-					return true;
-				}break;
-				case PlayerUnitState::FrontMove:
-				case PlayerUnitState::FrontRightMove:
-				case PlayerUnitState::FrontLeftMove:
-				case PlayerUnitState::RightMove:
-				case PlayerUnitState::LeftMove:
-				{
-					if (_aiContoller.lock()->GetCurrentSpeed() < _aiContoller.lock()->GetDefaultSpeed())
-					{
-						_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-						return true;
-					}
-					else if (_aiContoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _aiContoller.lock()->GetDefaultSpeed())
-					{
-						_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-						return true;
-					}
-				}break;
-				case PlayerUnitState::BackMove:
-				case PlayerUnitState::BackRightMove:
-				case PlayerUnitState::BackLeftMove:
-				{
-					_aiContoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-					return true;
-				}break;
-				case PlayerUnitState::Stun:
-				{
-					_aiContoller.lock()->SetAnimState(PlayerAnimType::Stun);
-					return true;
-				}break;
-				case PlayerUnitState::Loot:
-				{
-					_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
-					return true;
-				}break;
-				case PlayerUnitState::Death:
-				{
-					_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
-					return true;
-				}break;
-				case PlayerUnitState::Battle:
-				{
-					_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
-					return true;
-				}break;
-				}
+				Super::Update();
 			}
 		}
 	}
@@ -1243,28 +596,31 @@ bool PlayerAnimLoot::Out()
 	return false;
 }
 
+PlayerAnimDamaged::PlayerAnimDamaged()
+{
+	_stateAnim = PlayerAnimType::Damaged;
+
+	//Attack Sound
+	auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Damaged");
+	if (tempSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Playable/Warrior/Warrior_Damaged.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Damaged", sound);
+
+		_damagedSound = sound->Clone();
+	}
+	else
+	{
+		_damagedSound = tempSound->Clone();
+	}
+}
+
 bool PlayerAnimDamaged::Enter(const shared_ptr<CharacterController>& playerController)
 {
-	return false;
-}
-
-bool PlayerAnimDamaged::Update()
-{
-	return false;
-}
-
-bool PlayerAnimDamaged::Out()
-{
-	return false;
-}
-
-bool PlayerAnimDeath::Enter(const shared_ptr<CharacterController>& playerController)
-{
-	if (_stateAnim == PlayerAnimType::Death)
-	{
-		return false;
-	}
-
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
@@ -1278,31 +634,95 @@ bool PlayerAnimDeath::Enter(const shared_ptr<CharacterController>& playerControl
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
+	_animator.lock()->SetNextAnimation(L"Damaged");
+	_damagedSound->Play(false);
+	_contoller.lock()->_isBattle = true;
 
+	return false;
+}
+
+bool PlayerAnimDamaged::Update()
+{
+	if (_contoller.lock())
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+
+			if (_playerState.lock() != nullptr)
+			{
+				if (*_playerState.lock() != PlayerUnitState::Damaged)
+				{
+					Super::Update();
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+bool PlayerAnimDamaged::Out()
+{
+	return false;
+}
+
+PlayerAnimDeath::PlayerAnimDeath()
+{
 	_stateAnim = PlayerAnimType::Death;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+
+	//Death Sound
+	auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Death");
+	if (tempSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Playable/Warrior/Warrior_Death.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Death", sound);
+
+		_deathSound = sound->Clone();
+	}
+	else
+	{
+		_deathSound = tempSound->Clone();
+	}
+}
+
+bool PlayerAnimDeath::Enter(const shared_ptr<CharacterController>& playerController)
+{
+	if (dynamic_pointer_cast<PlayerController>(playerController))
+	{
+		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
+		_animator = _contoller.lock()->GetAnimator();
+		_playerState = _contoller.lock()->GetCurrentUnitState();
+	}
+	else
+	{
+		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
+		_animator = _aiContoller.lock()->GetAnimator();
+		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+	}
+
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
+
 	_animator.lock()->SetNextAnimation(L"Death");
-	
+	_animator.lock()->SetLoop(false);
+	_deathSound->Play(false);
+	_contoller.lock()->_isAlive = false;
+
 	return false;
 }
 
 bool PlayerAnimDeath::Update()
 {
-	if (_contoller.lock())
-	{
-		uint32 tempNextFrame = _animator.lock()->GetTweenDesc()->current.nextFrame;
-		if (tempNextFrame >= 80)
-		{
-			//_animator.lock()->SetLoop(false);
-		}
-
-		switch (*_playerState.lock())
-		{
-		default:
-			break;
-		}
-	}
-
 	return false;
 }
 
@@ -1326,8 +746,10 @@ bool PlayerAnimBattle::Enter(const shared_ptr<CharacterController>& playerContro
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::Battle;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"Battle");
 
 	return false;
@@ -1335,168 +757,11 @@ bool PlayerAnimBattle::Enter(const shared_ptr<CharacterController>& playerContro
 
 bool PlayerAnimBattle::Update()
 {
-	if (_contoller.lock())
+	if (_playerState.lock() != nullptr)
 	{
-		switch (*_playerState.lock())
+		if (*_playerState.lock() != PlayerUnitState::Battle)
 		{
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		case PlayerUnitState::RightMove:
-		case PlayerUnitState::LeftMove:
-		{
-			if (_contoller.lock()->GetCurrentSpeed() < _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_contoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::BackMove:
-		case PlayerUnitState::BackRightMove:
-		case PlayerUnitState::BackLeftMove:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-			return true;
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-		case PlayerUnitState::Stand:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
-		}
-	}
-	else if (_aiContoller.lock())
-	{
-		switch (*_playerState.lock())
-		{
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		{
-			if (_aiContoller.lock()->GetCurrentSpeed() < _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_aiContoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::BackMove:
-		case PlayerUnitState::BackRightMove:
-		case PlayerUnitState::BackLeftMove:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-			return true;
-		}break;
-		case PlayerUnitState::Jump:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-		case PlayerUnitState::Stand:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
+			Super::Update();
 		}
 	}
 
@@ -1506,6 +771,29 @@ bool PlayerAnimBattle::Update()
 bool PlayerAnimBattle::Out()
 {
 	return false;
+}
+
+PlayerAnimAttack1::PlayerAnimAttack1()
+{
+	_stateAnim = PlayerAnimType::Attack1;
+
+	//Attack Sound
+	auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Attack1");
+	if (tempSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Playable/Warrior/Warrior_Attack1.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Attack1", sound);
+
+		_attackSound = sound->Clone();
+	}
+	else
+	{
+		_attackSound = tempSound->Clone();
+	}
 }
 
 bool PlayerAnimAttack1::Enter(const shared_ptr<CharacterController>& playerController)
@@ -1523,11 +811,13 @@ bool PlayerAnimAttack1::Enter(const shared_ptr<CharacterController>& playerContr
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::Attack1;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
-	_animator.lock()->SetNextAnimation(L"Attack1");
-	_animator.lock()->SetFrameEnd(false);
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 
+	_animator.lock()->SetNextAnimation(L"Attack1");
+	_attackSound->Play(false);
 	return false;
 }
 
@@ -1537,142 +827,30 @@ bool PlayerAnimAttack1::Update()
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_contoller.lock()->SetIsAttack(false);
-		}
-
-		switch (*_playerState.lock())
-		{
-		case PlayerUnitState::Stand:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		case PlayerUnitState::RightMove:
-		case PlayerUnitState::LeftMove:
-		{
-			if (_contoller.lock()->GetCurrentSpeed() < _contoller.lock()->GetDefaultSpeed())
+			_contoller.lock()->_isBattle = true;
+			_contoller.lock()->_isAttack = false;
+			if (_playerState.lock() != nullptr)
 			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
+				if (*_playerState.lock() != PlayerUnitState::Attack)
+				{
+					Super::Update();
+				}
 			}
-			else if (_contoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::BackMove:
-		case PlayerUnitState::BackRightMove:
-		case PlayerUnitState::BackLeftMove:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
-
 		}
 	}
 	else if (_aiContoller.lock())
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_aiContoller.lock()->SetIsAttack(false);
-		}
-
-		switch (*_playerState.lock())
-		{
-		case PlayerUnitState::Stand:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		case PlayerUnitState::RightMove:
-		case PlayerUnitState::LeftMove:
-		{
-			if (_aiContoller.lock()->GetCurrentSpeed() < _aiContoller.lock()->GetDefaultSpeed())
+			_aiContoller.lock()->_isBattle = true;
+			_aiContoller.lock()->_isAttack = false;
+			if (_playerState.lock() != nullptr)
 			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
+				if (*_playerState.lock() != PlayerUnitState::Attack)
+				{
+					Super::Update();
+				}
 			}
-			else if (_aiContoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::BackMove:
-		case PlayerUnitState::BackRightMove:
-		case PlayerUnitState::BackLeftMove:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-			return true;
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-
-		case PlayerUnitState::Ability1:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
 		}
 	}
 
@@ -1682,6 +860,29 @@ bool PlayerAnimAttack1::Update()
 bool PlayerAnimAttack1::Out()
 {
 	return true;
+}
+
+PlayerAnimAttack2::PlayerAnimAttack2()
+{
+	_stateAnim = PlayerAnimType::Attack2;
+
+	//Attack Sound
+	auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Attack2");
+	if (tempSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Playable/Warrior/Warrior_Attack2.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Attack2", sound);
+
+		_attackSound = sound->Clone();
+	}
+	else
+	{
+		_attackSound = tempSound->Clone();
+	}
 }
 
 bool PlayerAnimAttack2::Enter(const shared_ptr<CharacterController>& playerController)
@@ -1699,10 +900,14 @@ bool PlayerAnimAttack2::Enter(const shared_ptr<CharacterController>& playerContr
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::Attack2;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+
+	}
+
 	_animator.lock()->SetNextAnimation(L"Attack2");
-	_animator.lock()->SetFrameEnd(false);
+	_attackSound->Play(false);
 
 	return false;
 }
@@ -1713,166 +918,31 @@ bool PlayerAnimAttack2::Update()
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_contoller.lock()->SetIsAttack(false);
-		}
+			_contoller.lock()->_isBattle = true;
+			_contoller.lock()->_isAttack = false;
 
-		switch (*_playerState.lock())
-		{
-		case PlayerUnitState::Stand:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		{
-			if (_contoller.lock()->GetCurrentSpeed() < _contoller.lock()->GetDefaultSpeed())
+			if (_playerState.lock() != nullptr)
 			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
+				if (*_playerState.lock() != PlayerUnitState::Attack)
+				{
+					Super::Update();
+				}
 			}
-			else if (_contoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::BackMove:
-		case PlayerUnitState::BackRightMove:
-		case PlayerUnitState::BackLeftMove:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-			return true;
-		}break;
-		case PlayerUnitState::RightMove:
-		case PlayerUnitState::LeftMove:
-		{
-			if (_contoller.lock()->GetCurrentSpeed() < _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_contoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _contoller.lock()->GetDefaultSpeed())
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-
-		case PlayerUnitState::Ability1:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
 		}
 	}
 	else if (_aiContoller.lock())
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_aiContoller.lock()->SetIsAttack(false);
-		}
-
-		switch (*_playerState.lock())
-		{
-		case PlayerUnitState::Stand:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			return true;
-		}break;
-		case PlayerUnitState::Battle:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}break;
-		case PlayerUnitState::FrontMove:
-		case PlayerUnitState::FrontRightMove:
-		case PlayerUnitState::FrontLeftMove:
-		{
-			if (_aiContoller.lock()->GetCurrentSpeed() < _aiContoller.lock()->GetDefaultSpeed())
+			_aiContoller.lock()->_isBattle = true;
+			_aiContoller.lock()->_isAttack = false;
+			if (_playerState.lock() != nullptr)
 			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
+				if (*_playerState.lock() != PlayerUnitState::Attack)
+				{
+					Super::Update();
+				}
 			}
-			else if (_aiContoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::BackMove:
-		case PlayerUnitState::BackRightMove:
-		case PlayerUnitState::BackLeftMove:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::BackRun);
-			return true;
-		}break;
-		case PlayerUnitState::RightMove:
-		case PlayerUnitState::LeftMove:
-		{
-			if (_aiContoller.lock()->GetCurrentSpeed() < _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontWalk);
-				return true;
-			}
-			else if (_aiContoller.lock()->GetCurrentSpeed() + FLT_EPSILON >= _aiContoller.lock()->GetDefaultSpeed())
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
-				return true;
-			}
-		}break;
-		case PlayerUnitState::Stun:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stun);
-			return true;
-		}break;
-		case PlayerUnitState::Loot:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-
-		case PlayerUnitState::Ability1:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}break;
-		case PlayerUnitState::Ability2:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}break;
 		}
 	}
 
@@ -1899,8 +969,10 @@ bool PlayerAnimCasting::Enter(const shared_ptr<CharacterController>& playerContr
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::Casting;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"Casting");
 
 	return false;
@@ -1914,6 +986,11 @@ bool PlayerAnimCasting::Update()
 bool PlayerAnimCasting::Out()
 {
 	return false;
+}
+
+PlayerAnimAbility1::PlayerAnimAbility1()
+{
+	_stateAnim = PlayerAnimType::Ability1;
 }
 
 bool PlayerAnimAbility1::Enter(const shared_ptr<CharacterController>& playerController)
@@ -1931,8 +1008,10 @@ bool PlayerAnimAbility1::Enter(const shared_ptr<CharacterController>& playerCont
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::Ability1;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"Ability1");
 
 	return false;
@@ -1944,12 +1023,7 @@ bool PlayerAnimAbility1::Update()
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_animator.lock()->SetFrameEnd(false);
 
-			if (_contoller.lock() != nullptr)
-				_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
-
-			return true;
 		}
 	}
 
@@ -1977,8 +1051,10 @@ bool PlayerAnimAbility2::Enter(const shared_ptr<CharacterController>& playerCont
 		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
 	}
 
-	_stateAnim = PlayerAnimType::Ability2;
-	//_animator.lock()->GetTweenDesc()->ClearNextAnim();
+	if (_animator.lock()->GetFrameEnd() == true)
+	{
+		_animator.lock()->SetFrameEnd(false);
+	}
 	_animator.lock()->SetNextAnimation(L"Ability2");
 
 	return false;
@@ -1986,6 +1062,20 @@ bool PlayerAnimAbility2::Enter(const shared_ptr<CharacterController>& playerCont
 
 bool PlayerAnimAbility2::Update()
 {
+	if (_contoller.lock() != nullptr)
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			if (_playerState.lock() != nullptr)
+			{
+				if (*_playerState.lock() != PlayerUnitState::Ability2)
+				{
+					Super::Update();
+				}
+			}
+		}
+	}
+
 	return false;
 }
 
@@ -1993,3 +1083,4 @@ bool PlayerAnimAbility2::Out()
 {
 	return false;
 }
+

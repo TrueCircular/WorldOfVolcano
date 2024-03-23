@@ -196,8 +196,6 @@ void DungeonScene::Init()
 		}
 		soundController->SetSound(PlayerAnimType::Death, bgm2);
 
-		_warrior->GetComponent<PlayerController>()->SetSoundController(soundController);
-
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
 

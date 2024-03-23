@@ -6,6 +6,7 @@
 #include "PlayableUnit.h"
 #include "CharacterInfo.h"
 #include "Sounds.h"
+#include "PlayerController.h"
 #include "AIController.h"
 
 MoltenGiantStand::MoltenGiantStand()
@@ -17,11 +18,12 @@ MoltenGiantStand::~MoltenGiantStand()
 {
 }
 
-void MoltenGiantStand::Enter(const shared_ptr<AIController>& controller)
+void MoltenGiantStand::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -108,33 +110,77 @@ void MoltenGiantStand::Update()
 	}
 }
 
-void MoltenGiantStand::Out(const wstring& transition)
+void MoltenGiantStand::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name , nextTransition);
 	}
 }
 
 MoltenGiantDamaged::MoltenGiantDamaged()
 {
 	_name = L"MoltenGiantDamaged";
+
+	//Damaged Sound
+	auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"MoltenGiant_Damaged");
+	if (tempSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/MoltenGiant/MoltenGiant_Damaged.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"MoltenGiant_Damaged", sound);
+
+		_damagedSound = sound->Clone();
+	}
+	else
+	{
+		_damagedSound = tempSound->Clone();
+	}
 }
 
 MoltenGiantDamaged::~MoltenGiantDamaged()
 {
 }
 
-void MoltenGiantDamaged::Enter(const shared_ptr<AIController>& controller)
+void MoltenGiantDamaged::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
+	if (controller != nullptr)
+	{
+		_controller = controller;
+		_prevTransition = prevTransition;
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_animator.lock()->SetFrameEnd(false);
+			_animator.lock()->SetNextAnimation(L"Damaged");
+			_damagedSound->Play(false);
+		}
+	}
 }
 
 void MoltenGiantDamaged::Update()
 {
+	if (_controller.lock() != nullptr)
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			Out(_prevTransition);
+		}
+	}
 }
 
-void MoltenGiantDamaged::Out(const wstring& transition)
+void MoltenGiantDamaged::Out(const wstring& nextTransition)
 {
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+	}
 }
 
 MoltenGiantStun::MoltenGiantStun()
@@ -146,7 +192,7 @@ MoltenGiantStun::~MoltenGiantStun()
 {
 }
 
-void MoltenGiantStun::Enter(const shared_ptr<AIController>& controller)
+void MoltenGiantStun::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -154,28 +200,77 @@ void MoltenGiantStun::Update()
 {
 }
 
-void MoltenGiantStun::Out(const wstring& transition)
+void MoltenGiantStun::Out(const wstring& nextTransition)
 {
 }
 
 MoltenGiantDead::MoltenGiantDead()
 {
 	_name = L"MoltenGiantDead";
+
+	//Death Sound
+	auto tempSound1 = MANAGER_RESOURCES()->GetResource<Sounds>(L"MoltenGiant_Death");
+	if (tempSound1 == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/MoltenGiant/MoltenGiant_Death.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"MoltenGiant_Death", sound);
+
+		_deadSound = sound->Clone();
+	}
+	else
+	{
+		_deadSound = tempSound1->Clone();
+	}
 }
 
 MoltenGiantDead::~MoltenGiantDead()
 {
 }
 
-void MoltenGiantDead::Enter(const shared_ptr<AIController>& controller)
+void MoltenGiantDead::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
+	if (controller != nullptr)
+	{
+		_controller = controller;
+		_prevTransition = prevTransition;
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_animator.lock()->SetFrameEnd(false);
+			_animator.lock()->SetNextAnimation(L"Death");
+			_dt = 0.f;
+			_soundFlag = false;
+		}
+	}
 }
 
 void MoltenGiantDead::Update()
 {
+	if (_controller.lock() != nullptr)
+	{
+		_dt += MANAGER_TIME()->GetDeltaTime();
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			_controller.lock()->_isAlive = false;
+		}
+
+		if (_dt > _soundTimer && _soundFlag == false)
+		{
+			_deadSound->Play(false);
+			_soundFlag = true;
+		}
+	}
 }
 
-void MoltenGiantDead::Out(const wstring& transition)
+void MoltenGiantDead::Out(const wstring& nextTransition)
 {
 }
 
@@ -188,11 +283,12 @@ MoltenGiantTrace::~MoltenGiantTrace()
 {
 }
 
-void MoltenGiantTrace::Enter(const shared_ptr<AIController>& controller)
+void MoltenGiantTrace::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -281,11 +377,11 @@ void MoltenGiantTrace::Update()
 	}
 }
 
-void MoltenGiantTrace::Out(const wstring& transition)
+void MoltenGiantTrace::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -298,11 +394,12 @@ MoltenGiantMoveToSpwanPoint::~MoltenGiantMoveToSpwanPoint()
 {
 }
 
-void MoltenGiantMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller)
+void MoltenGiantMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -316,7 +413,7 @@ void MoltenGiantMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controll
 			_animator.lock()->SetNextAnimation(L"Run");
 
 			_characterInfo = _controller.lock()->GetCharacterInfo();
-			_spwanPos = _controller.lock()->GetSpwanPosition();
+			_spwanPos = _controller.lock()->GetSpawnPosition();
 			_moveSpeed = _characterInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
 		}
 	}
@@ -379,11 +476,11 @@ void MoltenGiantMoveToSpwanPoint::Update()
 	}
 }
 
-void MoltenGiantMoveToSpwanPoint::Out(const wstring& transition)
+void MoltenGiantMoveToSpwanPoint::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -396,11 +493,12 @@ MoltenGiantBattle::~MoltenGiantBattle()
 {
 }
 
-void MoltenGiantBattle::Enter(const shared_ptr<AIController>& controller)
+void MoltenGiantBattle::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -477,14 +575,6 @@ void MoltenGiantBattle::Update()
 		{
 			_attackTimeCal += _dt;
 
-			//if 분기 제어 필요
-
-
-			//Ability Transition
-			{
-
-			}
-
 			//Attack Transition
 			{
 				if (_attackTimeCal >= _attackTime)
@@ -507,11 +597,11 @@ void MoltenGiantBattle::Update()
 	}
 }
 
-void MoltenGiantBattle::Out(const wstring& transition)
+void MoltenGiantBattle::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -560,13 +650,14 @@ MoltenGiantAttack::~MoltenGiantAttack()
 {
 }
 
-void MoltenGiantAttack::Enter(const shared_ptr<AIController>& controller)
+void MoltenGiantAttack::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		::srand(time(NULL));
 
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -579,24 +670,32 @@ void MoltenGiantAttack::Enter(const shared_ptr<AIController>& controller)
 
 		if (_animator.lock() != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
+			_characterInfo = _controller.lock()->GetCharacterInfo();
+			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
+			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
+
+			auto targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
+
+			if (targetCon != nullptr)
+			{
+				float attackDamage = _characterInfo.lock()->GetCharacterInfo()._atk;
+				targetCon->TakeDamage(_transform.lock()->GetGameObject(), attackDamage);
+			}
 
 			int randAttack = rand() % 2;
 
 			if (randAttack == 0)
 			{
+				_animator.lock()->SetFrameEnd(false);
 				_animator.lock()->SetNextAnimation(L"Attack1");
 				_attack1Sound->Play(false);
 			}
 			else
 			{
+				_animator.lock()->SetFrameEnd(false);
 				_animator.lock()->SetNextAnimation(L"Attack2");
 				_attack2Sound->Play(false);
 			}
-
-			_characterInfo = _controller.lock()->GetCharacterInfo();
-			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
-			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
 		}
 	}
 }
@@ -605,56 +704,60 @@ void MoltenGiantAttack::Update()
 {
 	if (_controller.lock() != nullptr)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
-		{
-			Out(L"MoltenGiantBattle");
-		}
-
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		Vec3 myPos = _transform.lock()->GetLocalPosition();
-		Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
-		targetPos.y = myPos.y;
-		Vec3 toTargetDir = targetPos - myPos;
-
-		//타겟 방향으로 회전
+		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			if (toTargetDir.Length() > 0)
+			Out(_prevTransition);
+		}
+
+		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		{
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
 			{
-				toTargetDir.Normalize(toTargetDir);
+				if (toTargetDir.Length() > 0)
 				{
-					Vec3 myForward = _transform.lock()->GetLookVector();
-					Vec3 myRight = _transform.lock()->GetRightVector();
-					Vec3 myUp = Vec3(0, 1, 0);
-
-					myForward.Normalize();
-
-					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
-					float angle = acosf(dotAngle);
-
-					Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-					float LeftRight = cross.Dot(myUp);
-
-					if (LeftRight < 0)
+					toTargetDir.Normalize(toTargetDir);
 					{
-						angle = -angle;
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						myForward.Normalize();
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
 					}
-
-					angle = angle * _totargetRotationSpeed * _dt;
-
-					Vec3 myRot = _transform.lock()->GetLocalRotation();
-					myRot.y += angle;
-					_transform.lock()->SetLocalRotation(myRot);
 				}
 			}
 		}
+
 	}
 }
 
-void MoltenGiantAttack::Out(const wstring& transition)
+void MoltenGiantAttack::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }

@@ -137,13 +137,6 @@ void ModelAnimator::CreateAnimationTransform(uint32 index)
 
 vector<AnimTransform>& ModelAnimator::GetAnimTransform()
 {
-	//_animTransforms.resize(_model->GetAnimationCount());
-
-	//if (_animTransforms.size() <= 0) 
-	//{
-	//	for (uint32 i = 0; i < _model->GetAnimationCount(); i++)
-	//		CreateAnimationTransform(i);
-	//}   
 	return  _animTransforms;
 }
 
@@ -183,12 +176,7 @@ void ModelAnimator::UpdateTweenData()
 			{
 				if (_currentAnim)
 				{
-					if (_tweenDesc->current.currentFrame == _currentAnim->duration)
-					{
-						_isFrameEnd = true;
-						_tweenDesc->current.currentFrame = 0;
-						_tweenDesc->current.nextFrame = 1;
-					}
+
 
 					_tweenDesc->current.sumTime += MANAGER_TIME()->GetDeltaTime();
 					_timePerFrame = 1 / (_currentAnim->frameRate * _tweenDesc->current.speed);
@@ -196,8 +184,13 @@ void ModelAnimator::UpdateTweenData()
 					if (_tweenDesc->current.sumTime > _timePerFrame + FLT_EPSILON)
 					{
 						_tweenDesc->current.sumTime = 0;
-						_tweenDesc->current.currentFrame = (_tweenDesc->current.currentFrame + 1);
-						_tweenDesc->current.nextFrame = (_tweenDesc->current.currentFrame + 1);
+						_tweenDesc->current.currentFrame = (_tweenDesc->current.currentFrame + 1) % _currentAnim->frameCount;
+						_tweenDesc->current.nextFrame = (_tweenDesc->current.currentFrame + 1) % _currentAnim->frameCount;
+					}
+
+					if (((_tweenDesc->current.nextFrame + 1) % _currentAnim->frameCount) == 0)
+					{
+						_isFrameEnd = true;
 					}
 
 					_tweenDesc->current.ratio = (_tweenDesc->current.sumTime / _timePerFrame);
@@ -209,7 +202,7 @@ void ModelAnimator::UpdateTweenData()
 				_tweenDesc->tweenSumTime += MANAGER_TIME()->GetDeltaTime();
 				_tweenDesc->tweenRatio = _tweenDesc->tweenSumTime / _tweenDesc->tweenDuration;
 
-				if (_tweenDesc->tweenRatio > 1.f + FLT_EPSILON)
+				if (_tweenDesc->tweenRatio > 1.f)
 				{
 					_tweenDesc->current = _tweenDesc->next;
 					_currentAnim = _nextAnim;
@@ -229,19 +222,77 @@ void ModelAnimator::UpdateTweenData()
 							_tweenDesc->next.sumTime = 0;
 							_tweenDesc->next.currentFrame = (_tweenDesc->next.currentFrame + 1) % _nextAnim->frameCount;
 							_tweenDesc->next.nextFrame = (_tweenDesc->next.currentFrame + 1) % _nextAnim->frameCount;
-
 						}
+
 						_tweenDesc->next.ratio = _tweenDesc->next.sumTime / timeperFrame;
-						//UpdateEquipmentTransform(_tweenDesc->next.currentFrame, _tweenDesc->next.nextFrame, _tweenDesc->next.ratio);
 					}
 				}
 			}
-			UpdateEquipmentTransform(_tweenDesc->current.currentFrame, _tweenDesc->current.nextFrame, _tweenDesc->current.ratio);
+			UpdateEquipmentTransform();
 		}
 		//논 루프 애니메이션
 		else
 		{
+			//현재 애니메이션
+			{
+				if (_currentAnim)
+				{
 
+
+					_tweenDesc->current.sumTime += MANAGER_TIME()->GetDeltaTime();
+					_timePerFrame = 1 / (_currentAnim->frameRate * _tweenDesc->current.speed);
+
+					if (_tweenDesc->current.sumTime > _timePerFrame + FLT_EPSILON)
+					{
+						_tweenDesc->current.sumTime = 0;
+						_tweenDesc->current.currentFrame = (_tweenDesc->current.currentFrame + 1) % _currentAnim->frameCount;
+						_tweenDesc->current.nextFrame = (_tweenDesc->current.currentFrame + 1) % _currentAnim->frameCount;
+					}
+
+					if (((_tweenDesc->current.nextFrame + 1) % _currentAnim->frameCount) == 0)
+					{
+						_tweenDesc->current.currentFrame = _currentAnim->frameCount - 1;
+						_tweenDesc->current.nextFrame = _tweenDesc->current.currentFrame;
+						_isPlay = false; 
+						_isFrameEnd = true; 
+					}
+
+					_tweenDesc->current.ratio = (_tweenDesc->current.sumTime / _timePerFrame);
+				}
+			}
+			//다음 애니메이션 예약 시
+			if (_tweenDesc->next.animIndex >= 0)
+			{
+				_tweenDesc->tweenSumTime += MANAGER_TIME()->GetDeltaTime();
+				_tweenDesc->tweenRatio = _tweenDesc->tweenSumTime / _tweenDesc->tweenDuration;
+
+				if (_tweenDesc->tweenRatio > 1.f)
+				{
+					_tweenDesc->current = _tweenDesc->next;
+					_currentAnim = _nextAnim;
+					_nextAnim = nullptr;
+					_tweenDesc->ClearNextAnim();
+				}
+				else
+				{
+					if (_nextAnim)
+					{
+						_tweenDesc->next.sumTime += MANAGER_TIME()->GetDeltaTime();
+
+						float timeperFrame = 1.f / (_nextAnim->frameRate * _tweenDesc->next.speed);
+
+						if (_tweenDesc->next.ratio > 1.f + FLT_EPSILON)
+						{
+							_tweenDesc->next.sumTime = 0;
+							_tweenDesc->next.currentFrame = (_tweenDesc->next.currentFrame + 1) % _nextAnim->frameCount;
+							_tweenDesc->next.nextFrame = (_tweenDesc->next.currentFrame + 1) % _nextAnim->frameCount;
+						}
+
+						_tweenDesc->next.ratio = _tweenDesc->next.sumTime / timeperFrame;
+					}
+				}
+			}
+			UpdateEquipmentTransform();
 		}
 
 		// SRV를 통해 정보 전달
@@ -258,8 +309,47 @@ bool ModelAnimator::SetNextAnimation(wstring animName)
 		{
 			_nextAnim = anim;
 			_tweenDesc->next.animIndex = num;
-			_tweenDesc->tweenDuration = 1.f / _nextAnim->frameCount;
 
+			if (_currentAnim != nullptr)
+			{
+				if (_currentAnim->name == L"Stand" && _nextAnim->name == L"Damaged")
+				{
+					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
+				}
+				else if (_currentAnim->name == L"Damaged" && _nextAnim->name == L"Stand")
+				{
+					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
+				}
+				else if (_currentAnim->name == L"Attack" && _nextAnim->name == L"Battle")
+				{
+					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
+				}
+				else if (_currentAnim->name == L"Battle" && _nextAnim->name == L"Attack")
+				{
+					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
+				}
+				else if (_currentAnim->name == L"Attack1" && _nextAnim->name == L"Battle")
+				{
+					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
+				}
+				else if (_currentAnim->name == L"Battle" && _nextAnim->name == L"Attack1")
+				{
+					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
+				}
+				else if (_currentAnim->name == L"Attack2" && _nextAnim->name == L"Battle")
+				{
+					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
+				}
+				else if (_currentAnim->name == L"Battle" && _nextAnim->name == L"Attack2")
+				{
+					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
+				}
+				else
+				{
+					_tweenDesc->tweenDuration = 0.18f;
+				}
+			}
+	
 			return true;
 		}
 		num++;
@@ -416,30 +506,47 @@ void ModelAnimator::ShadowUpdate() {
 
 }
 
-void ModelAnimator::UpdateEquipmentTransform(int currentFrame, int nextFrame, float ratio)
+void ModelAnimator::UpdateEquipmentTransform()
 {
 	auto equipmentSlot = GetGameObject()->GetParent()->GetComponent<EquipmentSlot>();
 
 	if (equipmentSlot == nullptr)
 		return;
-	
+
 	//Helm
 	{
 		auto helm = equipmentSlot->GetEquipmentItem(0);
 
 		if (helm != nullptr)
 		{
-			int index = _tweenDesc->current.animIndex;
+			int currentIndex = _tweenDesc->current.animIndex;
+			uint32 currentFrame = _tweenDesc->current.currentFrame;
+			uint32 currentNextFrame = _tweenDesc->current.nextFrame;
+			int nextIndex = _tweenDesc->next.animIndex;
+			uint32 nextFrame = _tweenDesc->next.currentFrame;
+			uint32 nextNextFrame = _tweenDesc->next.nextFrame;
 			int boneIndex = _equipmentBoneIndexList.HelmIndex;
 
-			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
-			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
-			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
-			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
+			Matrix currentItemMat = _animTransforms[currentIndex].transforms[currentFrame][boneIndex];
+			currentItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentItemMat;
+			Matrix currentNextItemMat = _animTransforms[currentIndex].transforms[currentNextFrame][boneIndex];
+			currentNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentNextItemMat;
 
-			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
+			Matrix interpolatedTransform = Matrix::Lerp(currentItemMat, currentNextItemMat, _tweenDesc->current.ratio);
 
-			helm->GetTransform()->SetLocalMatrix(lerpMat);
+			if (_nextAnim != nullptr)
+			{
+				Matrix nextItemMat = _animTransforms[nextIndex].transforms[nextFrame][boneIndex];
+				nextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextItemMat;
+				Matrix nextNextItemMat = _animTransforms[nextIndex].transforms[nextNextFrame][boneIndex];
+				nextNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextNextItemMat;
+				Matrix nextFinalMat = Matrix::Lerp(nextItemMat, nextNextItemMat, _tweenDesc->next.ratio);
+
+				// 현재와 넥스트 트랜스폼 사이를 보간
+				interpolatedTransform = Matrix::Lerp(interpolatedTransform, nextFinalMat, _tweenDesc->tweenRatio);
+			}
+
+			helm->GetTransform()->SetLocalMatrix(interpolatedTransform);
 		}
 	}
 	//LeftShoulder
@@ -448,17 +555,34 @@ void ModelAnimator::UpdateEquipmentTransform(int currentFrame, int nextFrame, fl
 
 		if (LeftShoulder != nullptr)
 		{
-			int index = _tweenDesc->current.animIndex;
+			int currentIndex = _tweenDesc->current.animIndex;
+			uint32 currentFrame = _tweenDesc->current.currentFrame;
+			uint32 currentNextFrame = _tweenDesc->current.nextFrame;
+			int nextIndex = _tweenDesc->next.animIndex;
+			uint32 nextFrame = _tweenDesc->next.currentFrame;
+			uint32 nextNextFrame = _tweenDesc->next.nextFrame;
 			int boneIndex = _equipmentBoneIndexList.LeftShoulderIndex;
 
-			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
-			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
-			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
-			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
+			Matrix currentItemMat = _animTransforms[currentIndex].transforms[currentFrame][boneIndex];
+			currentItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentItemMat;
+			Matrix currentNextItemMat = _animTransforms[currentIndex].transforms[currentNextFrame][boneIndex];
+			currentNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentNextItemMat;
 
-			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
+			Matrix interpolatedTransform = Matrix::Lerp(currentItemMat, currentNextItemMat, _tweenDesc->current.ratio);
 
-			LeftShoulder->GetTransform()->SetLocalMatrix(lerpMat);
+			if (_nextAnim != nullptr)
+			{
+				Matrix nextItemMat = _animTransforms[nextIndex].transforms[nextFrame][boneIndex];
+				nextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextItemMat;
+				Matrix nextNextItemMat = _animTransforms[nextIndex].transforms[nextNextFrame][boneIndex];
+				nextNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextNextItemMat;
+				Matrix nextFinalMat = Matrix::Lerp(nextItemMat, nextNextItemMat, _tweenDesc->next.ratio);
+
+				// 현재와 넥스트 트랜스폼 사이를 보간
+				interpolatedTransform = Matrix::Lerp(interpolatedTransform, nextFinalMat, _tweenDesc->tweenRatio);
+			}
+
+			LeftShoulder->GetTransform()->SetLocalMatrix(interpolatedTransform);
 		}
 	}
 	//RightShoulder
@@ -467,16 +591,34 @@ void ModelAnimator::UpdateEquipmentTransform(int currentFrame, int nextFrame, fl
 
 		if (RightShoulder != nullptr)
 		{
-			int index = _tweenDesc->current.animIndex;
+			int currentIndex = _tweenDesc->current.animIndex;
+			uint32 currentFrame = _tweenDesc->current.currentFrame;
+			uint32 currentNextFrame = _tweenDesc->current.nextFrame;
+			int nextIndex = _tweenDesc->next.animIndex;
+			uint32 nextFrame = _tweenDesc->next.currentFrame;
+			uint32 nextNextFrame = _tweenDesc->next.nextFrame;
 			int boneIndex = _equipmentBoneIndexList.RightShoulderIndex;
 
-			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
-			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
-			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
-			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
-			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
+			Matrix currentItemMat = _animTransforms[currentIndex].transforms[currentFrame][boneIndex];
+			currentItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentItemMat;
+			Matrix currentNextItemMat = _animTransforms[currentIndex].transforms[currentNextFrame][boneIndex];
+			currentNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentNextItemMat;
 
-			RightShoulder->GetTransform()->SetLocalMatrix(lerpMat);
+			Matrix interpolatedTransform = Matrix::Lerp(currentItemMat, currentNextItemMat, _tweenDesc->current.ratio);
+
+			if (_nextAnim != nullptr)
+			{
+				Matrix nextItemMat = _animTransforms[nextIndex].transforms[nextFrame][boneIndex];
+				nextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextItemMat;
+				Matrix nextNextItemMat = _animTransforms[nextIndex].transforms[nextNextFrame][boneIndex];
+				nextNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextNextItemMat;
+				Matrix nextFinalMat = Matrix::Lerp(nextItemMat, nextNextItemMat, _tweenDesc->next.ratio);
+
+				// 현재와 넥스트 트랜스폼 사이를 보간
+				interpolatedTransform = Matrix::Lerp(interpolatedTransform, nextFinalMat, _tweenDesc->tweenRatio);
+			}
+
+			RightShoulder->GetTransform()->SetLocalMatrix(interpolatedTransform);
 		}
 	}
 	//Belt
@@ -485,15 +627,34 @@ void ModelAnimator::UpdateEquipmentTransform(int currentFrame, int nextFrame, fl
 
 		if (Belt != nullptr)
 		{
-			int index = _tweenDesc->current.animIndex;
+			int currentIndex = _tweenDesc->current.animIndex;
+			uint32 currentFrame = _tweenDesc->current.currentFrame;
+			uint32 currentNextFrame = _tweenDesc->current.nextFrame;
+			int nextIndex = _tweenDesc->next.animIndex;
+			uint32 nextFrame = _tweenDesc->next.currentFrame;
+			uint32 nextNextFrame = _tweenDesc->next.nextFrame;
 			int boneIndex = _equipmentBoneIndexList.BeltIndex;
-			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
-			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
-			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
-			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
-			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
 
-			Belt->GetTransform()->SetLocalMatrix(lerpMat);
+			Matrix currentItemMat = _animTransforms[currentIndex].transforms[currentFrame][boneIndex];
+			currentItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentItemMat;
+			Matrix currentNextItemMat = _animTransforms[currentIndex].transforms[currentNextFrame][boneIndex];
+			currentNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentNextItemMat;
+
+			Matrix interpolatedTransform = Matrix::Lerp(currentItemMat, currentNextItemMat, _tweenDesc->current.ratio);
+
+			if (_nextAnim != nullptr)
+			{
+				Matrix nextItemMat = _animTransforms[nextIndex].transforms[nextFrame][boneIndex];
+				nextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextItemMat;
+				Matrix nextNextItemMat = _animTransforms[nextIndex].transforms[nextNextFrame][boneIndex];
+				nextNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextNextItemMat;
+				Matrix nextFinalMat = Matrix::Lerp(nextItemMat, nextNextItemMat, _tweenDesc->next.ratio);
+
+				// 현재와 넥스트 트랜스폼 사이를 보간
+				interpolatedTransform = Matrix::Lerp(interpolatedTransform, nextFinalMat, _tweenDesc->tweenRatio);
+			}
+
+			Belt->GetTransform()->SetLocalMatrix(interpolatedTransform);
 		}
 	}
 	//Weapon
@@ -502,15 +663,34 @@ void ModelAnimator::UpdateEquipmentTransform(int currentFrame, int nextFrame, fl
 
 		if (weapon != nullptr)
 		{
-		  int index = _tweenDesc->current.animIndex;
-		  int boneIndex = _equipmentBoneIndexList.WeaponIndex;
-		  Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
-		  itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
-		  Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
-		  itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
-		  Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
+			int currentIndex = _tweenDesc->current.animIndex;
+			uint32 currentFrame = _tweenDesc->current.currentFrame;
+			uint32 currentNextFrame = _tweenDesc->current.nextFrame;
+			int nextIndex = _tweenDesc->next.animIndex;
+			uint32 nextFrame = _tweenDesc->next.currentFrame;
+			uint32 nextNextFrame = _tweenDesc->next.nextFrame;
+			int boneIndex = _equipmentBoneIndexList.WeaponIndex;
 
-		  weapon->GetTransform()->SetLocalMatrix(lerpMat);
+			Matrix currentItemMat = _animTransforms[currentIndex].transforms[currentFrame][boneIndex];
+			currentItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentItemMat;
+			Matrix currentNextItemMat = _animTransforms[currentIndex].transforms[currentNextFrame][boneIndex];
+			currentNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentNextItemMat;
+
+			Matrix interpolatedTransform = Matrix::Lerp(currentItemMat, currentNextItemMat, _tweenDesc->current.ratio);
+
+			if (_nextAnim != nullptr)
+			{
+				Matrix nextItemMat = _animTransforms[nextIndex].transforms[nextFrame][boneIndex];
+				nextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextItemMat;
+				Matrix nextNextItemMat = _animTransforms[nextIndex].transforms[nextNextFrame][boneIndex];
+				nextNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextNextItemMat;
+				Matrix nextFinalMat = Matrix::Lerp(nextItemMat, nextNextItemMat, _tweenDesc->next.ratio);
+
+				// 현재와 넥스트 트랜스폼 사이를 보간
+				interpolatedTransform = Matrix::Lerp(interpolatedTransform, nextFinalMat, _tweenDesc->tweenRatio);
+			}
+
+			weapon->GetTransform()->SetLocalMatrix(interpolatedTransform);
 		}
 	}
 	//Shield
@@ -519,144 +699,40 @@ void ModelAnimator::UpdateEquipmentTransform(int currentFrame, int nextFrame, fl
 
 		if (Shield != nullptr)
 		{
-			int index = _tweenDesc->current.animIndex;
+			int currentIndex = _tweenDesc->current.animIndex;
+			uint32 currentFrame = _tweenDesc->current.currentFrame;
+			uint32 currentNextFrame = _tweenDesc->current.nextFrame;
+			int nextIndex = _tweenDesc->next.animIndex;
+			uint32 nextFrame = _tweenDesc->next.currentFrame;
+			uint32 nextNextFrame = _tweenDesc->next.nextFrame;
 			int boneIndex = _equipmentBoneIndexList.ShieldIndex;
-			Matrix itemMat = _animTransforms[index].transforms[currentFrame][boneIndex];
-			itemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat;
-			Matrix itemMat2 = _animTransforms[index].transforms[nextFrame][boneIndex];
-			itemMat2 = _model->GetBoneByIndex(boneIndex)->parent->transform * itemMat2;
-			Matrix lerpMat = Matrix::Lerp(itemMat, itemMat2, ratio);
 
-			Shield->GetTransform()->SetLocalMatrix(lerpMat);
+			Matrix currentItemMat = _animTransforms[currentIndex].transforms[currentFrame][boneIndex];
+			currentItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentItemMat;
+			Matrix currentNextItemMat = _animTransforms[currentIndex].transforms[currentNextFrame][boneIndex];
+			currentNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * currentNextItemMat;
+
+			Matrix interpolatedTransform = Matrix::Lerp(currentItemMat, currentNextItemMat, _tweenDesc->current.ratio);
+
+			if (_nextAnim != nullptr)
+			{
+				Matrix nextItemMat = _animTransforms[nextIndex].transforms[nextFrame][boneIndex];
+				nextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextItemMat;
+				Matrix nextNextItemMat = _animTransforms[nextIndex].transforms[nextNextFrame][boneIndex];
+				nextNextItemMat = _model->GetBoneByIndex(boneIndex)->parent->transform * nextNextItemMat;
+				Matrix nextFinalMat = Matrix::Lerp(nextItemMat, nextNextItemMat, _tweenDesc->next.ratio);
+
+				// 현재와 넥스트 트랜스폼 사이를 보간
+				interpolatedTransform = Matrix::Lerp(interpolatedTransform, nextFinalMat, _tweenDesc->tweenRatio);
+			}
+
+			Shield->GetTransform()->SetLocalMatrix(interpolatedTransform);
 		}
 	}
 }
 
 void ModelAnimator::Update()
 {
-	//if (_isPlay)
-	//{
-	//	if (_model == nullptr || _shader == nullptr)
-	//		return;
-
-	//	if (_texture == nullptr)
-	//		CreateTexture();
-
-	//	//루프 애니메이션
-	//	if (_isLoop)
-	//	{
-	//		//현재 애니메이션
-	//		if (_tweenDesc.current.animIndex >= 0)
-	//		{
-	//			if (_currentAnim)
-	//			{
-	//				if (_tweenDesc.current.currentFrame >= _currentAnim->duration)
-	//				{
-	//					_isFrameEnd = true;
-	//				}
-
-	//				_tweenDesc.current.sumTime += MANAGER_TIME()->GetDeltaTime();
-	//				_timePerFrame = 1 / (_currentAnim->frameRate * _tweenDesc.current.speed);
-
-	//				if (_tweenDesc.current.sumTime >= _timePerFrame)
-	//				{
-	//					_tweenDesc.current.sumTime = 0;
-	//					_tweenDesc.current.currentFrame = (_tweenDesc.current.currentFrame + 1) % _currentAnim->frameCount;
-	//					_tweenDesc.current.nextFrame = (_tweenDesc.current.currentFrame + 1) % _currentAnim->frameCount;
-	//				}
-
-	//				_tweenDesc.current.ratio = (_tweenDesc.current.sumTime / _timePerFrame);
-	//			}
-	//		}
-	//		//다음 애니메이션 예약 시
-	//		if (_tweenDesc.next.animIndex >= 0)
-	//		{
-	//			_tweenDesc.tweenSumTime += MANAGER_TIME()->GetDeltaTime();
-	//			_tweenDesc.tweenRatio = _tweenDesc.tweenSumTime / _tweenDesc.tweenDuration;
-
-	//			if (_tweenDesc.tweenRatio >= 1.f)
-	//			{
-	//				_tweenDesc.ClearCurrentAnim();
-	//				_tweenDesc.current = _tweenDesc.next;
-	//				_currentAnim = _nextAnim;
-	//				_nextAnim = nullptr;
-	//				_tweenDesc.ClearNextAnim();
-	//			}
-	//			else
-	//			{
-	//				if (_nextAnim)
-	//				{
-	//					_tweenDesc.next.sumTime += MANAGER_TIME()->GetDeltaTime();
-
-	//					float timeperFrame = 1.f / (_nextAnim->frameRate * _tweenDesc.next.speed);
-
-	//					if (_tweenDesc.next.ratio >= 1.f)
-	//					{
-	//						_tweenDesc.next.sumTime = 0;
-	//						_tweenDesc.next.currentFrame = (_tweenDesc.next.currentFrame + 1) % _nextAnim->frameCount;
-	//						_tweenDesc.next.nextFrame = (_tweenDesc.next.currentFrame + 1) % _nextAnim->frameCount;
-	//					}
-	//					_tweenDesc.next.ratio = _tweenDesc.next.sumTime / timeperFrame;
-	//				}
-	//			}
-	//		}
-	//	}
-	//	//논 루프 애니메이션
-	//	else
-	//	{
-
-	//	}
-	//	// 애니메이션 현재 프레임 정보
-	//	_shader->PushTweenData(_tweenDesc);
-
-	//	// SRV를 통해 정보 전달
-	//	_shader->GetSRV("TransformMap")->SetResource(_srv.Get());
-	//}
-	//	//Render
-	//	{
-	//		//Bone
-	//		BoneDesc boneDesc;
-
-	//		const uint32 boneCount = _model->GetBoneCount();
-	//		for (uint32 i = 0; i < boneCount; i++)
-	//		{
-	//			shared_ptr<ModelBone> bone = _model->GetBoneByIndex(i);
-	//			boneDesc.transforms[i] = bone->transform;
-	//		}
-
-	//		_shader->PushBoneData(boneDesc);
-	//		_shader->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
-
-	//		auto lightObj = MANAGER_SCENE()->GetCurrentScene()->GetLight();
-	//		if (lightObj)
-	//			_shader->PushLightData(lightObj->GetLight()->GetLightDesc());
-
-	//		auto world = GetTransform()->GetWorldMatrix();
-	//		_shader->PushTransformData(TransformDesc{ world });
-
-	//		const auto& meshes = _model->GetMeshes();
-	//		for (auto& mesh : meshes)
-	//		{
-	//			if (mesh->material)
-	//				mesh->material->Update();
-
-	//			//Bone Index
-	//			_shader->GetScalar("BoneIndex")->SetInt(mesh->boneIndex);
-
-	//			uint32 stride = mesh->vertexBuffer->GetStride();
-	//			uint32 offset = mesh->vertexBuffer->GetOffset();
-	//			//_shader->PushGlobalData(Camera::S_MatView, Camera::S_MatProjection);
-
-	//			DC()->IASetVertexBuffers(0, 1, mesh->vertexBuffer->GetBuffer().GetAddressOf(),
-	//				&stride, &offset);
-	//			DC()->IASetIndexBuffer(mesh->indexBuffer->GetBuffer().Get(),
-	//				DXGI_FORMAT_R32_UINT, 0);
-	//			DC()->OMSetBlendState(nullptr, 0, -1);
-
-	//			_shader->DrawIndexed(0, _pass, mesh->indexBuffer->GetCount(), 0, 0);
-	//		}
-	//	}
-	//}
 }
 
 void ModelAnimator::RenderInstancingShadow(shared_ptr<class InstancingBuffer>& buffer, ShadowViewDesc& desc)

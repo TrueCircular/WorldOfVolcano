@@ -201,8 +201,8 @@ void BaseScene::Update()
 		sendInfo._isOnline = true;
 		sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
 		sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
-		sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
-		sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
+		sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->_isAttack;
+		sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->_isBattle;
 		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
 		//sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapId();
 
@@ -229,13 +229,13 @@ void BaseScene::Update()
 
 		//Attack1
 		{
-			int size = _warrior->GetComponent<PlayerController>()->GetAttackQueueSize();
-			if (size > 0)
-			{
-				uint32 targetId = _warrior->GetComponent<PlayerController>()->GetPickedInfo()._instanceId;
-				_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId);
-				_service->Broadcast(_sendBuffer);
-			}
+			//int size = _warrior->GetComponent<PlayerController>()->GetAttackQueueSize();
+			//if (size > 0)
+			//{
+			//	uint32 targetId = _warrior->GetComponent<PlayerController>()->GetPickedInfo()._instanceId;
+			//	_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId);
+			//	_service->Broadcast(_sendBuffer);
+			//}
 		}
 
 		//SendBuffer

@@ -14,6 +14,8 @@ public:
 	const CHARACTER_INFO& GetDefaultCharacterInfo() const { return _defaultInfo; }
 	const CHARACTER_ADD_INFO& GetAddCharacterInfo() const { return _addInfo; }
 	const CHARACTER_INFO& GetCharacterInfo() const { return _info; }
+private:
+	void UpdateInformation();
 public:
 	void InitInformation();
 	void UpdateAddInformation(const shared_ptr<ItemData>& data, const bool& equip);

@@ -104,9 +104,6 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 		auto stand = make_shared<RagnarosStand>();
 		strategyList.push_back(stand);
 
-		auto damaged = make_shared<RagnarosDamaged>();
-		strategyList.push_back(damaged);
-
 		auto stun = make_shared<RagnarosStun>();
 		strategyList.push_back(stun);
 
@@ -115,9 +112,6 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 
 		auto trace = make_shared<RagnarosTrace>();
 		strategyList.push_back(trace);
-
-		auto moveToSpwanPoint = make_shared<RagnarosMoveToSpwanPoint>();
-		strategyList.push_back(moveToSpwanPoint);
 
 		auto battle = make_shared<RagnarosBattle>();
 		strategyList.push_back(battle);

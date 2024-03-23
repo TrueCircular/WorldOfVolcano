@@ -17,7 +17,7 @@ RagnarosStand::~RagnarosStand()
 {
 }
 
-void RagnarosStand::Enter(const shared_ptr<AIController>& controller)
+void RagnarosStand::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -25,28 +25,7 @@ void RagnarosStand::Update()
 {
 }
 
-void RagnarosStand::Out(const wstring& transition)
-{
-}
-
-RagnarosDamaged::RagnarosDamaged()
-{
-	_name = L"RagnarosDamaged";
-}
-
-RagnarosDamaged::~RagnarosDamaged()
-{
-}
-
-void RagnarosDamaged::Enter(const shared_ptr<AIController>& controller)
-{
-}
-
-void RagnarosDamaged::Update()
-{
-}
-
-void RagnarosDamaged::Out(const wstring& transition)
+void RagnarosStand::Out(const wstring& nextTransition)
 {
 }
 
@@ -59,7 +38,7 @@ RagnarosStun::~RagnarosStun()
 {
 }
 
-void RagnarosStun::Enter(const shared_ptr<AIController>& controller)
+void RagnarosStun::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -67,7 +46,7 @@ void RagnarosStun::Update()
 {
 }
 
-void RagnarosStun::Out(const wstring& transition)
+void RagnarosStun::Out(const wstring& nextTransition)
 {
 }
 
@@ -80,7 +59,7 @@ RagnarosDead::~RagnarosDead()
 {
 }
 
-void RagnarosDead::Enter(const shared_ptr<AIController>& controller)
+void RagnarosDead::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -88,7 +67,7 @@ void RagnarosDead::Update()
 {
 }
 
-void RagnarosDead::Out(const wstring& transition)
+void RagnarosDead::Out(const wstring& nextTransition)
 {
 }
 
@@ -101,7 +80,7 @@ RagnarosTrace::~RagnarosTrace()
 {
 }
 
-void RagnarosTrace::Enter(const shared_ptr<AIController>& controller)
+void RagnarosTrace::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -109,28 +88,7 @@ void RagnarosTrace::Update()
 {
 }
 
-void RagnarosTrace::Out(const wstring& transition)
-{
-}
-
-RagnarosMoveToSpwanPoint::RagnarosMoveToSpwanPoint()
-{
-	_name = L"RagnarosMoveToSpwanPoint";
-}
-
-RagnarosMoveToSpwanPoint::~RagnarosMoveToSpwanPoint()
-{
-}
-
-void RagnarosMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller)
-{
-}
-
-void RagnarosMoveToSpwanPoint::Update()
-{
-}
-
-void RagnarosMoveToSpwanPoint::Out(const wstring& transition)
+void RagnarosTrace::Out(const wstring& nextTransition)
 {
 }
 
@@ -143,7 +101,7 @@ RagnarosBattle::~RagnarosBattle()
 {
 }
 
-void RagnarosBattle::Enter(const shared_ptr<AIController>& controller)
+void RagnarosBattle::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -151,7 +109,7 @@ void RagnarosBattle::Update()
 {
 }
 
-void RagnarosBattle::Out(const wstring& transition)
+void RagnarosBattle::Out(const wstring& nextTransition)
 {
 }
 
@@ -164,7 +122,7 @@ RagnarosAttack::~RagnarosAttack()
 {
 }
 
-void RagnarosAttack::Enter(const shared_ptr<AIController>& controller)
+void RagnarosAttack::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -172,7 +130,7 @@ void RagnarosAttack::Update()
 {
 }
 
-void RagnarosAttack::Out(const wstring& transition)
+void RagnarosAttack::Out(const wstring& nextTransition)
 {
 }
 
@@ -185,7 +143,7 @@ RagnarosAbility::~RagnarosAbility()
 {
 }
 
-void RagnarosAbility::Enter(const shared_ptr<AIController>& controller)
+void RagnarosAbility::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -193,6 +151,6 @@ void RagnarosAbility::Update()
 {
 }
 
-void RagnarosAbility::Out(const wstring& transition)
+void RagnarosAbility::Out(const wstring& nextTransition)
 {
 }

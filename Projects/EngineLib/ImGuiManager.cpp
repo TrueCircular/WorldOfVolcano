@@ -728,15 +728,24 @@ void ImGuiManager::UpdatePicked(bool isPicked, uint32 maxHp, uint32 hp, wstring 
     WideCharToMultiByte(CP_UTF8, 0, name.c_str(), -1, _name, bufferSize, nullptr, nullptr);
 }
 
-void ImGuiManager::UpdatePicked(bool isPicked, const shared_ptr<CharacterInfo>& info)
+void ImGuiManager::UpdatePicked(bool isPicked, const shared_ptr<GameObject>& pickObj)
 {
-    //auto infomation = info->get
-    //show_picked_hp_window = isPicked;
-    //_pickedHp = static_cast<float>(hp) / static_cast<float>(maxHp);
+    if (pickObj->GetObjectType() == ObjectType::PlayableUnit)
+    {
+        auto infomation = pickObj->GetComponent<CharacterInfo>()->GetCharacterInfo();
+        _hp = static_cast<float>(infomation._hp) / static_cast<float>(infomation._maxHp);
+    }
+    else if(pickObj->GetObjectType() == ObjectType::EnemyUnit)
+    {
+        auto infomation = pickObj->GetComponent<CharacterInfo>()->GetCharacterInfo();
+        show_picked_hp_window = isPicked;
+        _pickedHp = static_cast<float>(infomation._hp) / static_cast<float>(infomation._maxHp);
 
-    //int bufferSize = WideCharToMultiByte(CP_UTF8, 0, name.c_str(), -1, nullptr, 0, nullptr, nullptr);
-    //_name = new char[bufferSize];
-    //WideCharToMultiByte(CP_UTF8, 0, name.c_str(), -1, _name, bufferSize, nullptr, nullptr);
+        int bufferSize = WideCharToMultiByte(CP_UTF8, 0, infomation._name.c_str(), -1, nullptr, 0, nullptr, nullptr);
+        _name = new char[bufferSize];
+        WideCharToMultiByte(CP_UTF8, 0, infomation._name.c_str(), -1, _name, bufferSize, nullptr, nullptr);
+    }
+
 }
 
 int ImGuiManager::GetAttackQueueSize()

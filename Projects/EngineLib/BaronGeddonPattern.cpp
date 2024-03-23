@@ -17,11 +17,12 @@ BaronGeddonStand::~BaronGeddonStand()
 {
 }
 
-void BaronGeddonStand::Enter(const shared_ptr<AIController>& controller)
+void BaronGeddonStand::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -108,11 +109,11 @@ void BaronGeddonStand::Update()
 	}
 }
 
-void BaronGeddonStand::Out(const wstring& transition)
+void BaronGeddonStand::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -125,17 +126,34 @@ BaronGeddonDamaged::~BaronGeddonDamaged()
 {
 }
 
-void BaronGeddonDamaged::Enter(const shared_ptr<AIController>& controller)
+void BaronGeddonDamaged::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
+	if (controller != nullptr)
+	{
+		_controller = controller;
+		_prevTransition = prevTransition;
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_animator.lock()->SetFrameEnd(false);
+			_animator.lock()->SetNextAnimation(L"Damaged");
+		}
+	}
 }
 
 void BaronGeddonDamaged::Update()
 {
 }
 
-void BaronGeddonDamaged::Out(const wstring& transition)
+void BaronGeddonDamaged::Out(const wstring& nextTransition)
 {
-
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+	}
 }
 
 BaronGeddonDead::BaronGeddonDead()
@@ -147,7 +165,7 @@ BaronGeddonDead::~BaronGeddonDead()
 {
 }
 
-void BaronGeddonDead::Enter(const shared_ptr<AIController>& controller)
+void BaronGeddonDead::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -155,7 +173,7 @@ void BaronGeddonDead::Update()
 {
 }
 
-void BaronGeddonDead::Out(const wstring& transition)
+void BaronGeddonDead::Out(const wstring& nextTransition)
 {
 }
 
@@ -168,11 +186,12 @@ BaronGeddonTrace::~BaronGeddonTrace()
 {
 }
 
-void BaronGeddonTrace::Enter(const shared_ptr<AIController>& controller)
+void BaronGeddonTrace::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -261,11 +280,11 @@ void BaronGeddonTrace::Update()
 	}
 }
 
-void BaronGeddonTrace::Out(const wstring& transition)
+void BaronGeddonTrace::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -278,11 +297,12 @@ BaronGeddonMoveToSpwanPoint::~BaronGeddonMoveToSpwanPoint()
 {
 }
 
-void BaronGeddonMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller)
+void BaronGeddonMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -296,7 +316,7 @@ void BaronGeddonMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controll
 			_animator.lock()->SetNextAnimation(L"Run");
 
 			_characterInfo = _controller.lock()->GetCharacterInfo();
-			_spwanPos = _controller.lock()->GetSpwanPosition();
+			_spwanPos = _controller.lock()->GetSpawnPosition();
 			_moveSpeed = _characterInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
 		}
 	}
@@ -359,11 +379,11 @@ void BaronGeddonMoveToSpwanPoint::Update()
 	}
 }
 
-void BaronGeddonMoveToSpwanPoint::Out(const wstring& transition)
+void BaronGeddonMoveToSpwanPoint::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -376,7 +396,7 @@ BaronGeddonBattle::~BaronGeddonBattle()
 {
 }
 
-void BaronGeddonBattle::Enter(const shared_ptr<AIController>& controller)
+void BaronGeddonBattle::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
@@ -487,11 +507,11 @@ void BaronGeddonBattle::Update()
 	}
 }
 
-void BaronGeddonBattle::Out(const wstring& transition)
+void BaronGeddonBattle::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -540,13 +560,14 @@ BaronGeddonAttack::~BaronGeddonAttack()
 {
 }
 
-void BaronGeddonAttack::Enter(const shared_ptr<AIController>& controller)
+void BaronGeddonAttack::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		::srand(time(NULL));
 
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -631,11 +652,11 @@ void BaronGeddonAttack::Update()
 	}
 }
 
-void BaronGeddonAttack::Out(const wstring& transition)
+void BaronGeddonAttack::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -648,7 +669,7 @@ BaronGeddonAbility::~BaronGeddonAbility()
 {
 }
 
-void BaronGeddonAbility::Enter(const shared_ptr<AIController>& controller)
+void BaronGeddonAbility::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -656,6 +677,6 @@ void BaronGeddonAbility::Update()
 {
 }
 
-void BaronGeddonAbility::Out(const wstring& transition)
+void BaronGeddonAbility::Out(const wstring& nextTransition)
 {
 }

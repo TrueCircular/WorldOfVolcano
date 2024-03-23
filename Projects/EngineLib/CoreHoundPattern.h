@@ -23,9 +23,9 @@ private:
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class CoreHoundDamaged : public DamagedStrategy
@@ -34,9 +34,9 @@ public:
 	CoreHoundDamaged();
 	virtual ~CoreHoundDamaged();
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class CoreHoundDead : public DeadStrategy
@@ -45,9 +45,9 @@ public:
 	CoreHoundDead();
 	virtual ~CoreHoundDead();
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class CoreHoundTrace : public TraceStrategy
@@ -67,9 +67,9 @@ private:
 	float					_attackRange = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class CoreHoundMoveToSpwanPoint : public MoveToSpwanPointStrategy
@@ -88,9 +88,9 @@ private:
 	float					_traceRadius = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class CoreHoundBattle : public BattleStrategy
@@ -113,9 +113,9 @@ private:
 	float					_attackRange = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class CoreHoundAttack : public AttackStrategy
@@ -136,7 +136,7 @@ private:
 	float					_traceRadius = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };

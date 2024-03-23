@@ -59,6 +59,11 @@ void Warrior::CharacterInit()
 		{
 			AddModelAndMaterial(model, L"Warrior");
 			AddAnimation(model, L"Warrior", L"Stand");
+			AddAnimation(model, L"Warrior", L"Damaged");
+			AddAnimation(model, L"Warrior", L"Stun");
+			AddAnimation(model, L"Warrior", L"Loot");
+			AddAnimation(model, L"Warrior", L"Damaged");
+			AddAnimation(model, L"Warrior", L"Death");
 			AddAnimation(model, L"Warrior", L"FrontWalk");
 			AddAnimation(model, L"Warrior", L"BackWalk");
 			AddAnimation(model, L"Warrior", L"FrontRun");

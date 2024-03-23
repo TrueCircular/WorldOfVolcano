@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	CGameDesc desc;
 	desc.AppName = L"Demo";
 	desc.hInstance = hInstance;
-	desc.vsync = false;
+	desc.vsync = true;
 	desc.hWnd = NULL;
 	desc.width = 1280.0f;
 	desc.height = 720.0f;

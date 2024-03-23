@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "PlayerController.h"
+#include "AIController.h"
 #include "PlayerAnimState.h"
 #include "HeightGetter.h"
 #include <float.h>
 #include "CharacterInfo.h"
+#include "UnitFSM.h"
 
 PlayerController::PlayerController()
 {
@@ -52,6 +54,7 @@ void PlayerController::AnimStateInit()
 	//Ability2
 	_animStateList.push_back(make_shared<PlayerAnimAbility2>());
 
+	*_currentState = PlayerUnitState::Stand;
 	_animState = _animStateList[0];
 	_animState->Enter(shared_from_this());
 }
@@ -107,9 +110,8 @@ void PlayerController::CameraMove()
 		{
 			_playerRot = _transform.lock()->GetLocalRotation();
 			float deltaX = _currentMousePos.x - _prevMousePos.x;
-			_playerRot.y += ::XMConvertToRadians(deltaX) * 100 * _dt;
+			_playerRot.y += ::XMConvertToRadians(deltaX) * _dt * (10.f);
 			_transform.lock()->SetLocalRotation(_playerRot);
-
 			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
 		}
 	}
@@ -127,8 +129,8 @@ void PlayerController::CameraMove()
 			_camera.lock()->GetCamera()->RotateAroundToTarget(_playerPos, _camRot);
 		}
 	}
+
 	_camera.lock()->GetCamera()->SetCameraDistance(_camDist);
-	//_camera.lock()->GetCamera()->SetCameraPosition(_camPos);
 	_prevMousePos = _currentMousePos;
 }
 
@@ -140,16 +142,15 @@ bool PlayerController::SetAnimState(const PlayerAnimType& animType)
 	}
 	else
 	{
-		_animState->Out();
-
-		_animState = _animStateList[static_cast<int>(animType)];
-
-		if (_animState)
+		for (auto& animState : _animStateList)
 		{
-			_animState->Enter(shared_from_this());
-			return true;
+			if (animState->GetStateAnimtype() == animType)
+			{
+				_animState = animState;
+				_animState->Enter(shared_from_this());
+				return true;
+			}
 		}
-
 	}
 
 	return false;
@@ -169,79 +170,14 @@ void PlayerController::PlayerInput()
 {
 	if (_isAlive == true)
 	{
-		PlayerPicking();
 		PlayerAttack();
 		PlayerMove();
 		PlayerAbility1();
+		PlayerAbility2();
 	}
 
-		_animState->Update();
-
-		if (_sound)
-			_sound->PlaySound(_animState->GetStateAnimtype());
-
-
-
-	//Debug
-	//{
-	//	string outputString;
-
-	//	switch (*_currentState)
-	//	{
-	//	case PlayerUnitState::Stand:
-	//	{
-	//		outputString = "Stand";
-	//	}
-	//	break;
-	//	case PlayerUnitState::FrontMove:
-	//	{
-	//		outputString = "FrontMove";
-	//	}
-	//	break;
-	//	case PlayerUnitState::FrontRightMove:
-	//	{
-	//		outputString = "FrontRightMove";
-	//	}
-	//	break;
-	//	case PlayerUnitState::FrontLeftMove:
-	//	{
-	//		outputString = "FrontLeftMove";
-	//	}
-	//	break;
-	//	case PlayerUnitState::BackMove:
-	//	{
-	//		outputString = "BackMove";
-	//	}
-	//	break;
-	//	case PlayerUnitState::BackRightMove:
-	//	{
-	//		outputString = "BackRightMove";
-	//	}
-	//	break;
-	//	case PlayerUnitState::BackLeftMove:
-	//	{
-	//		outputString = "BackLeftMove";
-	//	}
-	//	break;
-	//	case PlayerUnitState::RightMove:
-	//	{
-	//		outputString = "RightMove";
-	//	}
-	//	break;
-	//	case PlayerUnitState::LeftMove:
-	//	{
-	//		outputString = "LeftMove";
-	//	}
-	//	break;
-	//	case PlayerUnitState::Jump:
-	//	{
-	//		outputString = "Jump";
-	//	}
-	//	break;
-	//	}
-	//	outputString += "\n";
-	//	::OutputDebugStringA(outputString.c_str());
-	//}
+	_animState->Update();
+	CameraMove();
 }
 
 void PlayerController::PlayerMove()
@@ -268,106 +204,72 @@ void PlayerController::PlayerMove()
 
 	if (_isAttack == false)
 	{
+		if (!MANAGER_INPUT()->GetButton(KEY_TYPE::W) &&
+			!MANAGER_INPUT()->GetButton(KEY_TYPE::S) &&
+			!MANAGER_INPUT()->GetButton(KEY_TYPE::A) &&
+			!MANAGER_INPUT()->GetButton(KEY_TYPE::D))
+		{
+			if (_isBattle)
+			{
+				*_currentState = PlayerUnitState::Battle;
+			}
+			else
+			{
+				*_currentState = PlayerUnitState::Stand;
+			}
+		}
 		//왼쪽
-		if (MANAGER_INPUT()->GetButton(KEY_TYPE::A))
+		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::A))
 		{
 			*_currentState = PlayerUnitState::LeftMove;
 			{
-				//_playerRight = _transform.lock()->GetRightVector();
+				_isSlow = false;
+
 				_playerPos -= _playerRight * _currentSpeed * _dt;
 				_transform.lock()->SetPosition(_playerPos);
 				_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
 				_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-
 			}
+
 		}
 		//오른쪽
 		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::D))
 		{
 			*_currentState = PlayerUnitState::RightMove;
-
 			{
-				//_playerRight = _transform.lock()->GetRightVector();
+				_isSlow = false;
+
 				_playerPos += _playerRight * _currentSpeed * _dt;
 				_transform.lock()->SetPosition(_playerPos);
 				_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
 				_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-
 			}
 		}
 		//앞
 		if (MANAGER_INPUT()->GetButton(KEY_TYPE::W))
 		{
+			_isSlow = false;
 			*_currentState = PlayerUnitState::FrontMove;
 
-			_playerForward = _transform.lock()->GetLookVector();
 			_playerPos += _playerForward * _currentSpeed * _dt;
 			_transform.lock()->SetPosition(_playerPos);
 			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
 			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-
 		}
 		//뒤
 		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::S))
 		{
+			_isSlow = true;
 			*_currentState = PlayerUnitState::BackMove;
 
-			_playerForward = _transform.lock()->GetLookVector();
 			_playerPos -= _playerForward * _currentSpeed * _dt;
 			_transform.lock()->SetPosition(_playerPos);
 			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
 			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-
-		}
-	}
-	else // _isAttack == true
-	{
-		//왼쪽
-		if (MANAGER_INPUT()->GetButton(KEY_TYPE::A))
-		{
-			_playerRight = _transform.lock()->GetRightVector();
-			_playerPos -= _playerRight * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_playerPos);
-			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-
-		}
-		//오른쪽
-		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::D))
-		{
-			_playerRight = _transform.lock()->GetRightVector();
-			_playerPos += _playerRight * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_playerPos);
-			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-
 		}
 
-		//앞
-		if (MANAGER_INPUT()->GetButton(KEY_TYPE::W))
-		{
-			_playerForward = _transform.lock()->GetLookVector();
-			_playerPos += _playerForward * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_playerPos);
-			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-
-		}
-		//뒤
-		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::S))
-		{
-			_playerForward = _transform.lock()->GetLookVector();
-			_playerPos -= _playerForward * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_playerPos);
-			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-
-		}
-	}
-
-	if (_isAttack == false)
-	{
 		PlayerJump();
+
 	}
 
 	KeyStateCheck();
@@ -375,7 +277,6 @@ void PlayerController::PlayerMove()
 
 void PlayerController::PlayerJump()
 {
-
 	//점프
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::SPACE))
 	{
@@ -440,18 +341,61 @@ void PlayerController::PlayerJump()
 
 void PlayerController::PlayerAttack()
 {
-	if (_isAttack == true && _jumpState->isJump == false && _isPicked == true)
+	if (_isAttack == false && _jumpState->isJump == false)
 	{
-		_battleTimer = 0.f;
-		*_currentState = PlayerUnitState::Attack;
+		if (_pickedObj != nullptr)
+		{
+			int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
+			int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
+			auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
+
+			if (pickObj == _pickedObj)
+			{
+				auto pickTransform = pickObj->GetTransform();
+				Vec3 myPos = _transform.lock()->GetPosition();
+				Vec3 pickPos = pickTransform->GetPosition();
+				pickPos.y = myPos.y;
+				float dist = Vec3::Distance(myPos, pickPos);
+
+				if (dist < _attackRange + FLT_EPSILON)
+				{
+					if (_pickedObj->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->_type != UnitStrategyType::Dead)
+					{
+						if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::RBUTTON))
+						{
+							_battleTimer = 0.f;
+
+							auto pickController = _pickedObj->GetComponent<AIController>();
+
+							if (pickController != nullptr)
+							{
+								float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
+								pickController->TakeDamage(GetGameObject(), damage);
+								MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
+								*_currentState = PlayerUnitState::Attack;
+								_isAttack = true;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
 void PlayerController::PlayerAbility1()
 {
-	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::E))
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::KEY_1))
 	{
 		*_currentState = PlayerUnitState::Ability1;
+	}
+}
+
+void PlayerController::PlayerAbility2()
+{
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::KEY_2))
+	{
+		*_currentState = PlayerUnitState::Ability2;
 	}
 }
 
@@ -522,7 +466,6 @@ void PlayerController::PlayerPicking()
 
 void PlayerController::PlayerTargetControll()
 {
-
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::LBUTTON))
 	{
 		int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
@@ -532,11 +475,16 @@ void PlayerController::PlayerTargetControll()
 
 		if (pickObj != nullptr && pickObj->GetObjectType() == ObjectType::EnemyUnit)
 		{
-			MANAGER_IMGUI()->UpdatePicked(true);
-
+			_pickedObj = pickObj;
+			MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
+		}
+		else
+		{
+			MANAGER_IMGUI()->UpdatePicked(false);
+			_isPicked = false;
+			_pickedObj = nullptr;
 		}
 	}
-
 }
 
 void PlayerController::KeyStateCheck()
@@ -545,17 +493,6 @@ void PlayerController::KeyStateCheck()
 	{
 		if (_isAttack == false)
 		{
-			if (*_currentState == PlayerUnitState::LeftMove ||
-				*_currentState == PlayerUnitState::RightMove ||
-				*_currentState == PlayerUnitState::FrontMove)
-			{
-				_isSlow = false;
-			}
-			else if (*_currentState == PlayerUnitState::BackMove)
-			{
-				_isSlow = true;
-			}
-
 			if (MANAGER_INPUT()->GetButton(KEY_TYPE::W) &&
 				MANAGER_INPUT()->GetButton(KEY_TYPE::A))
 			{
@@ -564,7 +501,6 @@ void PlayerController::KeyStateCheck()
 			else if (MANAGER_INPUT()->GetButton(KEY_TYPE::S) &&
 				MANAGER_INPUT()->GetButton(KEY_TYPE::A))
 			{
-				_isSlow = true;
 				*_currentState = PlayerUnitState::BackLeftMove;
 			}
 			else if (MANAGER_INPUT()->GetButton(KEY_TYPE::W) &&
@@ -575,26 +511,7 @@ void PlayerController::KeyStateCheck()
 			else if (MANAGER_INPUT()->GetButton(KEY_TYPE::S) &&
 				MANAGER_INPUT()->GetButton(KEY_TYPE::D))
 			{
-				_isSlow = true;
 				*_currentState = PlayerUnitState::BackRightMove;
-			}
-			else if (!MANAGER_INPUT()->GetButton(KEY_TYPE::W) &&
-				!MANAGER_INPUT()->GetButton(KEY_TYPE::S) &&
-				!MANAGER_INPUT()->GetButton(KEY_TYPE::A) &&
-				!MANAGER_INPUT()->GetButton(KEY_TYPE::D))
-			{
-
-				if (_isBattle)
-				{
-					_currentSpeed = _defaultSpeed;
-					*_currentState = PlayerUnitState::Battle;
-				}
-				else
-				{
-					_currentSpeed = _defaultSpeed;
-					*_currentState = PlayerUnitState::Stand;
-				}
-
 			}
 		}
 	}
@@ -615,41 +532,162 @@ void PlayerController::NotifyPlayerAlive(bool isAlive)
 	}
 }
 
-int PlayerController::GetAttackQueueSize()
+void PlayerController::InitController()
 {
-	//if (_attackQueue.empty() == false)
-	//{
-	//	return _attackQueue.size();
-	//}
+	//Character;
+	{
+		_playerPos = { 0,0,0 };
+		_playerRot = { 0,0,0 };
+		_playerForward = { 0,0,0 };
+		_playerRight = { 0,0,0 };
+		_playerUp = { 0,0,0 };
+		_jumpStartPos = { 0,0,0 };
+		_jumpUpMaxPos = { 0,0,0 };
+		_jumpUpDir = { 0,1,0 };
+		_jumpDownDir = { 0,-1,0 };
+		_jumpPower = 20.f;
+		_jumpState->Init();
 
-	return -1;
+		_defaultSpeed = 40.f;
+		_currentSpeed = 40.f;
+		_slowSpeed = 20.f;
+		_dt = 0.f;
+		_isSlow = false;
+		_unitInfo.lock()->InitInformation();
+	}
+
+	//Picking
+	{
+		_isPicked = false;
+		_pickedObj = nullptr;
+	}
+
+	//Animation State & Unit State
+	{
+		*_currentState = PlayerUnitState::Stand;
+		_animState = _animStateList[0];
+		_animState->Enter(shared_from_this());
+	}
+
+	//Camera
+	{
+		//_camPos = Vec3(0.f);
+		_camRot = Vec3(0.f);
+		_camDist = _camera.lock()->GetCamera()->GetCameraDistance();
+		_camMaxDist = _camDist + FLT_EPSILON;
+		_camMinDist = 25.f;
+	}
 }
 
-void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, uint16 damage)
+void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float damage)
 {
+	if (_unitInfo.lock() == nullptr)
+		return;
+	else
+	{
+		//Damage Calculate
+		{
+			auto myInfo = _unitInfo.lock()->GetCharacterInfo();
+			float defEff = pow(myInfo._def * log(2), 0.5) * 3;
+			float calDamage = damage * (1 - defEff / 100);
+			float finalHp = myInfo._hp - calDamage;
+
+			if (finalHp < 1.f + FLT_EPSILON)
+			{
+				finalHp = 0;
+
+				myInfo._hp = (uint32)finalHp;
+				_unitInfo.lock()->SetCharacterInfo(myInfo);
+				MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
+				*_currentState = PlayerUnitState::Death;
+				SetAnimState(PlayerAnimType::Death);
+			}
+			else
+			{
+				myInfo._hp = (uint32)finalHp;
+				_unitInfo.lock()->SetCharacterInfo(myInfo);
+				MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
+
+				if (_animState->GetStateAnimtype() != PlayerAnimType::Damaged &&
+					_animState->GetStateAnimtype() != PlayerAnimType::Death &&
+					_animState->GetStateAnimtype() != PlayerAnimType::Casting &&
+					_animState->GetStateAnimtype() != PlayerAnimType::JumpStart &&
+					_animState->GetStateAnimtype() != PlayerAnimType::JumpFall &&
+					_animState->GetStateAnimtype() != PlayerAnimType::JumpEnd &&
+					_animState->GetStateAnimtype() != PlayerAnimType::Attack1 &&
+					_animState->GetStateAnimtype() != PlayerAnimType::Attack2 &&
+					_animState->GetStateAnimtype() != PlayerAnimType::Ability1 &&
+					_animState->GetStateAnimtype() != PlayerAnimType::Ability2)
+				{
+					*_currentState = PlayerUnitState::Damaged;
+					SetAnimState(PlayerAnimType::Damaged);
+				}
+			}
+		}
+	}
+}
+
+void PlayerController::DeadEvent()
+{
+}
+
+void PlayerController::Respawn(const Vec3& spawnPos)
+{
+	if (spawnPos != Vec3::Zero)
+	{
+		_isAlive = true;
+		_animator.lock()->SetLoop(true);
+		_animator.lock()->SetPlay(true);
+
+		InitController();
+		_transform.lock()->SetPosition(spawnPos);
+		MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
+	}
+	else
+	{
+		_isAlive = true;
+		_animator.lock()->SetLoop(true);
+		_animator.lock()->SetPlay(true);
+
+		InitController();
+		_transform.lock()->SetPosition(_spawnPos);
+		MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
+	}
 }
 
 void PlayerController::Start()
 {
-	_currentState = make_shared<PlayerUnitState>();
-	*_currentState = PlayerUnitState::Stand;
-	_jumpState = make_shared<JumpFlag>();
-
-	_transform = GetGameObject()->GetTransform();
-	_camera = MANAGER_SCENE()->GetCurrentScene()->GetCamera();
-	_animator = GetGameObject()->GetChildByName(L"Model")->GetModelAnimator();
-	_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
 	{
-		if (_transform.lock())
+		_currentState = make_shared<PlayerUnitState>();
+		_jumpState = make_shared<JumpFlag>();
+	}
+
+	{
+		_transform = GetGameObject()->GetTransform();
+		_camera = MANAGER_SCENE()->GetCurrentScene()->GetCamera();
+		_animator = GetGameObject()->GetChildByName(L"Model")->GetModelAnimator();
+		_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
+
+		_unitInfo = GetGameObject()->GetComponent<CharacterInfo>();
+		_attackRange = _unitInfo.lock()->GetDefaultCharacterInfo()._attackRange;
+		_defaultSpeed = _unitInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
+		_currentSpeed = _defaultSpeed;
+		_slowSpeed = _defaultSpeed / 2;
+
+		if (_transform.lock() && _heightGetterCom.lock() != nullptr)
 		{
 			Vec3 temPos = _transform.lock()->GetLocalPosition();
 			temPos.y = _heightGetterCom.lock()->GetHeight();
 			_transform.lock()->SetLocalPosition(temPos);
 		}
 	}
-	_camDist = _camera.lock()->GetCamera()->GetCameraDistance();
-	_camMaxDist = _camDist + FLT_EPSILON;
-	_camMinDist = 25.f;
+
+	{
+		_camDist = _camera.lock()->GetCamera()->GetCameraDistance();
+		_camMaxDist = _camDist + FLT_EPSILON;
+		_camMinDist = 25.f;
+	}
+
 
 	AnimStateInit();
 }
@@ -658,24 +696,26 @@ void PlayerController::FixedUpdate()
 {
 	if (_isAlive == false)
 	{
-		_isBattle = false;
+
 	}
 
 	if (_isBattle)
 	{
-		if (_battleTimer + FLT_EPSILON >= _battleTime)
+		if (_battleTimer + FLT_EPSILON > _battleTime)
 		{
 			_isBattle = false;
+			_battleTimer = 0.f;
 		}
 
 		_battleTimer += MANAGER_TIME()->GetDeltaTime();
 	}
+
+	PlayerTargetControll();
 }
 
 void PlayerController::Update()
 {
 	PlayerInput();
-	CameraMove();
 }
 
 void PlayerController::LateUpdate()

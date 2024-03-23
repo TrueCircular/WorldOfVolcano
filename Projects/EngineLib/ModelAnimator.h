@@ -26,7 +26,7 @@ private:
 	ComPtr<ID3D11ShaderResourceView>	_srv;
 	EquipmentBoneIndexDesc				_equipmentBoneIndexList;
 private:
-	KeyframeDesc	_keyFrameDesc;
+	KeyframeDesc				_keyFrameDesc;
 	shared_ptr<TweenDesc>		_tweenDesc;
 	uint16			_animCount = 0;
 	bool			_isPlay = false;
@@ -67,6 +67,7 @@ public:
 	virtual void Update() override;
 	void UpdateTweenData();
 	void ShadowUpdate();
-	void UpdateEquipmentTransform(int currentFrame, int nextFrame, float ratio);
+	void UpdateEquipmentTransform();
+
 };
 

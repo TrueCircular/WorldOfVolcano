@@ -14,8 +14,20 @@ CharacterInfo::~CharacterInfo()
 
 }
 
+void CharacterInfo::UpdateInformation()
+{
+	_info._hp += _addInfo._AddHP;
+	_info._maxHp = _info._hp;
+	_info._mp += _addInfo._AddMP;
+	_info._maxMp = _info._mp;
+	_info._atk += _addInfo._AddATK;
+	_info._def += _addInfo._AddDEF;
+}
+
 void CharacterInfo::InitInformation()
 {
+	_info = _defaultInfo;
+	UpdateInformation();
 }
 
 void CharacterInfo::UpdateAddInformation(const shared_ptr<ItemData>& data, const bool& equip)
@@ -29,6 +41,13 @@ void CharacterInfo::UpdateAddInformation(const shared_ptr<ItemData>& data, const
 		_addInfo._AddMP += data->GetItemInfo().MP;
 		_addInfo._AddATK += data->GetItemInfo().ATK;
 		_addInfo._AddDEF += data->GetItemInfo().DEF;
+
+		_info._hp += data->GetItemInfo().HP;;
+		_info._maxHp = _info._hp;
+		_info._mp += data->GetItemInfo().MP;
+		_info._maxMp = _info._mp;
+		_info._atk += data->GetItemInfo().ATK;
+		_info._def += data->GetItemInfo().DEF;
 	}
 	else
 	{
@@ -71,8 +90,14 @@ void CharacterInfo::UpdateAddInformation(const shared_ptr<ItemData>& data, const
 		{
 			_addInfo._AddDEF -= data->GetItemInfo().DEF;
 		}
-	}
 
+		_info._hp -= data->GetItemInfo().HP;;
+		_info._maxHp = _info._hp;
+		_info._mp -= data->GetItemInfo().MP;
+		_info._maxMp = _info._mp;
+		_info._atk -= data->GetItemInfo().ATK;
+		_info._def -= data->GetItemInfo().DEF;
+	}
 }
 
 bool CharacterInfo::LoadCharacterInformationFromFile(const wstring& loadPath)

@@ -23,9 +23,9 @@ private:
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class MoltenGiantDamaged : public DamagedStrategy
@@ -33,10 +33,14 @@ class MoltenGiantDamaged : public DamagedStrategy
 public:
 	MoltenGiantDamaged();
 	virtual ~MoltenGiantDamaged();
+private:
+	weak_ptr<AIController>	_controller;
+	weak_ptr<ModelAnimator>	_animator;
+	shared_ptr<Sounds>		_damagedSound;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class MoltenGiantStun : public StunStrategy
@@ -45,9 +49,9 @@ public:
 	MoltenGiantStun();
 	virtual ~MoltenGiantStun();
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class MoltenGiantDead : public DeadStrategy
@@ -55,10 +59,17 @@ class MoltenGiantDead : public DeadStrategy
 public:
 	MoltenGiantDead();
 	virtual ~MoltenGiantDead();
+private:
+	weak_ptr<AIController>	_controller;
+	weak_ptr<ModelAnimator>	_animator;
+	shared_ptr<Sounds>		_deadSound;
+	float					_dt = 0.f;
+	float					_soundTimer = 1.0f;
+	bool					_soundFlag = false;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class MoltenGiantTrace : public TraceStrategy
@@ -78,9 +89,9 @@ private:
 	float					_attackRange = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class MoltenGiantMoveToSpwanPoint : public MoveToSpwanPointStrategy
@@ -99,9 +110,9 @@ private:
 	float					_traceRadius = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class MoltenGiantBattle : public BattleStrategy
@@ -124,9 +135,9 @@ private:
 	float					_attackRange = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };
 
 class MoltenGiantAttack : public AttackStrategy
@@ -147,7 +158,7 @@ private:
 	float					_traceRadius = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
-	virtual void Enter(const shared_ptr<AIController>& controller) override;
+	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void Out(const wstring& transition) override;
+	virtual void Out(const wstring& nextTransition) override;
 };

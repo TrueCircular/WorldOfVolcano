@@ -17,11 +17,12 @@ CoreHoundStand::~CoreHoundStand()
 {
 }
 
-void CoreHoundStand::Enter(const shared_ptr<AIController>& controller)
+void CoreHoundStand::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -108,11 +109,11 @@ void CoreHoundStand::Update()
 	}
 }
 
-void CoreHoundStand::Out(const wstring& transition)
+void CoreHoundStand::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -125,7 +126,7 @@ CoreHoundDamaged::~CoreHoundDamaged()
 {
 }
 
-void CoreHoundDamaged::Enter(const shared_ptr<AIController>& controller)
+void CoreHoundDamaged::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -133,7 +134,7 @@ void CoreHoundDamaged::Update()
 {
 }
 
-void CoreHoundDamaged::Out(const wstring& transition)
+void CoreHoundDamaged::Out(const wstring& nextTransition)
 {
 }
 
@@ -146,7 +147,7 @@ CoreHoundDead::~CoreHoundDead()
 {
 }
 
-void CoreHoundDead::Enter(const shared_ptr<AIController>& controller)
+void CoreHoundDead::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 }
 
@@ -154,7 +155,7 @@ void CoreHoundDead::Update()
 {
 }
 
-void CoreHoundDead::Out(const wstring& transition)
+void CoreHoundDead::Out(const wstring& nextTransition)
 {
 }
 
@@ -167,11 +168,12 @@ CoreHoundTrace::~CoreHoundTrace()
 {
 }
 
-void CoreHoundTrace::Enter(const shared_ptr<AIController>& controller)
+void CoreHoundTrace::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -260,11 +262,11 @@ void CoreHoundTrace::Update()
 	}
 }
 
-void CoreHoundTrace::Out(const wstring& transition)
+void CoreHoundTrace::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -277,11 +279,12 @@ CoreHoundMoveToSpwanPoint::~CoreHoundMoveToSpwanPoint()
 {
 }
 
-void CoreHoundMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller)
+void CoreHoundMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -295,7 +298,7 @@ void CoreHoundMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller
 			_animator.lock()->SetNextAnimation(L"Run");
 
 			_characterInfo = _controller.lock()->GetCharacterInfo();
-			_spwanPos = _controller.lock()->GetSpwanPosition();
+			_spwanPos = _controller.lock()->GetSpawnPosition();
 			_moveSpeed = _characterInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
 		}
 	}
@@ -358,11 +361,11 @@ void CoreHoundMoveToSpwanPoint::Update()
 	}
 }
 
-void CoreHoundMoveToSpwanPoint::Out(const wstring& transition)
+void CoreHoundMoveToSpwanPoint::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -375,11 +378,12 @@ CoreHoundBattle::~CoreHoundBattle()
 {
 }
 
-void CoreHoundBattle::Enter(const shared_ptr<AIController>& controller)
+void CoreHoundBattle::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -486,11 +490,11 @@ void CoreHoundBattle::Update()
 	}
 }
 
-void CoreHoundBattle::Out(const wstring& transition)
+void CoreHoundBattle::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -539,13 +543,14 @@ CoreHoundAttack::~CoreHoundAttack()
 {
 }
 
-void CoreHoundAttack::Enter(const shared_ptr<AIController>& controller)
+void CoreHoundAttack::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
 	if (controller != nullptr)
 	{
 		::srand(time(NULL));
 
 		_controller = controller;
+		_prevTransition = prevTransition;
 
 		if (_controller.lock()->GetTransform() != nullptr)
 			_transform = _controller.lock()->GetTransform();
@@ -630,10 +635,10 @@ void CoreHoundAttack::Update()
 	}
 }
 
-void CoreHoundAttack::Out(const wstring& transition)
+void CoreHoundAttack::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(transition);
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }

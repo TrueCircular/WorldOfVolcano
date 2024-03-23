@@ -10,10 +10,12 @@ class Sounds : public ResourceBase
 	using Super = ResourceBase;
 
 	//need each n files to create;
+	FMOD::Channel* fm_Channel = nullptr;
 	wstring _soundPath;
 	FMOD::Sound* fm_Sound=nullptr;
 	float volume=1;
 	float volumeMultiply = 1;
+
 public:
 	Sounds();
 	~Sounds();
@@ -27,4 +29,5 @@ public:
 	void SetVolume(float vol) {volume = vol; };
 	float GetVolume() { return volume; };
 	shared_ptr<Sounds> Clone();
+	void StopChannel();
 };

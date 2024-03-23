@@ -126,10 +126,15 @@ void TestAbilityScene::Init()
 	{
 		//Player
 		{
+			auto height = make_shared<HeightGetter>();
+			height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+			Vec3 spwanPos = Vec3(-44.f, 0.f, 277.f);
+			spwanPos.y = height->GetHeight(spwanPos);
+
 			_warrior = make_shared<Warrior>();
 			_warrior->Awake();
 			_warrior->SetCharacterController(make_shared<PlayerController>());
-			_warrior->SetSpwanPosition(Vec3(-44.f, 0.f, 277.f));
+			_warrior->SetSpwanPosition(spwanPos);
 			_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
 			_warrior->Start();
 
@@ -201,7 +206,7 @@ void TestAbilityScene::Init()
 			wstring bgmpath = RESOURCES_ADDR_SOUND;
 			bgmpath += L"Scene/Dungeon.mp3";
 			bgm->Load(bgmpath);
-			bgm->SetVolume(0.5f);
+			bgm->SetVolume(0.35f);
 			MANAGER_RESOURCES()->AddResource<Sounds>(L"DungeonBGM", bgm);
 			bgm->Play(true);
 		}
@@ -229,6 +234,12 @@ void TestAbilityScene::Update()
 	Scene::Update();
 
 	MANAGER_SOUND()->Update();
+
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::Q))
+	{
+		_warrior->GetComponent<PlayerController>()->Respawn();
+	}
+
 }
 
 void TestAbilityScene::LateUpdate()
