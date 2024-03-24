@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "BossScene.h"
 
+#include "BaseScene.h"
+
 #include "CameraMove.h"
 #include "LavaFlow.h"
 #include "StruectedLavaSprite.h"
@@ -16,20 +18,11 @@
 #include "ObjectExporter.h"
 #include "Demo.h"
 
-#include "BaseScene.h"
-#include "MainScene.h"
-
 #include "engine\PlayerSoundController.h"
 
 
 void BossScene::Init()
 {
-	//¸®¼Ò½º ¸Å´ÏÀú ÃÊ±âÈ­
-	MANAGER_RESOURCES()->Init();
-
-	//»ç¿îµå ¸Å´ÏÀú ÃÊ±âÈ­
-	MANAGER_SOUND()->Init();
-
 	//light
 	{
 		auto light = make_shared<GameObject>();
@@ -182,7 +175,7 @@ void BossScene::Init()
 		}
 		soundController->SetSound(PlayerAnimType::Death, bgm2);
 
-		_warrior->GetComponent<PlayerController>()->SetSoundController(soundController);
+		//_warrior->GetComponent<PlayerController>()->SetSoundController(soundController);
 
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
@@ -233,12 +226,20 @@ void BossScene::Update()
 	quadTreeTerrain->Frame((*frustom->frustomBox.get()));
 	MANAGER_SOUND()->Update();
 
+	sendInfo = ClientPacketHandler::Instance().GetUserInfo();
+	sendInfo._pos = _warrior->GetTransform()->GetPosition();
+	sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
+	sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
+	sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
+	sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
+
+	_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
 	SpawnManager::GetInstance().Update();
 
 #pragma region Client Thread
-	//12ºÐÀÇ1ÃÊ = 83.33ms
-	//30ºÐÀÇ1ÃÊ = 33.33ms
-	//60ºÐÀÇ1ÃÊ = 16.67ms
+	//12ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ = 83.33ms
+	//30ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ = 33.33ms
+	//60ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ = 16.67ms
 
 	if (_threadTimer < 0.1f)
 	{
@@ -254,14 +255,14 @@ void BossScene::Update()
 	}
 #pragma endregion Client Thread
 
-	//Ã¤ÆÃ
+	//Ã¤ï¿½ï¿½
 	if (MANAGER_IMGUI()->GetLatestMessages().size() > 0 && (MANAGER_IMGUI()->GetLatestMessages().size() != latestMessageSize))
 	{
 		string text = MANAGER_IMGUI()->GetLatestMessages().back();
 		const char* newMessage = text.c_str();
 		MESSAGE message;
 		std::strncpy(message._messageBox, newMessage, sizeof(message._messageBox) - 1);
-		message._messageBox[sizeof(message._messageBox) - 1] = '\0'; // Null ¹®ÀÚ Ãß°¡
+		message._messageBox[sizeof(message._messageBox) - 1] = '\0'; // Null ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
 		_sendBuffer = ClientPacketHandler::Instance().Make_MESSAGE(message);
 		_service->Broadcast(_sendBuffer);
 	}
@@ -276,12 +277,6 @@ void BossScene::Update()
 	Scene::Update();
 	DamageIndicator::GetInstance().Frame();
 
-	shared_ptr<Scene> scene = make_shared<BaseScene>();
-	scene->SetSceneName(L"BaseScene");
-
-
-
-
 	{
 		Vec3 pos = _warrior->GetTransform()->GetPosition();
 
@@ -295,6 +290,10 @@ void BossScene::Update()
 
 		OutputDebugString(Pstring.c_str());
 	}
+
+	shared_ptr<Scene> scene = make_shared<BaseScene>();
+	scene->SetSceneName(L"BaseScene");
+
 	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
 	{
 		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();

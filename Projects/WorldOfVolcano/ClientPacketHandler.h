@@ -13,6 +13,45 @@ enum
 	PACKET_DISCONNECT = 99,
 };
 
+struct PACKET_CHARACTER_INFO
+{
+	uint32 _instanceId = 0;
+	MapType _spawnMapType = MapType::Lobby;
+	uint32 _maxHp = 1000;
+	uint32 _maxMp = 1000;
+	uint32 _hp = 1000;
+	uint32 _mp = 1000;
+	uint16 _atk = 100;
+	uint16 _def = 100;
+	uint16 _moveSpeed = 10;
+	uint16 _aggroLevel = 100;
+	float _attackRange = 15.0f;
+	float _attackTime = 0.8f;
+	float _traceRadius = 0.f;
+	Vec3 _pos = { 0.0f, 0.0f, 0.0f };
+	Vec3 _Rotate = { 0.0f, 0.0f, 0.0f };
+	bool _isAlive = true;
+	bool _isAttack = false;
+	bool _isBattle = false;
+	double _timeStamp = 0.0f;
+};
+
+struct PACKET_Player_INFO : public PACKET_CHARACTER_INFO
+{
+	uint32 _uid = 0;
+	bool _isOnline = false;
+	PlayerUnitState _animState = PlayerUnitState::Stand;
+	JumpFlag _jumpFlag;
+};
+
+struct PACKET_Mob_INFO : public PACKET_CHARACTER_INFO
+{
+	uint32 _monsterId = 0;
+	Vec3 _targetPos = { 0.f, 0.f, 0.f };
+	bool _isMove = false;
+	EnemyUnitState _animState = EnemyUnitState::Stand;
+};
+
 class ClientPacketHandler
 {
 public:
@@ -27,8 +66,8 @@ public:
 	void Handle_MESSAGE(BYTE* buffer, int32 len);
 	void Handle_USER_DISCONNECT(BYTE* buffer, int32 len);
 
-	SendBufferRef Make_USER_INFO(Player_INFO userInfo);
-	SendBufferRef Make_MONSTER_INFO(MONSTER_INFO info);
+	SendBufferRef Make_USER_INFO(Player_INFO userInfo, wstring name);
+	SendBufferRef Make_MONSTER_INFO(MONSTER_INFO info, wstring name);
 	SendBufferRef Make_MESSAGE(MESSAGE message);
 	SendBufferRef Make_BATTLE(Player_INFO attackerInfo, uint32 targerId);
 

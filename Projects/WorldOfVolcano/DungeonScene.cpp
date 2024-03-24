@@ -1,35 +1,31 @@
 #include "pch.h"
 #include "DungeonScene.h"
 
-#include "CameraMove.h"
+//Scene Include
+#include "Demo.h"
+#include "BossScene.h"
+//Script Include
 #include "LavaFlow.h"
 #include "StruectedLavaSprite.h"
 #include "LayerSplatter.h"
-#include "engine\Utils.h"
+#include "ObjectExporter.h"
 #include "CameraMove.h"
+//Engine Include
+#include "engine\\FrustomCamera.h"
 #include "engine\HeightGetter.h"
 #include "engine\Utils.h"
 #include "engine/Warrior.h"
 #include "engine/CoreHound.h"
 #include "engine/BaronGeddon.h"
 #include "engine/SphereCollider.h"
-#include "ObjectExporter.h"
-#include "Demo.h"
-
-#include "BaseScene.h"
-#include "MainScene.h"
-
+#include "engine/PlayerController.h"
+#include "engine/AIController.h"
+#include "engine/StrategyFactory.h"
 #include "engine\PlayerSoundController.h"
-
+#include "engine\Utils.h"
 
 void DungeonScene::Init()
 {
-	//리소스 매니저 초기화
-	MANAGER_RESOURCES()->Init();
-
-	//사운드 매니저 초기화
-	MANAGER_SOUND()->Init();
-
 	//light
 	{
 		auto light = make_shared<GameObject>();
@@ -43,15 +39,14 @@ void DungeonScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(light);
 	}
 
-	DamageIndicator::GetInstance().Init();
-	DamageIndicator::GetInstance().SetCamera(_childCamera);
-
-	ObjectExporter exporter;
-	exporter.OpenFile(L"../../Resources/Assets/dungeon1fix.dat");
-	for (int i = 0; i < exporter._structureList.size(); ++i) {
-		Add(exporter._structureList[i]);
-	}
+	//Terrain Object Load
 	{
+		ObjectExporter exporter;
+		exporter.OpenFile(L"../../Resources/Assets/dungeon1fix.dat");
+		for (int i = 0; i < exporter._structureList.size(); ++i) {
+			Add(exporter._structureList[i]);
+		}
+
 		auto obj = make_shared<GameObject>();
 		LavaSpriteDesc descs{};
 		descs.duration = 10;
@@ -88,152 +83,112 @@ void DungeonScene::Init()
 		skyBox->Start();
 	}
 
-	HeightPlainInfo heightMapDesc;
-	heightMapDesc.heightFilename = L"HeightMapDungeon";
-	heightMapDesc.heightFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"dungeon1.bmp";
-	heightMapDesc.shaderFilePath = L"SplattingMapping.fx";
-	//heightMapDesc.shaderFilePath = L"TerrainMapping.fx";
-	heightMapDesc.shaderFilename = L"HeightMapShaderDungeon";
-	heightMapDesc.textureFilename = L"HeightMapTextureDungeon";
-	heightMapDesc.textureFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"020.bmp";
-	heightMapDesc.meshKey = L"TerrainMeshDungeon";
-	heightMapDesc.distance = 2;
-	heightMapDesc.row = 253;
-	heightMapDesc.col = 253;
+	//Terrain
+	{
+		HeightPlainInfo heightMapDesc;
+		heightMapDesc.heightFilename = L"HeightMapDungeon";
+		heightMapDesc.heightFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"dungeon1.bmp";
+		heightMapDesc.shaderFilePath = L"SplattingMapping.fx";
+		heightMapDesc.shaderFilename = L"HeightMapShaderDungeon";
+		heightMapDesc.textureFilename = L"HeightMapTextureDungeon";
+		heightMapDesc.textureFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"020.bmp";
+		heightMapDesc.meshKey = L"TerrainMeshDungeon";
+		heightMapDesc.distance = 2;
+		heightMapDesc.row = 253;
+		heightMapDesc.col = 253;
 
-	_terrain = make_shared<Terrain>(heightMapDesc);
-	_terrain->Awake();
-	_terrain->AddComponent(make_shared<MeshRenderer>());
-	_terrain->Start();
-	quadTreeTerrain = make_shared<QuadTreeTerrain>();
-	quadTreeTerrain->Set(_terrain, 3);
-	quadTreeTerrain->Start();
+		_terrain = make_shared<Terrain>(heightMapDesc);
+		_terrain->Awake();
+		_terrain->AddComponent(make_shared<MeshRenderer>());
+		_terrain->Start();
+		_quadTreeTerrain = make_shared<QuadTreeTerrain>();
+		_quadTreeTerrain->Set(_terrain, 3);
+		_quadTreeTerrain->Start();
 
-	SplatterDesc spDesc{};
-	spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
-	spDesc.texPath[1] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsashcracks.png";
-	spDesc.texPath[2] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppscharcoal01.png";
-	spDesc.texName[0] = L"Splat1Dungeon";
-	spDesc.texName[1] = L"Splat2Dungeon";
-	spDesc.texName[2] = L"Splat3Dungeon";
-	spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"dungeon1alpha.bmp";
-	spDesc.alphaName = L"SplatAlphaDungeon";
-	splatter = make_shared<LayerSplatter>();
-	splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderDungeon"));
+		SplatterDesc spDesc{};
+		spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
+		spDesc.texPath[1] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsashcracks.png";
+		spDesc.texPath[2] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppscharcoal01.png";
+		spDesc.texName[0] = L"Splat1Dungeon";
+		spDesc.texName[1] = L"Splat2Dungeon";
+		spDesc.texName[2] = L"Splat3Dungeon";
+		spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"dungeon1alpha.bmp";
+		spDesc.alphaName = L"SplatAlphaDungeon";
+		_splatter = make_shared<LayerSplatter>();
+		_splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderDungeon"));
 
-	quadTreeTerrain->AddSplatter(splatter);
+		_quadTreeTerrain->AddSplatter(_splatter);
 
-
-	SetTerrain(_terrain);
+		SetTerrain(_terrain);
+	}
 
 	//Camera
 	{
-		frustom = make_shared<FrustomCamera>();
-		_childCamera = make_shared<GameObject>();
-		_childCamera->Awake();
-		_childCamera->AddComponent(make_shared<Camera>());
-		_childCamera->AddComponent(frustom);
-		_childCamera->Start();
-		_childCamera->SetName(L"Camera");
-		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 125.f);
-		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
-		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
+		_frustom = make_shared<FrustomCamera>();
+		_camera = make_shared<GameObject>();
+		_camera->Awake();
+		_camera->AddComponent(make_shared<Camera>());
+		_camera->AddComponent(_frustom);
+		_camera->Start();
+		_camera->SetName(L"Camera");
+		_camera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 130.f);
+		_camera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
+		MANAGER_SCENE()->GetCurrentScene()->Add(_camera);
 	}
 	//Character
 	{
-		_warrior = make_shared<Warrior>();
-		_warrior->Awake();
-		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
-		_warrior->SetCharacterController(make_shared<PlayerController>());
-		_warrior->SetSpwanPosition(Vec3(-44.f, 0.f, 277.f));
-		_warrior->GetTransform()->SetLocalPosition(Vec3(-44.f, 0.f, 277.f));
-		_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
-		_warrior->Start();
+		//Player
+		{
+			_warrior = make_shared<Warrior>();
+			_warrior->Awake();
+			_warrior->SetCharacterController(make_shared<PlayerController>());
+			_warrior->SetSpwanPosition(spawnPos);
+			_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
+			_warrior->Start();
 
-		Add(_warrior);
-		AddShadow(_warrior);
+			Add(_warrior);
 
-		shared_ptr< PlayerSoundController> soundController = make_shared<PlayerSoundController>();
-
-		soundController->Set(_warrior->GetTransform());
-		shared_ptr<Sounds> bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Attack");
-		if (bgm2 == nullptr) {
-			bgm2 = make_shared<Sounds>();
-			wstring bgmpath = RESOURCES_ADDR_SOUND;
-			bgmpath += L"Character/Playable/Warrior/Warrior_Attack1.mp3";
-			bgm2->Load(bgmpath);
-			MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Attack", bgm2);
+			_camera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		}
-		soundController->SetSound(PlayerAnimType::Attack1, bgm2);
 
-		bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Attack2");
-		if (bgm2 == nullptr) {
-			bgm2 = make_shared<Sounds>();
-			wstring bgmpath = RESOURCES_ADDR_SOUND;
-			bgmpath += L"Character/Playable/Warrior/Warrior_Attack2.mp3";
-			bgm2->Load(bgmpath);
-			MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Attack2", bgm2);
+		//monster
+		{
+			//baronGeddon
+			{
+				/*auto height = make_shared<HeightGetter>();
+				height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+				Vec3 spwanPos = Vec3(103, 0, 240);
+				spwanPos.y = height->GetHeight(spwanPos);
+
+				auto baronGeddon = make_shared<BaronGeddon>();
+				baronGeddon->Awake();
+				baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+				baronGeddon->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+				baronGeddon->SetSpwanPosition(spwanPos);
+				baronGeddon->Start();
+
+				Add(baronGeddon);*/
+			}
 		}
-		soundController->SetSound(PlayerAnimType::Attack2, bgm2);
-
-		bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Damaged");
-		if (bgm2 == nullptr) {
-			bgm2 = make_shared<Sounds>();
-			wstring bgmpath = RESOURCES_ADDR_SOUND;
-			bgmpath += L"Character/Playable/Warrior/Warrior_Damaged.mp3";
-			bgm2->Load(bgmpath);
-			MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Damaged", bgm2);
-		}
-		soundController->SetSound(PlayerAnimType::Damaged, bgm2);
-
-		bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Death");
-		if (bgm2 == nullptr) {
-			bgm2 = make_shared<Sounds>();
-			wstring bgmpath = RESOURCES_ADDR_SOUND;
-			bgmpath += L"Character/Playable/Warrior/Warrior_Death.mp3";
-			bgm2->Load(bgmpath);
-			MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Death", bgm2);
-		}
-		soundController->SetSound(PlayerAnimType::Death, bgm2);
-
-		_warrior->GetComponent<PlayerController>()->SetSoundController(soundController);
-
-		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
 
-	//monster
+	//Background Sound
 	{
-		auto height = make_shared<HeightGetter>();
-		height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
-		Vec3 spwanPos = Vec3(103, 0, 240);
-		spwanPos.y = height->GetHeight(spwanPos);
-
-
-		auto baronGeddon = make_shared<BaronGeddon>();
-		baronGeddon->Awake();
-		baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
-		baronGeddon->SetSpwanPosition(spwanPos);
-		baronGeddon->Start();
-		baronGeddon->GetTransform()->SetPosition(spwanPos);
-
-		Add(baronGeddon);
+		shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"DungeonBGM");
+		if (bgm == nullptr) {
+			shared_ptr<Sounds> bgm = make_shared<Sounds>();
+			wstring bgmpath = RESOURCES_ADDR_SOUND;
+			bgmpath += L"Scene/Dungeon.mp3";
+			bgm->Load(bgmpath);
+			bgm->SetVolume(10);
+			MANAGER_RESOURCES()->AddResource<Sounds>(L"DungeonBGM", bgm);
+			bgm->Play(true);
+		}
+		else {
+			bgm->SetVolume(10);
+			bgm->Play(true);
+		}
 	}
-
-
-	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"fireland");
-	if (bgm == nullptr) {
-		shared_ptr<Sounds> bgm = make_shared<Sounds>();
-		wstring bgmpath = RESOURCES_ADDR_SOUND;
-		bgmpath += L"Scene/Dungeon.mp3";
-		bgm->Load(bgmpath);
-		MANAGER_RESOURCES()->AddResource<Sounds>(L"fireland", bgm);
-		bgm->Play(true);
-	}
-	else {
-		bgm->Play(true);
-	}
-///	bool isplaynsd;
-//	chs->isPlaying(&isplaynsd);
 
 	SpawnManager::GetInstance().Init();
 }
@@ -244,54 +199,21 @@ void DungeonScene::Start()
 
 void DungeonScene::Update()
 {
-	quadTreeTerrain->Frame((*frustom->frustomBox.get()));
+	_quadTreeTerrain->Frame((*_frustom->frustomBox.get()));
+
 	MANAGER_SOUND()->Update();
 
-	//{
-	//	sendInfo = ClientPacketHandler::Instance().GetUserInfo();
-	//	sendInfo._pos = _warrior->GetTransform()->GetPosition();
-	//	sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
-	//	sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
-	//	sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
-	//	sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
-	//	sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
-	//	sendInfo._spawnMapId = SpawnManager::GetInstance().GetSpawnMapId();
+	{
+		sendInfo = ClientPacketHandler::Instance().GetUserInfo();
+		sendInfo._pos = _warrior->GetTransform()->GetPosition();
+		sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
+		sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
+		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
+		sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
 
-	//	//Alive
-	//	if (sendInfo._isAlive == false)
-	//	{
-	//		_warrior->GetComponent<PlayerController>()->NotifyPlayerAlive(false);
-	//		MANAGER_IMGUI()->NotifyPlayerAlive(false);
-	//	}
-
-	//	//Rebirth
-	//	{
-	//		int size = MANAGER_IMGUI()->GetAttackQueueSize();
-	//		if (size > 0)
-	//		{
-	//			sendInfo._isAlive = true;
-	//			sendInfo._hp = sendInfo._maxHp;
-	//			sendInfo._pos = spawnPos;
-	//			_warrior->GetTransform()->SetLocalPosition(spawnPos);
-	//			_warrior->GetComponent<PlayerController>()->NotifyPlayerAlive(true);
-	//			MANAGER_IMGUI()->NotifyPlayerAlive(true);
-	//		}
-	//	}
-
-	//	//Attack1
-	//	{
-	//		int size = _warrior->GetComponent<PlayerController>()->GetAttackQueueSize();
-	//		if (size > 0)
-	//		{
-	//			uint32 targetId = _warrior->GetComponent<PlayerController>()->GetPickedInfo()._instanceId;
-	//			_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId);
-	//			_service->Broadcast(_sendBuffer);
-	//		}
-	//	}
-
-	//	//SendBuffer
-	//	_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo);
-	//}
+		//SendBuffer
+		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
+	}
 
 	SpawnManager::GetInstance().Update();
 
@@ -335,19 +257,6 @@ void DungeonScene::Update()
 
 	Scene::Update();
 	skyBox->Update();
-	DamageIndicator::GetInstance().Frame();
-
-	shared_ptr<Scene> scene = make_shared<BaseScene>();
-	scene->SetSceneName(L"BaseScene");
-
-	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
-	{
-		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
-		SpawnManager::GetInstance().Reset(name);
-		SpawnManager::GetInstance().EraseSpawnerMap(name);
-		MANAGER_SCENE()->ChangeScene(scene);
-	}
-
 
 	{
 		Vec3 pos =  _warrior->GetTransform()->GetPosition();
@@ -363,12 +272,20 @@ void DungeonScene::Update()
 		OutputDebugString(Pstring.c_str());
 	}
 
+	shared_ptr<Scene> scene = make_shared<BossScene>();
+	scene->SetSceneName(L"BossScene");
+
+	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
+	{
+		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
+		SpawnManager::GetInstance().Reset(name);
+		SpawnManager::GetInstance().EraseSpawnerMap(name);
+		MANAGER_SCENE()->ChangeScene(scene);
+	}
 }
 
 void DungeonScene::LateUpdate()
 {
 	Scene::LateUpdate();
-	quadTreeTerrain->Update();
-
-	DamageIndicator::GetInstance().Render();
+	_quadTreeTerrain->Update();
 }

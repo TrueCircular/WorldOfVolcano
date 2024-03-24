@@ -48,7 +48,17 @@ bool AncientSword::ApplyItem(const bool& apply)
 	}
 	else
 	{
-		_itemData->ItemEffectToSelf(apply);
+		if (apply)
+		{
+			_itemData->ItemEffectToSelf(apply);
+		}
+		else
+		{
+			_itemData->ItemEffectToSelf(apply);
+			_itemData = nullptr;
+			_itemModel = nullptr;
+		}
+
 	}
 
 	return true;
