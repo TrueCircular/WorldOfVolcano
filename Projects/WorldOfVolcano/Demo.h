@@ -1,10 +1,5 @@
 #pragma once
 #include "engine/IExecute.h"
-#include "BaseScene.h"
-#include "DungeonScene.h"
-#include "MainScene.h"
-#include "BossScene.h"
-
 
 class Demo : public IExecute
 {

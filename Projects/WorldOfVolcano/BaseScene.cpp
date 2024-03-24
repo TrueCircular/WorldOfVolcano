@@ -1,22 +1,26 @@
 #include "pch.h"
 #include "BaseScene.h"
+
+//Scene Include
+#include "Demo.h"
+#include "DungeonScene.h"
+//Script Include
 #include "CameraMove.h"
 #include "LavaFlow.h"
 #include "StruectedLavaSprite.h"
 #include "LayerSplatter.h"
-#include "engine\Utils.h"
-#include "CameraMove.h"
+#include "ObjectExporter.h"
+//Engine Include
+#include "engine\\FrustomCamera.h"
 #include "engine\HeightGetter.h"
 #include "engine\Utils.h"
 #include "engine/Warrior.h"
-#include "engine/CoreHound.h"
 #include "engine/SphereCollider.h"
-#include "ObjectExporter.h"
-#include "Demo.h"
-
-#include "DungeonScene.h"
-#include "BaseScene.h"
-#include "MainScene.h"
+#include "engine/PlayerController.h"
+#include "engine/AIController.h"
+#include "engine/StrategyFactory.h"
+#include "engine\PlayerSoundController.h"
+#include "engine\Utils.h"
 
 void BaseScene::Init()
 {
@@ -39,9 +43,6 @@ void BaseScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(light);
 //		MANAGER_RENDERER()->PushLightData(lightDesc);
 	}
-
-	DamageIndicator::GetInstance().Init();
-	DamageIndicator::GetInstance().SetCamera(_childCamera);
 
 	{
 		auto obj = make_shared<GameObject>();
@@ -116,9 +117,9 @@ void BaseScene::Init()
 	_terrain->Awake();
 	_terrain->AddComponent(make_shared<MeshRenderer>());
 	_terrain->Start();
-	quadTreeTerrain = make_shared<QuadTreeTerrain>();
-	quadTreeTerrain->Set(_terrain, 3);
-	quadTreeTerrain->Start();
+	_quadTreeTerrain = make_shared<QuadTreeTerrain>();
+	_quadTreeTerrain->Set(_terrain, 3);
+	_quadTreeTerrain->Start();
 
 	SplatterDesc spDesc{};
 	spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
@@ -129,37 +130,52 @@ void BaseScene::Init()
 	spDesc.texName[2] = L"Splat3Base";
 	spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"testalpha.bmp";
 	spDesc.alphaName = L"SplatAlphaBase";
-	splatter = make_shared<LayerSplatter>();
-	splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderBase"));
-	quadTreeTerrain->AddSplatter(splatter);
+	_splatter = make_shared<LayerSplatter>();
+	_splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderBase"));
+	_quadTreeTerrain->AddSplatter(_splatter);
 	SetTerrain(_terrain);
 
 	//Camera
 	{
-
-		frustom = make_shared<FrustomCamera>();
-		_childCamera = make_shared<GameObject>();
-		_childCamera->Awake();
-		_childCamera->AddComponent(make_shared<Camera>());
-		_childCamera->AddComponent(frustom);
-		_childCamera->Start();
-		_childCamera->SetName(L"Camera");
-		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 100.f);
-		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
-		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
+		_frustom = make_shared<FrustomCamera>();
+		_camera = make_shared<GameObject>();
+		_camera->Awake();
+		_camera->AddComponent(make_shared<Camera>());
+		_camera->AddComponent(_frustom);
+		_camera->Start();
+		_camera->SetName(L"Camera");
+		_camera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 130.f);
+		_camera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
+		MANAGER_SCENE()->GetCurrentScene()->Add(_camera);
 	}
 	//Character
 	{
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
-		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
-		_warrior->AddComponent(make_shared<PlayerController>());
+		_warrior->SetCharacterController(make_shared<PlayerController>());
+		_warrior->SetSpwanPosition(spawnPos);
+		_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
 		_warrior->Start();
-		_warrior->GetTransform()->SetLocalPosition(spawnPos);
+
 		Add(_warrior);
 		AddShadow(_warrior);
 
-		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
+		_camera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
+	}
+	//Npc
+	{
+		_MagniBronzebeard = make_shared<MagniBronzebeard>();
+		_MagniBronzebeard->Awake();
+		shared_ptr<AIController> _aiCon = make_shared<AIController>();
+		_aiCon->SetAIType(AIType::PlayableUnit);
+		_MagniBronzebeard->AddComponent(_aiCon);
+		_MagniBronzebeard->AddComponent(make_shared<CharacterInfo>());
+		_MagniBronzebeard->GetTransform()->SetLocalScale(Vec3(0.2f, 0.2f, 0.2f));
+		_MagniBronzebeard->GetTransform()->SetLocalPosition(Vec3(10, 25, 0));
+		_MagniBronzebeard->Start();
+
+		Add(_MagniBronzebeard);
+		//AddShadow(_MagniBronzebeard);
 	}
 
 
@@ -185,7 +201,7 @@ void BaseScene::Start()
 
 void BaseScene::Update()
 {
-	quadTreeTerrain->Frame((*frustom->frustomBox.get()));
+	_quadTreeTerrain->Frame((*_frustom->frustomBox.get()));
 	MANAGER_SOUND()->Update();
 	MANAGER_SHADOW()->StartShadow();
 	_terrain->GetMeshRenderer()->SetPass(1);
@@ -204,7 +220,7 @@ void BaseScene::Update()
 		sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
 		sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
 		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
-		//sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapId();
+		sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
 
 		//Alive
 		if (sendInfo._isAlive == false)
@@ -239,7 +255,7 @@ void BaseScene::Update()
 		}
 
 		//SendBuffer
-		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo);
+		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
 	}
 
 	SpawnManager::GetInstance().Update();
@@ -287,12 +303,16 @@ void BaseScene::Update()
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	scene->SetSceneName(L"DungeonScene");
 
-	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
+	//Change
 	{
-		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
-		SpawnManager::GetInstance().Reset(name);
-		SpawnManager::GetInstance().EraseSpawnerMap(name);
-		MANAGER_SCENE()->ChangeScene(scene);
+		int size = MANAGER_IMGUI()->GetChangeSceneQueueSize();
+		if (size > 0)
+		{
+			wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
+			SpawnManager::GetInstance().Reset(name);
+			SpawnManager::GetInstance().EraseSpawnerMap(name);
+			MANAGER_SCENE()->ChangeScene(scene);
+		}
 	}
 }
 
@@ -300,7 +320,5 @@ void BaseScene::LateUpdate()
 {
 
 	Scene::LateUpdate();
-	quadTreeTerrain->Update();
-
-	DamageIndicator::GetInstance().Render();
+	_quadTreeTerrain->Update();
 }

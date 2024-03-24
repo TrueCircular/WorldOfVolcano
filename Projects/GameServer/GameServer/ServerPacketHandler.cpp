@@ -38,15 +38,17 @@ void ServerPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 	PacketHeader header;
 	br >> header;
 
-	Player_INFO userInfo;
+	PACKET_Player_INFO userInfo;
 	br >> userInfo;
 	userInfo._timeStamp = TIMER().getCurrentTime();
 
-	cout << "uid : " << userInfo._uid << endl;
-	cout << "position : (" << userInfo._pos.x << ", " << userInfo._pos.y << ", " << userInfo._pos.z << ")" << endl;
-	cout << "hp : " << userInfo._hp << endl;
+	wstring name;
+	uint16 nameLen;
+	br >> nameLen;
+	name.resize(nameLen);
+	br.Read((void*)name.data(), nameLen * sizeof(WCHAR));
 
-	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, true);
+	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, name, true);
 	GSessionManager.UpdateUserInfo(userInfo);
 	GSessionManager.Broadcast(sendBuffer);
 }
@@ -58,8 +60,14 @@ void ServerPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 	PacketHeader header;
 	br >> header;
 
-	MONSTER_INFO info;
+	PACKET_Mob_INFO info;
 	br >> info;
+
+	wstring name;
+	uint16 nameLen;
+	br >> nameLen;
+	name.resize(nameLen);
+	br.Read((void*)name.data(), nameLen * sizeof(WCHAR));
 
 	GSessionManager.UpdateMobInfo(info);
 }
@@ -85,11 +93,9 @@ void ServerPacketHandler::Handle_BATTLE(BYTE* buffer, int32 len)
 	PacketHeader header;
 	br >> header;
 
-	Player_INFO atkInfo;
+	PACKET_Player_INFO atkInfo;
 	uint32 tgtId;
-	SkillType skillType;
-	br >> atkInfo >> tgtId >> skillType;
-	GSessionManager.BattleCalculate(atkInfo, tgtId, skillType);
+	br >> atkInfo >> tgtId;
 }
 
 SendBufferRef ServerPacketHandler::Make_USER_CONNECT()
@@ -98,13 +104,16 @@ SendBufferRef ServerPacketHandler::Make_USER_CONNECT()
 	return nullptr;
 }
 
-SendBufferRef ServerPacketHandler::Make_USER_INFO(Player_INFO userInfo, bool otherPacket)
+SendBufferRef ServerPacketHandler::Make_USER_INFO(PACKET_Player_INFO userInfo, wstring name, bool otherPacket)
 {
 	SendBufferRef sendBuffer = GSendBufferManager->Open(4096); //4kb
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
 	PacketHeader* header = bw.Reserve<PacketHeader>();
 
 	bw << userInfo;
+
+	bw << (uint16)name.size();
+	bw.Write((void*)name.data(), name.size() * sizeof(WCHAR));
 
 	header->size = bw.WriteSize();
 	header->id = PACKET_USER_INFO;
@@ -115,7 +124,7 @@ SendBufferRef ServerPacketHandler::Make_USER_INFO(Player_INFO userInfo, bool oth
 	return sendBuffer;
 }
 
-SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint32, MONSTER_INFO> charaInfo)
+SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint32, PACKET_Mob_INFO> charaInfo)
 {
 	SendBufferRef sendBuffer = GSendBufferManager->Open(4096); //4kb
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
@@ -123,9 +132,9 @@ SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint32, MONSTER_INFO> c
 
 	for (const auto& pair : charaInfo) {
 		uint64 id = pair.first;
-		MONSTER_INFO info = pair.second;
+		PACKET_Mob_INFO info = pair.second;
 		info._timeStamp = TIMER().getCurrentTime();
-
+		
 		bw << info;
 	}
 

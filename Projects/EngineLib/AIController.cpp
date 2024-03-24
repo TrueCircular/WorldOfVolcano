@@ -182,7 +182,7 @@ void AIController::SearchTraceTarget()
 
 	if (_targetList.size() > 0)
 	{
-		//Taget ÈÄº¸ °áÁ¤
+		//Taget ï¿½Äºï¿½ ï¿½ï¿½ï¿½ï¿½
 		map<float, shared_ptr<PlayableUnit>> ToTargetList;
 
 		for (const auto& target : _targetList)
@@ -191,7 +191,7 @@ void AIController::SearchTraceTarget()
 			Vec3 targetPos = target->GetTransform()->GetLocalPosition();
 			float Length = Vec3::Distance(myPos, targetPos);
 
-			//ÀÚ½ÅÀÇ À§Ä¡¿Í Å¸°Ù À§Ä¡°¡ ÃßÀû°Å¸® ¾È¿¡ Á¸Àç ÇÒ °æ¿ì Å½»ö
+			//ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ ï¿½È¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ Å½ï¿½ï¿½
 			if (Length <= _traceRadius)
 			{
 				ToTargetList.insert(make_pair(Length, target));
@@ -204,7 +204,7 @@ void AIController::SearchTraceTarget()
 			float minDistance = 0.f;
 			shared_ptr<PlayableUnit> FinalTarget;
 
-			//ÃÖÁ¾ Å¸±ê °è»ê
+			//ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½
 			for (const auto& target : ToTargetList)
 			{
 				uint16 aggroPow = target.second->GetComponent<CharacterInfo>()->GetDefaultCharacterInfo()._aggroLevel;

@@ -42,8 +42,6 @@ int main()
 			while (true)
 			{
 				TIMER().update();
-				GameServerAI gameAI;
-				gameAI.Update();
 
 				SendBufferRef sendBuffer = ServerPacketHandler::Make_MONSTER_INFO(GSessionManager.GetMobInfoList());
 				GSessionManager.Broadcast(sendBuffer);
