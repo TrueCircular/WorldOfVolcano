@@ -458,7 +458,6 @@ void PlayerController::PlayerPicking()
 					_isAttack = true;
 					_isBattle = true;
 				}
-
 			}
 		}
 	}
@@ -577,9 +576,10 @@ void PlayerController::InitController()
 		_camMaxDist = _camDist + FLT_EPSILON;
 		_camMinDist = 25.f;
 	}
+
 }
 
-void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float damage)
+void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float damage, float aggroValue)
 {
 	if (_unitInfo.lock() == nullptr)
 		return;

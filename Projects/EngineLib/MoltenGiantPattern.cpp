@@ -59,10 +59,11 @@ void MoltenGiantStand::Update()
 			{
 				Vec3 myPos = _transform.lock()->GetLocalPosition();
 				Vec3 targetPos = target->GetTransform()->GetLocalPosition();
+				bool& isAlive = target->GetComponent<CharacterController>()->_isAlive;
 				float Length = Vec3::Distance(myPos, targetPos);
 
 				//자신의 위치와 타겟 위치가 추적거리 안에 존재 할 경우 탐색
-				if (Length <= _traceRadius)
+				if (Length <= _traceRadius && isAlive)
 				{
 					ToTargetList.insert(make_pair(Length, target));
 				}
@@ -317,61 +318,69 @@ void MoltenGiantTrace::Update()
 	if (_controller.lock() != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
+		bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
 
-		//자신의 위치에서 타겟방향으로 향하는 정규화 된 방향 벡터 계산(Normal Vector)
-		Vec3 myPos = _transform.lock()->GetLocalPosition();
-		Vec3 targetPos = _targetTransform.lock()->GetPosition();
-		targetPos.y = myPos.y;
-		Vec3 toTargetDir = targetPos - myPos;
-
-		//타겟 방향으로 회전
+		if (isAlive == false)
 		{
-			if (toTargetDir.Length() > 0)
+			Out(L"MoltenGiantMoveToSpwanPoint");
+		}
+		else
+		{
+			//자신의 위치에서 타겟방향으로 향하는 정규화 된 방향 벡터 계산(Normal Vector)
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
 			{
-				toTargetDir.Normalize(toTargetDir);
+				if (toTargetDir.Length() > 0)
 				{
-					Vec3 myForward = _transform.lock()->GetLookVector();
-					Vec3 myRight = _transform.lock()->GetRightVector();
-					Vec3 myUp = Vec3(0, 1, 0);
-
-					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
-					float angle = acosf(dotAngle);
-
-					Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-					float LeftRight = cross.Dot(myUp);
-
-					if (LeftRight < 0)
+					toTargetDir.Normalize(toTargetDir);
 					{
-						angle = -angle;
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
 					}
-
-					angle = angle * _totargetRotationSpeed * _dt;
-
-					Vec3 myRot = _transform.lock()->GetLocalRotation();
-					myRot.y += angle;
-					_transform.lock()->SetLocalRotation(myRot);
 				}
 			}
-		}
 
-		toTargetDir.Normalize(toTargetDir);
+			toTargetDir.Normalize(toTargetDir);
 
-		//타겟 방향으로 이동 & Attack Range 체크 후 도달 시 Trasition
-		{
-			Vec3 toTargetTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
-			_transform.lock()->SetPosition(toTargetTranslate);
-
-			Vec3 targetPos2 = _targetTransform.lock()->GetLocalPosition();
-
-			float distance = Vec3::Distance(toTargetTranslate, targetPos2);
-
-			if (distance <= _attackRange && distance <= _traceRadius)
+			//타겟 방향으로 이동 & Attack Range 체크 후 도달 시 Trasition
 			{
-				Out(L"MoltenGiantBattle");
-			}
-			else if (distance > _attackRange && distance > _traceRadius)
-			{
-				Out(L"MoltenGiantMoveToSpwanPoint");
+				Vec3 toTargetTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
+				_transform.lock()->SetPosition(toTargetTranslate);
+
+				Vec3 targetPos2 = _targetTransform.lock()->GetLocalPosition();
+
+				float distance = Vec3::Distance(toTargetTranslate, targetPos2);
+
+				if (distance <= _attackRange && distance <= _traceRadius)
+				{
+					Out(L"MoltenGiantBattle");
+				}
+				else if (distance > _attackRange && distance > _traceRadius)
+				{
+					Out(L"MoltenGiantMoveToSpwanPoint");
+				}
 			}
 		}
 	}
@@ -467,6 +476,7 @@ void MoltenGiantMoveToSpwanPoint::Update()
 		{
 			Vec3 toSpwanPosTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
 			_transform.lock()->SetLocalPosition(toSpwanPosTranslate);
+			Out(L"MoltenGiantStand");
 		}
 		else
 		{

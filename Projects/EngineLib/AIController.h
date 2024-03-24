@@ -9,9 +9,15 @@ class HeightGetter;
 class CharacterInfo;
 class UnitFSM;
 
+struct TargetDesc
+{
+	shared_ptr<GameObject> Target;
+	float	AggroValue = 0.f;
+};
+
 class AIController : public CharacterController, public enable_shared_from_this<AIController>
 {
-	using TarceTargetList = unordered_set<shared_ptr<PlayableUnit>>;
+	using TargetList = set<TargetDesc>;
 public:
 	AIController(){}
 	virtual ~AIController(){}
@@ -26,8 +32,8 @@ private:
 	float _slowSpeed = 0.f;
 	bool _isSlow = false;
 private:
+	TargetList					_targetList;
 	weak_ptr<Transform>			_targetTransform;
-	TarceTargetList				_targetList;
 	Vec3						_targetPos = Vec3(0.f);
 	float						_traceRadius = 0.f;
 private:
@@ -74,9 +80,9 @@ public:
 	const PlayerAnimType& GetCurrentPlayerAnimType() const { return _currentPlayerAnimState->GetStateAnimtype(); }
 public:
 	//Event
-	virtual void TakeDamage(const shared_ptr<GameObject>& sender, float damage) override;
+	virtual void TakeDamage(const shared_ptr<GameObject>& sender, float damage, float aggroValue) override;
 	virtual void DeadEvent() override;
-	void SearchTraceTarget();
+	void SearchTarget();
 public:
 	virtual void Start() override;
 	virtual void FixedUpdate() override;

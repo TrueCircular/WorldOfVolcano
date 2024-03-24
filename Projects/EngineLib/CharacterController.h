@@ -25,7 +25,7 @@ public:
 protected:
 	virtual void InitController(){}
 public:
-	virtual void TakeDamage(const shared_ptr<GameObject>& sender, float damage) {}
+	virtual void TakeDamage(const shared_ptr<GameObject>& sender, float damage, float aggroValue) {}
 	virtual void Respawn(const Vec3& spawnPos = Vec3(0.f)){}
 	virtual void DeadEvent(){}
 };

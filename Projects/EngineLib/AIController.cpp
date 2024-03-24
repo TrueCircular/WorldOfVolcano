@@ -103,10 +103,28 @@ bool AIController::SetAnimState(const PlayerAnimType& type)
 	return false;
 }
 
-void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage)
+void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage, float aggroValue)
 {
 	if (_characterInfo.lock() == nullptr)
 		return;
+
+	//Aggro Calculte
+	{
+		for (auto target : _targetList)
+		{
+			if (sender == target.Target)
+			{
+				target.AggroValue += aggroValue;
+			}
+			else
+			{
+				TargetDesc temp;
+				temp.Target = sender;
+				temp.AggroValue = aggroValue;
+				_targetList.insert(temp);
+			}
+		}
+	}
 
 	//Damage Calculate
 	{
@@ -176,58 +194,8 @@ void AIController::DeadEvent()
 	GetGameObject()->SetActive(false);
 }
 
-void AIController::SearchTraceTarget()
+void AIController::SearchTarget()
 {
-	_targetList = MANAGER_SCENE()->GetCurrentScene()->GetPlayableUnit();
-
-	if (_targetList.size() > 0)
-	{
-		//Taget 후보 결정
-		map<float, shared_ptr<PlayableUnit>> ToTargetList;
-
-		for (const auto& target : _targetList)
-		{
-			Vec3 myPos = _transform.lock()->GetLocalPosition();
-			Vec3 targetPos = target->GetTransform()->GetLocalPosition();
-			float Length = Vec3::Distance(myPos, targetPos);
-
-			//자신의 위치와 타겟 위치가 추적거리 안에 존재 할 경우 탐색
-			if (Length <= _traceRadius)
-			{
-				ToTargetList.insert(make_pair(Length, target));
-			}
-		}
-
-		if (ToTargetList.size() > 0)
-		{
-			uint16 maxAggroPow = 0;
-			float minDistance = 0.f;
-			shared_ptr<PlayableUnit> FinalTarget;
-
-			//최종 타깃 계산
-			for (const auto& target : ToTargetList)
-			{
-				uint16 aggroPow = target.second->GetComponent<CharacterInfo>()->GetDefaultCharacterInfo()._aggroLevel;
-
-				if (aggroPow > maxAggroPow)
-				{
-					maxAggroPow = aggroPow;
-					minDistance = target.first;
-					FinalTarget = target.second;
-				}
-				else if (aggroPow == maxAggroPow && target.first < minDistance)
-				{
-					minDistance = target.first;
-					FinalTarget = target.second;
-				}
-			}
-
-			if (FinalTarget != nullptr)
-			{
-				SetTargetTransform(FinalTarget->GetTransform());
-			}
-		}
-	}
 }
 
 void AIController::Start()
@@ -259,15 +227,7 @@ void AIController::FixedUpdate()
 	{
 		DeadEvent();
 	}
-
-	if (_heightGetterCom.lock())
-	{
-		Vec3 tempPos = _transform.lock()->GetLocalPosition();
-		tempPos.y = _heightGetterCom.lock()->GetHeight();
-		_transform.lock()->SetLocalPosition(tempPos);
-	}
-
-	if (_jumpState->isJump == false)
+	else
 	{
 		if (_heightGetterCom.lock())
 		{
@@ -275,19 +235,29 @@ void AIController::FixedUpdate()
 			tempPos.y = _heightGetterCom.lock()->GetHeight();
 			_transform.lock()->SetLocalPosition(tempPos);
 		}
-	}
-	switch (_type)
-	{
-	case AIType::PlayableUnit:
-	{
-		_currentPlayerAnimState->Update();
-	}
-	break;
-	case AIType::EnemyUnit:
-	{
-		_unitFsm->Update();
-	}
-	break;
+
+		if (_jumpState->isJump == false)
+		{
+			if (_heightGetterCom.lock())
+			{
+				Vec3 tempPos = _transform.lock()->GetLocalPosition();
+				tempPos.y = _heightGetterCom.lock()->GetHeight();
+				_transform.lock()->SetLocalPosition(tempPos);
+			}
+		}
+		switch (_type)
+		{
+		case AIType::PlayableUnit:
+		{
+			_currentPlayerAnimState->Update();
+		}
+		break;
+		case AIType::EnemyUnit:
+		{
+			_unitFsm->Update();
+		}
+		break;
+		}
 	}
 }
 
