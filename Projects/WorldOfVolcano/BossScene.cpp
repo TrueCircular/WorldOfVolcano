@@ -175,7 +175,7 @@ void BossScene::Init()
 		}
 		soundController->SetSound(PlayerAnimType::Death, bgm2);
 
-		_warrior->GetComponent<PlayerController>()->SetSoundController(soundController);
+		//_warrior->GetComponent<PlayerController>()->SetSoundController(soundController);
 
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
@@ -230,8 +230,6 @@ void BossScene::Update()
 	sendInfo._pos = _warrior->GetTransform()->GetPosition();
 	sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
 	sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
-	sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
-	sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
 	sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
 	sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
 
