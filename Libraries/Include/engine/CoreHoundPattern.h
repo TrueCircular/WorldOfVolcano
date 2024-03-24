@@ -6,11 +6,12 @@ class PlayableUnit;
 class CharacterInfo;
 class AIController;
 class Sounds;
+struct TargetDesc;
 #pragma endregion
 
 class CoreHoundStand : public StandStrategy
 {
-	using TarceTargetList = unordered_set<shared_ptr<PlayableUnit>>;
+	using TargetList = unordered_set<shared_ptr<TargetDesc>>;
 public:
 	CoreHoundStand();
 	virtual ~CoreHoundStand();
@@ -19,7 +20,7 @@ private:
 	weak_ptr<Transform>		_transform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
-	TarceTargetList			_targetList;
+	weak_ptr<TargetList>	_targetList;
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 public:
@@ -33,6 +34,10 @@ class CoreHoundDamaged : public DamagedStrategy
 public:
 	CoreHoundDamaged();
 	virtual ~CoreHoundDamaged();
+private:
+	weak_ptr<AIController>	_controller;
+	weak_ptr<ModelAnimator>	_animator;
+	shared_ptr<Sounds>		_damagedSound;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
@@ -44,6 +49,13 @@ class CoreHoundDead : public DeadStrategy
 public:
 	CoreHoundDead();
 	virtual ~CoreHoundDead();
+private:
+	weak_ptr<AIController>	_controller;
+	weak_ptr<ModelAnimator>	_animator;
+	shared_ptr<Sounds>		_deadSound;
+	float					_dt = 0.f;
+	float					_soundTimer = 1.0f;
+	bool					_soundFlag = false;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
@@ -52,12 +64,14 @@ public:
 
 class CoreHoundTrace : public TraceStrategy
 {
+	using TargetList = unordered_set<shared_ptr<TargetDesc>>;
 public:
 	CoreHoundTrace();
 	virtual ~CoreHoundTrace();
 private:
 	weak_ptr<AIController>	_controller;
 	weak_ptr<Transform>		_transform;
+	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
@@ -95,12 +109,14 @@ public:
 
 class CoreHoundBattle : public BattleStrategy
 {
+	using TargetList = unordered_set<shared_ptr<TargetDesc>>;
 public:
 	CoreHoundBattle();
 	virtual ~CoreHoundBattle();
 private:
 	weak_ptr<AIController>	_controller;
 	weak_ptr<Transform>		_transform;
+	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;

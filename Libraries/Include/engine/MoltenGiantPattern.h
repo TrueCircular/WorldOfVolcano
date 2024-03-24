@@ -6,11 +6,12 @@ class PlayableUnit;
 class CharacterInfo;
 class AIController;
 class Sounds;
+struct TargetDesc;
 #pragma endregion
 
 class MoltenGiantStand : public StandStrategy
 {
-	using TarceTargetList = unordered_set<shared_ptr<PlayableUnit>>;
+	using TargetList = unordered_set<shared_ptr<TargetDesc>>;
 public:
 	MoltenGiantStand();
 	virtual ~MoltenGiantStand();
@@ -19,7 +20,7 @@ private:
 	weak_ptr<Transform>		_transform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
-	TarceTargetList			_targetList;
+	weak_ptr<TargetList>	_targetList;
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 public:
@@ -48,6 +49,12 @@ class MoltenGiantStun : public StunStrategy
 public:
 	MoltenGiantStun();
 	virtual ~MoltenGiantStun();
+private:
+	weak_ptr<AIController>	_controller;
+	weak_ptr<ModelAnimator>	_animator;
+	float _stunTime = 1.5f;
+	float _stunTimer = 0.f;
+	float _dt = 0.f;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
@@ -74,12 +81,14 @@ public:
 
 class MoltenGiantTrace : public TraceStrategy
 {
+	using TargetList = unordered_set<shared_ptr<TargetDesc>>;
 public:
 	MoltenGiantTrace();
 	virtual ~MoltenGiantTrace();
 private:
 	weak_ptr<AIController>	_controller;
 	weak_ptr<Transform>		_transform;
+	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
@@ -117,12 +126,14 @@ public:
 
 class MoltenGiantBattle : public BattleStrategy
 {
+	using TargetList = unordered_set<shared_ptr<TargetDesc>>;
 public:
 	MoltenGiantBattle();
 	virtual ~MoltenGiantBattle();
 private:
 	weak_ptr<AIController>	_controller;
 	weak_ptr<Transform>		_transform;
+	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;

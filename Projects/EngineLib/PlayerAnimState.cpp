@@ -65,33 +65,6 @@ bool PlayerAnimState::Update()
 			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}
-		case PlayerUnitState::Ability2:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}
 		}
 	}
 	else if (_aiContoller.lock())
@@ -149,33 +122,6 @@ bool PlayerAnimState::Update()
 			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}break;
-		case PlayerUnitState::Attack:
-		{
-			::srand(time(NULL));
-
-			int selectAttack = rand() % 2;
-
-			if (selectAttack == 0)
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack1);
-
-			}
-			else
-			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack2);
-			}
-			return true;
-		}break;
-		case PlayerUnitState::Ability1:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
-			return true;
-		}
-		case PlayerUnitState::Ability2:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
-			return true;
-		}
 		}
 	}
 
@@ -651,7 +597,6 @@ bool PlayerAnimDamaged::Update()
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-
 			if (_playerState.lock() != nullptr)
 			{
 				if (*_playerState.lock() != PlayerUnitState::Damaged)
@@ -827,30 +772,18 @@ bool PlayerAnimAttack1::Update()
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_contoller.lock()->_isBattle = true;
-			_contoller.lock()->_isAttack = false;
-			if (_playerState.lock() != nullptr)
-			{
-				if (*_playerState.lock() != PlayerUnitState::Attack)
-				{
-					Super::Update();
-				}
-			}
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
 		}
 	}
 	else if (_aiContoller.lock())
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_aiContoller.lock()->_isBattle = true;
-			_aiContoller.lock()->_isAttack = false;
-			if (_playerState.lock() != nullptr)
-			{
-				if (*_playerState.lock() != PlayerUnitState::Attack)
-				{
-					Super::Update();
-				}
-			}
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
 		}
 	}
 
@@ -918,31 +851,18 @@ bool PlayerAnimAttack2::Update()
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_contoller.lock()->_isBattle = true;
-			_contoller.lock()->_isAttack = false;
-
-			if (_playerState.lock() != nullptr)
-			{
-				if (*_playerState.lock() != PlayerUnitState::Attack)
-				{
-					Super::Update();
-				}
-			}
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
 		}
 	}
 	else if (_aiContoller.lock())
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_aiContoller.lock()->_isBattle = true;
-			_aiContoller.lock()->_isAttack = false;
-			if (_playerState.lock() != nullptr)
-			{
-				if (*_playerState.lock() != PlayerUnitState::Attack)
-				{
-					Super::Update();
-				}
-			}
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
 		}
 	}
 
@@ -1023,7 +943,18 @@ bool PlayerAnimAbility1::Update()
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
+		}
+	}
+	else if (_aiContoller.lock())
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
 		}
 	}
 
@@ -1066,13 +997,18 @@ bool PlayerAnimAbility2::Update()
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			if (_playerState.lock() != nullptr)
-			{
-				if (*_playerState.lock() != PlayerUnitState::Ability2)
-				{
-					Super::Update();
-				}
-			}
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
+		}
+	}
+	else if (_aiContoller.lock())
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
 		}
 	}
 

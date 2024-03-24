@@ -69,6 +69,9 @@
 
 //STL
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>
+#include <float.h>
 #include <vector>
 #include <list>
 #include <queue>

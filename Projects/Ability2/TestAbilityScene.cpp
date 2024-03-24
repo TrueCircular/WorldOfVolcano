@@ -147,26 +147,26 @@ void TestAbilityScene::Init()
 		{
 			//CoreHound
 			{
-				//auto height = make_shared<HeightGetter>();
-				//height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
-				//Vec3 spwanPos = Vec3(103, 0, 240);
-				//spwanPos.y = height->GetHeight(spwanPos);
+				auto height = make_shared<HeightGetter>();
+				height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+				Vec3 spwanPos = Vec3(103, 0, 240);
+				spwanPos.y = height->GetHeight(spwanPos);
 
-				//_coreHound = make_shared<CoreHound>();
-				//_coreHound->Awake();
-				//_coreHound->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
-				//_coreHound->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
-				//_coreHound->SetSpwanPosition(spwanPos);
-				//_coreHound->Start();
+				_coreHound = make_shared<CoreHound>();
+				_coreHound->Awake();
+				_coreHound->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+				_coreHound->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
+				_coreHound->SetSpwanPosition(spwanPos);
+				_coreHound->Start();
 
-				//Add(_coreHound);
+				Add(_coreHound);
 			}
 
 			//MoltenGaint
 			{
 				auto height = make_shared<HeightGetter>();
 				height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
-				Vec3 spwanPos = Vec3(153, 0, 240);
+				Vec3 spwanPos = Vec3(153, 0, 180);
 				spwanPos.y = height->GetHeight(spwanPos);
 
 				auto moltenGiant = make_shared<MoltenGiant>();

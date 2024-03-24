@@ -101,7 +101,7 @@ protected:
 	virtual void InitController() override;
 public:
 	//Event
-	virtual void TakeDamage(const shared_ptr<GameObject>& sender, float damage, float aggroValue) override;
+	virtual void TakeDamage(const shared_ptr<GameObject>& sender, float damage) override;
 	virtual void DeadEvent() override;
 	virtual void Respawn(const Vec3& spawnPos = Vec3(0.f)) override;
 public:

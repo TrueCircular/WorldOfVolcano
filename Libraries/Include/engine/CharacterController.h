@@ -8,7 +8,7 @@ public:
 	virtual ~CharacterController(){}
 protected:
 	Vec3	_spawnPos = Vec3(0.f);
-	AIType	_type = AIType::None;
+	AIType	_aiType = AIType::None;
 public:
 	bool _isBattle = false;
 	bool _isAttack = false;
@@ -18,10 +18,10 @@ public:
 public:
 	//Setter
 	void SetSpawnPosition(const Vec3& pos) { _spawnPos = pos; }
-	void SetAIType(AIType type) { _type = type; }
+	void SetAIType(AIType type) { _aiType = type; }
 	//Getter
 	const Vec3& GetSpawnPosition() const { return _spawnPos; }
-	const AIType& GetAiType() const { return _type; }
+	const AIType& GetAiType() const { return _aiType; }
 protected:
 	virtual void InitController(){}
 public:

@@ -3,7 +3,7 @@
 #include "AIController.h"
 #include "PlayerAnimState.h"
 #include "HeightGetter.h"
-#include <float.h>
+
 #include "CharacterInfo.h"
 #include "UnitFSM.h"
 
@@ -170,14 +170,14 @@ void PlayerController::PlayerInput()
 {
 	if (_isAlive == true)
 	{
-		PlayerAttack();
 		PlayerMove();
+		CameraMove();
+		PlayerAttack();
 		PlayerAbility1();
 		PlayerAbility2();
 	}
 
 	_animState->Update();
-	CameraMove();
 }
 
 void PlayerController::PlayerMove()
@@ -202,75 +202,71 @@ void PlayerController::PlayerMove()
 		_currentSpeed = _defaultSpeed;
 	}
 
-	if (_isAttack == false)
+	if (!MANAGER_INPUT()->GetButton(KEY_TYPE::W) &&
+		!MANAGER_INPUT()->GetButton(KEY_TYPE::S) &&
+		!MANAGER_INPUT()->GetButton(KEY_TYPE::A) &&
+		!MANAGER_INPUT()->GetButton(KEY_TYPE::D))
 	{
-		if (!MANAGER_INPUT()->GetButton(KEY_TYPE::W) &&
-			!MANAGER_INPUT()->GetButton(KEY_TYPE::S) &&
-			!MANAGER_INPUT()->GetButton(KEY_TYPE::A) &&
-			!MANAGER_INPUT()->GetButton(KEY_TYPE::D))
+		if (_isBattle)
 		{
-			if (_isBattle)
-			{
-				*_currentState = PlayerUnitState::Battle;
-			}
-			else
-			{
-				*_currentState = PlayerUnitState::Stand;
-			}
+			*_currentState = PlayerUnitState::Battle;
 		}
-		//왼쪽
-		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::A))
+		else
 		{
-			*_currentState = PlayerUnitState::LeftMove;
-			{
-				_isSlow = false;
-
-				_playerPos -= _playerRight * _currentSpeed * _dt;
-				_transform.lock()->SetPosition(_playerPos);
-				_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-				_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-			}
-
+			*_currentState = PlayerUnitState::Stand;
 		}
-		//오른쪽
-		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::D))
-		{
-			*_currentState = PlayerUnitState::RightMove;
-			{
-				_isSlow = false;
-
-				_playerPos += _playerRight * _currentSpeed * _dt;
-				_transform.lock()->SetPosition(_playerPos);
-				_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-				_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-			}
-		}
-		//앞
-		if (MANAGER_INPUT()->GetButton(KEY_TYPE::W))
+	}
+	//왼쪽
+	else if (MANAGER_INPUT()->GetButton(KEY_TYPE::A))
+	{
+		*_currentState = PlayerUnitState::LeftMove;
 		{
 			_isSlow = false;
-			*_currentState = PlayerUnitState::FrontMove;
 
-			_playerPos += _playerForward * _currentSpeed * _dt;
+			_playerPos -= _playerRight * _currentSpeed * _dt;
 			_transform.lock()->SetPosition(_playerPos);
 			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
 			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
 		}
-		//뒤
-		else if (MANAGER_INPUT()->GetButton(KEY_TYPE::S))
-		{
-			_isSlow = true;
-			*_currentState = PlayerUnitState::BackMove;
-
-			_playerPos -= _playerForward * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_playerPos);
-			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
-		}
-
-		PlayerJump();
 
 	}
+	//오른쪽
+	else if (MANAGER_INPUT()->GetButton(KEY_TYPE::D))
+	{
+		*_currentState = PlayerUnitState::RightMove;
+		{
+			_isSlow = false;
+
+			_playerPos += _playerRight * _currentSpeed * _dt;
+			_transform.lock()->SetPosition(_playerPos);
+			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+		}
+	}
+	//앞
+	if (MANAGER_INPUT()->GetButton(KEY_TYPE::W))
+	{
+		_isSlow = false;
+		*_currentState = PlayerUnitState::FrontMove;
+
+		_playerPos += _playerForward * _currentSpeed * _dt;
+		_transform.lock()->SetPosition(_playerPos);
+		_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+		_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+	}
+	//뒤
+	else if (MANAGER_INPUT()->GetButton(KEY_TYPE::S))
+	{
+		_isSlow = true;
+		*_currentState = PlayerUnitState::BackMove;
+
+		_playerPos -= _playerForward * _currentSpeed * _dt;
+		_transform.lock()->SetPosition(_playerPos);
+		_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+		_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+	}
+
+	PlayerJump();
 
 	KeyStateCheck();
 }
@@ -341,40 +337,60 @@ void PlayerController::PlayerJump()
 
 void PlayerController::PlayerAttack()
 {
+	if (_isAttack == true)
+	{
+		if (_attackTimer > _attackTime)
+		{
+			_isAttack = false;
+			_attackTimer = 0.f;
+		}
+		else
+		{
+			_attackTimer += MANAGER_TIME()->GetDeltaTime();
+		}
+	}
+
 	if (_isAttack == false && _jumpState->isJump == false)
 	{
 		if (_pickedObj != nullptr)
 		{
-			int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
-			int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
-			auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
+			auto pickTransform = _pickedObj->GetTransform();
+			Vec3 myPos = _transform.lock()->GetPosition();
+			Vec3 pickPos = pickTransform->GetPosition();
+			pickPos.y = myPos.y;
+			float dist = Vec3::Distance(myPos, pickPos);
 
-			if (pickObj == _pickedObj)
+			if (dist < _attackRange + FLT_EPSILON)
 			{
-				auto pickTransform = pickObj->GetTransform();
-				Vec3 myPos = _transform.lock()->GetPosition();
-				Vec3 pickPos = pickTransform->GetPosition();
-				pickPos.y = myPos.y;
-				float dist = Vec3::Distance(myPos, pickPos);
-
-				if (dist < _attackRange + FLT_EPSILON)
+				if (_pickedObj->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->_type != UnitStrategyType::Dead)
 				{
-					if (_pickedObj->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->_type != UnitStrategyType::Dead)
+					if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::RBUTTON))
 					{
-						if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::RBUTTON))
+						auto pickController = _pickedObj->GetComponent<AIController>();
+
+						if (pickController != nullptr)
 						{
-							_battleTimer = 0.f;
+							float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
+							pickController->TakeDamage(GetGameObject(), damage);
 
-							auto pickController = _pickedObj->GetComponent<AIController>();
+							MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
 
-							if (pickController != nullptr)
+							*_currentState = PlayerUnitState::Attack;
+
+							::srand(time(NULL));
+
+							int selectAttack = rand() % 2;
+
+							if (selectAttack == 0)
 							{
-								float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
-								pickController->TakeDamage(GetGameObject(), damage);
-								MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
-								*_currentState = PlayerUnitState::Attack;
-								_isAttack = true;
+								SetAnimState(PlayerAnimType::Attack1);
 							}
+							else
+							{
+								SetAnimState(PlayerAnimType::Attack2);
+							}
+							_isBattle = true;
+							_isAttack = true;
 						}
 					}
 				}
@@ -401,65 +417,65 @@ void PlayerController::PlayerAbility2()
 
 void PlayerController::PlayerPicking()
 {
-	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::LBUTTON))
-	{
-		int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
-		int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
+	//if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::LBUTTON))
+	//{
+	//	int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
+	//	int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
 
-		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
+	//	auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
 
-		if (pickObj && pickObj->GetName() == L"MagniBronzebeard")
-		{
-			MANAGER_IMGUI()->BeginDialogue();
-		}
-		else if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
-		{
-			_isPicked = true;
-			_pickedObj = pickObj;
-		}
-		else
-		{
-			MANAGER_IMGUI()->UpdatePicked(false);
-			_isPicked = false;
-		}
-	}
+	//	if (pickObj && pickObj->GetName() == L"MagniBronzebeard")
+	//	{
+	//		MANAGER_IMGUI()->BeginDialogue();
+	//	}
+	//	else if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
+	//	{
+	//		_isPicked = true;
+	//		_pickedObj = pickObj;
+	//	}
+	//	else
+	//	{
+	//		MANAGER_IMGUI()->UpdatePicked(false);
+	//		_isPicked = false;
+	//	}
+	//}
 
-	if (_isPicked)
-	{
-		_pickedInfo = _pickedObj->GetComponent<CharacterInfo>()->GetDefaultCharacterInfo();
+	//if (_isPicked)
+	//{
+	//	_pickedInfo = _pickedObj->GetComponent<CharacterInfo>()->GetDefaultCharacterInfo();
 
-		MANAGER_IMGUI()->UpdatePicked(true, _pickedInfo._maxHp, _pickedInfo._hp, _pickedObj->GetName());
-		if (_pickedInfo._hp == 0)
-		{
-			MANAGER_IMGUI()->UpdatePicked(false);
-			_isPicked = false;
-			//MANAGER_SCENE()->GetCurrentScene()->Remove(_pickedObj);
-		}
+	//	MANAGER_IMGUI()->UpdatePicked(true, _pickedInfo._maxHp, _pickedInfo._hp, _pickedObj->GetName());
+	//	if (_pickedInfo._hp == 0)
+	//	{
+	//		MANAGER_IMGUI()->UpdatePicked(false);
+	//		_isPicked = false;
+	//		//MANAGER_SCENE()->GetCurrentScene()->Remove(_pickedObj);
+	//	}
 
-		if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::RBUTTON))
-		{
-			int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
-			int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
+	//	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::RBUTTON))
+	//	{
+	//		int32 mx = MANAGER_INPUT()->GetScreenMousePos().x;
+	//		int32 my = MANAGER_INPUT()->GetScreenMousePos().y;
 
-			auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
+	//		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
 
-			if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
-			{
-				Vec3 diff = DirectX::XMVectorSubtract(_playerPos, _pickedInfo._pos);
-				float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diff));
+	//		if (pickObj && pickObj->GetName() != L"") //어떤 타입이든 인식할수 있게 수정해야할 필요 있음
+	//		{
+	//			Vec3 diff = DirectX::XMVectorSubtract(_playerPos, _pickedInfo._pos);
+	//			float distance = DirectX::XMVectorGetX(DirectX::XMVector3Length(diff));
 
-				if (distance <= 15.0f)
-				{
-					if (_isAttack == false)
-					{
-						//_attackQueue.push(SkillType::NormalAttack);
-					}
-					_isAttack = true;
-					_isBattle = true;
-				}
-			}
-		}
-	}
+	//			if (distance <= 15.0f)
+	//			{
+	//				if (_isAttack == false)
+	//				{
+	//					//_attackQueue.push(SkillType::NormalAttack);
+	//				}
+	//				_isAttack = true;
+	//				_isBattle = true;
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 void PlayerController::PlayerTargetControll()
@@ -578,48 +594,51 @@ void PlayerController::InitController()
 
 }
 
-void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float damage, float aggroValue)
+void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float damage)
 {
 	if (_unitInfo.lock() == nullptr)
 		return;
 	else
 	{
-		//Damage Calculate
+		if (_isAlive)
 		{
-			auto myInfo = _unitInfo.lock()->GetCharacterInfo();
-			float defEff = pow(myInfo._def * log(2), 0.5) * 3;
-			float calDamage = damage * (1 - defEff / 100);
-			float finalHp = myInfo._hp - calDamage;
-
-			if (finalHp < 1.f + FLT_EPSILON)
+			//Damage Calculate
 			{
-				finalHp = 0;
+				auto myInfo = _unitInfo.lock()->GetCharacterInfo();
+				float defEff = pow(myInfo._def * log(2), 0.5) * 3;
+				float calDamage = damage * (1 - defEff / 100);
+				float finalHp = myInfo._hp - calDamage;
 
-				myInfo._hp = (uint32)finalHp;
-				_unitInfo.lock()->SetCharacterInfo(myInfo);
-				MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
-				*_currentState = PlayerUnitState::Death;
-				SetAnimState(PlayerAnimType::Death);
-			}
-			else
-			{
-				myInfo._hp = (uint32)finalHp;
-				_unitInfo.lock()->SetCharacterInfo(myInfo);
-				MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
-
-				if (_animState->GetStateAnimtype() != PlayerAnimType::Damaged &&
-					_animState->GetStateAnimtype() != PlayerAnimType::Death &&
-					_animState->GetStateAnimtype() != PlayerAnimType::Casting &&
-					_animState->GetStateAnimtype() != PlayerAnimType::JumpStart &&
-					_animState->GetStateAnimtype() != PlayerAnimType::JumpFall &&
-					_animState->GetStateAnimtype() != PlayerAnimType::JumpEnd &&
-					_animState->GetStateAnimtype() != PlayerAnimType::Attack1 &&
-					_animState->GetStateAnimtype() != PlayerAnimType::Attack2 &&
-					_animState->GetStateAnimtype() != PlayerAnimType::Ability1 &&
-					_animState->GetStateAnimtype() != PlayerAnimType::Ability2)
+				if (finalHp < 1.f + FLT_EPSILON)
 				{
-					*_currentState = PlayerUnitState::Damaged;
-					SetAnimState(PlayerAnimType::Damaged);
+					finalHp = 0;
+
+					myInfo._hp = (uint32)finalHp;
+					_unitInfo.lock()->SetCharacterInfo(myInfo);
+					MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
+					*_currentState = PlayerUnitState::Death;
+					SetAnimState(PlayerAnimType::Death);
+				}
+				else
+				{
+					myInfo._hp = (uint32)finalHp;
+					_unitInfo.lock()->SetCharacterInfo(myInfo);
+					MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
+
+					if (_animState->GetStateAnimtype() != PlayerAnimType::Damaged &&
+						_animState->GetStateAnimtype() != PlayerAnimType::Death &&
+						_animState->GetStateAnimtype() != PlayerAnimType::Casting &&
+						_animState->GetStateAnimtype() != PlayerAnimType::JumpStart &&
+						_animState->GetStateAnimtype() != PlayerAnimType::JumpFall &&
+						_animState->GetStateAnimtype() != PlayerAnimType::JumpEnd &&
+						_animState->GetStateAnimtype() != PlayerAnimType::Attack1 &&
+						_animState->GetStateAnimtype() != PlayerAnimType::Attack2 &&
+						_animState->GetStateAnimtype() != PlayerAnimType::Ability1 &&
+						_animState->GetStateAnimtype() != PlayerAnimType::Ability2)
+					{
+						*_currentState = PlayerUnitState::Damaged;
+						SetAnimState(PlayerAnimType::Damaged);
+					}
 				}
 			}
 		}
@@ -628,6 +647,7 @@ void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float da
 
 void PlayerController::DeadEvent()
 {
+	*_currentState = PlayerUnitState::Stand;
 }
 
 void PlayerController::Respawn(const Vec3& spawnPos)
@@ -635,6 +655,9 @@ void PlayerController::Respawn(const Vec3& spawnPos)
 	if (spawnPos != Vec3::Zero)
 	{
 		_isAlive = true;
+		_isAttack = false;
+		_isBattle = false;
+		_isAbility = false;
 		_animator.lock()->SetLoop(true);
 		_animator.lock()->SetPlay(true);
 
@@ -645,6 +668,9 @@ void PlayerController::Respawn(const Vec3& spawnPos)
 	else
 	{
 		_isAlive = true;
+		_isAttack = false;
+		_isBattle = false;
+		_isAbility = false;
 		_animator.lock()->SetLoop(true);
 		_animator.lock()->SetPlay(true);
 
@@ -668,6 +694,7 @@ void PlayerController::Start()
 		_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
 
 		_unitInfo = GetGameObject()->GetComponent<CharacterInfo>();
+		_attackTime = _unitInfo.lock()->GetDefaultCharacterInfo()._attackTime;
 		_attackRange = _unitInfo.lock()->GetDefaultCharacterInfo()._attackRange;
 		_defaultSpeed = _unitInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
 		_currentSpeed = _defaultSpeed;
@@ -695,7 +722,7 @@ void PlayerController::FixedUpdate()
 {
 	if (_isAlive == false)
 	{
-
+		DeadEvent();
 	}
 
 	if (_isBattle)
@@ -708,6 +735,8 @@ void PlayerController::FixedUpdate()
 
 		_battleTimer += MANAGER_TIME()->GetDeltaTime();
 	}
+
+
 
 	PlayerTargetControll();
 }
