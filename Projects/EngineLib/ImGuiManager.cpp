@@ -209,41 +209,59 @@ void ImGuiManager::Update()
         if (show_hp_window)
         {
             // Set the window size to a fixed value
-            ImGui::SetNextWindowSize(ImVec2(300, 150), ImGuiCond_Always);
+            ImGui::SetNextWindowSize(ImVec2(310, 115), ImGuiCond_Always);
             // Set the window position to the top-left corner
-            ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(-5, -5), ImGuiCond_Always);
 
             // 윈도우의 배경색을 투명도(alpha)에 따라 설정
             ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
             ImGui::PushStyleColor(ImGuiCol_BorderShadow, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
             ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 
-            ImGui::Begin("Hp Window", &show_hp_window, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 
+            wstring charImgPath = RESOURCES_ADDR_TEXTURE;
+            charImgPath += L"CharSlot.PNG";
+            shared_ptr<Texture> slotImg = MANAGER_RESOURCES()->LoadResource<Texture>(L"SkillSlot", charImgPath);
+
+            wstring emptyBarImgPath = RESOURCES_ADDR_TEXTURE;
+            emptyBarImgPath += L"HPMPEMPTYBAR.PNG";
+            shared_ptr<Texture> EmtyBarImg = MANAGER_RESOURCES()->LoadResource<Texture>(L"EmptyBar", emptyBarImgPath);
+            wstring HpBarImgPath = RESOURCES_ADDR_TEXTURE;
+            HpBarImgPath += L"HPLINE.PNG";
+            shared_ptr<Texture> HPBarImg = MANAGER_RESOURCES()->LoadResource<Texture>(L"HpBar", HpBarImgPath);
+            wstring MpBarImgPath = RESOURCES_ADDR_TEXTURE;
+            MpBarImgPath += L"MPLINE.PNG";
+            shared_ptr<Texture> MPbarImg = MANAGER_RESOURCES()->LoadResource<Texture>(L"MpBar", MpBarImgPath);
+
+            ImGui::Begin("Hp Window", &show_hp_window, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoScrollWithMouse| ImGuiWindowFlags_NoScrollbar);
+
+            ImGui::SetCursorPos(ImVec2(-10, -10));
+            ImGui::Image((void*)slotImg->GetTexture().Get(),ImVec2(310,115));
             ImGui::PopStyleColor(3); // Push한 스타일을 복원
 
+            ImGui::SetCursorPos(ImVec2(15, 5));
             ImGui::Text("Warrior");
             //Hp Bar
             {
+                ImVec2 curPos = ImGui::GetCursorPos();
+                ImGui::SetCursorPosX(10);
                 ImGui::Text("HP");
-                float r = 187.0f / 255.0f;
-                float g = 0.0f / 255.0f;
-                float b = 2.0f / 255.0f;
-                ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(r, g, b, 1.0f));
-                ImGui::SameLine();
-                ImGui::ProgressBar(_hp);
-                ImGui::PopStyleColor(1);
+                curPos.x = 50;
+                ImGui::SetCursorPos(curPos);
+                ImGui::Image((void*)EmtyBarImg->GetTexture().Get(), ImVec2(240, 30));
+                ImGui::SetCursorPos(curPos);
+                ImGui::Image((void*)HPBarImg->GetTexture().Get(), ImVec2(240*_hp, 30));
             }
             //Mp Bar
             {
+                ImVec2 curPos = ImGui::GetCursorPos();
+                ImGui::SetCursorPosX(10);
                 ImGui::Text("MP");
-                float r = 2.0f / 255.0f;
-                float g = 30.0f / 255.0f;
-                float b = 200.0f / 255.0f;
-                ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(r, g, b, 1.0f));
-                ImGui::SameLine();
-                ImGui::ProgressBar(_mp);
-                ImGui::PopStyleColor(1);
+                curPos.x = 50;
+                ImGui::SetCursorPos(curPos);
+                ImGui::Image((void*)EmtyBarImg->GetTexture().Get(), ImVec2(240, 30));
+                ImGui::SetCursorPos(curPos);
+                ImGui::Image((void*)MPbarImg->GetTexture().Get(), ImVec2(240 * _mp, 30));
             }
 
 
@@ -435,15 +453,37 @@ void ImGuiManager::Update()
             float g = 98.0f / 255.0f;
             float b = 87.0f / 255.0f;
 
+            wstring slotImgPath = RESOURCES_ADDR_TEXTURE;
+            slotImgPath += L"SkillSlot.png";
+            shared_ptr<Texture> slotImg = MANAGER_RESOURCES()->LoadResource<Texture>(L"SkillSlot", slotImgPath);
+
+
+            wstring frameImgPath = RESOURCES_ADDR_TEXTURE;
+            frameImgPath += L"Frame_red.PNG";
+            shared_ptr<Texture> frameImg = MANAGER_RESOURCES()->LoadResource<Texture>(L"SkillFrame", frameImgPath);
+
+
+            ImGui::SetNextWindowSize(ImVec2(windowSizeX*6, windowSizeY+25), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(windowPosX-7.5, windowPosY-5), ImGuiCond_Always);
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.0f));
+            ImGui::Begin("SkillSlot", &show_skill_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse|ImGuiWindowFlags_NoMouseInputs);
+
+            ImGui::SetCursorPos(ImVec2(3, 3));
+            ImGui::Image((void*)slotImg->GetTexture().Get(), ImVec2((windowSizeX * 4)+10, windowSizeY+30));
             //Skill1
             {
                 ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
                 ImGui::SetNextWindowPos(ImVec2(windowPosX, windowPosY), ImGuiCond_Always);
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.0f));
                 ImGui::Begin("Skill1 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
                 shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"skill_charge");
                 ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
-                ImGui::Image(textureID, ImVec2(ImageSizeX, ImageSizeY));
+                ImGui::SetCursorPos(ImVec2(3, 3));
+                ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
+                ImGui::SetCursorPos(ImVec2(3, 3));
+                ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX - 6, windowSizeY - 6));
+                ImGui::SetCursorPos(ImVec2(9, 3));
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "1");
                 ImGui::End();
                 ImGui::PopStyleColor();
             }
@@ -451,11 +491,16 @@ void ImGuiManager::Update()
             {
                 ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
                 ImGui::SetNextWindowPos(ImVec2(windowPosX + spacing, windowPosY), ImGuiCond_Always);
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.0f));
                 ImGui::Begin("Skill2 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
                 shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"skill_shouting");
                 ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
-                ImGui::Image(textureID, ImVec2(ImageSizeX, ImageSizeY));
+                ImGui::SetCursorPos(ImVec2(3, 3));
+                ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
+                ImGui::SetCursorPos(ImVec2(3, 3));
+                ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX - 6, windowSizeY - 6));
+                ImGui::SetCursorPos(ImVec2(9, 3));
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "2");
                 ImGui::End();
                 ImGui::PopStyleColor();
             }
@@ -463,11 +508,17 @@ void ImGuiManager::Update()
             {
                 ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
                 ImGui::SetNextWindowPos(ImVec2(windowPosX + spacing * 2, windowPosY), ImGuiCond_Always);
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
-                ImGui::Begin("Skill3 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.0f));
+                ImGui::Begin("Skill3 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoScrollWithMouse);
                 shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"HealthPotion");
                 ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
-                ImGui::Image(textureID, ImVec2(ImageSizeX, ImageSizeY));
+                ImGui::SetItemAllowOverlap();
+                ImGui::SetCursorPos(ImVec2(3, 3));
+                ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
+                ImGui::SetCursorPos(ImVec2(3, 3));
+                ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX - 6, windowSizeY - 6));
+                ImGui::SetCursorPos(ImVec2(9, 3));
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "3");
                 ImGui::End();
                 ImGui::PopStyleColor();
             }
@@ -475,14 +526,22 @@ void ImGuiManager::Update()
             {
                 ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
                 ImGui::SetNextWindowPos(ImVec2(windowPosX + spacing * 3, windowPosY), ImGuiCond_Always);
-                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.8f));
-                ImGui::Begin("Skill4 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration);
+                ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.0f));
+                ImGui::Begin("Skill4 Window", &show_skill_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse);
                 shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"ManaPotion");
+                ImGui::SetItemAllowOverlap();
                 ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
-                ImGui::Image(textureID, ImVec2(ImageSizeX, ImageSizeY));
+                ImGui::SetCursorPos(ImVec2(3, 3));
+                ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
+                ImGui::SetCursorPos(ImVec2(3, 3));
+                ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX-6 , windowSizeY-6));
+                ImGui::SetCursorPos(ImVec2(9, 3));
+                ImGui::TextColored(ImVec4(1, 1, 1, 1), "4");
                 ImGui::End();
                 ImGui::PopStyleColor();
             }
+            ImGui::End();
+            ImGui::PopStyleColor();
         }
 
         //show_quest_window

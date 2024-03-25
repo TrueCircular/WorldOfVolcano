@@ -1,4 +1,9 @@
 #pragma once
+
+class Camera;
+class mesh;
+class Shader;
+
 struct DamageIndiCatorBox {
 	int damage;
 	float textDuration;
@@ -27,7 +32,7 @@ class DamageIndicator
 	shared_ptr<VertexBuffer> instanceBuffer;
 	vector<IndicatorInstance> renderList;
 	list<DamageIndiCatorBox> managingBoxList;
-	shared_ptr<GameObject> cam;
+	shared_ptr<Camera> cam;
 
 	vector<ID3D11ShaderResourceView*> numSRVs;
 	ComPtr<ID3DX11EffectShaderResourceVariable> numArray;
@@ -41,8 +46,8 @@ public:
 
 	static	DamageIndicator& GetInstance();
 	void Init();
-	void SetCamera(shared_ptr<GameObject> obj) {
-		cam = obj;
+	void SetCamera(shared_ptr<Camera> camera) {
+		cam = camera;
 	};
 	void Frame();
 	void Render();

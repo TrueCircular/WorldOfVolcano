@@ -1,5 +1,5 @@
 #pragma once
-class ExPlode : public ParticleObj
+class Explode : public ParticleObj
 {
 private:
 

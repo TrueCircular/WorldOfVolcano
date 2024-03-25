@@ -82,7 +82,7 @@
 					IndicatorInstance data;
 					data.num = dividingDamage[i];
 					auto look = (cam->GetTransform()->GetLookVector());
-					Matrix billmat = Matrix::CreateBillboard(it->pos, cam->GetTransform()->GetPosition(), cam->GetTransform()->GetUpVector(), &look);
+					Matrix billmat = Matrix::CreateBillboard(it->pos, cam->GetCameraPosition(), cam->GetCameraUpVector(), &look);
 
 					Vec3 dePos;
 					Vec3 deScale;
@@ -114,7 +114,7 @@
 					IndicatorInstance data;
 					data.num = dividingDamage[i];
 					auto look = (cam->GetTransform()->GetLookVector());
-					Matrix billmat = Matrix::CreateBillboard(it->pos, cam->GetTransform()->GetPosition(), cam->GetTransform()->GetUpVector(), &look);
+					Matrix billmat = Matrix::CreateBillboard(it->pos, cam->GetCameraPosition(), cam->GetCameraUpVector(), &look);
 
 					Vec3 dePos;
 					Vec3 deScale;

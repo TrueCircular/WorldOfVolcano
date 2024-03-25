@@ -29,7 +29,7 @@
 #include "engine/MagicCircle.h"
 #include "engine/LineSpark.h"
 #include "engine/ShineHelper.h"
-#include "engine/Exlode.h"
+#include "engine/Explode.h"
 void BaseScene::Init()
 {
 	//리소스 매니저 초기화
@@ -60,7 +60,6 @@ void BaseScene::Init()
 	}
 
 	DamageIndicator::GetInstance().Init();
-	DamageIndicator::GetInstance().SetCamera(_childCamera);
 
 	{
 		auto obj = make_shared<GameObject>();
@@ -85,38 +84,37 @@ void BaseScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(obj);
 	}
 
-	auto fog_obj = make_shared<GameObject>();
 	//Character
-	{
-		shared_ptr<Model> model = make_shared<Model>();
-		{
-			wstring MeshAdr = RESOURCES_ADDR_MESH_STATIC;
-			MeshAdr += L"fog";
-			MeshAdr += L"/";
-			MeshAdr += L"fog";
-			MeshAdr += L".mesh";
+	_skydome = make_shared<SkyDome>();
+	SkyDomeDesc _domeDesc;
+	_domeDesc.shaderPath = L"SkyDome.fx";
+	_domeDesc.SkyDomeTexPath = RESOURCES_ADDR_TEXTURE;
+	_domeDesc.SkyDomeTexPath += L"firelandsskyclouds03.png";
+	_domeDesc.SkyDomeBlendPath = RESOURCES_ADDR_TEXTURE;
+	_domeDesc.SkyDomeBlendPath += L"firelandsskyhorizon01.png";
+	_skydome->Set(&_domeDesc);
+	_skydome->Start();
+	//{
+	//	shared_ptr<Model> model = make_shared<Model>();
+	//	{
+	//		wstring MeshAdr = RESOURCES_ADDR_MESH_STATIC;
+	//		MeshAdr += L"fog";
+	//		MeshAdr += L"/";
+	//		MeshAdr += L"fog";
+	//		MeshAdr += L".mesh";
 
-			wstring MaterialAdr = RESOURCES_ADDR_TEXTURE_STATIC;
-			MaterialAdr += L"fog";
-			MaterialAdr += L"/";
-			MaterialAdr += L"fog";
-			MaterialAdr += L".xml";
+	//		wstring MaterialAdr = RESOURCES_ADDR_TEXTURE_STATIC;
+	//		MaterialAdr += L"fog";
+	//		MaterialAdr += L"/";
+	//		MaterialAdr += L"fog";
+	//		MaterialAdr += L".xml";
 
-			model->ReadModel(MeshAdr);
-			model->ReadMaterial(MaterialAdr);
-		}
-		const auto& shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
-		shared_ptr<ModelRenderer> tempModelRenderer = make_shared<ModelRenderer>(shader);
-		{
-			tempModelRenderer->SetModel(model);
-			tempModelRenderer->SetPass(8);
-		}
-		fog_obj->AddComponent(tempModelRenderer);
-		fog_obj->GetOrAddTransform()->SetLocalPosition(Vec3(0, 0, 0));
-		fog_obj->GetTransform()->SetLocalScale(Vec3(5, 5, 5));
-	}
-	fog_obj->Awake();
-	Add(fog_obj);
+	//		model->ReadModel(MeshAdr);
+	//		model->ReadMaterial(MaterialAdr);
+	//	}
+
+	//	model->GetMeshes();
+	//}
 
 
 	HeightPlainInfo heightMapDesc;
@@ -137,7 +135,7 @@ void BaseScene::Init()
 	_terrain->AddComponent(make_shared<MeshRenderer>());
 	_terrain->Start();
 	quadTreeTerrain = make_shared<QuadTreeTerrain>();
-	quadTreeTerrain->Set(_terrain, 3);
+	quadTreeTerrain->Set(_terrain, 1);
 	quadTreeTerrain->Start();
 
 
@@ -162,8 +160,6 @@ void BaseScene::Init()
 	quadTreeTerrainOutLine->Set(_terrainOutLine, 3);
 	quadTreeTerrainOutLine->Start();
 
-
-
 	SplatterDesc spDesc{};
 	spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
 	spDesc.texPath[1] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsashcracks.png";
@@ -177,18 +173,6 @@ void BaseScene::Init()
 	splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderBase"));
 	quadTreeTerrain->AddSplatter(splatter);
 	SetTerrain(_terrain);
-
-	//SplatterDesc spDesc{};
-	//spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
-	//spDesc.texPath[1] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsashcracks.png";
-	//spDesc.texPath[2] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppscharcoal01.png";
-	//spDesc.texName[0] = L"Splat1Dungeon";
-	//spDesc.texName[1] = L"Splat2Dungeon";
-	//spDesc.texName[2] = L"Splat3Dungeon";
-	//spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"dungeon1alpha.bmp";
-	//spDesc.alphaName = L"SplatAlphaDungeon";
-	//splatter = make_shared<LayerSplatter>();
-	//splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderDungeon"));
 
 	quadTreeTerrain->AddSplatter(splatter);
 	spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"testalphaOutLine.bmp";
@@ -211,6 +195,7 @@ void BaseScene::Init()
 		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}
+
 	//Character
 	{
 		_warrior = make_shared<Warrior>();
@@ -252,7 +237,7 @@ void BaseScene::Init()
 	shared_ptr<Polar> polar = make_shared<Polar>();
 	shared_ptr<MagicCircle> magicCircle = make_shared<MagicCircle>();
 	shared_ptr<LineSpark> lineSpark = make_shared<LineSpark>();
-	shared_ptr<Exlode> explode = make_shared<Exlode>();
+	shared_ptr<Explode> explode = make_shared<Explode>();
 	tempTargetTrans = make_shared<Transform>();
 	tempTargetTrans->SetLocalPosition(Vec3(0, 80, 0));
 	shared_ptr<ShineHelper> sparkHelper = make_shared<ShineHelper>();
@@ -285,6 +270,7 @@ void BaseScene::Init()
 	//	shared_ptr<ParticleInstance> instancedata = make_shared<ParticleInstance>(5, pos2, nullptr, 0, true);
 	//	magicCircle->AddParticle(instancedata);
 	//}
+	DamageIndicator::GetInstance().SetCamera(_childCamera->GetCamera());
 	SpawnManager::GetInstance().Init();
 }
 void BaseScene::Start()
@@ -310,8 +296,8 @@ void BaseScene::Update()
 		sendInfo._isOnline = true;
 		sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
 		sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
-		sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
-		sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
+		//sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
+		//sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
 		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
 		//sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapId();
 
@@ -338,13 +324,13 @@ void BaseScene::Update()
 
 		//Attack1
 		{
-			int size = _warrior->GetComponent<PlayerController>()->GetAttackQueueSize();
-			if (size > 0)
-			{
-				uint32 targetId = _warrior->GetComponent<PlayerController>()->GetPickedInfo()._instanceId;
-				_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId);
-				_service->Broadcast(_sendBuffer);
-			}
+		//	int size = _warrior->GetComponent<PlayerController>()->GetAttackQueueSize();
+			//if (size > 0)
+			//{
+			//	uint32 targetId = _warrior->GetComponent<PlayerController>()->GetPickedInfo()._instanceId;
+			//	_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId);
+			//	_service->Broadcast(_sendBuffer);
+			//}
 		}
 
 		//SendBuffer
@@ -430,12 +416,19 @@ void BaseScene::Update()
 		//pos2->SetScale(Vec3(100, 100, 100));
 		//shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
 		//clapParticle->AddParticle(instancedata2);
-		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Explode");
-		shared_ptr<Transform> pos2 = make_shared<Transform>();
-		pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
-		pos2->SetScale(Vec3(100, 100, 100));
-		shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
-		clapParticle->AddParticle(instancedata2);
+		
+		//auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Explode");
+		//shared_ptr<Transform> pos2 = make_shared<Transform>();
+		//pos2->SetLocalPosition(_warrior->GetTransform()->GetLocalPosition());
+		//pos2->SetScale(Vec3(100, 100, 100));
+		//shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
+		//clapParticle->AddParticle(instancedata2);
+		DamageIndiCatorBox box;
+		box.damage = rand() % 10000;
+		box.pos = _warrior->GetTransform()->GetLocalPosition();
+		box.pos.y += 10;
+		box.textDuration = 1.5;
+		MANAGER_INDICATOR().Add(box);
 	}
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::A)) {
 		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke2");
@@ -489,10 +482,11 @@ void BaseScene::Update()
 void BaseScene::LateUpdate()
 {
 
+	_skydome->Update();
 	Scene::LateUpdate();
 	quadTreeTerrain->Update();
 	quadTreeTerrainOutLine->Update();
-
+	
 	MANAGER_SOUND()->Update();
 	DamageIndicator::GetInstance().Render();
 	MANATER_PARTICLE()->Render();

@@ -58,17 +58,17 @@ void DungeonScene::Init()
 		frustom = make_shared<FrustomCamera>();
 		_childCamera = make_shared<GameObject>();
 		_childCamera->Awake();
-		_childCamera->GetTransform()->SetLocalPosition(Vec3(0.f, 500.f, -1000.f));
 		_childCamera->AddComponent(make_shared<Camera>());
-		_childCamera->GetCamera()->SetCameraType(CameraType::Target);
+		_childCamera->AddComponent(make_shared<CameraMove>());
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();
 		_childCamera->SetName(L"Camera");
+		_childCamera->GetCamera()->Init(Vec3(0, 300.f, 0.f), CameraType::Debug, ProjectionType::Perspective, 100.f);
+		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}
 
 	DamageIndicator::GetInstance().Init();
-	DamageIndicator::GetInstance().SetCamera(_childCamera);
 
 	ObjectExporter exporter;
 	exporter.OpenFile(L"../../Resources/Assets/dungeon1fix.dat");
@@ -156,7 +156,7 @@ void DungeonScene::Init()
 	{
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
-		_warrior->AddChild(_childCamera);
+		//_warrior->AddChild(_childCamera);
 		_warrior->AddComponent(make_shared<PlayerController>());
 		_warrior->Start();
 		_warrior->GetTransform()->SetLocalPosition(spawnPos);
@@ -206,7 +206,7 @@ void DungeonScene::Init()
 		}
 		soundController->SetSound(PlayerAnimType::Death, bgm2);
 
-		_warrior->GetComponent<PlayerController>()->SetSoundController(soundController);
+		//_warrior->GetComponent<PlayerController>()->SetSoundController(soundController);
 
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
@@ -227,6 +227,7 @@ void DungeonScene::Init()
 ///	bool isplaynsd;
 //	chs->isPlaying(&isplaynsd);
 
+	DamageIndicator::GetInstance().SetCamera(_childCamera->GetCamera());
 	SpawnManager::GetInstance().Init();
 }
 void DungeonScene::Start()
@@ -244,8 +245,8 @@ void DungeonScene::Update()
 		sendInfo._pos = _warrior->GetTransform()->GetPosition();
 		sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
 		sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
-		sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
-		sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
+		//sendInfo._isAttack = _warrior->GetComponent<PlayerController>()->IsAttack();
+		//sendInfo._isBattle = _warrior->GetComponent<PlayerController>()->IsBattle();
 		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
 //		sendInfo._spawnMapId = SpawnManager::GetInstance().GetSpawnMapId();
 
@@ -272,13 +273,13 @@ void DungeonScene::Update()
 
 		//Attack1
 		{
-			int size = _warrior->GetComponent<PlayerController>()->GetAttackQueueSize();
-			if (size > 0)
-			{
-				uint32 targetId = _warrior->GetComponent<PlayerController>()->GetPickedInfo()._instanceId;
-				_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId);
-				_service->Broadcast(_sendBuffer);
-			}
+			//int size = _warrior->GetComponent<PlayerController>()->GetAttackQueueSize();
+			//if (size > 0)
+			//{
+			//	uint32 targetId = _warrior->GetComponent<PlayerController>()->GetPickedInfo()._instanceId;
+			//	_sendBuffer = ClientPacketHandler::Instance().Make_BATTLE(sendInfo, targetId);
+			//	_service->Broadcast(_sendBuffer);
+			//}
 		}
 
 		//SendBuffer
