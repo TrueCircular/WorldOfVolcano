@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "CharacterInfo.h"
 #include "Sounds.h"
+#include "AbilitySlot.h"
 
 BaronGeddonStand::BaronGeddonStand()
 {
@@ -481,6 +482,8 @@ void BaronGeddonBattle::Enter(const shared_ptr<AIController>& controller, const 
 		}
 
 		_characterInfo = _controller.lock()->GetCharacterInfo();
+		_abilitySlot = _controller.lock()->GetGameObject()->GetComponent<AbilitySlot>();
+		_abilityTime = _abilitySlot.lock()->GetAbility(0)->GetAbilityData().AbilityCoolTime;
 		_targetList = _controller.lock()->GetTargetList();
 		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
 		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
@@ -565,6 +568,17 @@ void BaronGeddonBattle::Update()
 				}
 			}
 
+			_abilityTimer += _dt;
+
+			//Ability Transition
+			{
+				if (_abilityTimer >= _abilityTime)
+				{
+					_abilityTimer = 0.f;
+					Out(L"BaronGeddonAbility");
+				}
+			}
+
 			toTargetDir.Normalize(toTargetDir);
 			float distance = Vec3::Distance(myPos, targetPos);
 
@@ -572,10 +586,6 @@ void BaronGeddonBattle::Update()
 			{
 				_attackTimeCal += _dt;
 
-				//Ability Transition
-				{
-
-				}
 
 				//Attack Transition
 				{
@@ -772,6 +782,24 @@ void BaronGeddonAttack::Out(const wstring& nextTransition)
 BaronGeddonAbility::BaronGeddonAbility()
 {
 	_name = L"BaronGeddonAbility";
+
+	//Ability Sound
+	auto tmepSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"BaronGeddon_Ability1");
+	if (tmepSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/BaronGeddon/BaronGeddon_Ability1.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"BaronGeddon_Ability1", sound);
+
+		_abiltySound = sound->Clone();
+	}
+	else
+	{
+		_abiltySound = tmepSound->Clone();
+	}
 }
 
 BaronGeddonAbility::~BaronGeddonAbility()
@@ -780,12 +808,101 @@ BaronGeddonAbility::~BaronGeddonAbility()
 
 void BaronGeddonAbility::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
+	if (controller != nullptr)
+	{
+		::srand(time(NULL));
+
+		_controller = controller;
+		_prevTransition = prevTransition;
+
+		if (_controller.lock()->GetTransform() != nullptr)
+			_transform = _controller.lock()->GetTransform();
+
+		if (_controller.lock()->GetTargetTransform() != nullptr)
+			_targetTransform = _controller.lock()->GetTargetTransform();
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_animator.lock()->SetFrameEnd(false);
+			_animator.lock()->SetNextAnimation(L"Ability");
+		}
+		_characterInfo = _controller.lock()->GetCharacterInfo();
+		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
+		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
+		_abilitySlot = _controller.lock()->GetGameObject()->GetComponent<AbilitySlot>();
+		_abFlag = false;
+		_abTimer = 0.f;
+	}
 }
 
 void BaronGeddonAbility::Update()
 {
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+		_abTimer += _dt;
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			Out(L"BaronGeddonBattle");
+		}
+
+		if (_abTimer > _abTime && _abFlag == false)
+		{
+			_abilitySlot.lock()->ExecuteAbility(0, _targetTransform.lock()->GetGameObject());
+			_abiltySound->Play(false);
+			_abFlag = true;
+		}
+
+		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		{
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
+			{
+				if (toTargetDir.Length() > 0)
+				{
+					toTargetDir.Normalize(toTargetDir);
+					{
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						myForward.Normalize();
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
+					}
+				}
+			}
+		}
+	}
 }
 
 void BaronGeddonAbility::Out(const wstring& nextTransition)
 {
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+	}
 }

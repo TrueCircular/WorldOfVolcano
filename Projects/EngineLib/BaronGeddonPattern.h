@@ -5,6 +5,7 @@
 class CharacterInfo;
 class AIController;
 class Sounds;
+class AbilitySlot;
 struct TargetDesc;
 #pragma endregion
 
@@ -120,6 +121,7 @@ private:
 	weak_ptr<Transform>		_targetTransform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
+	weak_ptr<AbilitySlot>	_abilitySlot;
 	float					_dt = 0.f;
 	float					_traceTime = 0.f;
 	float					_traceWaitingTime = 0.75f;
@@ -127,6 +129,8 @@ private:
 	float					_attackTime = 0.f;
 	float					_attackTimeCal = 0.f;
 	float					_attackRange = 0.f;
+	float					_abilityTime = 0.f;
+	float					_abilityTimer = 0.f;
 	float					_totargetRotationSpeed = 5.0f;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
@@ -162,6 +166,22 @@ class BaronGeddonAbility : public AbilityStrategy
 public:
 	BaronGeddonAbility();
 	virtual ~BaronGeddonAbility();
+private:
+	weak_ptr<AIController>	_controller;
+	weak_ptr<Transform>		_transform;
+	weak_ptr<Transform>		_targetTransform;
+	weak_ptr<ModelAnimator>	_animator;
+	weak_ptr<CharacterInfo>	_characterInfo;
+	shared_ptr<Sounds>		_abiltySound;
+	weak_ptr<AbilitySlot>	_abilitySlot;
+	float					_dt = 0.f;
+	float					_attackRange = 0.f;
+	float					_traceRadius = 0.f;
+	float					_totargetRotationSpeed = 5.0f;
+
+	float					_abTime = 0.3f;
+	float					_abTimer = 0.f;
+	bool					_abFlag = false;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;

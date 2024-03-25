@@ -26,7 +26,7 @@ private:
 	shared_ptr<ParticleInstance> _roarInstance;
 	shared_ptr<ParticleInstance> _clapInstance;
 	shared_ptr<ParticleInstance> _sparkInstance;
-	uint16						 _ownerAtk;
+	uint16						 _ownerAtk = 0;
 	uint32						 _consumedMp = 0;
 	float						 _abilityRange = 0.f;
 	float						 _abilityDamage = 0.f;

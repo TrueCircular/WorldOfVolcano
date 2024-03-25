@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "FireBall.h"
 #include "Utils.h"
+#include "CharacterController.h"
+#include "PlayerController.h"
+#include "AIController.h"
+
 
 void FireBall::Update()
 {
@@ -80,6 +84,12 @@ void FireBall::OnDestroy(shared_ptr<ParticleInstance>& instance)
 	pos2->SetLocalPosition(instance->particleTransform->GetPosition());
 	shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
 	clapParticle->AddParticle(instancedata2);
+
+	if (_target != nullptr)
+	{
+		auto controller = _target->GetComponent<CharacterController>();
+		controller->TakeDamage(_target, _damage);
+	}
 }
 
 void FireBall::AddParticle(shared_ptr<ParticleInstance> data)

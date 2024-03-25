@@ -2,7 +2,7 @@
     <Name>FireBolt</Name>
     <AbilityType>1</AbilityType>
     <ConsumedMp>0</ConsumedMp>
-    <AbilityCoolTime>15</AbilityCoolTime>
+    <AbilityCoolTime>5</AbilityCoolTime>
     <AbilityPow>2</AbilityPow>
     <AbilityRange>100</AbilityRange>
 </AbilityInformation>

@@ -149,53 +149,54 @@ void TestAbilityScene::Init()
 		{
 			//CoreHound
 			{
-				auto height = make_shared<HeightGetter>();
-				height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
-				Vec3 spwanPos = Vec3(103, 0, 240);
-				spwanPos.y = height->GetHeight(spwanPos);
+				//auto height = make_shared<HeightGetter>();
+				//height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+				//Vec3 spwanPos = Vec3(103, 0, 240);
+				//spwanPos.y = height->GetHeight(spwanPos);
 
-				_coreHound = make_shared<CoreHound>();
-				_coreHound->Awake();
-				_coreHound->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
-				_coreHound->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
-				_coreHound->SetSpwanPosition(spwanPos);
-				_coreHound->Start();
+				//_coreHound = make_shared<CoreHound>();
+				//_coreHound->Awake();
+				//_coreHound->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+				//_coreHound->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
+				//_coreHound->SetSpwanPosition(spwanPos);
+				//_coreHound->Start();
 
-				Add(_coreHound);
+				//Add(_coreHound);
 			}
 
 			//MoltenGaint
 			{
-				auto height = make_shared<HeightGetter>();
-				height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
-				Vec3 spwanPos = Vec3(153, 0, 180);
-				spwanPos.y = height->GetHeight(spwanPos);
+				//auto height = make_shared<HeightGetter>();
+				//height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+				//Vec3 spwanPos = Vec3(153, 0, 180);
+				//spwanPos.y = height->GetHeight(spwanPos);
 
-				auto moltenGiant = make_shared<MoltenGiant>();
-				moltenGiant->Awake();
-				moltenGiant->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
-				moltenGiant->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
-				moltenGiant->SetSpwanPosition(spwanPos);
-				moltenGiant->Start();
+				//auto moltenGiant = make_shared<MoltenGiant>();
+				//moltenGiant->Awake();
+				//moltenGiant->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+				//moltenGiant->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
+				//moltenGiant->SetSpwanPosition(spwanPos);
+				//moltenGiant->Start();
 
-				Add(moltenGiant);
+				//Add(moltenGiant);
 			}
 
 			//baronGeddon
 			{
-				//auto height = make_shared<HeightGetter>();
-				//height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
-				//Vec3 spwanPos = Vec3(153, 0, 240);
-				//spwanPos.y = height->GetHeight(spwanPos);
+				auto height = make_shared<HeightGetter>();
+				height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+				Vec3 spwanPos = Vec3(153, 0, 240);
+				spwanPos.y = height->GetHeight(spwanPos);
 
-				//auto baronGeddon = make_shared<BaronGeddon>();
-				//baronGeddon->Awake();
-				//baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
-				//baronGeddon->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
-				//baronGeddon->SetSpwanPosition(spwanPos);
-				//baronGeddon->Start();
+				auto baronGeddon = make_shared<BaronGeddon>();
+				baronGeddon->Awake();
+				baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+				baronGeddon->GetComponent<AbilitySlot>()->SetController(baronGeddon->GetComponent<AIController>());
+				baronGeddon->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+				baronGeddon->SetSpwanPosition(spwanPos);
+				baronGeddon->Start();
 
-				//Add(baronGeddon);
+				Add(baronGeddon);
 			}
 		}
 	}

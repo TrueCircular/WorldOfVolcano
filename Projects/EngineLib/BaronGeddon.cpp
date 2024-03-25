@@ -5,6 +5,10 @@
 #include "CharacterInfo.h"
 #include "AIController.h"
 
+#include "AbilitySlot.h"
+#include "AFireBolt.h"
+#include "AFireBoltData.h"
+
 BaronGeddon::BaronGeddon()
 {
 	_objType = ObjectType::EnemyUnit;
@@ -74,6 +78,18 @@ void BaronGeddon::CharacterInit()
 		auto collider = make_shared<SphereCollider>();
 		collider->SetRadius(35.f);
 		AddComponent(collider);
+	}
+	//Ability Set
+	{
+		auto abilitySlot = make_shared<AbilitySlot>();
+
+		auto fireBoltData = make_shared<AFireBoltData>();
+		auto fireBolt = make_shared<AFireBolt>();
+
+		fireBolt->SetAbilityData(fireBoltData);
+		abilitySlot->SetAbility(0, fireBolt);
+
+		AddComponent(abilitySlot);
 	}
 
 	SetName(L"BaronGeddon");
