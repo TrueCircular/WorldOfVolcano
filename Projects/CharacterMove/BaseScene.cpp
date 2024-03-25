@@ -94,28 +94,6 @@ void BaseScene::Init()
 	_domeDesc.SkyDomeBlendPath += L"firelandsskyhorizon01.png";
 	_skydome->Set(&_domeDesc);
 	_skydome->Start();
-	//{
-	//	shared_ptr<Model> model = make_shared<Model>();
-	//	{
-	//		wstring MeshAdr = RESOURCES_ADDR_MESH_STATIC;
-	//		MeshAdr += L"fog";
-	//		MeshAdr += L"/";
-	//		MeshAdr += L"fog";
-	//		MeshAdr += L".mesh";
-
-	//		wstring MaterialAdr = RESOURCES_ADDR_TEXTURE_STATIC;
-	//		MaterialAdr += L"fog";
-	//		MaterialAdr += L"/";
-	//		MaterialAdr += L"fog";
-	//		MaterialAdr += L".xml";
-
-	//		model->ReadModel(MeshAdr);
-	//		model->ReadMaterial(MaterialAdr);
-	//	}
-
-	//	model->GetMeshes();
-	//}
-
 
 	HeightPlainInfo heightMapDesc;
 	heightMapDesc.heightFilename = L"HeightMapBase";

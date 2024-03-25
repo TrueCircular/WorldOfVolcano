@@ -299,13 +299,13 @@ void QuadTreeTerrain::Update()
 		if(splatter)splatter->PreUpdate();
 		auto _mat = MANAGER_RESOURCES()->GetResource<Material>(renderBlocks[i]->GetTextureKey());
 //		_mat->GetDiffuseMap()->SetDubugTexture(rt.GetDsvSRV());
-		//auto _shader = _mat->GetShader();
+		auto _shader = _mat->GetShader();
 //		ShadowDesc shadowdesc;
-		//MANAGER_SHADOW()->SetShadow(_shader);
-		//shadowdesc.mat = shadowMat;
-		//_shader->PushShadowData(shadowdesc);
-		//shadow = _shader->GetSRV("DepthMap");
-		//shadow->SetResource(rt.GetDsvSRV());
+		MANAGER_SHADOW()->SetShadow(_shader);
+//		shadowdesc.mat = shadowMat;
+//		_shader->PushShadowData(shadowdesc);
+//		shadow = _shader->GetSRV("DepthMap");
+//		shadow->SetResource(rt.GetDsvSRV());
 
 		renderer->LegacyUpdate();
 	}

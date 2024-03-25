@@ -36,7 +36,8 @@ void Demo::Init(){
 
 	//���� �Ŵ��� �ʱ�ȭ
 	MANAGER_SOUND()->Init();
-
+	
+	MANATER_PARTICLE()->Init();
 	shared_ptr<Texture> tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"mainTitle", L"../../Resources/Texture/MainTitle2.png");
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"logo", L"../../Resources/Texture/logo.png");
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"skill_charge", L"../../Resources/Texture/Skill/skill_charge.jpg");

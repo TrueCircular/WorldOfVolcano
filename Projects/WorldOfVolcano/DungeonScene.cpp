@@ -22,8 +22,9 @@
 #include "engine/AIController.h"
 #include "engine/StrategyFactory.h"
 #include "engine\PlayerSoundController.h"
-#include "engine\Utils.h"
+#include "engine/AbilitySlot.h"
 
+#include "ObjectExporter2.h"
 void DungeonScene::Init()
 {
 	//light
@@ -139,9 +140,15 @@ void DungeonScene::Init()
 	{
 		//Player
 		{
+			auto height = make_shared<HeightGetter>();
+			height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+//			Vec3 spwanPos = Vec3(-44.f, 0.f, 277.f);
+//			spwanPos.y = height->GetHeight(spwanPos);
+
 			_warrior = make_shared<Warrior>();
 			_warrior->Awake();
 			_warrior->SetCharacterController(make_shared<PlayerController>());
+			_warrior->GetComponent<AbilitySlot>()->SetController(_warrior->GetComponent<PlayerController>());
 			_warrior->SetSpwanPosition(spawnPos);
 			_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
 			_warrior->Start();
@@ -151,23 +158,130 @@ void DungeonScene::Init()
 			_camera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		}
 
-		//monster
+		MANAGER_INDICATOR()->SetCamera(_camera->GetCamera());
+
+		ObjectExporter2 exporter2;
+		exporter2.OpenFile(L"../../Resources/Assets/MobDungeon.dat");
+		for (int id = 0; id < exporter2.enemyListforServer.size(); ++id)
 		{
+			PACKET_Mob_INFO mobInfo;
+
+			// 지정된 범위 내에서 x 및 z에 대한 무작위 값 설정
+			mobInfo._instanceId = id;
+			wstring name = exporter2.enemyListforServer[id].first;
+			mobInfo._pos = exporter2.enemyListforServer[id].second;
+			mobInfo._spawnMapType = MapType::Dungeon;
+
+			// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon
+			if (name == L"CoreHound")
+			{
+				{
+					auto height = make_shared<HeightGetter>();
+					height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+					Vec3 spwanPos = Vec3(103, 0, 240);
+					spwanPos.y = height->GetHeight(spwanPos);
+
+					_coreHound = make_shared<CoreHound>();
+					_coreHound->Awake();
+					_coreHound->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+					_coreHound->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
+					_coreHound->SetSpwanPosition(mobInfo._pos);
+					_coreHound->Start();
+
+					Add(_coreHound);
+				}
+			}
+			if (name == L"MoltenGiant")
+			{
+				{
+					auto height = make_shared<HeightGetter>();
+					height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+					Vec3 spwanPos = Vec3(153, 0, 180);
+					spwanPos.y = height->GetHeight(spwanPos);
+
+					auto moltenGiant = make_shared<MoltenGiant>();
+					moltenGiant->Awake();
+					moltenGiant->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+					moltenGiant->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
+					moltenGiant->SetSpwanPosition(mobInfo._pos);
+					moltenGiant->Start();
+
+					Add(moltenGiant);
+				}
+			}
+			if (name == L"BaronGeddon")
+			{
+				{
+					auto height = make_shared<HeightGetter>();
+					height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+					Vec3 spwanPos = Vec3(153, 0, 240);
+					spwanPos.y = height->GetHeight(spwanPos);
+
+					auto baronGeddon = make_shared<BaronGeddon>();
+					baronGeddon->Awake();
+					baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+					baronGeddon->GetComponent<AbilitySlot>()->SetController(baronGeddon->GetComponent<AIController>());
+					baronGeddon->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+					baronGeddon->SetSpwanPosition(mobInfo._pos);
+					baronGeddon->Start();
+
+					Add(baronGeddon);
+				}
+			}
+
+		}
+		//Enemy
+		{
+			//CoreHound
+			{
+				//auto height = make_shared<HeightGetter>();
+				//height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+				//Vec3 spwanPos = Vec3(103, 0, 240);
+				//spwanPos.y = height->GetHeight(spwanPos);
+
+				//_coreHound = make_shared<CoreHound>();
+				//_coreHound->Awake();
+				//_coreHound->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+				//_coreHound->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
+				//_coreHound->SetSpwanPosition(spwanPos);
+				//_coreHound->Start();
+
+				//Add(_coreHound);
+			}
+
+			//MoltenGaint
+			{
+				//auto height = make_shared<HeightGetter>();
+				//height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+				//Vec3 spwanPos = Vec3(153, 0, 180);
+				//spwanPos.y = height->GetHeight(spwanPos);
+
+				//auto moltenGiant = make_shared<MoltenGiant>();
+				//moltenGiant->Awake();
+				//moltenGiant->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+				//moltenGiant->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
+				//moltenGiant->SetSpwanPosition(spwanPos);
+				//moltenGiant->Start();
+
+				//Add(moltenGiant);
+			}
+
 			//baronGeddon
 			{
-				/*auto height = make_shared<HeightGetter>();
-				height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
-				Vec3 spwanPos = Vec3(103, 0, 240);
-				spwanPos.y = height->GetHeight(spwanPos);
-
-				auto baronGeddon = make_shared<BaronGeddon>();
-				baronGeddon->Awake();
-				baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
-				baronGeddon->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
-				baronGeddon->SetSpwanPosition(spwanPos);
-				baronGeddon->Start();
-
-				Add(baronGeddon);*/
+				//auto height = make_shared<HeightGetter>();
+				//height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+				//Vec3 spwanPos = Vec3(153, 0, 240);
+				//spwanPos.y = height->GetHeight(spwanPos);
+				//
+				//auto baronGeddon = make_shared<BaronGeddon>();
+				//baronGeddon->Awake();
+				//baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+				//baronGeddon->GetComponent<AbilitySlot>()->SetController(baronGeddon->GetComponent<AIController>());
+				//baronGeddon->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+				//baronGeddon->SetSpwanPosition(spwanPos);
+				//baronGeddon->Start();
+				//
+				//Add(baronGeddon);
 			}
 		}
 	}
@@ -180,12 +294,11 @@ void DungeonScene::Init()
 			wstring bgmpath = RESOURCES_ADDR_SOUND;
 			bgmpath += L"Scene/Dungeon.mp3";
 			bgm->Load(bgmpath);
-			bgm->SetVolume(10);
+			bgm->SetVolume(0.35f);
 			MANAGER_RESOURCES()->AddResource<Sounds>(L"DungeonBGM", bgm);
 			bgm->Play(true);
 		}
 		else {
-			bgm->SetVolume(10);
 			bgm->Play(true);
 		}
 	}
@@ -199,9 +312,7 @@ void DungeonScene::Start()
 
 void DungeonScene::Update()
 {
-	_quadTreeTerrain->Frame((*_frustom->frustomBox.get()));
 
-	MANAGER_SOUND()->Update();
 
 	{
 		sendInfo = ClientPacketHandler::Instance().GetUserInfo();
@@ -268,6 +379,7 @@ void DungeonScene::Update()
 	Scene::Update();
 	skyBox->Update();
 
+	_quadTreeTerrain->Frame((*_frustom->frustomBox.get()));
 	{
 		Vec3 pos =  _warrior->GetTransform()->GetPosition();
 
@@ -281,6 +393,10 @@ void DungeonScene::Update()
 		
 		OutputDebugString(Pstring.c_str());
 	}
+
+	MANATER_PARTICLE()->Update();
+	MANAGER_SOUND()->Update();
+	MANAGER_INDICATOR()->Frame();
 
 	shared_ptr<Scene> scene = make_shared<BossScene>();
 	scene->SetSceneName(L"BossScene");
@@ -298,4 +414,6 @@ void DungeonScene::LateUpdate()
 {
 	Scene::LateUpdate();
 	_quadTreeTerrain->Update();
+	MANATER_PARTICLE()->Render();
+	MANAGER_INDICATOR()->Render();
 }

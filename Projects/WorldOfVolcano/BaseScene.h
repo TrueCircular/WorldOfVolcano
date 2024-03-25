@@ -1,6 +1,6 @@
 #pragma once
 #include "QuadTreeBlock.h"
-#include "Skybox.h"
+#include "SkyDome.h"
 //Character
 #include "Character.h"
 #include "Player.h"
@@ -29,10 +29,13 @@ private:
 	shared_ptr<Unit> _MagniBronzebeard;
 	shared_ptr<Unit> _coreHound;
 	//Terrain and Terrain Object
-	shared_ptr<Terrain>			_terrain;
-	shared_ptr<QuadTreeTerrain> _quadTreeTerrain;
-	shared_ptr<LayerSplatter>	_splatter;
-	shared_ptr<Skybox> skyBox;
+	shared_ptr<Terrain> _terrain;
+	shared_ptr<Terrain> _terrainOutLine;
+	shared_ptr<QuadTreeTerrain> quadTreeTerrain;
+	shared_ptr<QuadTreeTerrain> quadTreeTerrainOutLine;
+	shared_ptr<LayerSplatter> splatter;
+	shared_ptr<LayerSplatter> splatterOutLine;
+	shared_ptr<SkyDome> _skydome;
 	//Spawn Pos
 	Vec3 spawnPos = Vec3(0, 25, 0);
 	//Shader

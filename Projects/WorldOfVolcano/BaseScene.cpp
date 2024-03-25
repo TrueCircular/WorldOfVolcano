@@ -21,7 +21,7 @@
 #include "engine/StrategyFactory.h"
 #include "engine\PlayerSoundController.h"
 #include "engine\Utils.h"
-
+#include "engine/AbilitySlot.h"
 void BaseScene::Init()
 {
 	//리소스 매니저 초기화
@@ -67,38 +67,17 @@ void BaseScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(obj);
 	}
 
-	auto fog_obj = make_shared<GameObject>();
+
 	//Character
-	{
-		shared_ptr<Model> model = make_shared<Model>();
-		{
-			wstring MeshAdr = RESOURCES_ADDR_MESH_STATIC;
-			MeshAdr += L"fog";
-			MeshAdr += L"/";
-			MeshAdr += L"fog";
-			MeshAdr += L".mesh";
-
-			wstring MaterialAdr = RESOURCES_ADDR_TEXTURE_STATIC;
-			MaterialAdr += L"fog";
-			MaterialAdr += L"/";
-			MaterialAdr += L"fog";
-			MaterialAdr += L".xml";
-
-			model->ReadModel(MeshAdr);
-			model->ReadMaterial(MaterialAdr);
-		}
-		const auto& shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
-		shared_ptr<ModelRenderer> tempModelRenderer = make_shared<ModelRenderer>(shader);
-		{
-			tempModelRenderer->SetModel(model);
-			tempModelRenderer->SetPass(8);
-		}
-		fog_obj->AddComponent(tempModelRenderer);
-		fog_obj->GetOrAddTransform()->SetLocalPosition(Vec3(0, 0, 0));
-	}
-	fog_obj->Awake();
-	Add(fog_obj);
-
+	_skydome = make_shared<SkyDome>();
+	SkyDomeDesc _domeDesc;
+	_domeDesc.shaderPath = L"SkyDome.fx";
+	_domeDesc.SkyDomeTexPath = RESOURCES_ADDR_TEXTURE;
+	_domeDesc.SkyDomeTexPath += L"firelandsskyclouds03.png";
+	_domeDesc.SkyDomeBlendPath = RESOURCES_ADDR_TEXTURE;
+	_domeDesc.SkyDomeBlendPath += L"firelandsskyhorizon01.png";
+	_skydome->Set(&_domeDesc);
+	_skydome->Start();
 
 	HeightPlainInfo heightMapDesc;
 	heightMapDesc.heightFilename = L"HeightMapBase";
@@ -117,9 +96,31 @@ void BaseScene::Init()
 	_terrain->Awake();
 	_terrain->AddComponent(make_shared<MeshRenderer>());
 	_terrain->Start();
-	_quadTreeTerrain = make_shared<QuadTreeTerrain>();
-	_quadTreeTerrain->Set(_terrain, 3);
-	_quadTreeTerrain->Start();
+	quadTreeTerrain = make_shared<QuadTreeTerrain>();
+	quadTreeTerrain->Set(_terrain, 1);
+	quadTreeTerrain->Start();
+
+
+	heightMapDesc.heightFilename = L"HeightMapOutLine";
+	heightMapDesc.heightFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"testOutLine.bmp";
+	heightMapDesc.shaderFilePath = L"SplattingMapping.fx";
+	//heightMapDesc.shaderFilePath = L"TerrainMapping.fx";
+	heightMapDesc.shaderFilename = L"HeightMapShaderDungeon";
+	heightMapDesc.textureFilename = L"HeightMapTextureDungeon";
+	heightMapDesc.textureFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"020.bmp";
+	heightMapDesc.meshKey = L"TerrainMeshOutLine";
+	heightMapDesc.distance = 20;
+	heightMapDesc.heightScale = 20;
+	heightMapDesc.row = 253;
+	heightMapDesc.col = 253;
+
+	_terrainOutLine = make_shared<Terrain>(heightMapDesc);
+	_terrainOutLine->Awake();
+	_terrainOutLine->AddComponent(make_shared<MeshRenderer>());
+	_terrainOutLine->Start();
+	quadTreeTerrainOutLine = make_shared<QuadTreeTerrain>();
+	quadTreeTerrainOutLine->Set(_terrainOutLine, 3);
+	quadTreeTerrainOutLine->Start();
 
 	SplatterDesc spDesc{};
 	spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
@@ -130,10 +131,17 @@ void BaseScene::Init()
 	spDesc.texName[2] = L"Splat3Base";
 	spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"testalpha.bmp";
 	spDesc.alphaName = L"SplatAlphaBase";
-	_splatter = make_shared<LayerSplatter>();
-	_splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderBase"));
-	_quadTreeTerrain->AddSplatter(_splatter);
+	splatter = make_shared<LayerSplatter>();
+	splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderBase"));
+	quadTreeTerrain->AddSplatter(splatter);
 	SetTerrain(_terrain);
+
+	quadTreeTerrain->AddSplatter(splatter);
+	spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"testalphaOutLine.bmp";
+	spDesc.alphaName = L"SplatAlphaBaseOutLine";
+	splatterOutLine = make_shared<LayerSplatter>();
+	splatterOutLine->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderDungeon"));
+	quadTreeTerrainOutLine->AddSplatter(splatterOutLine);
 
 	//Camera
 	{
@@ -153,6 +161,7 @@ void BaseScene::Init()
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
 		_warrior->SetCharacterController(make_shared<PlayerController>());
+		_warrior->GetComponent<AbilitySlot>()->SetController(_warrior->GetComponent<PlayerController>());
 		_warrior->SetSpwanPosition(spawnPos);
 		_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
 		_warrior->Start();
@@ -201,7 +210,6 @@ void BaseScene::Start()
 
 void BaseScene::Update()
 {
-	_quadTreeTerrain->Frame((*_frustom->frustomBox.get()));
 	MANAGER_SOUND()->Update();
 	MANAGER_SHADOW()->StartShadow();
 	_terrain->GetMeshRenderer()->SetPass(1);
@@ -262,6 +270,8 @@ void BaseScene::Update()
 
 	Scene::Update();
 
+	quadTreeTerrain->Frame((*_frustom->frustomBox.get()));
+	quadTreeTerrainOutLine->Frame((*_frustom->frustomBox.get()));
 	//skyBox->Update();
 	MANAGER_INDICATOR()->Frame();
 
@@ -284,6 +294,11 @@ void BaseScene::Update()
 void BaseScene::LateUpdate()
 {
 
+	_skydome->Update();
 	Scene::LateUpdate();
-	_quadTreeTerrain->Update();
+	quadTreeTerrain->Update();
+	quadTreeTerrainOutLine->Update();
+	MANAGER_SOUND()->Update();
+	MANAGER_INDICATOR()->Render();
+	MANATER_PARTICLE()->Render();
 }

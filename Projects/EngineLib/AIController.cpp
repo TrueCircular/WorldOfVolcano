@@ -164,7 +164,7 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 
 		//Damage Calculate
 		{
-			/*auto myInfo = _characterInfo.lock()->GetCharacterInfo();
+			auto myInfo = _characterInfo.lock()->GetCharacterInfo();
 			float defEff = pow(myInfo._def * log(2), 0.5) * 3;
 			float calDamage = damage * (1 - defEff / 100);
 			float finalHp = myInfo._hp - calDamage;
@@ -193,7 +193,7 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 			{
 				myInfo._hp = (uint32)finalHp;
 				_characterInfo.lock()->SetCharacterInfo(myInfo);
-			}*/
+			}
 
 			PacketEvent damageEvent{
 				PacketEventType::DamageRequest,

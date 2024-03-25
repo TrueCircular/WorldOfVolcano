@@ -36,9 +36,6 @@ void BossScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(light);
 	}
 
-	MANAGER_INDICATOR()->Init();
-	MANAGER_INDICATOR()->SetCamera(_childCamera);
-
 	ObjectExporter exporter;
 	exporter.OpenFile(L"../../Resources/Assets/dungeonboss.dat");
 	for (int i = 0; i < exporter._structureList.size(); ++i) {
@@ -197,6 +194,8 @@ void BossScene::Init()
 
 	//	Add(baronGeddon);
 	//}
+
+	MANAGER_INDICATOR()->SetCamera(_childCamera->GetCamera());
 
 
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"fireland");
