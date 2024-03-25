@@ -29,6 +29,7 @@ struct IndicatorInstance {
 
 class DamageIndicator
 {
+	static DamageIndicator* _instance;
 	shared_ptr<VertexBuffer> instanceBuffer;
 	vector<IndicatorInstance> renderList;
 	list<DamageIndiCatorBox> managingBoxList;
@@ -44,7 +45,7 @@ class DamageIndicator
 
 public:
 
-	static	DamageIndicator& GetInstance();
+	static	DamageIndicator* GetInstance();
 	void Init();
 	void SetCamera(shared_ptr<Camera> camera) {
 		cam = camera;

@@ -36,8 +36,8 @@ void BossScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(light);
 	}
 
-	DamageIndicator::GetInstance().Init();
-	DamageIndicator::GetInstance().SetCamera(_childCamera);
+	MANAGER_INDICATOR()->Init();
+	MANAGER_INDICATOR()->SetCamera(_childCamera);
 
 	ObjectExporter exporter;
 	exporter.OpenFile(L"../../Resources/Assets/dungeonboss.dat");
@@ -272,10 +272,10 @@ void BossScene::Update()
 	//box.damage = 444;
 	//box.pos = _warrior->GetTransform()->GetLocalPosition();
 	//box.textDuration = 20; sexkinghfghfghrttrrtherethrteh
-	//DamageIndicator::GetInstance().Add(box);
+	//MANAGER_INDICATOR()->Add(box);
 
 	Scene::Update();
-	DamageIndicator::GetInstance().Frame();
+	MANAGER_INDICATOR()->Frame();
 
 	{
 		Vec3 pos = _warrior->GetTransform()->GetPosition();
@@ -308,5 +308,5 @@ void BossScene::LateUpdate()
 	Scene::LateUpdate();
 	quadTreeTerrain->Update();
 
-	DamageIndicator::GetInstance().Render();
+	MANAGER_INDICATOR()->Render();
 }

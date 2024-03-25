@@ -84,7 +84,7 @@ void Spawner::SpawnOtherPlayer(uint64 uid, Vec3 spawnPos)
 	bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Death");
 	soundController->SetSound(PlayerAnimType::Death, bgm2);
 
-	_aiCon->SetAiSound(soundController);
+	//_aiCon->SetAiSound(soundController);
 	
 	_otherPlayers.insert(std::make_pair(uid, _chr)); //map에 모델과 식별id 추가
 	MANAGER_SCENE()->GetCurrentScene()->Add(_chr);

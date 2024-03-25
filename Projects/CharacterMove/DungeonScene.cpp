@@ -68,7 +68,7 @@ void DungeonScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}
 
-	DamageIndicator::GetInstance().Init();
+	MANAGER_INDICATOR()->Init();
 
 	ObjectExporter exporter;
 	exporter.OpenFile(L"../../Resources/Assets/dungeon1fix.dat");
@@ -227,7 +227,7 @@ void DungeonScene::Init()
 ///	bool isplaynsd;
 //	chs->isPlaying(&isplaynsd);
 
-	DamageIndicator::GetInstance().SetCamera(_childCamera->GetCamera());
+	MANAGER_INDICATOR()->SetCamera(_childCamera->GetCamera());
 	SpawnManager::GetInstance().Init();
 }
 void DungeonScene::Start()
@@ -324,12 +324,12 @@ void DungeonScene::Update()
 	//box.damage = 444;
 	//box.pos = _warrior->GetTransform()->GetLocalPosition();
 	//box.textDuration = 20; sexkinghfghfghrttrrtherethrteh
-	//DamageIndicator::GetInstance().Add(box);
+	//MANAGER_INDICATOR()->Add(box);
 
 	Scene::Update();
 	quadTreeTerrain->Update();
 	skyBox->Update();
-	DamageIndicator::GetInstance().Frame();
+	MANAGER_INDICATOR()->Frame();
 
 	shared_ptr<Scene> scene = make_shared<BaseScene>();
 	scene->SetSceneName(L"BaseScene");
@@ -346,5 +346,5 @@ void DungeonScene::Update()
 void DungeonScene::LateUpdate()
 {
 	Scene::LateUpdate();
-	DamageIndicator::GetInstance().Render();
+	MANAGER_INDICATOR()->Render();
 }

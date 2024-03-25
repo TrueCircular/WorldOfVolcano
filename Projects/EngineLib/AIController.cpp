@@ -169,6 +169,13 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 			float calDamage = damage * (1 - defEff / 100);
 			float finalHp = myInfo._hp - calDamage;
 
+			DamageIndiCatorBox box;
+			box.pos = GetGameObject()->GetTransform()->GetPosition();
+			box.pos.y += 30;
+			box.textDuration = 1.5f;
+			box.damage = calDamage;
+			MANAGER_INDICATOR()->Add(box);
+
 			if (finalHp < 1.f + FLT_EPSILON)
 			{
 				finalHp = 0;

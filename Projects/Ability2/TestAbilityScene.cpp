@@ -145,6 +145,8 @@ void TestAbilityScene::Init()
 			_camera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		}
 
+		MANAGER_INDICATOR()->SetCamera(_camera->GetCamera());
+
 		//Enemy
 		{
 			//CoreHound
@@ -236,6 +238,7 @@ void TestAbilityScene::Update()
 
 	MANATER_PARTICLE()->Update();
 	MANAGER_SOUND()->Update();
+	MANAGER_INDICATOR()->Frame();
 
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::Q))
 	{
@@ -250,4 +253,5 @@ void TestAbilityScene::LateUpdate()
 
 	_quadTreeTerrain->Update();
 	MANATER_PARTICLE()->Render();
+	MANAGER_INDICATOR()->Render();
 }

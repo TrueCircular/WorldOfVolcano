@@ -232,5 +232,8 @@
     <FxCompile Include="..\..\Resources\Shader\SkyDome.fx">
       <Filter>Shader\Effects</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\Smoke4.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
