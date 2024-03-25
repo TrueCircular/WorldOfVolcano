@@ -221,6 +221,13 @@ void BaseScene::Update()
 
 	{
 		sendInfo = ClientPacketHandler::Instance().GetUserInfo();
+
+		CHARACTER_INFO chrInfo = _warrior->GetComponent<CharacterInfo>()->GetCharacterInfo();
+		sendInfo._hp = chrInfo._hp;
+		sendInfo._mp = chrInfo._mp;
+		sendInfo._atk = chrInfo._atk;
+		sendInfo._def = chrInfo._def;
+
 		sendInfo._pos = _warrior->GetTransform()->GetPosition();
 		sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
 		sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();

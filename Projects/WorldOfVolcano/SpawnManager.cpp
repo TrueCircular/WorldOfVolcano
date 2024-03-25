@@ -57,4 +57,3 @@ MapType SpawnManager::GetSpawnMapType()
         return MapType::BossRoom;
     }
 }
-

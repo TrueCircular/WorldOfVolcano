@@ -5,6 +5,7 @@
 #include "engine/PlayerSoundController.h"
 #include "engine\EquipmentSlot.h"
 #include "engine/StrategyFactory.h"
+#include "ObjectExporter2.h"
 
 using namespace std::chrono;
 
@@ -51,6 +52,7 @@ void Spawner::Init()
 	if (name == L"DungeonScene")
 	{
 		_spawnMapType = MapType::Dungeon;
+		GenerateMobList();
 	}
 
 	if (name == L"BossScene")
@@ -124,11 +126,6 @@ void Spawner::SpawnOtherPlayers()
 			if (pair.second._isOnline == false)
 			{
 				//접속중이 아니라면 다른플레이어 목록에서 삭제
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(0);
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(1);
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(2);
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(3);
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(4);
 				MANAGER_SCENE()->GetCurrentScene()->Remove(it->second);
 				_otherPlayers.erase(it);
 				ClientPacketHandler::Instance().EraseOtherUserInfoMap(pair.first);
@@ -176,22 +173,21 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 
 	// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon
 	shared_ptr<EnemyUnit> _chr;
-	switch (mobInfo._monsterId)
+	switch (mobInfo._monsterType)
 	{
-	case 0:
+	case MonsterType::CoreHound:
 		_chr = make_shared<CoreHound>();
 		break;
-	case 1:
+	case MonsterType::MoltenGiant:
 		_chr = make_shared<MoltenGiant>();
 		break;
-	case 2:
+	case MonsterType::BaronGeddon:
 		_chr = make_shared<BaronGeddon>();
 		break;
-	case 3:
+	case MonsterType::Ragnaros:
 		_chr = make_shared<Ragnaros>();
 		break;
 	default:
-		_chr = make_shared<CoreHound>();
 		break;
 	}
 
@@ -200,18 +196,18 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 		_chr->Awake();
 		_chr->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
 
-		switch (mobInfo._monsterId)
+		switch (mobInfo._monsterType)
 		{
-		case 0:
+		case MonsterType::CoreHound:
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
 			break;
-		case 1:
+		case MonsterType::MoltenGiant:
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
 			break;
-		case 2:
+		case MonsterType::BaronGeddon:
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
 			break;
-		case 3:
+		case MonsterType::Ragnaros:
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
 			break;
 		default:
@@ -307,6 +303,57 @@ void Spawner::SpawnMonsters()
 
 			cout << "find not key, new player spawn" << endl;
 		}
+	}
+}
+
+void Spawner::GenerateMobList()
+{
+	ObjectExporter2 exporter;
+	exporter.OpenFile(L"../../Resources/Assets/MobDungeon.dat");
+	for (int id = 0; id < exporter.enemyListforServer.size(); id++)
+	{
+		MONSTER_INFO mobInfo;
+
+		mobInfo._instanceId = id;
+		
+		wstring name = exporter.enemyListforServer[id].first;
+		mobInfo._pos = exporter.enemyListforServer[id].second;
+		mobInfo._spawnMapType = MapType::Dungeon;
+
+		auto chinfo = make_shared<CharacterInfo>();
+		CHARACTER_INFO chrInfo;
+		if (name == L"CoreHound")
+		{
+			wstring LoadPath = DATA_ADDR_UNIT;
+			LoadPath += L"CoreHound/Information.xml";
+			chinfo->LoadCharacterInformationFromFile(LoadPath);
+			chrInfo = chinfo->GetCharacterInfo();
+			mobInfo._monsterType = MonsterType::CoreHound;
+		}
+		if (name == L"MoltenGiant")
+		{
+			wstring LoadPath = DATA_ADDR_UNIT;
+			LoadPath += L"MoltenGiant/Information.xml";
+			chinfo->LoadCharacterInformationFromFile(LoadPath);
+			chrInfo = chinfo->GetCharacterInfo();
+			mobInfo._monsterType = MonsterType::MoltenGiant;
+		}
+		if (name == L"BaronGeddon")
+		{
+			wstring LoadPath = DATA_ADDR_UNIT;
+			LoadPath += L"BaronGeddon/Information.xml";
+			chinfo->LoadCharacterInformationFromFile(LoadPath);
+			chrInfo = chinfo->GetCharacterInfo();
+			mobInfo._monsterType = MonsterType::BaronGeddon;
+		}
+
+		mobInfo._hp = chrInfo._hp;
+		mobInfo._mp = chrInfo._mp;
+		mobInfo._atk = chrInfo._atk;
+		mobInfo._def = chrInfo._def;
+
+		ClientPacketHandler::Instance().AddMobInfoList(id, mobInfo);
+		SpawnMonster(id, mobInfo);
 	}
 }
 

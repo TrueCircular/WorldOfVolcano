@@ -223,3 +223,12 @@ enum class PacketEventType {
 	None,
 	DamageRequest
 };
+
+enum class MonsterType
+{
+	None,
+	CoreHound,
+	MoltenGiant,
+	BaronGeddon,
+	Ragnaros
+};

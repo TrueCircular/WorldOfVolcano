@@ -46,9 +46,7 @@ struct PACKET_Player_INFO : public PACKET_CHARACTER_INFO
 
 struct PACKET_Mob_INFO : public PACKET_CHARACTER_INFO
 {
-	uint32 _monsterId = 0;
-	Vec3 _targetPos = { 0.f, 0.f, 0.f };
-	bool _isMove = false;
+	MonsterType _monsterType = MonsterType::None;
 	EnemyUnitState _animState = EnemyUnitState::Stand;
 };
 
@@ -71,9 +69,9 @@ public:
 	SendBufferRef Make_MESSAGE(MESSAGE message);
 	SendBufferRef Make_BATTLE(float damage, uint32 targerId);
 
-
 	Player_INFO GetUserInfo() { return _userInfo; }
 	map<uint64, MONSTER_INFO> GetMobInfoList() { return _mobInfoList; }
+	void AddMobInfoList(uint64 uid, MONSTER_INFO mobInfo) { _mobInfoList.insert(make_pair(uid, mobInfo)); }
 	map<uint64, Player_INFO> GetOtherUserInfoMap()
 	{
 		std::lock_guard<std::mutex> lock(_mutex);

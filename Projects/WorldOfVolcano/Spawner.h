@@ -33,6 +33,8 @@ public:
 	//몬스터
 	void SpawnMonster(uint64 uid, MONSTER_INFO mobInfo);
 	void SpawnMonsters();
+	//호스트 스폰
+	void GenerateMobList();
 	int GetOtherPlayersSize() { return _otherPlayers.size(); }
 	void Reset();
 private:

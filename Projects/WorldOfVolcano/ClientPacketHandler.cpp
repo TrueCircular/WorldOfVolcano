@@ -87,9 +87,7 @@ MONSTER_INFO CopyPacketMonsterInfo(const PACKET_Mob_INFO& mobInfo, wstring name)
 	realMobInfo._isBattle = mobInfo._isBattle;
 	realMobInfo._timeStamp = mobInfo._timeStamp;
 
-	realMobInfo._monsterId = mobInfo._monsterId;
-	realMobInfo._targetPos = mobInfo._targetPos;
-	realMobInfo._isMove = mobInfo._isMove;
+	realMobInfo._monsterType = mobInfo._monsterType;
 	realMobInfo._animState = mobInfo._animState;
 
 	return realMobInfo;
@@ -164,18 +162,18 @@ void ClientPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 		br >> mobInfo;
 
 		wstring name = L"";
-		switch (mobInfo._monsterId)
+		switch (mobInfo._monsterType)
 		{
-		case 0:
+		case MonsterType::CoreHound:
 			name = L"CoreHound";
 			break;
-		case 1:
+		case MonsterType::MoltenGiant:
 			name = L"MoltenGiant";
 			break;
-		case 2:
+		case MonsterType::BaronGeddon:
 			name = L"BaronGeddon";
 			break;
-		case 3:
+		case MonsterType::Ragnaros:
 			name = L"Ragnaros";
 			break;
 		default:
@@ -285,9 +283,7 @@ PACKET_Mob_INFO CopyMonsterInfo(const MONSTER_INFO& mobInfo) {
 	sendMobInfo._isBattle = mobInfo._isBattle;
 	sendMobInfo._timeStamp = mobInfo._timeStamp;
 
-	sendMobInfo._monsterId = mobInfo._monsterId;
-	sendMobInfo._targetPos = mobInfo._targetPos;
-	sendMobInfo._isMove = mobInfo._isMove;
+	sendMobInfo._monsterType = mobInfo._monsterType;
 	sendMobInfo._animState = mobInfo._animState;
 
 	return sendMobInfo;

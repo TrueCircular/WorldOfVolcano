@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "GameSessionManager.h"
-#include "ObjectExporter.h"
 
 GameSessionManager GSessionManager;
 bool isUpdate = true;
@@ -54,9 +53,9 @@ void GameSessionManager::UpdateUserInfo(PACKET_Player_INFO info)
 
 void GameSessionManager::GenerateMobList()
 {
-	ObjectExporter exporter;
-	exporter.OpenFile(L"MobDungeon.dat");
-	for (int id = 0; id < exporter.enemyListforServer.size(); ++id)
+	//ObjectExporter exporter;
+	//exporter.OpenFile(L"MobDungeon.dat");
+	/*for (int id = 0; id < exporter.enemyListforServer.size(); ++id)
 	{
 		PACKET_Mob_INFO mobInfo;
 
@@ -69,52 +68,19 @@ void GameSessionManager::GenerateMobList()
 		// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon
 		if (name == L"CoreHound")
 		{
-			mobInfo._monsterId = 0;
-			mobInfo._hp = 12000;
-			mobInfo._maxHp = mobInfo._hp;
-			mobInfo._mp = 500;
-			mobInfo._maxMp = mobInfo._mp;
-			mobInfo._atk = 1200;
-			mobInfo._def = 250;
-			mobInfo._moveSpeed = 35;
-			mobInfo._aggroLevel = 0;
-			mobInfo._attackRange = 40;
-			mobInfo._attackTime = 1.5;
-			mobInfo._traceRadius = 80;
+			mobInfo._monsterType = MonsterType::CoreHound;
 		}
 		if (name == L"MoltenGiant")
 		{
-			mobInfo._monsterId = 1;
-			mobInfo._hp = 18000;
-			mobInfo._maxHp = mobInfo._hp;
-			mobInfo._mp = 800;
-			mobInfo._maxMp = mobInfo._mp;
-			mobInfo._atk = 1500;
-			mobInfo._def = 250;
-			mobInfo._moveSpeed = 30;
-			mobInfo._aggroLevel = 0;
-			mobInfo._attackRange = 40;
-			mobInfo._attackTime = 2.0;
-			mobInfo._traceRadius = 100;
+			mobInfo._monsterType = MonsterType::MoltenGiant;
 		}
 		if (name == L"BaronGeddon")
 		{
-			mobInfo._monsterId = 2;
-			mobInfo._hp = 50000;
-			mobInfo._maxHp = mobInfo._hp;
-			mobInfo._mp = 1000;
-			mobInfo._maxMp = mobInfo._mp;
-			mobInfo._atk = 2000;
-			mobInfo._def = 400;
-			mobInfo._moveSpeed = 35;
-			mobInfo._aggroLevel = 0;
-			mobInfo._attackRange = 40;
-			mobInfo._attackTime = 1.5;
-			mobInfo._traceRadius = 150;
+			mobInfo._monsterType = MonsterType::BaronGeddon;
 		}
 
 		_mobInfoList.insert(make_pair(id, mobInfo));
-	}
+	}*/
 }
 
 void GameSessionManager::UpdateMobInfo(PACKET_Mob_INFO info)
