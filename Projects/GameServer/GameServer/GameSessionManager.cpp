@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameSessionManager.h"
 #include "ObjectExporter.h"
+
 GameSessionManager GSessionManager;
 bool isUpdate = true;
 
@@ -69,17 +70,47 @@ void GameSessionManager::GenerateMobList()
 		if (name == L"CoreHound")
 		{
 			mobInfo._monsterId = 0;
+			mobInfo._hp = 12000;
+			mobInfo._maxHp = mobInfo._hp;
+			mobInfo._mp = 500;
+			mobInfo._maxMp = mobInfo._mp;
+			mobInfo._atk = 1200;
+			mobInfo._def = 250;
+			mobInfo._moveSpeed = 35;
+			mobInfo._aggroLevel = 0;
+			mobInfo._attackRange = 40;
+			mobInfo._attackTime = 1.5;
+			mobInfo._traceRadius = 80;
 		}
 		if (name == L"MoltenGiant")
 		{
 			mobInfo._monsterId = 1;
+			mobInfo._hp = 18000;
+			mobInfo._maxHp = mobInfo._hp;
+			mobInfo._mp = 800;
+			mobInfo._maxMp = mobInfo._mp;
+			mobInfo._atk = 1500;
+			mobInfo._def = 250;
+			mobInfo._moveSpeed = 30;
+			mobInfo._aggroLevel = 0;
+			mobInfo._attackRange = 40;
+			mobInfo._attackTime = 2.0;
+			mobInfo._traceRadius = 100;
 		}
 		if (name == L"BaronGeddon")
 		{
 			mobInfo._monsterId = 2;
-			mobInfo._maxHp = 1000;
-			mobInfo._hp = 1000;
-			mobInfo._atk = 200;
+			mobInfo._hp = 50000;
+			mobInfo._maxHp = mobInfo._hp;
+			mobInfo._mp = 1000;
+			mobInfo._maxMp = mobInfo._mp;
+			mobInfo._atk = 2000;
+			mobInfo._def = 400;
+			mobInfo._moveSpeed = 35;
+			mobInfo._aggroLevel = 0;
+			mobInfo._attackRange = 40;
+			mobInfo._attackTime = 1.5;
+			mobInfo._traceRadius = 150;
 		}
 
 		_mobInfoList.insert(make_pair(id, mobInfo));
@@ -143,5 +174,38 @@ void GameSessionManager::CheckAndResetMonster()
 	{
 		GSessionManager.ClearMobInfoList();
 		GSessionManager.GenerateMobList();
+	}
+}
+
+void GameSessionManager::MonsterBattleCalculate(float damage, uint32 tgtId)
+{
+	//Damage Calculate
+	{
+		auto it = _mobInfoList.find(tgtId);
+		if (it != _mobInfoList.end())
+		{
+			auto myInfo = it->second;
+			float defEff = pow(myInfo._def * log(2), 0.5) * 3;
+			float calDamage = damage * (1 - defEff / 100);
+			float finalHp = myInfo._hp - calDamage;
+
+			if (finalHp < 1.f + FLT_EPSILON)
+			{
+				finalHp = 0;
+				myInfo._hp = (uint32)finalHp;
+				UpdateMobInfo(myInfo);
+				myInfo._isAlive = false; // 죽은 후 서버가 클라에게 죽었다는걸 알려야 함
+
+				SendBufferRef sendBuffer = ServerPacketHandler::Make_MONSTER_INFO(GSessionManager.GetMobInfoList());
+				GSessionManager.Broadcast(sendBuffer);
+
+				_mobInfoList.erase(it->first);
+			}
+			else
+			{
+				myInfo._hp = (uint32)finalHp;
+				UpdateMobInfo(myInfo);
+			}
+		}
 	}
 }

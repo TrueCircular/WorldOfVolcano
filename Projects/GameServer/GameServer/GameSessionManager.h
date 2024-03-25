@@ -33,8 +33,9 @@ public:
 	void UpdateMobInfo(PACKET_Mob_INFO info);
 	void ClearMobInfoList() { _mobInfoList.clear(); }
 	void EnemyIsAttack(PACKET_Player_INFO& target, PACKET_Mob_INFO& enemy);
-
 	void CheckAndResetMonster();
+
+	void MonsterBattleCalculate(float damage, uint32 tgtId);
 private:
 	float attackTime = 1.5f;
 	float attackTimer = 0.0f;

@@ -77,9 +77,6 @@
     <ClCompile Include="ManagerCleaner.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="DamageIndicator.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="TitleScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -143,9 +140,6 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="ManagerCleaner.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="DamageIndicator.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="TitleScene.h">

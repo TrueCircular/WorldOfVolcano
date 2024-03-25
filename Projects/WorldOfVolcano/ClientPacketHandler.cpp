@@ -117,14 +117,12 @@ void ClientPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 	{
 		Player_INFO realUserInfo = CopyPacketPlayerInfo(userInfo, name);
 		_userInfo = realUserInfo;
-		MANAGER_IMGUI()->UpdateHp(_userInfo._maxHp, _userInfo._hp);
 	}
 
 	if (header.other == false)
 	{
 		Player_INFO realUserInfo = CopyPacketPlayerInfo(userInfo, name);
 		_userInfo = realUserInfo;
-		MANAGER_IMGUI()->UpdateHp(_userInfo._maxHp, _userInfo._hp);
 		//cout << "your uid : " << userInfo._uid << endl;
 		//cout << "position : ( " << userInfo._pos.x << ", " << userInfo._pos.y << ", " << userInfo._pos.z << " )" << endl;
 	}
@@ -165,15 +163,38 @@ void ClientPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 		PACKET_Mob_INFO mobInfo;
 		br >> mobInfo;
 
+		wstring name = L"";
+		switch (mobInfo._monsterId)
+		{
+		case 0:
+			name = L"CoreHound";
+			break;
+		case 1:
+			name = L"MoltenGiant";
+			break;
+		case 2:
+			name = L"BaronGeddon";
+			break;
+		case 3:
+			name = L"Ragnaros";
+			break;
+		default:
+			break;
+		}
+
 		auto it = _mobInfoList.find(mobInfo._instanceId);
 		if (it != _mobInfoList.end())
 		{
-			MONSTER_INFO realMobInfo = CopyPacketMonsterInfo(mobInfo, L"mob");
+			MONSTER_INFO realMobInfo = CopyPacketMonsterInfo(mobInfo, name);
+			if (realMobInfo._hp == 0)
+			{
+				realMobInfo._isAlive = false;
+			}
 			it->second = realMobInfo;
 		}
 		else
 		{
-			MONSTER_INFO realMobInfo = CopyPacketMonsterInfo(mobInfo, L"mob");
+			MONSTER_INFO realMobInfo = CopyPacketMonsterInfo(mobInfo, name);
 			_mobInfoList.insert(make_pair(mobInfo._instanceId, realMobInfo));
 		}
 	}
@@ -336,7 +357,7 @@ SendBufferRef ClientPacketHandler::Make_MESSAGE(MESSAGE message)
 	return sendBuffer;
 }
 
-SendBufferRef ClientPacketHandler::Make_BATTLE(Player_INFO attackerInfo, uint32 targerId)
+SendBufferRef ClientPacketHandler::Make_BATTLE(float damage, uint32 targerId)
 {
 	std::lock_guard<std::mutex> lock(_mutex);
 
@@ -344,7 +365,7 @@ SendBufferRef ClientPacketHandler::Make_BATTLE(Player_INFO attackerInfo, uint32 
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
 	PacketHeader* header = bw.Reserve<PacketHeader>();
 
-	bw << attackerInfo << targerId;
+	bw << damage << targerId;
 
 	header->size = bw.WriteSize();
 	header->id = PACKET_BATTLE;

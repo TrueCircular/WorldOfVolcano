@@ -37,7 +37,6 @@ void BossScene::Init()
 	}
 
 	DamageIndicator::GetInstance().Init();
-	DamageIndicator::GetInstance().SetCamera(_childCamera);
 
 	ObjectExporter exporter;
 	exporter.OpenFile(L"../../Resources/Assets/dungeonboss.dat");

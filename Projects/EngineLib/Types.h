@@ -218,3 +218,8 @@ enum class AbilityType : uint8
 	Multiple,
 	End
 };
+
+enum class PacketEventType {
+	None,
+	DamageRequest
+};

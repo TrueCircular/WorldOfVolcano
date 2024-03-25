@@ -92,7 +92,7 @@ void Spawner::SpawnOtherPlayer(uint64 uid, Vec3 spawnPos)
 	bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Death");
 	soundController->SetSound(PlayerAnimType::Death, bgm2);
 
-	_aiCon->SetAiSound(soundController);
+	//_aiCon->SetAiSound(soundController);
 	
 	_otherPlayers.insert(std::make_pair(uid, _chr)); //map에 모델과 식별id 추가
 	MANAGER_SCENE()->GetCurrentScene()->Add(_chr);
@@ -124,6 +124,11 @@ void Spawner::SpawnOtherPlayers()
 			if (pair.second._isOnline == false)
 			{
 				//접속중이 아니라면 다른플레이어 목록에서 삭제
+				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(0);
+				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(1);
+				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(2);
+				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(3);
+				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(4);
 				MANAGER_SCENE()->GetCurrentScene()->Remove(it->second);
 				_otherPlayers.erase(it);
 				ClientPacketHandler::Instance().EraseOtherUserInfoMap(pair.first);
@@ -164,29 +169,29 @@ void Spawner::SpawnOtherPlayers()
 	}
 }
 
-void Spawner::SpawnMonster(uint64 uid, uint32 monsterId, Vec3 spawnPos)
+void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 {
 #pragma region Initialize
 	shared_ptr<Shader> _shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
 
-	// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon    3. Ragnaros
+	// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon
 	shared_ptr<EnemyUnit> _chr;
-	switch (monsterId)
+	switch (mobInfo._monsterId)
 	{
 	case 0:
-		_chr = make_shared<BaronGeddon>();
+		_chr = make_shared<CoreHound>();
 		break;
 	case 1:
-		_chr = make_shared<BaronGeddon>();
+		_chr = make_shared<MoltenGiant>();
 		break;
 	case 2:
 		_chr = make_shared<BaronGeddon>();
 		break;
 	case 3:
-		_chr = make_shared<BaronGeddon>();
+		_chr = make_shared<Ragnaros>();
 		break;
 	default:
-		_chr = make_shared<BaronGeddon>();
+		_chr = make_shared<CoreHound>();
 		break;
 	}
 
@@ -195,26 +200,26 @@ void Spawner::SpawnMonster(uint64 uid, uint32 monsterId, Vec3 spawnPos)
 		_chr->Awake();
 		_chr->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
 
-		switch (monsterId)
+		switch (mobInfo._monsterId)
 		{
 		case 0:
-			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
 			break;
 		case 1:
-			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
 			break;
 		case 2:
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
 			break;
 		case 3:
-			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
 			break;
 		default:
-			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
 			break;
 		}
 
-		_chr->SetSpwanPosition(spawnPos);
+		_chr->SetSpwanPosition(mobInfo._pos);
+		_chr->GetComponent<CharacterInfo>()->SetCharacterInfo(mobInfo);
 		_chr->Start();
 
 		_monsters.insert(std::make_pair(uid, _chr)); //map에 모델과 식별id 추가
@@ -244,20 +249,23 @@ void Spawner::SpawnMonsters()
 
 		if (it != _monsters.end())
 		{
-
-
 			if (pair.second._isAlive == false)
 			{
 				//주의 : 이거 삭제한 이후로 얘 건들면 nullptr 뜰걸로 예상됨
 				it->second->GetComponent<AIController>()->notifyEnemyDeath();
 				//it->second->GetComponent<AIController>()->SetUnitState(PlayerUnitState::Death); <- 동작수정
 				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
-
+				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
+				if (it->second->GetComponent<CharacterInfo>()->GetCharacterInfo()._name == L"BaronGeddon")
+				{
+					MANAGER_IMGUI()->NotifyGeddonDeath();
+				}
 				_monsters.erase(it);
 				ClientPacketHandler::Instance().EraseMonster(pair.first);
 			}
 			else
 			{
+				it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
 				/// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
 				/*auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
 				auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
@@ -294,7 +302,7 @@ void Spawner::SpawnMonsters()
 			//다른플레이어 처음 등장시 스폰
 			if (pair.second._isAlive == true)
 			{
-				SpawnMonster(pair.first, pair.second._monsterId, pair.second._pos);
+				SpawnMonster(pair.first, pair.second);
 			}
 
 			cout << "find not key, new player spawn" << endl;

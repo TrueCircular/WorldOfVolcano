@@ -264,3 +264,9 @@ struct AbilityDataDesc
 	float			AbilityPow = 0.f;
 	float			AbilityRange = 0.f;
 };
+
+struct PacketEvent {
+	PacketEventType type;
+	float damage;
+	uint32 targetId;
+};

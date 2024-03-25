@@ -551,6 +551,9 @@
     <ClInclude Include="DamageIndicator.h">
       <Filter>07. Particle\Damage</Filter>
     </ClInclude>
+    <ClInclude Include="PacketEventManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -929,6 +932,9 @@
     </ClCompile>
     <ClCompile Include="DamageIndicator.cpp">
       <Filter>07. Particle\Damage</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketEventManager.cpp">
+      <Filter>02. Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
