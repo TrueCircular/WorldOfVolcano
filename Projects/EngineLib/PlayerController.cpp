@@ -376,7 +376,12 @@ void PlayerController::PlayerAttack()
 
 							float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
 							pickController->TakeDamage(GetGameObject(), damage);
-
+							DamageIndiCatorBox box;
+							box.pos = GetGameObject()->GetTransform()->GetPosition();
+//							box.pos.y += 30;
+							box.textDuration = 1.5f;
+							box.damage = damage;
+							MANAGER_INDICATOR().Add(box);
 							MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
 
 							*_currentState = PlayerUnitState::Attack;

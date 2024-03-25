@@ -43,8 +43,8 @@ void DungeonScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(light);
 	}
 
-	DamageIndicator::GetInstance().Init();
-	DamageIndicator::GetInstance().SetCamera(_childCamera);
+
+	MANAGER_INDICATOR().Init();
 
 	ObjectExporter exporter;
 	exporter.OpenFile(L"../../Resources/Assets/dungeon1fix.dat");
@@ -72,20 +72,6 @@ void DungeonScene::Init()
 		obj->AddComponent(sprite);
 		obj->AddComponent(make_shared<Lava>(100, 3, false));
 		MANAGER_SCENE()->GetCurrentScene()->Add(obj);
-	}
-
-	{
-		SkyBoxDesc descs{};
-		descs.resourceFilePath[SkyBoxDesc::SKY_Front] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		descs.resourceFilePath[SkyBoxDesc::SKY_Back] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		descs.resourceFilePath[SkyBoxDesc::SKY_Right] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		descs.resourceFilePath[SkyBoxDesc::SKY_Left] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		descs.resourceFilePath[SkyBoxDesc::SKY_UP] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		descs.resourceFilePath[SkyBoxDesc::SKY_DOWN] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsrock01.png";
-		descs.shaderPath = L"skyBox.fx";
-		skyBox = make_shared < Skybox>();
-		skyBox->Set(&descs);
-		skyBox->Start();
 	}
 
 	HeightPlainInfo heightMapDesc;
@@ -217,6 +203,7 @@ void DungeonScene::Init()
 		Add(baronGeddon);
 	}
 
+	DamageIndicator::GetInstance().SetCamera(_childCamera->GetCamera());
 
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"fireland");
 	if (bgm == nullptr) {
@@ -333,7 +320,7 @@ void DungeonScene::Update()
 
 	Scene::Update();
 	skyBox->Update();
-	DamageIndicator::GetInstance().Frame();
+	MANAGER_INDICATOR().Frame();
 
 	shared_ptr<Scene> scene = make_shared<BaseScene>();
 	scene->SetSceneName(L"BaseScene");
@@ -368,5 +355,5 @@ void DungeonScene::LateUpdate()
 	Scene::LateUpdate();
 	quadTreeTerrain->Update();
 
-	DamageIndicator::GetInstance().Render();
+	MANAGER_INDICATOR().Render();
 }

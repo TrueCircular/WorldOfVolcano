@@ -41,7 +41,6 @@ void BaseScene::Init()
 	}
 
 	DamageIndicator::GetInstance().Init();
-	DamageIndicator::GetInstance().SetCamera(_childCamera);
 
 	{
 		auto obj = make_shared<GameObject>();
@@ -66,37 +65,37 @@ void BaseScene::Init()
 		MANAGER_SCENE()->GetCurrentScene()->Add(obj);
 	}
 
-	auto fog_obj = make_shared<GameObject>();
 	//Character
-	{
-		shared_ptr<Model> model = make_shared<Model>();
-		{
-			wstring MeshAdr = RESOURCES_ADDR_MESH_STATIC;
-			MeshAdr += L"fog";
-			MeshAdr += L"/";
-			MeshAdr += L"fog";
-			MeshAdr += L".mesh";
+	_skydome = make_shared<SkyDome>();
+	SkyDomeDesc _domeDesc;
+	_domeDesc.shaderPath = L"SkyDome.fx";
+	_domeDesc.SkyDomeTexPath = RESOURCES_ADDR_TEXTURE;
+	_domeDesc.SkyDomeTexPath += L"firelandsskyclouds03.png";
+	_domeDesc.SkyDomeBlendPath = RESOURCES_ADDR_TEXTURE;
+	_domeDesc.SkyDomeBlendPath += L"firelandsskyhorizon01.png";
+	_skydome->Set(&_domeDesc);
+	_skydome->Start();
+	//{
+	//	shared_ptr<Model> model = make_shared<Model>();
+	//	{
+	//		wstring MeshAdr = RESOURCES_ADDR_MESH_STATIC;
+	//		MeshAdr += L"fog";
+	//		MeshAdr += L"/";
+	//		MeshAdr += L"fog";
+	//		MeshAdr += L".mesh";
 
-			wstring MaterialAdr = RESOURCES_ADDR_TEXTURE_STATIC;
-			MaterialAdr += L"fog";
-			MaterialAdr += L"/";
-			MaterialAdr += L"fog";
-			MaterialAdr += L".xml";
+	//		wstring MaterialAdr = RESOURCES_ADDR_TEXTURE_STATIC;
+	//		MaterialAdr += L"fog";
+	//		MaterialAdr += L"/";
+	//		MaterialAdr += L"fog";
+	//		MaterialAdr += L".xml";
 
-			model->ReadModel(MeshAdr);
-			model->ReadMaterial(MaterialAdr);
-		}
-		const auto& shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
-		shared_ptr<ModelRenderer> tempModelRenderer = make_shared<ModelRenderer>(shader);
-		{
-			tempModelRenderer->SetModel(model);
-			tempModelRenderer->SetPass(8);
-		}
-		fog_obj->AddComponent(tempModelRenderer);
-		fog_obj->GetOrAddTransform()->SetLocalPosition(Vec3(0, 0, 0));
-	}
-	fog_obj->Awake();
-	Add(fog_obj);
+	//		model->ReadModel(MeshAdr);
+	//		model->ReadMaterial(MaterialAdr);
+	//	}
+
+	//	model->GetMeshes();
+	//}
 
 
 	HeightPlainInfo heightMapDesc;
@@ -120,6 +119,28 @@ void BaseScene::Init()
 	quadTreeTerrain->Set(_terrain, 3);
 	quadTreeTerrain->Start();
 
+
+	heightMapDesc.heightFilename = L"HeightMapOutLine";
+	heightMapDesc.heightFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"testOutLine.bmp";
+	heightMapDesc.shaderFilePath = L"SplattingMapping.fx";
+	//heightMapDesc.shaderFilePath = L"TerrainMapping.fx";
+	heightMapDesc.shaderFilename = L"HeightMapShaderDungeon";
+	heightMapDesc.textureFilename = L"HeightMapTextureDungeon";
+	heightMapDesc.textureFilePath = wstring(RESOURCES_ADDR_TEXTURE) + L"020.bmp";
+	heightMapDesc.meshKey = L"TerrainMeshOutLine";
+	heightMapDesc.distance = 20;
+	heightMapDesc.heightScale = 20;
+	heightMapDesc.row = 253;
+	heightMapDesc.col = 253;
+
+	_terrainOutLine = make_shared<Terrain>(heightMapDesc);
+	_terrainOutLine->Awake();
+	_terrainOutLine->AddComponent(make_shared<MeshRenderer>());
+	_terrainOutLine->Start();
+	quadTreeTerrainOutLine = make_shared<QuadTreeTerrain>();
+	quadTreeTerrainOutLine->Set(_terrainOutLine, 3);
+	quadTreeTerrainOutLine->Start();
+
 	SplatterDesc spDesc{};
 	spDesc.texPath[0] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsash01.png";
 	spDesc.texPath[1] = wstring(RESOURCES_ADDR_TEXTURE) + L"burningsteppsashcracks.png";
@@ -133,6 +154,14 @@ void BaseScene::Init()
 	splatter->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderBase"));
 	quadTreeTerrain->AddSplatter(splatter);
 	SetTerrain(_terrain);
+
+	quadTreeTerrain->AddSplatter(splatter);
+	spDesc.alphaPath = wstring(RESOURCES_ADDR_TEXTURE) + L"testalphaOutLine.bmp";
+	spDesc.alphaName = L"SplatAlphaBaseOutLine";
+	splatterOutLine = make_shared<LayerSplatter>();
+	splatterOutLine->Set(spDesc, MANAGER_RESOURCES()->GetResource<Shader>(L"HeightMapShaderDungeon"));
+	quadTreeTerrainOutLine->AddSplatter(splatterOutLine);
+
 
 	//Camera
 	{
@@ -162,6 +191,7 @@ void BaseScene::Init()
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
 
+	DamageIndicator::GetInstance().SetCamera(_childCamera->GetCamera());
 
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"Lobby");
 	if (bgm == nullptr) {
@@ -281,6 +311,8 @@ void BaseScene::Update()
 
 	Scene::Update();
 
+	quadTreeTerrain->Frame((*frustom->frustomBox.get()));
+	quadTreeTerrainOutLine->Frame((*frustom->frustomBox.get()));
 	//skyBox->Update();
 	DamageIndicator::GetInstance().Frame();
 
@@ -299,8 +331,10 @@ void BaseScene::Update()
 void BaseScene::LateUpdate()
 {
 
+	_skydome->Update();
 	Scene::LateUpdate();
 	quadTreeTerrain->Update();
+	quadTreeTerrainOutLine->Update();
 
 	DamageIndicator::GetInstance().Render();
 }

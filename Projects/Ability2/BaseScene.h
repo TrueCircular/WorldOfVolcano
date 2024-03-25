@@ -1,7 +1,7 @@
 #pragma once
 #include "engine\\FrustomCamera.h"
 #include "QuadTreeBlock.h"
-#include "Skybox.h"
+#include "SkyDome.h"
 //Character
 #include "Character.h"
 #include "Player.h"
@@ -24,7 +24,12 @@ class BaseScene : public Scene
 	shared_ptr<Terrain> _terrain;
 	shared_ptr<QuadTreeTerrain> quadTreeTerrain;
 	shared_ptr<LayerSplatter> splatter;
-	shared_ptr<Skybox> skyBox;
+
+	shared_ptr<Terrain> _terrainOutLine;
+	shared_ptr<QuadTreeTerrain> quadTreeTerrainOutLine;
+	shared_ptr<LayerSplatter> splatterOutLine;
+
+	shared_ptr<SkyDome> _skydome;
 
 	//Shader
 	shared_ptr<Shader>	_shader;

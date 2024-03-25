@@ -92,6 +92,7 @@
     <ClCompile Include="BossScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="SkyDome.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -159,6 +160,7 @@
     <ClInclude Include="BossScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="SkyDome.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Resources\Shader\Global.fx">
