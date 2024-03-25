@@ -6,6 +6,7 @@
 #include "Smoke1.h"
 #include "Smoke2.h"
 #include "Smoke3.h"
+#include "Smoke4.h"
 #include "FireStorm.h"
 #include "FireBall.h"
 #include "Polar.h"
@@ -42,6 +43,7 @@ void ParticleManager::AddDefaultParticle()
 	shared_ptr<Smoke1> smoke1 = make_shared<Smoke1>();
 	shared_ptr<Smoke2> smoke2 = make_shared<Smoke2>();
 	shared_ptr<Smoke3> smoke3 = make_shared<Smoke3>();
+	shared_ptr<Smoke4> smoke4 = make_shared<Smoke4>();
 	shared_ptr<FireStorm> storm = make_shared<FireStorm>();
 	shared_ptr<FireBall> fireBall = make_shared<FireBall>();
 	shared_ptr<Polar> polar = make_shared<Polar>();
@@ -57,6 +59,7 @@ void ParticleManager::AddDefaultParticle()
 	AddManagingParticle(L"Smoke1", smoke1);
 	AddManagingParticle(L"Smoke3", smoke3);
 	AddManagingParticle(L"Smoke2", smoke2);
+	AddManagingParticle(L"Smoke4", smoke4);
 	AddManagingParticle(L"FireStorm", storm);
 	AddManagingParticle(L"FireBall", fireBall);
 	AddManagingParticle(L"Polar", polar);

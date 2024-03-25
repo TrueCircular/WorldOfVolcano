@@ -157,6 +157,11 @@ void Warrior::CharacterInit()
 	{
 		auto abSlot = make_shared<AbilitySlot>();
 
+		auto chargeData = make_shared<AWarriorChargeData>();
+		auto _charge = make_shared<AWarriorCharge>();
+		_charge->SetAbilityData(chargeData);
+		abSlot->SetAbility(0, _charge);
+
 		auto roarData = make_shared<AWarriorRoarData>();
 		auto roar = make_shared<AWarriorRoar>();
 		roar->SetAbilityData(roarData);

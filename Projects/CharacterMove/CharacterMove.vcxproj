@@ -232,6 +232,7 @@
     <FxCompile Include="..\..\Resources\Shader\Smoke2Legacy.fx" />
     <FxCompile Include="..\..\Resources\Shader\Smoke3.fx" />
     <FxCompile Include="..\..\Resources\Shader\Smoke3Legacy.fx" />
+    <FxCompile Include="..\..\Resources\Shader\Smoke4.fx" />
     <FxCompile Include="..\..\Resources\Shader\SmokeLegacy.fx" />
     <FxCompile Include="..\..\Resources\Shader\Storm.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

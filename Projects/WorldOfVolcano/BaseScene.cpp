@@ -264,7 +264,7 @@ void BaseScene::Update()
 	Scene::Update();
 
 	//skyBox->Update();
-	DamageIndicator::GetInstance().Frame();
+	MANAGER_INDICATOR()->Frame();
 
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	scene->SetSceneName(L"DungeonScene");

@@ -69,7 +69,7 @@ float4 PS(NumOutput input) : SV_TARGET
 
 technique11 T0
 {
-    PASS_RS_BS_VP(P0,CullNone,DamageBlendState,MeshVS,PS)
+    PASS_RS_BS_VPNOD(P0,CullNone,DamageBlendState,MeshVS,PS)
 //    PASS_RS_SP(P0, CullNone, MeshVS, PS)
 //	PASS_RS_SP(P0, ShadowRaster, MeshVS, PS)
 };

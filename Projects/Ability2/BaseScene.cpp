@@ -40,7 +40,7 @@ void BaseScene::Init()
 //		MANAGER_RENDERER()->PushLightData(lightDesc);
 	}
 
-	DamageIndicator::GetInstance().Init();
+	MANAGER_INDICATOR()->Init();
 
 	{
 		auto obj = make_shared<GameObject>();
@@ -191,7 +191,7 @@ void BaseScene::Init()
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
 
-	DamageIndicator::GetInstance().SetCamera(_childCamera->GetCamera());
+	MANAGER_INDICATOR()->SetCamera(_childCamera->GetCamera());
 
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"Lobby");
 	if (bgm == nullptr) {
@@ -314,7 +314,7 @@ void BaseScene::Update()
 	quadTreeTerrain->Frame((*frustom->frustomBox.get()));
 	quadTreeTerrainOutLine->Frame((*frustom->frustomBox.get()));
 	//skyBox->Update();
-	DamageIndicator::GetInstance().Frame();
+	MANAGER_INDICATOR()->Frame();
 
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	scene->SetSceneName(L"DungeonScene");
@@ -336,5 +336,5 @@ void BaseScene::LateUpdate()
 	quadTreeTerrain->Update();
 	quadTreeTerrainOutLine->Update();
 
-	DamageIndicator::GetInstance().Render();
+	MANAGER_INDICATOR()->Render();
 }

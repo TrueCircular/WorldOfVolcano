@@ -3,35 +3,17 @@
 
 
 
-	DamageIndicator& DamageIndicator::GetInstance() {
-		static DamageIndicator indiCator;
-		return indiCator;
+DamageIndicator* DamageIndicator::_instance = nullptr;
+
+	DamageIndicator* DamageIndicator::GetInstance() {
+		if (_instance == nullptr)
+			_instance = new DamageIndicator();
+
+		return _instance;
 	}
 
 	void DamageIndicator::Init() {
 
-		//Need To Change
-		if (_shader == nullptr) {
-			_shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Damage");
-			if (_shader == nullptr) {
-				_shader = make_shared<Shader>(L"Damage.fx");
-				MANAGER_RESOURCES()->AddResource(L"Damage", _shader);
-				numArray = _shader->GetSRV("NumListMap");
-			}
-
-			CreateInstance();
-			CreateMesh();
-
-			for (int i = 0; i < 10; ++i) {
-				std::wstring string = L"../../Resources/Font/num/";
-				string += std::to_wstring(i);
-				string += L".png";
-
-				shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetOrAddTexture(L"num" + to_wstring(i), string);
-				numSRVs.push_back(tex->GetTexture().Get());
-			}
-
-		}
 	};
 	void DamageIndicator::Frame() {
 		float time = MANAGER_TIME()->GetDeltaTime();
@@ -155,6 +137,28 @@
 		renderList.clear();
 	};
 	DamageIndicator::DamageIndicator() {
+		//Need To Change
+		if (_shader == nullptr) {
+			_shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Damage");
+			if (_shader == nullptr) {
+				_shader = make_shared<Shader>(L"Damage.fx");
+				MANAGER_RESOURCES()->AddResource(L"Damage", _shader);
+				numArray = _shader->GetSRV("NumListMap");
+			}
+
+			CreateInstance();
+			CreateMesh();
+
+			for (int i = 0; i < 10; ++i) {
+				std::wstring string = L"../../Resources/Font/num/";
+				string += std::to_wstring(i);
+				string += L".png";
+
+				shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetOrAddTexture(L"num" + to_wstring(i), string);
+				numSRVs.push_back(tex->GetTexture().Get());
+			}
+
+		}
 	};
 	void DamageIndicator::CreateInstance() {
 

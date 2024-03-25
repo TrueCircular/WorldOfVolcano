@@ -44,7 +44,7 @@ void DungeonScene::Init()
 	}
 
 
-	MANAGER_INDICATOR().Init();
+	MANAGER_INDICATOR()->Init();
 
 	ObjectExporter exporter;
 	exporter.OpenFile(L"../../Resources/Assets/dungeon1fix.dat");
@@ -203,7 +203,6 @@ void DungeonScene::Init()
 		Add(baronGeddon);
 	}
 
-	DamageIndicator::GetInstance().SetCamera(_childCamera->GetCamera());
 
 	shared_ptr<Sounds> bgm = MANAGER_RESOURCES()->GetResource<Sounds>(L"fireland");
 	if (bgm == nullptr) {
@@ -220,6 +219,7 @@ void DungeonScene::Init()
 ///	bool isplaynsd;
 //	chs->isPlaying(&isplaynsd);
 
+	MANAGER_INDICATOR()->SetCamera(_childCamera->GetCamera());
 	SpawnManager::GetInstance().Init();
 }
 void DungeonScene::Start()
@@ -316,11 +316,11 @@ void DungeonScene::Update()
 	//box.damage = 444;
 	//box.pos = _warrior->GetTransform()->GetLocalPosition();
 	//box.textDuration = 20; sexkinghfghfghrttrrtherethrteh
-	//DamageIndicator::GetInstance().Add(box);
+	//MANAGER_INDICATOR()->Add(box);
 
 	Scene::Update();
 	skyBox->Update();
-	MANAGER_INDICATOR().Frame();
+	MANAGER_INDICATOR()->Frame();
 
 	shared_ptr<Scene> scene = make_shared<BaseScene>();
 	scene->SetSceneName(L"BaseScene");
@@ -355,5 +355,5 @@ void DungeonScene::LateUpdate()
 	Scene::LateUpdate();
 	quadTreeTerrain->Update();
 
-	MANAGER_INDICATOR().Render();
+	MANAGER_INDICATOR()->Render();
 }

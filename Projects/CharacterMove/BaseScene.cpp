@@ -59,7 +59,7 @@ void BaseScene::Init()
 		//		MANAGER_RENDERER()->PushLightData(lightDesc);
 	}
 
-	DamageIndicator::GetInstance().Init();
+	MANAGER_INDICATOR()->Init();
 
 	{
 		auto obj = make_shared<GameObject>();
@@ -270,7 +270,7 @@ void BaseScene::Init()
 	//	shared_ptr<ParticleInstance> instancedata = make_shared<ParticleInstance>(5, pos2, nullptr, 0, true);
 	//	magicCircle->AddParticle(instancedata);
 	//}
-	DamageIndicator::GetInstance().SetCamera(_childCamera->GetCamera());
+	MANAGER_INDICATOR()->SetCamera(_childCamera->GetCamera());
 	SpawnManager::GetInstance().Init();
 }
 void BaseScene::Start()
@@ -377,7 +377,7 @@ void BaseScene::Update()
 	Scene::Update();
 
 	//skyBox->Update();
-	DamageIndicator::GetInstance().Frame();
+	MANAGER_INDICATOR()->Frame();
 	shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	scene->SetSceneName(L"DungeonScene");
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::E)) {
@@ -428,7 +428,7 @@ void BaseScene::Update()
 		box.pos = _warrior->GetTransform()->GetLocalPosition();
 		box.pos.y += 10;
 		box.textDuration = 1.5;
-		MANAGER_INDICATOR().Add(box);
+		MANAGER_INDICATOR()->Add(box);
 	}
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::A)) {
 		auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Smoke2");
@@ -488,6 +488,6 @@ void BaseScene::LateUpdate()
 	quadTreeTerrainOutLine->Update();
 	
 	MANAGER_SOUND()->Update();
-	DamageIndicator::GetInstance().Render();
+	MANAGER_INDICATOR()->Render();
 	MANATER_PARTICLE()->Render();
 }

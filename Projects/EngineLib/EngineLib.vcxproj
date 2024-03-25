@@ -237,6 +237,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="FrustomCamera.h" />
     <ClInclude Include="Ragnaros.h" />
     <ClInclude Include="ShineHelper.h" />
+    <ClInclude Include="Smoke4.h" />
     <ClInclude Include="StrategyFactory.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Geometry.h" />
@@ -367,6 +368,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="FrustomCamera.cpp" />
     <ClCompile Include="Ragnaros.cpp" />
     <ClCompile Include="ShineHelper.cpp" />
+    <ClCompile Include="Smoke4.cpp" />
     <ClCompile Include="StrategyFactory.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Geometry.cpp" />

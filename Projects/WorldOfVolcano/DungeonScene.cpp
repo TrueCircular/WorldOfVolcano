@@ -253,7 +253,7 @@ void DungeonScene::Update()
 	//box.damage = 444;
 	//box.pos = _warrior->GetTransform()->GetLocalPosition();
 	//box.textDuration = 20; sexkinghfghfghrttrrtherethrteh
-	//DamageIndicator::GetInstance().Add(box);
+	//MANAGER_INDICATOR()->Add(box);
 
 	Scene::Update();
 	skyBox->Update();
