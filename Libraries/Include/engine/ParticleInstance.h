@@ -18,6 +18,7 @@ struct ParticleInstance
 	shared_ptr<Transform> parentTransform;
 	float speed=1.0f;
 	float duration=0.0f;
+	ParticleInstance(){}
 	ParticleInstance(float _duration, shared_ptr<Transform> pos, shared_ptr<Transform> target, float speedVel, bool loop = false) {
 		duration = _duration;
 		particleTransform = pos;
@@ -32,6 +33,20 @@ struct ParticleInstance
 		isLoop = loop;
 	};
 public:
+	void SetInstance(float _duration, shared_ptr<Transform> pos, shared_ptr<Transform> target, float speedVel, bool loop = false)
+	{
+		duration = _duration;
+		particleTransform = pos;
+		if (target) {
+			targetTransform = target;
+			isTargeting = true;
+		}
+		else {
+			targetTransform = nullptr;
+		}
+		speed = speedVel;
+		isLoop = loop;
+	}
 	void Reset() {
 		data.currentime = 0.0f;
 		data.world = Matrix::Identity;

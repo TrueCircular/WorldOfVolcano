@@ -2,15 +2,15 @@
 #include "UnitStrategy.h"
 
 #pragma region Forward Declaration
-class PlayableUnit;
 class CharacterInfo;
 class AIController;
 class Sounds;
+struct TargetDesc;
 #pragma endregion
 
 class BaronGeddonStand : public StandStrategy
 {
-	using TarceTargetList = unordered_set<shared_ptr<PlayableUnit>>;
+	using TargetList = unordered_set<shared_ptr<TargetDesc>>;
 public:
 	BaronGeddonStand();
 	virtual ~BaronGeddonStand();
@@ -19,7 +19,8 @@ private:
 	weak_ptr<Transform>		_transform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
-	TarceTargetList			_targetList;
+	weak_ptr<TargetList>	_targetList;
+	Vec3					_spwanPos = Vec3(0.f);
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 public:
@@ -36,6 +37,7 @@ public:
 private:
 	weak_ptr<AIController>	_controller;
 	weak_ptr<ModelAnimator>	_animator;
+	shared_ptr<Sounds>		_damagedSound;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
@@ -47,6 +49,13 @@ class BaronGeddonDead : public DeadStrategy
 public:
 	BaronGeddonDead();
 	virtual ~BaronGeddonDead();
+private:
+	weak_ptr<AIController>	_controller;
+	weak_ptr<ModelAnimator>	_animator;
+	shared_ptr<Sounds>		_deadSound;
+	float					_dt = 0.f;
+	float					_soundTimer = 1.0f;
+	bool					_soundFlag = false;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
@@ -55,12 +64,14 @@ public:
 
 class BaronGeddonTrace : public TraceStrategy
 {
+	using TargetList = unordered_set<shared_ptr<TargetDesc>>;
 public:
 	BaronGeddonTrace();
 	virtual ~BaronGeddonTrace();
 private:
 	weak_ptr<AIController>	_controller;
 	weak_ptr<Transform>		_transform;
+	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
@@ -98,12 +109,14 @@ public:
 
 class BaronGeddonBattle : public BattleStrategy
 {
+	using TargetList = unordered_set<shared_ptr<TargetDesc>>;
 public:
 	BaronGeddonBattle();
 	virtual ~BaronGeddonBattle();
 private:
 	weak_ptr<AIController>	_controller;
 	weak_ptr<Transform>		_transform;
+	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;

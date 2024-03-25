@@ -251,8 +251,10 @@ class PlayerAnimAbility2 : public PlayerAnimState
 {
 	using Super = PlayerAnimState;
 public:
-	PlayerAnimAbility2() { _stateAnim = PlayerAnimType::Ability2; };
+	PlayerAnimAbility2();
 	virtual ~PlayerAnimAbility2() {};
+private:
+	shared_ptr<Sounds> _abilitySound;
 public:
 	virtual bool Enter(const shared_ptr<CharacterController>& playerController) override;
 	virtual bool Update() override;

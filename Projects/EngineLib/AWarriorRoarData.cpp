@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "WarriorRoarData.h"
+#include "AWarriorRoarData.h"
 
-WarriorRoarData::WarriorRoarData()
+AWarriorRoarData::AWarriorRoarData()
 {
 	wstring LoadPath = DATA_ADDR_ABILITY;
 	LoadPath += L"Warrior/WarriorRoar.xml";
@@ -9,6 +9,6 @@ WarriorRoarData::WarriorRoarData()
 	LoadAbilityDataFromFile(LoadPath);
 }
 
-WarriorRoarData::~WarriorRoarData()
+AWarriorRoarData::~AWarriorRoarData()
 {
 }

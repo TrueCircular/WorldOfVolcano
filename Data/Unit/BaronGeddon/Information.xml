@@ -1,12 +1,12 @@
 <CharacterInfo>
     <Name>BaronGeddon</Name>
-    <HP>80000</HP>
+    <HP>50000</HP>
     <MP>1000</MP>
-    <ATK>250</ATK>
-    <DEF>200</DEF>
+    <ATK>2000</ATK>
+    <DEF>400</DEF>
     <MoveSpeed>35</MoveSpeed>
     <AggroPow>0</AggroPow>
     <AttackRange>40</AttackRange>
     <AttackTime>1.5</AttackTime>
-    <TraceRadius>100</TraceRadius>
+    <TraceRadius>150</TraceRadius>
 </CharacterInfo>

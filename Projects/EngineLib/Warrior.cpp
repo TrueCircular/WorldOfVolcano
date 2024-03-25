@@ -1,8 +1,12 @@
 #include "pch.h"
 #include "Warrior.h"
+
+//Controller
 #include "PlayerController.h"
 #include "CharacterInfo.h"
 #include "HeightGetter.h"
+//Item
+#include "EquipmentSlot.h"
 #include "ItemData.h"
 #include "AncientHelm.h"
 #include "AncientLShoulder.h"
@@ -10,7 +14,13 @@
 #include "AncientBelt.h"
 #include "AncientSword.h"
 #include "AncientShield.h"
-#include "EquipmentSlot.h"
+//Ability
+#include "AbilitySlot.h"
+#include "AbilityData.h"
+#include "AWarriorRoarData.h"
+#include "AWarriorRoar.h"
+#include "AWarriorChargeData.h"
+#include "AWarriorCharge.h"
 
 Warrior::Warrior()
 {
@@ -141,6 +151,18 @@ void Warrior::CharacterInit()
 		equipmentSlot->EquipmentItem(5, shield);
 
 		AddComponent(equipmentSlot);
+	}
+
+	//Set Ability
+	{
+		auto abSlot = make_shared<AbilitySlot>();
+
+		auto roarData = make_shared<AWarriorRoarData>();
+		auto roar = make_shared<AWarriorRoar>();
+		roar->SetAbilityData(roarData);
+		abSlot->SetAbility(1, roar);
+
+		AddComponent(abSlot);
 	}
 
 	SetName(L"Warrior");

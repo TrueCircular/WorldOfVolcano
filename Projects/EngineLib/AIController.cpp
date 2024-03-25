@@ -257,11 +257,11 @@ void AIController::Start()
 
 void AIController::FixedUpdate()
 {
-	if (_isAlive == false)
-	{
-		DeadEvent();
-	}
-	else
+}
+
+void AIController::Update()
+{
+	if(_isAlive)
 	{
 		UpdateTargetList();
 
@@ -281,25 +281,21 @@ void AIController::FixedUpdate()
 				_transform.lock()->SetLocalPosition(tempPos);
 			}
 		}
-		switch (_aiType)
-		{
-		case AIType::PlayableUnit:
-		{
-			_currentPlayerAnimState->Update();
-		}
-		break;
-		case AIType::EnemyUnit:
-		{
-			_unitFsm->Update();
-		}
-		break;
-		}
 	}
-}
 
-void AIController::Update()
-{
-
+	switch (_aiType)
+	{
+	case AIType::PlayableUnit:
+	{
+		_currentPlayerAnimState->Update();
+	}
+	break;
+	case AIType::EnemyUnit:
+	{
+		_unitFsm->Update();
+	}
+	break;
+	}
 }
 void AIController::LateUpdate()
 {

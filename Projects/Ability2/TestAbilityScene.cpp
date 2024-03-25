@@ -23,6 +23,7 @@
 #include "engine/AIController.h"
 #include "engine/Utils.h"
 #include "engine/StrategyFactory.h"
+#include "engine/AbilitySlot.h"
 
 void TestAbilityScene::Init()
 {
@@ -134,6 +135,7 @@ void TestAbilityScene::Init()
 			_warrior = make_shared<Warrior>();
 			_warrior->Awake();
 			_warrior->SetCharacterController(make_shared<PlayerController>());
+			_warrior->GetComponent<AbilitySlot>()->SetController(_warrior->GetComponent<PlayerController>());
 			_warrior->SetSpwanPosition(spwanPos);
 			_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
 			_warrior->Start();
@@ -214,7 +216,6 @@ void TestAbilityScene::Init()
 			bgm->Play(true);
 		}
 	}
-
 }
 
 void TestAbilityScene::Start()
@@ -233,6 +234,7 @@ void TestAbilityScene::Update()
 
 	Scene::Update();
 
+	MANATER_PARTICLE()->Update();
 	MANAGER_SOUND()->Update();
 
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::Q))
@@ -247,4 +249,5 @@ void TestAbilityScene::LateUpdate()
 	Scene::LateUpdate();
 
 	_quadTreeTerrain->Update();
+	MANATER_PARTICLE()->Render();
 }

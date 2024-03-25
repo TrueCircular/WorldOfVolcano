@@ -1,0 +1,8 @@
+<AbilityInformation>
+    <Name>WarriorCharge</Name>
+    <AbilityType>1</AbilityType>
+    <ConsumedMp>50</ConsumedMp>
+    <AbilityCoolTime>5</AbilityCoolTime>
+    <AbilityPow>2.5</AbilityPow>
+    <AbilityRange>100</AbilityRange>
+</AbilityInformation>

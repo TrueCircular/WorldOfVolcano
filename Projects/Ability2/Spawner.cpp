@@ -69,27 +69,10 @@ void Spawner::SpawnOtherPlayer(uint64 uid, Vec3 spawnPos)
 	_chr->Start();
 	_chr->GetTransform()->SetLocalPosition(spawnPos);
 	//DOTO FOR TEMPLATE
-	shared_ptr< PlayerSoundController> soundController = make_shared<PlayerSoundController>();
 
-	soundController->Set(_chr->GetTransform());
-	shared_ptr<Sounds> bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Attack");
-	soundController->SetSound(PlayerAnimType::Attack1, bgm2);
-
-	bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Attack2");
-	soundController->SetSound(PlayerAnimType::Attack2, bgm2);
-
-	bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Damaged");
-	soundController->SetSound(PlayerAnimType::Damaged, bgm2);
-
-	bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Death");
-	soundController->SetSound(PlayerAnimType::Death, bgm2);
-
-	_aiCon->SetAiSound(soundController);
-	
 	_otherPlayers.insert(std::make_pair(uid, _chr)); //map에 모델과 식별id 추가
 	MANAGER_SCENE()->GetCurrentScene()->Add(_chr);
 	MANAGER_SCENE()->GetCurrentScene()->AddShadow(_chr);
-
 }
 
 void Spawner::SpawnOtherPlayers()

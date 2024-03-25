@@ -34,7 +34,7 @@ bool AbilityData::LoadAbilityDataFromFile(const wstring& path)
         //Find FirstNode
         ::XMLNode* node = document->FirstChild();
 
-        //Find Element
+        //Find Element//
         //Name
         ::XMLElement* element = node->FirstChildElement("Name");
         string temp;
@@ -47,22 +47,36 @@ bool AbilityData::LoadAbilityDataFromFile(const wstring& path)
         element->QueryIntText(&iType);
         tempDesc.Type = static_cast<AbilityType>(iType);
 
-        //ConsumedMp
+        //Consumed Mp
         element = node->FirstChildElement("ConsumedMp");
         unsigned int mp = 0;
         element->QueryUnsignedText(&mp);
         tempDesc.ConsumedMp = static_cast<uint32>(mp);
 
-        //AbilityPow
+        //Ability CoolTime
+        element = node->FirstChildElement("AbilityCoolTime");
+        float coolTime = 0;
+        element->QueryFloatText(&coolTime);
+        tempDesc.AbilityCoolTime = coolTime;
+
+        //Ability Pow
         element = node->FirstChildElement("AbilityPow");
         float pow = 0;
         element->QueryFloatText(&pow);
         tempDesc.AbilityPow = pow;
 
+        //Ability Range
+        element = node->FirstChildElement("AbilityRange");
+        float range = 0;
+        element->QueryFloatText(&range);
+        tempDesc.AbilityRange = range;
+
         _desc.Name = tempDesc.Name;
         _desc.Type = tempDesc.Type;
         _desc.ConsumedMp = tempDesc.ConsumedMp;
+        _desc.AbilityCoolTime = tempDesc.AbilityCoolTime;
         _desc.AbilityPow = tempDesc.AbilityPow;
+        _desc.AbilityRange = tempDesc.AbilityRange;
     }
 
     return true;
@@ -103,8 +117,16 @@ bool AbilityData::SaveAbilityDataToFilePath(const wstring& path)
         element->SetText(static_cast<uint32>(_desc.ConsumedMp));
         node->InsertEndChild(element);
 
+        element = document->NewElement("AbilityCoolTime");
+        element->SetText((_desc.AbilityCoolTime));
+        node->InsertEndChild(element);
+
         element = document->NewElement("AbilityPow");
         element->SetText((_desc.AbilityPow));
+        node->InsertEndChild(element);
+
+        element = document->NewElement("AbilityRange");
+        element->SetText((_desc.AbilityRange));
         node->InsertEndChild(element);
     }
 

@@ -50,16 +50,6 @@ bool PlayerAnimState::Update()
 			_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
 			return true;
 		}break;
-		case PlayerUnitState::Death:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Damaged:
-		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Damaged);
-			return true;
-		}break;
 		case PlayerUnitState::Battle:
 		{
 			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
@@ -105,16 +95,6 @@ bool PlayerAnimState::Update()
 		case PlayerUnitState::Loot:
 		{
 			_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
-			return true;
-		}break;
-		case PlayerUnitState::Death:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
-			return true;
-		}break;
-		case PlayerUnitState::Damaged:
-		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Damaged);
 			return true;
 		}break;
 		case PlayerUnitState::Battle:
@@ -597,13 +577,7 @@ bool PlayerAnimDamaged::Update()
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			if (_playerState.lock() != nullptr)
-			{
-				if (*_playerState.lock() != PlayerUnitState::Damaged)
-				{
-					Super::Update();
-				}
-			}
+			Super::Update();
 		}
 	}
 
@@ -911,6 +885,24 @@ bool PlayerAnimCasting::Out()
 PlayerAnimAbility1::PlayerAnimAbility1()
 {
 	_stateAnim = PlayerAnimType::Ability1;
+
+	//Ability Sound
+	auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Ability1");
+	if (tempSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Playable/Warrior/Warrior_Ability1.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Ability1", sound);
+
+		_abilitySound = sound->Clone();
+	}
+	else
+	{
+		_abilitySound = tempSound->Clone();
+	}
 }
 
 bool PlayerAnimAbility1::Enter(const shared_ptr<CharacterController>& playerController)
@@ -933,31 +925,13 @@ bool PlayerAnimAbility1::Enter(const shared_ptr<CharacterController>& playerCont
 		_animator.lock()->SetFrameEnd(false);
 	}
 	_animator.lock()->SetNextAnimation(L"Ability1");
+	_abilitySound->Play(false);
 
 	return false;
 }
 
 bool PlayerAnimAbility1::Update()
 {
-	if (_contoller.lock() != nullptr)
-	{
-		if (_animator.lock()->GetFrameEnd() == true)
-		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}
-	}
-	else if (_aiContoller.lock())
-	{
-		if (_animator.lock()->GetFrameEnd() == true)
-		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
-			return true;
-		}
-	}
-
 	return false;
 }
 
@@ -965,6 +939,29 @@ bool PlayerAnimAbility1::Out()
 {
 
 	return true;
+}
+
+PlayerAnimAbility2::PlayerAnimAbility2()
+{
+	_stateAnim = PlayerAnimType::Ability2;
+
+	//Ability Sound
+	auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Ability2");
+	if (tempSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Playable/Warrior/Warrior_Ability2.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Ability2", sound);
+
+		_abilitySound = sound->Clone();
+	}
+	else
+	{
+		_abilitySound = tempSound->Clone();
+	}
 }
 
 bool PlayerAnimAbility2::Enter(const shared_ptr<CharacterController>& playerController)
@@ -987,6 +984,7 @@ bool PlayerAnimAbility2::Enter(const shared_ptr<CharacterController>& playerCont
 		_animator.lock()->SetFrameEnd(false);
 	}
 	_animator.lock()->SetNextAnimation(L"Ability2");
+	_abilitySound->Play(false);
 
 	return false;
 }

@@ -2,7 +2,6 @@
 #include "UnitStrategy.h"
 
 #pragma region Forward Declaration
-class PlayableUnit;
 class CharacterInfo;
 class AIController;
 class Sounds;

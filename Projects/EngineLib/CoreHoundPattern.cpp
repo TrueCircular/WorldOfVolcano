@@ -1,12 +1,10 @@
 #include "pch.h"
 #include "CoreHoundPattern.h"
 
-#include <stdlib.h>
-#include <time.h>
-#include "PlayableUnit.h"
+#include "PlayerController.h"
+#include "AIController.h"
 #include "CharacterInfo.h"
 #include "Sounds.h"
-#include "AIController.h"
 
 CoreHoundStand::CoreHoundStand()
 {
@@ -206,6 +204,7 @@ void CoreHoundDead::Enter(const shared_ptr<AIController>& controller, const wstr
 		}
 		_dt = 0.f;
 		_soundFlag = false;
+		_controller.lock()->_isAlive = false;
 	}
 }
 
@@ -217,7 +216,7 @@ void CoreHoundDead::Update()
 
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_controller.lock()->_isAlive = false;
+			_controller.lock()->DeadEvent();
 		}
 
 		if (_dt > _soundTimer && _soundFlag == false)
@@ -406,11 +405,11 @@ void CoreHoundMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller
 		{
 			_animator.lock()->SetFrameEnd(false);
 			_animator.lock()->SetNextAnimation(L"Run");
-
-			_characterInfo = _controller.lock()->GetCharacterInfo();
-			_spwanPos = _controller.lock()->GetSpawnPosition();
-			_moveSpeed = _characterInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
 		}
+
+		_characterInfo = _controller.lock()->GetCharacterInfo();
+		_spwanPos = _controller.lock()->GetSpawnPosition();
+		_moveSpeed = _characterInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
 	}
 }
 
@@ -458,7 +457,7 @@ void CoreHoundMoveToSpwanPoint::Update()
 
 		float moveToLength = Vec3::Distance(myPos, _spwanPos);
 
-		if (moveToLength >= 1.f)
+		if (moveToLength > 2.f + FLT_EPSILON)
 		{
 			Vec3 toSpwanPosTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
 			_transform.lock()->SetLocalPosition(toSpwanPosTranslate);

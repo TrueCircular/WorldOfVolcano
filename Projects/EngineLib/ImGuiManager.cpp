@@ -734,6 +734,7 @@ void ImGuiManager::UpdatePicked(bool isPicked, const shared_ptr<GameObject>& pic
     {
         auto infomation = pickObj->GetComponent<CharacterInfo>()->GetCharacterInfo();
         _hp = static_cast<float>(infomation._hp) / static_cast<float>(infomation._maxHp);
+        _mp = static_cast<float>(infomation._mp) / static_cast<float>(infomation._maxMp);
     }
     else if(pickObj->GetObjectType() == ObjectType::EnemyUnit)
     {

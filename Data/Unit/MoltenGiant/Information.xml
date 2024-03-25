@@ -3,7 +3,7 @@
     <HP>18000</HP>
     <MP>500</MP>
     <ATK>1500</ATK>
-    <DEF>350</DEF>
+    <DEF>250</DEF>
     <MoveSpeed>30</MoveSpeed>
     <AggroPow>0</AggroPow>
     <AttackRange>40</AttackRange>

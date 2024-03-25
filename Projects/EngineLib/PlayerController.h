@@ -5,6 +5,7 @@
 #pragma region Forward Declaration
 class PlayerAnimState;
 class CharacterInfo;
+class AbilitySlot;
 #pragma endregion
 
 class HeightGetter;
@@ -25,6 +26,7 @@ private:
 	weak_ptr<Transform>			_transform;
 	weak_ptr<CharacterInfo>		_unitInfo;
 	weak_ptr<HeightGetter>		_heightGetterCom;
+	weak_ptr<AbilitySlot>		_abilitySlot;
 	uint16 _defaultSpeed = 0;
 	uint16 _currentSpeed = 0;
 	uint16 _slowSpeed = 0;
@@ -83,6 +85,7 @@ private:
 public:
 	//Setter
 	bool SetAnimState(const PlayerAnimType& animType);
+	void SetCurrentState(PlayerUnitState state) { *_currentState = state; }
 public:
 	//Getter Animation State
 	const shared_ptr<ModelAnimator>& GetAnimator() { return _animator.lock(); }
@@ -96,6 +99,7 @@ public:
 	const float& GetDefaultSpeed() const { return _defaultSpeed; }
 	const float& GetCurrentSpeed() const { return _currentSpeed; }
 	void NotifyPlayerAlive(bool isAlive);
+	const shared_ptr< CharacterInfo>& GetUnitInformation() const { return _unitInfo.lock(); }
 	const CHARACTER_INFO& GetPickedInfo() const { return _pickedInfo; }
 protected:
 	virtual void InitController() override;

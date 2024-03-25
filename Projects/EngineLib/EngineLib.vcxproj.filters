@@ -151,6 +151,15 @@
     <Filter Include="07. Particle\ParticleHelper">
       <UniqueIdentifier>{c0ca38e5-c9be-43a9-8afd-d6bd26d1ee5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Component\Ability\Warrior\Data">
+      <UniqueIdentifier>{a243742e-c6bd-435f-9e05-fc0105b52bc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Ability\Ragnaros\Data">
+      <UniqueIdentifier>{b6ad1422-0b9f-45c7-a242-56e02cf3f648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Ability\BaronGeddon\Data">
+      <UniqueIdentifier>{7c9fd712-c552-4729-adff-4743176eb494}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -440,13 +449,7 @@
     <ClInclude Include="AbilityData.h">
       <Filter>04. Component\Ability</Filter>
     </ClInclude>
-    <ClInclude Include="WarriorCharge.h">
-      <Filter>04. Component\Ability\Warrior</Filter>
-    </ClInclude>
-    <ClInclude Include="WarriorRoarData.h">
-      <Filter>04. Component\Ability\Warrior</Filter>
-    </ClInclude>
-    <ClInclude Include="WarriorChargeData.h">
+    <ClInclude Include="AWarriorCharge.h">
       <Filter>04. Component\Ability\Warrior</Filter>
     </ClInclude>
     <ClInclude Include="ParticleInstance.h">
@@ -526,6 +529,21 @@
     </ClInclude>
     <ClInclude Include="ShineHelper.h">
       <Filter>07. Particle\ParticleHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="AWarriorRoar.h">
+      <Filter>04. Component\Ability\Warrior</Filter>
+    </ClInclude>
+    <ClInclude Include="AWarriorChargeData.h">
+      <Filter>04. Component\Ability\Warrior\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="AWarriorRoarData.h">
+      <Filter>04. Component\Ability\Warrior\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="AFireBoltData.h">
+      <Filter>04. Component\Ability\BaronGeddon\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="AFireBolt.h">
+      <Filter>04. Component\Ability\BaronGeddon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -807,13 +825,7 @@
     <ClCompile Include="AbilityData.cpp">
       <Filter>04. Component\Ability</Filter>
     </ClCompile>
-    <ClCompile Include="WarriorCharge.cpp">
-      <Filter>04. Component\Ability\Warrior</Filter>
-    </ClCompile>
-    <ClCompile Include="WarriorRoarData.cpp">
-      <Filter>04. Component\Ability\Warrior</Filter>
-    </ClCompile>
-    <ClCompile Include="WarriorChargeData.cpp">
+    <ClCompile Include="AWarriorCharge.cpp">
       <Filter>04. Component\Ability\Warrior</Filter>
     </ClCompile>
     <ClCompile Include="ParticleInstance.cpp">
@@ -893,6 +905,21 @@
     </ClCompile>
     <ClCompile Include="ShineHelper.cpp">
       <Filter>07. Particle\ParticleHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="AWarriorRoar.cpp">
+      <Filter>04. Component\Ability\Warrior</Filter>
+    </ClCompile>
+    <ClCompile Include="AWarriorChargeData.cpp">
+      <Filter>04. Component\Ability\Warrior\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="AWarriorRoarData.cpp">
+      <Filter>04. Component\Ability\Warrior\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="AFireBoltData.cpp">
+      <Filter>04. Component\Ability\BaronGeddon\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="AFireBolt.cpp">
+      <Filter>04. Component\Ability\BaronGeddon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

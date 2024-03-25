@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Ability.h"
+
+#include "AbilitySlot.h"
 #include "CharacterInfo.h"
 #include "CharacterController.h"
 
@@ -17,12 +19,4 @@ void Ability::SetOwnerController(const shared_ptr<CharacterController>& controll
 		return;
 
 	_ownerController = controller;
-}
-
-void Ability::SetTargetController(const shared_ptr<CharacterController>& controller)
-{
-	if (controller == nullptr)
-		return;
-
-	_targetController = controller;
 }

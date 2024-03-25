@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "WarriorChargeData.h"
+#include "AWarriorChargeData.h"
 
-WarriorChargeData::WarriorChargeData()
+AWarriorChargeData::AWarriorChargeData()
 {
 	wstring LoadPath = DATA_ADDR_ABILITY;
 	LoadPath += L"Warrior/WarriorCharge.xml";
@@ -9,6 +9,6 @@ WarriorChargeData::WarriorChargeData()
 	LoadAbilityDataFromFile(LoadPath);
 }
 
-WarriorChargeData::~WarriorChargeData()
+AWarriorChargeData::~AWarriorChargeData()
 {
 }

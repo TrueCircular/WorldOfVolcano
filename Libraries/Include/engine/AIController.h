@@ -45,10 +45,6 @@ private:
 	shared_ptr<PlayerAnimState>			_currentPlayerAnimState;
 	vector<shared_ptr<PlayerAnimState>> _playerAnimStateList;
 private:
-	//Sound
-	shared_ptr<PlayerSoundController>	_aiSound;
-	shared_ptr<EnemySoundController>	_enemySound;
-private:
 	void InitState();
 public:
 	//Setter
@@ -61,9 +57,6 @@ public:
 	//Animation Controll
 	bool SetAnimState(const PlayerAnimType& type);
 	void SetUnitState(const PlayerUnitState& state) { *_currentPlayerState = state; }
-	//Sound Controll
-	void SetEnemySound(shared_ptr<EnemySoundController> enemySound) { _enemySound = enemySound; };
-	void SetAiSound(shared_ptr<PlayerSoundController> aiSound) { _aiSound = aiSound; };
 public:
 	//Getter
 	//State Controll

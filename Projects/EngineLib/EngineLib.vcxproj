@@ -177,6 +177,8 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="Ability.h" />
     <ClInclude Include="AbilityData.h" />
     <ClInclude Include="AbilitySlot.h" />
+    <ClInclude Include="AFireBolt.h" />
+    <ClInclude Include="AFireBoltData.h" />
     <ClInclude Include="AIController.h" />
     <ClInclude Include="AncientBelt.h" />
     <ClInclude Include="AncientBeltData.h" />
@@ -190,6 +192,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="AncientShieldData.h" />
     <ClInclude Include="AncientSword.h" />
     <ClInclude Include="AncientSwordData.h" />
+    <ClInclude Include="AWarriorRoar.h" />
     <ClInclude Include="BaronGeddon.h" />
     <ClInclude Include="BaronGeddonPattern.h" />
     <ClInclude Include="BaseCollider.h" />
@@ -296,15 +299,17 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="VertexData.h" />
     <ClInclude Include="Viewport.h" />
     <ClInclude Include="Warrior.h" />
-    <ClInclude Include="WarriorCharge.h" />
-    <ClInclude Include="WarriorChargeData.h" />
+    <ClInclude Include="AWarriorCharge.h" />
+    <ClInclude Include="AWarriorChargeData.h" />
     <ClInclude Include="WarriorRoar.h" />
-    <ClInclude Include="WarriorRoarData.h" />
+    <ClInclude Include="AWarriorRoarData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Ability.cpp" />
     <ClCompile Include="AbilityData.cpp" />
     <ClCompile Include="AbilitySlot.cpp" />
+    <ClCompile Include="AFireBolt.cpp" />
+    <ClCompile Include="AFireBoltData.cpp" />
     <ClCompile Include="AIController.cpp" />
     <ClCompile Include="AncientBelt.cpp" />
     <ClCompile Include="AncientBeltData.cpp" />
@@ -318,6 +323,7 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="AncientShieldData.cpp" />
     <ClCompile Include="AncientSword.cpp" />
     <ClCompile Include="AncientSwordData.cpp" />
+    <ClCompile Include="AWarriorRoar.cpp" />
     <ClCompile Include="BaronGeddon.cpp" />
     <ClCompile Include="BaronGeddonPattern.cpp" />
     <ClCompile Include="BaseCollider.cpp" />
@@ -429,10 +435,10 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="VertexData.cpp" />
     <ClCompile Include="Viewport.cpp" />
     <ClCompile Include="Warrior.cpp" />
-    <ClCompile Include="WarriorCharge.cpp" />
-    <ClCompile Include="WarriorChargeData.cpp" />
+    <ClCompile Include="AWarriorCharge.cpp" />
+    <ClCompile Include="AWarriorChargeData.cpp" />
     <ClCompile Include="WarriorRoar.cpp" />
-    <ClCompile Include="WarriorRoarData.cpp" />
+    <ClCompile Include="AWarriorRoarData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl" />

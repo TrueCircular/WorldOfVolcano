@@ -37,7 +37,6 @@ void BaronGeddon::CharacterInit()
 			AddAnimation(model, L"BaronGeddon", L"Run");
 			AddAnimation(model, L"BaronGeddon", L"Damaged");
 			AddAnimation(model, L"BaronGeddon", L"Death");
-			AddAnimation(model, L"BaronGeddon", L"Battle");
 			AddAnimation(model, L"BaronGeddon", L"Attack1");
 			AddAnimation(model, L"BaronGeddon", L"Attack2");
 			AddAnimation(model, L"BaronGeddon", L"Casting");
@@ -64,6 +63,7 @@ void BaronGeddon::CharacterInit()
 		_childModel->GetTransform()->SetLocalPosition(Vec3(0, 35, 0));
 		AddChild(_childModel);
 	}
+
 	{
 		auto height = make_shared<HeightGetter>();
 		height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());

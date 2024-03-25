@@ -1,11 +1,12 @@
 #include "pch.h"
 #include "PlayerController.h"
+
 #include "AIController.h"
 #include "PlayerAnimState.h"
 #include "HeightGetter.h"
-
 #include "CharacterInfo.h"
 #include "UnitFSM.h"
+#include "AbilitySlot.h"
 
 PlayerController::PlayerController()
 {
@@ -370,6 +371,9 @@ void PlayerController::PlayerAttack()
 
 						if (pickController != nullptr)
 						{
+							_isBattle = true;
+							_isAttack = true;
+
 							float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
 							pickController->TakeDamage(GetGameObject(), damage);
 
@@ -389,8 +393,6 @@ void PlayerController::PlayerAttack()
 							{
 								SetAnimState(PlayerAnimType::Attack2);
 							}
-							_isBattle = true;
-							_isAttack = true;
 						}
 					}
 				}
@@ -411,7 +413,7 @@ void PlayerController::PlayerAbility2()
 {
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::KEY_2))
 	{
-		*_currentState = PlayerUnitState::Ability2;
+		_abilitySlot.lock()->ExecuteAbility(1, _pickedObj);
 	}
 }
 
@@ -616,6 +618,7 @@ void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float da
 					myInfo._hp = (uint32)finalHp;
 					_unitInfo.lock()->SetCharacterInfo(myInfo);
 					MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
+
 					*_currentState = PlayerUnitState::Death;
 					SetAnimState(PlayerAnimType::Death);
 				}
@@ -692,6 +695,7 @@ void PlayerController::Start()
 		_camera = MANAGER_SCENE()->GetCurrentScene()->GetCamera();
 		_animator = GetGameObject()->GetChildByName(L"Model")->GetModelAnimator();
 		_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
+		_abilitySlot = GetGameObject()->GetComponent<AbilitySlot>();
 
 		_unitInfo = GetGameObject()->GetComponent<CharacterInfo>();
 		_attackTime = _unitInfo.lock()->GetDefaultCharacterInfo()._attackTime;
@@ -732,11 +736,11 @@ void PlayerController::FixedUpdate()
 			_isBattle = false;
 			_battleTimer = 0.f;
 		}
-
-		_battleTimer += MANAGER_TIME()->GetDeltaTime();
+		else
+		{
+			_battleTimer += MANAGER_TIME()->GetDeltaTime();
+		}
 	}
-
-
 
 	PlayerTargetControll();
 }

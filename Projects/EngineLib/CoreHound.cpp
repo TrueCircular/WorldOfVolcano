@@ -19,28 +19,6 @@ void CoreHound::CharacterInit()
 	//Character Info
 	auto chinfo = make_shared<CharacterInfo>();
 	{
-
-		{
-			//CHARACTER_INFO info;
-			//info._name = L"CoreHound";
-			//info._hp = 12000;
-			//info._maxHp = info._hp;
-			//info._mp = 500;
-			//info._maxMp = info._mp;
-			//info._atk = 1500;
-			//info._def = 250;
-			//info._moveSpeed = 30;
-			//info._aggroLevel = 0;
-			//info._attackRange = 15;
-			//info._attackTime = 1.5f;
-			//info._traceRadius = 60.f;
-
-			//chinfo->SetDefaultCharacterInfo(info);
-			//wstring savePath = DATA_ADDR_UNIT;
-			//savePath += L"CoreHound/Information.xml";
-			//chinfo->SaveCharacterInformationFromFile(savePath);
-		}
-
 		wstring LoadPath = DATA_ADDR_UNIT;
 		LoadPath += L"CoreHound/Information.xml";
 		chinfo->LoadCharacterInformationFromFile(LoadPath);
