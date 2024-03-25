@@ -151,6 +151,9 @@
     <Filter Include="07. Particle\ParticleHelper">
       <UniqueIdentifier>{c0ca38e5-c9be-43a9-8afd-d6bd26d1ee5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="07. Particle\Damage">
+      <UniqueIdentifier>{4d33631d-1d4d-44d0-abe9-4e52398fcc6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -521,11 +524,14 @@
     <ClInclude Include="NpcUnit.h">
       <Filter>03. GameObject\Unit\NpcUnit</Filter>
     </ClInclude>
-    <ClInclude Include="Exlode.h">
+    <ClInclude Include="Explode.h">
       <Filter>07. Particle\ParticleHelper</Filter>
     </ClInclude>
     <ClInclude Include="ShineHelper.h">
       <Filter>07. Particle\ParticleHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageIndicator.h">
+      <Filter>07. Particle\Damage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -888,11 +894,14 @@
     <ClCompile Include="NpcUnit.cpp">
       <Filter>03. GameObject\Unit\NpcUnit</Filter>
     </ClCompile>
-    <ClCompile Include="Exlode.cpp">
+    <ClCompile Include="Explode.cpp">
       <Filter>07. Particle\ParticleHelper</Filter>
     </ClCompile>
     <ClCompile Include="ShineHelper.cpp">
       <Filter>07. Particle\ParticleHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageIndicator.cpp">
+      <Filter>07. Particle\Damage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

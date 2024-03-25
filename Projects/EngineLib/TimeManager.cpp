@@ -34,6 +34,7 @@ bool GameTimer::Update()
 	if (_isActive)
 	{
 		_end = chrono::steady_clock::now();
+		srand((unsigned int)(_gameTime*rand()));
 		_elapsedTime = chrono::duration<double, std::milli>(_end - _start);
 		_deltaTime = _elapsedTime.count() * 0.001;
 

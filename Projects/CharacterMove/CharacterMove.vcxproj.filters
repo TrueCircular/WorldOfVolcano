@@ -83,9 +83,6 @@
     <ClCompile Include="ManagerCleaner.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="DamageIndicator.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="MainScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -95,6 +92,7 @@
     <ClCompile Include="TestScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="SkyDome.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -147,9 +145,6 @@
     <ClInclude Include="ManagerCleaner.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="DamageIndicator.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="MainScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -159,6 +154,7 @@
     <ClInclude Include="TestScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="SkyDome.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Resources\Shader\Global.fx">
@@ -231,6 +227,9 @@
       <Filter>Shader\Effects</Filter>
     </FxCompile>
     <FxCompile Include="..\..\Resources\Shader\Smoke3Legacy.fx">
+      <Filter>Shader\Effects</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Resources\Shader\SkyDome.fx">
       <Filter>Shader\Effects</Filter>
     </FxCompile>
   </ItemGroup>

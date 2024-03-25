@@ -198,10 +198,11 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="Clap.h" />
     <ClInclude Include="ConsumableItem.h" />
     <ClInclude Include="CoreHoundPattern.h" />
+    <ClInclude Include="DamageIndicator.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="EnemySoundController.h" />
     <ClInclude Include="EquipmentSlot.h" />
-    <ClInclude Include="Exlode.h" />
+    <ClInclude Include="Explode.h" />
     <ClInclude Include="FireBall.h" />
     <ClInclude Include="FireStorm.h" />
     <ClInclude Include="GUIInterface.h" />
@@ -326,10 +327,11 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="Clap.cpp" />
     <ClCompile Include="ConsumableItem.cpp" />
     <ClCompile Include="CoreHoundPattern.cpp" />
+    <ClCompile Include="DamageIndicator.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EnemySoundController.cpp" />
     <ClCompile Include="EquipmentSlot.cpp" />
-    <ClCompile Include="Exlode.cpp" />
+    <ClCompile Include="Explode.cpp" />
     <ClCompile Include="FireBall.cpp" />
     <ClCompile Include="FireStorm.cpp" />
     <ClCompile Include="GUIInterface.cpp" />

@@ -216,3 +216,8 @@ extern FMOD::System* g_fmSystem;
 
 //Character
 #include "MagniBronzebeard.h"
+
+
+//ETC
+#include "DamageIndicator.h"
+#define MANAGER_INDICATOR()		DamageIndicator::GetInstance()

@@ -61,7 +61,10 @@ EffectOutput StormVS(EffectMesh input)
     EffectOutput output;
     
    // output.position = mul(input.position, W);
-    output.position = mul(input.position, input.world);
+    output.position = input.position;
+    output.position.xy = mul(output.position, 1 + input.time * 10);
+    output.position = mul(output.position, input.world);
+//    output.position = mul(input.position, input.world);
     output.worldPosition = output.position;
     output.position = mul(output.position, VP);
     output.normal =input.normal;

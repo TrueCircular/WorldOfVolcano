@@ -75,6 +75,11 @@ void FireBall::LateUpdate()
 
 void FireBall::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
+	auto clapParticle = MANATER_PARTICLE()->GetParticleFromName(L"Explode");
+	shared_ptr<Transform> pos2 = make_shared<Transform>();
+	pos2->SetLocalPosition(instance->particleTransform->GetPosition());
+	shared_ptr<ParticleInstance>  instancedata2 = make_shared<ParticleInstance>(3, pos2, nullptr, 0);
+	clapParticle->AddParticle(instancedata2);
 }
 
 void FireBall::AddParticle(shared_ptr<ParticleInstance> data)

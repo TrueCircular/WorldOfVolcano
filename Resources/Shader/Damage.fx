@@ -5,6 +5,7 @@
 Texture2D NumListMap[10];
 BlendState DamageBlendState
 {
+    AlphaToCoverageEnable = true;
     BlendEnable[0] = true;
     SrcBlend = SRC_ALPHA;
     DestBlend = INV_SRC_ALPHA;

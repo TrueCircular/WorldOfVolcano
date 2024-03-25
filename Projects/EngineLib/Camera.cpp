@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Camera.h"
-
+#include "Terrain.h"
 Matrix Camera::S_MatView = Matrix::Identity;
 Matrix Camera::S_MatProjection = Matrix::Identity;
 
@@ -67,6 +67,9 @@ void Camera::UpdateTargetView()
 	}
 	else
 	{
+
+		auto _terrain = MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain();
+
 		if(_camIsRotateAround == false)
 		{
 			_targetPos = _targetTransform->GetPosition();
@@ -75,8 +78,11 @@ void Camera::UpdateTargetView()
 			lookVector.Normalize(); // ·è º¤ÅÍ Á¤±ÔÈ­
 			Vec3 newCamPos = _targetPos + lookVector * (-_distance) + Vec3(0, 50.f, 0);
 			_camPos = (newCamPos);
-
-
+			if (_terrain) {
+				float terrainHeight = _terrain->GetHeight(_camPos.x, _camPos.z);
+				if (terrainHeight + 10 > _camPos.y)_camPos.y = terrainHeight + 10;
+			}
+			
 			Vec3 Eye, Look, Up;
 			Eye = _camPos;
 			Look = _targetPos;
@@ -93,6 +99,10 @@ void Camera::UpdateTargetView()
 		{
 			_targetPos = _targetTransform->GetPosition();
 
+			if (_terrain) {
+				float terrainHeight = _terrain->GetHeight(_camPos.x, _camPos.z);
+				if (terrainHeight + 10 > _camPos.y)_camPos.y = terrainHeight + 10;
+			}
 			Vec3 Eye, Look, Up;
 			Eye = _camPos;
 			Look = _targetPos;
