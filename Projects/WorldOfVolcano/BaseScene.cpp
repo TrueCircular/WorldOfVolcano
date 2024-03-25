@@ -212,9 +212,8 @@ void BaseScene::Update()
 	MANAGER_SHADOW()->EndShadow();
 
 	{
-		sendInfo._uid = ClientPacketHandler::Instance().GetUserInfo()._uid;
+		sendInfo = ClientPacketHandler::Instance().GetUserInfo();
 		sendInfo._pos = _warrior->GetTransform()->GetPosition();
-		sendInfo._isOnline = true;
 		sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
 		sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
 		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();

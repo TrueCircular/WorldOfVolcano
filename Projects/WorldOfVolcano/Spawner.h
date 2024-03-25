@@ -6,6 +6,8 @@
 #include "engine\AIController.h"
 #include "engine/Warrior.h"
 #include "engine/CoreHound.h"
+#include "engine/MoltenGiant.h"
+#include "engine/Ragnaros.h"
 #include "engine/BaronGeddon.h"
 #include "engine/CharacterInfo.h"
 
@@ -29,7 +31,7 @@ public:
 	void SpawnOtherPlayer(uint64 uid, Vec3 spawnPos);
 	void SpawnOtherPlayers();
 	//∏ÛΩ∫≈Õ
-	void SpawnMonster(uint64 uid, uint32 monsterId, Vec3 spawnPos);
+	void SpawnMonster(uint64 uid, MONSTER_INFO mobInfo);
 	void SpawnMonsters();
 	int GetOtherPlayersSize() { return _otherPlayers.size(); }
 	void Reset();

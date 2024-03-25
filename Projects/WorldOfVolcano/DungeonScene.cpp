@@ -215,6 +215,16 @@ void DungeonScene::Update()
 		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
 	}
 
+	//Event
+	{
+		PacketEvent packetEvent = MANAGER_EVENT()->PopEvent();
+		if (packetEvent.type != PacketEventType::None)
+		{
+			SendBufferRef eventBuffer = ClientPacketHandler::Instance().Make_BATTLE(packetEvent.damage, packetEvent.targetId);
+			_service->Broadcast(eventBuffer);
+		}	
+	}
+
 	SpawnManager::GetInstance().Update();
 
 #pragma region Client Thread

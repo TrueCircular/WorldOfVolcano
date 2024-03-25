@@ -45,11 +45,11 @@ void Demo::Init(){
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"ManaPotion", L"../../Resources/Texture/Item/Consumable/ManaPotion.png");
 
 #pragma endregion Client Thread
-	shared_ptr<Scene> scene = make_shared<TitleScene>();
-	MANAGER_SCENE()->ChangeScene(scene);
+	//shared_ptr<Scene> scene = make_shared<TitleScene>();
+	//MANAGER_SCENE()->ChangeScene(scene);
 	//
-	//shared_ptr<Scene> scene = make_shared<BaseScene>();
-	//scene->SetSceneName(L"BaseScene");
+	shared_ptr<Scene> scene = make_shared<BaseScene>();
+	scene->SetSceneName(L"BaseScene");
 	// 
 	//shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	//scene->SetSceneName(L"DungeonScene");

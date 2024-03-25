@@ -164,7 +164,7 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 
 		//Damage Calculate
 		{
-			auto myInfo = _characterInfo.lock()->GetCharacterInfo();
+			/*auto myInfo = _characterInfo.lock()->GetCharacterInfo();
 			float defEff = pow(myInfo._def * log(2), 0.5) * 3;
 			float calDamage = damage * (1 - defEff / 100);
 			float finalHp = myInfo._hp - calDamage;
@@ -193,7 +193,14 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 			{
 				myInfo._hp = (uint32)finalHp;
 				_characterInfo.lock()->SetCharacterInfo(myInfo);
-			}
+			}*/
+
+			PacketEvent damageEvent{
+				PacketEventType::DamageRequest,
+				damage,
+				_characterInfo.lock()->GetCharacterInfo()._instanceId
+			};
+			MANAGER_EVENT()->AddEvent(damageEvent);
 		}
 
 		if (_aiType == AIType::PlayableUnit)
@@ -231,6 +238,19 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 			}
 		}
 	}
+}
+
+void AIController::notifyEnemyDeath()
+{
+	for (auto& st : _unitStrategyList)
+	{
+		if (st->_type == UnitStrategyType::Dead)
+		{
+			SetCurrentFsmStrategy(_unitFsm->GetStrategyName(), st->_name);
+		}
+	}
+
+	_isAlive = false;
 }
 
 void AIController::DeadEvent()
@@ -271,13 +291,6 @@ void AIController::Update()
 	if(_isAlive)
 	{
 		UpdateTargetList();
-
-		if (_heightGetterCom.lock())
-		{
-			Vec3 tempPos = _transform.lock()->GetLocalPosition();
-			tempPos.y = _heightGetterCom.lock()->GetHeight();
-			_transform.lock()->SetLocalPosition(tempPos);
-		}
 
 		if (_jumpState->isJump == false)
 		{

@@ -179,6 +179,7 @@ extern FMOD::System* g_fmSystem;
 #include "SoundManager.h"
 #include "ImGuiManager.h"
 #include "ParticleManager.h"
+#include "PacketEventManager.h"
 
 //Global Macro
 #define MANAGER_INPUT()		 InputManager::GetInstance()
@@ -191,6 +192,7 @@ extern FMOD::System* g_fmSystem;
 #define MANAGER_SOUND()		SoundManager::GetInstance()
 #define MANAGER_IMGUI()		 ImGuiManager::GetInstance()
 #define MANATER_PARTICLE()   ParticleManager::GetInstance()
+#define MANAGER_EVENT()      PacketEventManager::GetInstance()
 
 //Components
 #include "Component.h"

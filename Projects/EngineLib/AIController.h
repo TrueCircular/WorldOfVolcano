@@ -50,7 +50,7 @@ public:
 	//Setter
 	//State Controll
 	void SetJumpState(const JumpFlag& jumpFlag) { *_jumpState = jumpFlag; }
-	void notifyEnemyDeath() { _isAlive = false; }
+	void notifyEnemyDeath();
 	void SetTargetTransform(const shared_ptr<Transform> transform) { _targetTransform = transform; }
 	void SetCurrentFsmStrategy(const wstring& preTransition, const wstring& nextTransition);
 	void SetFsmStrategyList(const vector<shared_ptr<UnitStrategy>>& strategyList) { _unitStrategyList = strategyList; }

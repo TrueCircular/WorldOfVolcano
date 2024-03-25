@@ -551,6 +551,9 @@
     <ClInclude Include="DamageIndicator.h">
       <Filter>07. Particle\Damage</Filter>
     </ClInclude>
+    <ClInclude Include="PacketEventManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
     <ClInclude Include="Smoke4.h">
       <Filter>07. Particle</Filter>
     </ClInclude>
@@ -932,6 +935,9 @@
     </ClCompile>
     <ClCompile Include="DamageIndicator.cpp">
       <Filter>07. Particle\Damage</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketEventManager.cpp">
+      <Filter>02. Managers</Filter>
     </ClCompile>
     <ClCompile Include="Smoke4.cpp">
       <Filter>07. Particle</Filter>

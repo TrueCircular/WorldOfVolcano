@@ -93,9 +93,11 @@ void ServerPacketHandler::Handle_BATTLE(BYTE* buffer, int32 len)
 	PacketHeader header;
 	br >> header;
 
-	PACKET_Player_INFO atkInfo;
+	float damage;
 	uint32 tgtId;
-	br >> atkInfo >> tgtId;
+	br >> damage >> tgtId;
+
+	GSessionManager.MonsterBattleCalculate(damage, tgtId);
 }
 
 SendBufferRef ServerPacketHandler::Make_USER_CONNECT()

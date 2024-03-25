@@ -69,7 +69,7 @@ public:
 	SendBufferRef Make_USER_INFO(Player_INFO userInfo, wstring name);
 	SendBufferRef Make_MONSTER_INFO(MONSTER_INFO info, wstring name);
 	SendBufferRef Make_MESSAGE(MESSAGE message);
-	SendBufferRef Make_BATTLE(Player_INFO attackerInfo, uint32 targerId);
+	SendBufferRef Make_BATTLE(float damage, uint32 targerId);
 
 
 	Player_INFO GetUserInfo() { return _userInfo; }

@@ -58,5 +58,8 @@
     <Filter Include="Network">
       <UniqueIdentifier>{edbbc572-b804-4261-92c7-36179b50800b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="xml">
+      <UniqueIdentifier>{d2ef341f-5c54-41a5-b48d-da223bad672e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -488,7 +488,11 @@ void PlayerController::PlayerTargetControll()
 
 		auto pickObj = MANAGER_SCENE()->GetCurrentScene()->Pick(mx, my);
 
-		if (pickObj != nullptr && pickObj->GetObjectType() == ObjectType::EnemyUnit)
+		if (pickObj && pickObj->GetName() == L"MagniBronzebeard")
+		{
+			MANAGER_IMGUI()->BeginDialogue();
+		}
+		else if (pickObj != nullptr && pickObj->GetObjectType() == ObjectType::EnemyUnit)
 		{
 			_pickedObj = pickObj;
 			MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
@@ -747,6 +751,10 @@ void PlayerController::FixedUpdate()
 void PlayerController::Update()
 {
 	PlayerInput();
+	if (_pickedObj != nullptr)
+	{
+		MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
+	}
 }
 
 void PlayerController::LateUpdate()
