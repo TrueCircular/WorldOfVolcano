@@ -214,10 +214,6 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 				break;
 			}
 		}
-		else
-		{
-			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
-		}
 		
 
 		_chr->SetSpwanPosition(mobInfo._pos);

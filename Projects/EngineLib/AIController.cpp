@@ -52,7 +52,7 @@ void AIController::InitState()
 		*_currentPlayerState = PlayerUnitState::Stand;
 
 		_currentPlayerAnimState = _playerAnimStateList[0];
-		_currentPlayerAnimState->Enter(shared_from_this());
+		_currentPlayerAnimState->Enter(shared_from_this()); 
 	}break;
 	case AIType::EnemyUnit:
 	{
