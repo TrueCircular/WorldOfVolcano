@@ -57,3 +57,15 @@ MapType SpawnManager::GetSpawnMapType()
         return MapType::BossRoom;
     }
 }
+
+map<uint64, shared_ptr<GameObject>> SpawnManager::GetCurrentMobList()
+{
+    wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
+    auto it = _spawnerMap.find(name);
+    if (it != _spawnerMap.end())
+    {
+        return it->second->GetMobList();
+    }
+
+    return map<uint64, shared_ptr<GameObject>>();
+}

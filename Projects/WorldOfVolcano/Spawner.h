@@ -34,7 +34,7 @@ public:
 	void SpawnMonster(uint64 uid, MONSTER_INFO mobInfo);
 	void SpawnMonsters();
 	//호스트 스폰
-	void GenerateMobList();
+	map<uint64, shared_ptr<GameObject>> GetMobList() { return _monsters; }
 	int GetOtherPlayersSize() { return _otherPlayers.size(); }
 	void Reset();
 private:

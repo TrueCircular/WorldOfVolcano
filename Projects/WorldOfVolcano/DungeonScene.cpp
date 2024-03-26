@@ -242,8 +242,6 @@ void DungeonScene::Start()
 
 void DungeonScene::Update()
 {
-
-
 	{
 		sendInfo = ClientPacketHandler::Instance().GetUserInfo();
 
@@ -279,6 +277,8 @@ void DungeonScene::Update()
 		}
 	}
 
+	SendBufferRef mobBuffer;
+	
 	SpawnManager::GetInstance().Update();
 
 	
@@ -293,6 +293,19 @@ void DungeonScene::Update()
 	}
 	else
 	{
+		if (ClientPacketHandler::Instance().GetIsMapHost() == true)
+		{
+			for (auto pair : SpawnManager::GetInstance().GetCurrentMobList())
+			{
+				MONSTER_INFO mobInfo = ClientPacketHandler::Instance().GetMobInfo(pair.first);
+				CHARACTER_INFO chrInfo = pair.second->GetComponent<CharacterInfo>()->GetCharacterInfo();
+				mobInfo = ClientPacketHandler::Instance().CopyChraracterToMobInfo(chrInfo, mobInfo);
+				ClientPacketHandler::Instance().UpdateMobInfo(pair.first, mobInfo);
+				mobBuffer = ClientPacketHandler::Instance().Make_MONSTER_INFO(mobInfo, mobInfo._name);
+				_service->Broadcast(mobBuffer);
+			}
+		}
+
 		if (_sendBuffer != nullptr)
 		{
 			_service->Broadcast(_sendBuffer);

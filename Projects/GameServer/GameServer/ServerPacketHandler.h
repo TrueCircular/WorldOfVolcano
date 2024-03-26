@@ -10,6 +10,7 @@ enum
 	PACKET_MONSTER_INFO = 3,
 	PACKET_MESSAGE = 4,
 	PACKET_BATTLE = 5,
+	PACKET_HOST = 6,
 	PACKET_DISCONNECT = 99,
 };
 
@@ -139,8 +140,9 @@ public:
 	static void Handle_BATTLE(BYTE* buffer, int32 len);
 
 	static SendBufferRef Make_USER_CONNECT();
-	static SendBufferRef Make_USER_INFO(PACKET_Player_INFO userInfo, wstring name, bool otherPacket);
+	static SendBufferRef Make_USER_INFO(PACKET_Player_INFO userInfo, wstring name, bool otherPacket, bool isMapHost);
 	static SendBufferRef Make_MONSTER_INFO(map<uint32, PACKET_Mob_INFO> mobInfo);
 	static SendBufferRef Make_USER_DISCONNECT(uint64 uid);
 	static SendBufferRef Make_MESSAGE(MESSAGE message);
+	static SendBufferRef Make_HOST(bool isMapHost);
 };

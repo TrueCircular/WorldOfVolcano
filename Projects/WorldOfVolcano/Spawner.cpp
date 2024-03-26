@@ -5,7 +5,6 @@
 #include "engine/PlayerSoundController.h"
 #include "engine\EquipmentSlot.h"
 #include "engine/StrategyFactory.h"
-#include "ObjectExporter2.h"
 
 using namespace std::chrono;
 
@@ -52,7 +51,6 @@ void Spawner::Init()
 	if (name == L"DungeonScene")
 	{
 		_spawnMapType = MapType::Dungeon;
-		GenerateMobList();
 	}
 
 	if (name == L"BossScene")
@@ -196,23 +194,31 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 		_chr->Awake();
 		_chr->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
 
-		switch (mobInfo._monsterType)
+		if (ClientPacketHandler::Instance().GetIsMapHost() == true)
 		{
-		case MonsterType::CoreHound:
-			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
-			break;
-		case MonsterType::MoltenGiant:
-			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
-			break;
-		case MonsterType::BaronGeddon:
-			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
-			break;
-		case MonsterType::Ragnaros:
-			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
-			break;
-		default:
-			break;
+			switch (mobInfo._monsterType)
+			{
+			case MonsterType::CoreHound:
+				_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
+				break;
+			case MonsterType::MoltenGiant:
+				_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
+				break;
+			case MonsterType::BaronGeddon:
+				_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+				break;
+			case MonsterType::Ragnaros:
+				_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
+				break;
+			default:
+				break;
+			}
 		}
+		else
+		{
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
+		}
+		
 
 		_chr->SetSpwanPosition(mobInfo._pos);
 		_chr->GetComponent<CharacterInfo>()->SetCharacterInfo(mobInfo);
@@ -251,7 +257,6 @@ void Spawner::SpawnMonsters()
 				it->second->GetComponent<AIController>()->notifyEnemyDeath();
 				//it->second->GetComponent<AIController>()->SetUnitState(PlayerUnitState::Death); <- 동작수정
 				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
-				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
 				if (it->second->GetComponent<CharacterInfo>()->GetCharacterInfo()._name == L"BaronGeddon")
 				{
 					MANAGER_IMGUI()->NotifyGeddonDeath();
@@ -261,36 +266,41 @@ void Spawner::SpawnMonsters()
 			}
 			else
 			{
-				it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
+				MONSTER_INFO mobInfo = pair.second;
 				/// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
-				/*auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
-				auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
-				double alpha = fmin(1.0, durationSec / 1.0);
-
-				Vec3 pos = it->second->GetTransform()->GetPosition();
-				Vec3 rot = it->second->GetTransform()->GetLocalRotation();
-
-				Vec3 target = pair.second._targetPos;
-				Vec3 direction = target - pos;
-
-				float distance = IsPlayerInRanger(target, pos);
-
-				if (pair.second._animState == EnemyUnitState::Run)
+				if (ClientPacketHandler::Instance().GetIsMapHost() == false)
 				{
-					pos += interpolate(alpha, direction, Vec3(0.0f, 0.0f, 0.0f)) * MANAGER_TIME()->GetDeltaTime();
+					auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
+					auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
+					double alpha = fmin(1.0, durationSec / 1.0);
+
+					Vec3 pos = it->second->GetTransform()->GetPosition();
+					Vec3 rot = it->second->GetTransform()->GetLocalRotation();
+
+					Vec3 target = pair.second._pos;
+					Vec3 direction = target - pos;
+
+					float distance = IsPlayerInRanger(target, pos);
+
+					if (pair.second._animState == EnemyUnitState::Run)
+					{
+						pos += interpolate(alpha, direction, Vec3(0.0f, 0.0f, 0.0f)) * MANAGER_TIME()->GetDeltaTime();
+					}
+
+					//회전 보간 계산
+					Vec3 targetRot = pair.second._Rotate;
+					Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
+					Quaternion endRotation = Quaternion::CreateFromYawPitchRoll(targetRot.y, 0.0f, 0.0f);
+					Quaternion calcRot = Quaternion::Slerp(startRotation, endRotation, alpha);
+					rot.y = QuatToEulerAngleY(calcRot);
+
+					it->second->GetTransform()->SetPosition(pos);
+					it->second->GetTransform()->SetLocalRotation(targetRot);
+					//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState); <- 동작수정
+					it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
 				}
 
-				//회전 보간 계산
-				Vec3 targetRot = pair.second._Rotate;
-				Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
-				Quaternion endRotation = Quaternion::CreateFromYawPitchRoll(targetRot.y, 0.0f, 0.0f);
-				Quaternion calcRot = Quaternion::Slerp(startRotation, endRotation, alpha);
-				rot.y = QuatToEulerAngleY(calcRot);
-
-				it->second->GetTransform()->SetPosition(pos);
-				it->second->GetTransform()->SetLocalRotation(targetRot);
-				//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState); <- 동작수정
-				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);*/
+				it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(mobInfo);
 			}
 		}
 		else
@@ -303,57 +313,6 @@ void Spawner::SpawnMonsters()
 
 			cout << "find not key, new player spawn" << endl;
 		}
-	}
-}
-
-void Spawner::GenerateMobList()
-{
-	ObjectExporter2 exporter;
-	exporter.OpenFile(L"../../Resources/Assets/MobDungeon.dat");
-	for (int id = 0; id < exporter.enemyListforServer.size(); id++)
-	{
-		MONSTER_INFO mobInfo;
-
-		mobInfo._instanceId = id;
-		
-		wstring name = exporter.enemyListforServer[id].first;
-		mobInfo._pos = exporter.enemyListforServer[id].second;
-		mobInfo._spawnMapType = MapType::Dungeon;
-
-		auto chinfo = make_shared<CharacterInfo>();
-		CHARACTER_INFO chrInfo;
-		if (name == L"CoreHound")
-		{
-			wstring LoadPath = DATA_ADDR_UNIT;
-			LoadPath += L"CoreHound/Information.xml";
-			chinfo->LoadCharacterInformationFromFile(LoadPath);
-			chrInfo = chinfo->GetCharacterInfo();
-			mobInfo._monsterType = MonsterType::CoreHound;
-		}
-		if (name == L"MoltenGiant")
-		{
-			wstring LoadPath = DATA_ADDR_UNIT;
-			LoadPath += L"MoltenGiant/Information.xml";
-			chinfo->LoadCharacterInformationFromFile(LoadPath);
-			chrInfo = chinfo->GetCharacterInfo();
-			mobInfo._monsterType = MonsterType::MoltenGiant;
-		}
-		if (name == L"BaronGeddon")
-		{
-			wstring LoadPath = DATA_ADDR_UNIT;
-			LoadPath += L"BaronGeddon/Information.xml";
-			chinfo->LoadCharacterInformationFromFile(LoadPath);
-			chrInfo = chinfo->GetCharacterInfo();
-			mobInfo._monsterType = MonsterType::BaronGeddon;
-		}
-
-		mobInfo._hp = chrInfo._hp;
-		mobInfo._mp = chrInfo._mp;
-		mobInfo._atk = chrInfo._atk;
-		mobInfo._def = chrInfo._def;
-
-		ClientPacketHandler::Instance().AddMobInfoList(id, mobInfo);
-		SpawnMonster(id, mobInfo);
 	}
 }
 

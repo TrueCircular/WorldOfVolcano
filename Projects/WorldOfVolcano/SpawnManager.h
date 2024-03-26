@@ -18,6 +18,7 @@ public:
 	void AddSceneSpawner(wstring name);
 	void Reset(wstring name);
 	MapType GetSpawnMapType();
+	map<uint64, shared_ptr<GameObject>> GetCurrentMobList();
 	void EraseSpawnerMap(wstring name) { _spawnerMap.erase(name); }
 private:
 	SpawnManager() = default;

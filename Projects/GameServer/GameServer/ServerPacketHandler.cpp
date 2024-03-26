@@ -48,7 +48,7 @@ void ServerPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 	name.resize(nameLen);
 	br.Read((void*)name.data(), nameLen * sizeof(WCHAR));
 
-	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, name, true);
+	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, name, true, false);
 	GSessionManager.UpdateUserInfo(userInfo);
 	GSessionManager.Broadcast(sendBuffer);
 }
@@ -106,7 +106,7 @@ SendBufferRef ServerPacketHandler::Make_USER_CONNECT()
 	return nullptr;
 }
 
-SendBufferRef ServerPacketHandler::Make_USER_INFO(PACKET_Player_INFO userInfo, wstring name, bool otherPacket)
+SendBufferRef ServerPacketHandler::Make_USER_INFO(PACKET_Player_INFO userInfo, wstring name, bool otherPacket, bool isMapHost)
 {
 	SendBufferRef sendBuffer = GSendBufferManager->Open(4096); //4kb
 	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
@@ -120,6 +120,7 @@ SendBufferRef ServerPacketHandler::Make_USER_INFO(PACKET_Player_INFO userInfo, w
 	header->size = bw.WriteSize();
 	header->id = PACKET_USER_INFO;
 	header->other = otherPacket;
+	header->isMapHost = isMapHost;
 
 	sendBuffer->Close(bw.WriteSize()); //사용한 길이만큼 닫아줌
 
@@ -158,6 +159,21 @@ SendBufferRef ServerPacketHandler::Make_MESSAGE(MESSAGE message)
 
 	header->size = bw.WriteSize();
 	header->id = PACKET_MESSAGE;
+
+	sendBuffer->Close(bw.WriteSize()); //사용한 길이만큼 닫아줌
+
+	return sendBuffer;
+}
+
+SendBufferRef ServerPacketHandler::Make_HOST(bool isMapHost)
+{
+	SendBufferRef sendBuffer = GSendBufferManager->Open(4096); //4kb
+	BufferWriter bw(sendBuffer->Buffer(), sendBuffer->AllocSize());
+	PacketHeader* header = bw.Reserve<PacketHeader>();
+
+	header->size = bw.WriteSize();
+	header->id = PACKET_HOST;
+	header->isMapHost = isMapHost;
 
 	sendBuffer->Close(bw.WriteSize()); //사용한 길이만큼 닫아줌
 

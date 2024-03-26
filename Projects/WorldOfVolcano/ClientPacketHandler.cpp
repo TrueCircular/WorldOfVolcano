@@ -3,6 +3,8 @@
 #include "BufferReader.h"
 #include "BufferWriter.h"
 
+#include "ObjectExporter2.h"
+#include "engine/CharacterInfo.h"
 
 void ClientPacketHandler::HandlePacket(BYTE* buffer, int32 len)
 {
@@ -23,7 +25,9 @@ void ClientPacketHandler::HandlePacket(BYTE* buffer, int32 len)
 		Handle_MESSAGE(buffer, len);
 		break;
 	case PACKET_BATTLE:
-
+		break;
+	case PACKET_HOST:
+		Handle_HOST(buffer, len);
 		break;
 	case PACKET_DISCONNECT:
 		Handle_USER_DISCONNECT(buffer, len);
@@ -121,8 +125,6 @@ void ClientPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 	{
 		Player_INFO realUserInfo = CopyPacketPlayerInfo(userInfo, name);
 		_userInfo = realUserInfo;
-		//cout << "your uid : " << userInfo._uid << endl;
-		//cout << "position : ( " << userInfo._pos.x << ", " << userInfo._pos.y << ", " << userInfo._pos.z << " )" << endl;
 	}
 	else if (_userInfo._uid != userInfo._uid)
 	{
@@ -208,6 +210,17 @@ void ClientPacketHandler::Handle_MESSAGE(BYTE* buffer, int32 len)
 	br >> message;
 
 	MANAGER_IMGUI()->AddMessage(message._messageBox);
+}
+
+void ClientPacketHandler::Handle_HOST(BYTE* buffer, int32 len)
+{
+	BufferReader br(buffer, len);
+
+	PacketHeader header;
+	br >> header;
+
+	_isMapHost = header.isMapHost;
+	GenerateMobList();
 }
 
 void ClientPacketHandler::Handle_USER_DISCONNECT(BYTE* buffer, int32 len)
@@ -369,4 +382,103 @@ SendBufferRef ClientPacketHandler::Make_BATTLE(float damage, uint32 targerId)
 	sendBuffer->Close(bw.WriteSize()); //ªÁøÎ«— ±Ê¿Ã∏∏≈≠ ¥›æ∆¡‹
 
 	return sendBuffer;
+}
+
+void ClientPacketHandler::GenerateMobList()
+{
+	ObjectExporter2 exporter;
+	exporter.OpenFile(L"../../Resources/Assets/MobDungeon.dat");
+	for (int id = 0; id < exporter.enemyListforServer.size(); id++)
+	{
+		MONSTER_INFO mobInfo;
+
+		mobInfo._instanceId = id;
+
+		wstring name = exporter.enemyListforServer[id].first;
+		mobInfo._pos = exporter.enemyListforServer[id].second;
+		mobInfo._spawnMapType = MapType::Dungeon;
+
+		auto chinfo = make_shared<CharacterInfo>();
+		CHARACTER_INFO chrInfo;
+		if (name == L"CoreHound")
+		{
+			wstring LoadPath = DATA_ADDR_UNIT;
+			LoadPath += L"CoreHound/Information.xml";
+			chinfo->LoadCharacterInformationFromFile(LoadPath);
+			chrInfo = chinfo->GetCharacterInfo();
+			mobInfo._monsterType = MonsterType::CoreHound;
+			mobInfo._name = L"CoreHound";
+		}
+		if (name == L"MoltenGiant")
+		{
+			wstring LoadPath = DATA_ADDR_UNIT;
+			LoadPath += L"MoltenGiant/Information.xml";
+			chinfo->LoadCharacterInformationFromFile(LoadPath);
+			chrInfo = chinfo->GetCharacterInfo();
+			mobInfo._monsterType = MonsterType::MoltenGiant;
+			mobInfo._name = L"MoltenGiant";
+		}
+		if (name == L"BaronGeddon")
+		{
+			wstring LoadPath = DATA_ADDR_UNIT;
+			LoadPath += L"BaronGeddon/Information.xml";
+			chinfo->LoadCharacterInformationFromFile(LoadPath);
+			chrInfo = chinfo->GetCharacterInfo();
+			mobInfo._monsterType = MonsterType::BaronGeddon;
+			mobInfo._name = L"BaronGeddon";
+		}
+
+		mobInfo._hp = chrInfo._hp;
+		mobInfo._mp = chrInfo._mp;
+		mobInfo._atk = chrInfo._atk;
+		mobInfo._def = chrInfo._def;
+
+		AddMobInfoList(id, mobInfo);
+	}
+}
+
+MONSTER_INFO ClientPacketHandler::GetMobInfo(uint64 uid)
+{
+	auto it = _mobInfoList.find(uid);
+	if (it != _mobInfoList.end())
+	{
+		return it->second;
+	}
+
+	return MONSTER_INFO();
+}
+
+MONSTER_INFO ClientPacketHandler::CopyChraracterToMobInfo(CHARACTER_INFO chrInfo, MONSTER_INFO mobInfo)
+{
+	mobInfo._name = chrInfo._name;
+	mobInfo._instanceId = chrInfo._instanceId;
+	mobInfo._spawnMapType = chrInfo._spawnMapType;
+	mobInfo._maxHp = chrInfo._maxHp;
+	mobInfo._maxMp = chrInfo._maxMp;
+	mobInfo._hp = chrInfo._hp;
+	mobInfo._mp = chrInfo._mp;
+	mobInfo._atk = chrInfo._atk;
+	mobInfo._def = chrInfo._def;
+	mobInfo._moveSpeed = chrInfo._moveSpeed;
+	mobInfo._aggroLevel = chrInfo._aggroLevel;
+	mobInfo._attackRange = chrInfo._attackRange;
+	mobInfo._attackTime = chrInfo._attackTime;
+	mobInfo._traceRadius = chrInfo._traceRadius;
+	mobInfo._pos = chrInfo._pos;
+	mobInfo._Rotate = chrInfo._Rotate;
+	mobInfo._isAlive = chrInfo._isAlive;
+	mobInfo._isAttack = chrInfo._isAttack;
+	mobInfo._isBattle = chrInfo._isBattle;
+	mobInfo._timeStamp = chrInfo._timeStamp;
+
+	return mobInfo;
+}
+
+void ClientPacketHandler::UpdateMobInfo(uint64 uid, MONSTER_INFO mobInfo)
+{
+	auto it = _mobInfoList.find(uid);
+	if (it != _mobInfoList.end())
+	{
+		it->second = mobInfo;
+	}
 }

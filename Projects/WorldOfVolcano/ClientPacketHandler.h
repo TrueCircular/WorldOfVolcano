@@ -10,6 +10,7 @@ enum
 	PACKET_MONSTER_INFO = 3,
 	PACKET_MESSAGE = 4,
 	PACKET_BATTLE = 5,
+	PACKET_HOST = 6,
 	PACKET_DISCONNECT = 99,
 };
 
@@ -62,6 +63,7 @@ public:
 	void Handle_USER_INFO(BYTE* buffer, int32 len);
 	void Handle_MONSTER_INFO(BYTE* buffer, int32 len);
 	void Handle_MESSAGE(BYTE* buffer, int32 len);
+	void Handle_HOST(BYTE* buffer, int32 len);
 	void Handle_USER_DISCONNECT(BYTE* buffer, int32 len);
 
 	SendBufferRef Make_USER_INFO(Player_INFO userInfo, wstring name);
@@ -69,9 +71,14 @@ public:
 	SendBufferRef Make_MESSAGE(MESSAGE message);
 	SendBufferRef Make_BATTLE(float damage, uint32 targerId);
 
+	void GenerateMobList();
+	bool GetIsMapHost() { return _isMapHost; }
 	Player_INFO GetUserInfo() { return _userInfo; }
 	map<uint64, MONSTER_INFO> GetMobInfoList() { return _mobInfoList; }
+	MONSTER_INFO GetMobInfo(uint64 uid);
+	MONSTER_INFO CopyChraracterToMobInfo(CHARACTER_INFO chrInfo, MONSTER_INFO mobInfo);
 	void AddMobInfoList(uint64 uid, MONSTER_INFO mobInfo) { _mobInfoList.insert(make_pair(uid, mobInfo)); }
+	void UpdateMobInfo(uint64 uid, MONSTER_INFO mobInfo);
 	map<uint64, Player_INFO> GetOtherUserInfoMap()
 	{
 		std::lock_guard<std::mutex> lock(_mutex);
@@ -100,6 +107,7 @@ private:
 	ClientPacketHandler() = default;
 	~ClientPacketHandler() = default;
 
+	bool _isMapHost = false;
 	Player_INFO _userInfo;
 	map<uint64, Player_INFO> otherUserInfoMap;
 	std::mutex _mutex;
