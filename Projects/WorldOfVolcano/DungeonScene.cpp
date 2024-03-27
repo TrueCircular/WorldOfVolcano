@@ -408,6 +408,11 @@ void DungeonScene::Update()
 		SpawnManager::GetInstance().EraseSpawnerMap(name);
 		MANAGER_SCENE()->ChangeScene(scene);
 	}
+
+	if (MANAGER_INPUT()->GetButton(KEY_TYPE::E))
+	{
+		_warrior->GetComponent<PlayerController>()->Respawn();
+	}
 }
 
 void DungeonScene::LateUpdate()
