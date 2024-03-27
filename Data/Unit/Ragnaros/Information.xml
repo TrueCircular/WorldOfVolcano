@@ -1,0 +1,12 @@
+<CharacterInfo>
+    <Name>Ragnaros</Name>
+    <HP>80000</HP>
+    <MP>1000</MP>
+    <ATK>2500</ATK>
+    <DEF>500</DEF>
+    <MoveSpeed>0</MoveSpeed>
+    <AggroPow>0</AggroPow>
+    <AttackRange>1000</AttackRange>
+    <AttackTime>2</AttackTime>
+    <TraceRadius>1000</TraceRadius>
+</CharacterInfo>

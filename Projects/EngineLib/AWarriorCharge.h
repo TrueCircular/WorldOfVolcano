@@ -26,7 +26,7 @@ private:
 
 	shared_ptr<ParticleInstance> _explodeInstance;
 	shared_ptr<ParticleInstance> _polarInstance;
-	uint16						 _ownerAtk;
+	uint16						 _ownerAtk = 0;
 	uint32						 _consumedMp = 0;
 	float						 _abilityRange = 0.f;
 	float						 _abilityDamage = 0.f;
