@@ -338,11 +338,17 @@ void MoltenGiantTrace::Update()
 		{
 			if (_targetList.lock()->size() > 0)
 			{
-				float minAggro = -1.f;
-
+				float minAggro = 0.f;
 				shared_ptr<Transform> _lastTarget;
 				for (auto& target : *_targetList.lock())
 				{
+					if (target->Target == _targetTransform.lock()->GetGameObject())
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+						continue;
+					}
+
 					if (target->AggroValue > minAggro)
 					{
 						minAggro = target->AggroValue;
@@ -588,22 +594,31 @@ void MoltenGiantBattle::Update()
 		}
 		else
 		{
-			float minAggro = -1.f;
-
-			shared_ptr<Transform> _lastTarget = nullptr;
-			for (auto& target : *_targetList.lock())
+			if (_targetList.lock()->size() > 0)
 			{
-				if (target->AggroValue > minAggro)
+				float minAggro = 0.f;
+				shared_ptr<Transform> _lastTarget;
+				for (auto& target : *_targetList.lock())
 				{
-					minAggro = target->AggroValue;
-					_lastTarget = target->Target->GetTransform();
-				}
-			}
+					if (target->Target == _targetTransform.lock()->GetGameObject())
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+						continue;
+					}
 
-			if (_lastTarget != nullptr)
-			{
-				_targetTransform = _lastTarget;
-				_controller.lock()->SetTargetTransform(_targetTransform.lock());
+					if (target->AggroValue > minAggro)
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+					}
+				}
+
+				if (_lastTarget)
+				{
+					_targetTransform = _lastTarget;
+					_controller.lock()->SetTargetTransform(_targetTransform.lock());
+				}
 			}
 		}
 
