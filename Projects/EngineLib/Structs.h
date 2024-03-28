@@ -168,6 +168,7 @@ struct ShadowViewDesc {
 struct CHARACTER_INFO
 {
 	std::wstring _name;
+	std::wstring _strategyName;
 	uint32 _instanceId = 0;
 	MapType _spawnMapType = MapType::Lobby;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 	uint32 _maxHp = 0;

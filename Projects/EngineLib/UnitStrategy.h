@@ -19,7 +19,8 @@ protected:
 	weak_ptr<ModelAnimator>	_animator;
 	weak_ptr<CharacterInfo>	_characterInfo;
 public:
-	void UpdateLocalPosition(Vec3 pos);
+	wstring GetStrategyName() { return _name; }
+	void UpdateInfo(MONSTER_INFO info);
 	weak_ptr<Transform> GetWeakTransform() { return _transform; }
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) = 0;

@@ -90,6 +90,7 @@ struct JumpFlag
 struct PACKET_CHARACTER_INFO
 {
 	//wstring _name;
+	//std::wstring _strategyName;
 	uint32 _instanceId = 0;
 	MapType _spawnMapType = MapType::Lobby;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 	uint32 _maxHp = 1000;
@@ -145,4 +146,6 @@ public:
 	static SendBufferRef Make_USER_DISCONNECT(uint64 uid);
 	static SendBufferRef Make_MESSAGE(MESSAGE message);
 	static SendBufferRef Make_HOST(bool isMapHost);
+private:
+	static std::wstring _strategyName;
 };

@@ -69,6 +69,8 @@ void ServerPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 	name.resize(nameLen);
 	br.Read((void*)name.data(), nameLen * sizeof(WCHAR));
 
+	_strategyName = name;
+
 	GSessionManager.UpdateMobInfo(info);
 }
 
@@ -139,6 +141,9 @@ SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint32, PACKET_Mob_INFO
 		info._timeStamp = TIMER().getCurrentTime();
 		
 		bw << info;
+
+		bw << (uint16)_strategyName.size();
+		bw.Write((void*)_strategyName.data(), _strategyName.size() * sizeof(WCHAR));
 	}
 
 	header->size = bw.WriteSize();

@@ -274,10 +274,12 @@ void Spawner::SpawnMonsters()
 							auto strategy = unitFsm->GetStrategy();
 							if (strategy)
 							{
+								wstring name = strategy->GetStrategyName();
 								weak_ptr<Transform> transform = strategy->GetWeakTransform();
 								if (auto sharedTransform = transform.lock())
 								{
 									chrInfo._pos = transform.lock()->GetLocalPosition();
+									chrInfo._Rotate = transform.lock()->GetLocalRotation();
 									mob.second->GetComponent<CharacterInfo>()->SetCharacterInfo(chrInfo);
 								}
 								
@@ -288,7 +290,8 @@ void Spawner::SpawnMonsters()
 				else
 				{
 					it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
-					it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->UpdateLocalPosition(pair.second._pos);
+					it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->UpdateInfo(pair.second);
+					//it->second->GetComponent<AIController>()->SetCurrentFsmStrategy();
 				}
 				
 				///// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
