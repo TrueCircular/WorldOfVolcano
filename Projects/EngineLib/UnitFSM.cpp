@@ -10,3 +10,8 @@ void UnitFSM::Update()
 {
 	_strategy->Update();
 }
+
+void UnitFSM::UpdateFromServer()
+{
+	_strategy->UpdateFromServer();
+}

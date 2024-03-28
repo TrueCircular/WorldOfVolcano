@@ -5,6 +5,9 @@
 #include "engine/PlayerSoundController.h"
 #include "engine\EquipmentSlot.h"
 #include "engine/StrategyFactory.h"
+#include "engine/AbilitySlot.h"
+#include "engine/UnitFSM.h"
+#include "engine/UnitStrategy.h"
 
 using namespace std::chrono;
 
@@ -170,7 +173,7 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 	shared_ptr<Shader> _shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
 
 	// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon
-	shared_ptr<EnemyUnit> _chr;
+	auto _chr = make_shared<EnemyUnit>();;
 	switch (mobInfo._monsterType)
 	{
 	case MonsterType::CoreHound:
@@ -193,29 +196,27 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 	{
 		_chr->Awake();
 		_chr->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+		_chr->GetComponent<AIController>()->SetIsAiHost(ClientPacketHandler::Instance().GetIsMapHost());
 
-		if (ClientPacketHandler::Instance().GetIsMapHost() == true)
+		switch (mobInfo._monsterType)
 		{
-			switch (mobInfo._monsterType)
-			{
-			case MonsterType::CoreHound:
-				_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
-				break;
-			case MonsterType::MoltenGiant:
-				_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
-				break;
-			case MonsterType::BaronGeddon:
-				_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
-				break;
-			case MonsterType::Ragnaros:
-				_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
-				break;
-			default:
-				break;
-			}
+		case MonsterType::CoreHound:
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
+			break;
+		case MonsterType::MoltenGiant:
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
+			break;
+		case MonsterType::BaronGeddon:
+			_chr->GetComponent<AbilitySlot>()->SetController(_chr->GetComponent<AIController>());
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
+			break;
+		case MonsterType::Ragnaros:
+			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
+			break;
+		default:
+			break;
 		}
 		
-
 		_chr->SetSpwanPosition(mobInfo._pos);
 		_chr->GetComponent<CharacterInfo>()->SetCharacterInfo(mobInfo);
 		_chr->Start();
@@ -262,41 +263,66 @@ void Spawner::SpawnMonsters()
 			}
 			else
 			{
-				MONSTER_INFO mobInfo = pair.second;
-				/// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
-				if (ClientPacketHandler::Instance().GetIsMapHost() == false)
+				if (ClientPacketHandler::Instance().GetIsMapHost())
 				{
-					auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
-					auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
-					double alpha = fmin(1.0, durationSec / 1.0);
-
-					Vec3 pos = it->second->GetTransform()->GetPosition();
-					Vec3 rot = it->second->GetTransform()->GetLocalRotation();
-
-					Vec3 target = pair.second._pos;
-					Vec3 direction = target - pos;
-
-					float distance = IsPlayerInRanger(target, pos);
-
-					if (pair.second._animState == EnemyUnitState::Run)
+					for (auto mob : _monsters)
 					{
-						pos += interpolate(alpha, direction, Vec3(0.0f, 0.0f, 0.0f)) * MANAGER_TIME()->GetDeltaTime();
+						CHARACTER_INFO chrInfo = mob.second->GetComponent<CharacterInfo>()->GetCharacterInfo();
+						auto unitFsm = mob.second->GetComponent<AIController>()->GetUnitFsm();
+						if (unitFsm)
+						{
+							auto strategy = unitFsm->GetStrategy();
+							if (strategy)
+							{
+								weak_ptr<Transform> transform = strategy->GetWeakTransform();
+								if (auto sharedTransform = transform.lock())
+								{
+									chrInfo._pos = transform.lock()->GetLocalPosition();
+									mob.second->GetComponent<CharacterInfo>()->SetCharacterInfo(chrInfo);
+								}
+								
+							}
+						};
 					}
-
-					//회전 보간 계산
-					Vec3 targetRot = pair.second._Rotate;
-					Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
-					Quaternion endRotation = Quaternion::CreateFromYawPitchRoll(targetRot.y, 0.0f, 0.0f);
-					Quaternion calcRot = Quaternion::Slerp(startRotation, endRotation, alpha);
-					rot.y = QuatToEulerAngleY(calcRot);
-
-					it->second->GetTransform()->SetPosition(pos);
-					it->second->GetTransform()->SetLocalRotation(targetRot);
-					//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState); <- 동작수정
-					it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
 				}
+				else
+				{
+					it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
+					it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->UpdateLocalPosition(pair.second._pos);
+				}
+				
+				///// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
+				//if (ClientPacketHandler::Instance().GetIsMapHost() == false)
+				//{
+				//	auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
+				//	auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
+				//	double alpha = fmin(1.0, durationSec / 1.0);
 
-				it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(mobInfo);
+				//	Vec3 pos = it->second->GetTransform()->GetPosition();
+				//	Vec3 rot = it->second->GetTransform()->GetLocalRotation();
+
+				//	Vec3 target = pair.second._pos;
+				//	Vec3 direction = target - pos;
+
+				//	float distance = IsPlayerInRanger(target, pos);
+
+				//	if (pair.second._animState == EnemyUnitState::Run)
+				//	{
+				//		pos += interpolate(alpha, direction, Vec3(0.0f, 0.0f, 0.0f)) * MANAGER_TIME()->GetDeltaTime();
+				//	}
+
+				//	//회전 보간 계산
+				//	Vec3 targetRot = pair.second._Rotate;
+				//	Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
+				//	Quaternion endRotation = Quaternion::CreateFromYawPitchRoll(targetRot.y, 0.0f, 0.0f);
+				//	Quaternion calcRot = Quaternion::Slerp(startRotation, endRotation, alpha);
+				//	rot.y = QuatToEulerAngleY(calcRot);
+
+				//	it->second->GetTransform()->SetPosition(pos);
+				//	it->second->GetTransform()->SetLocalRotation(targetRot);
+				//	//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState); <- 동작수정
+				//	it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
+				//}
 			}
 		}
 		else

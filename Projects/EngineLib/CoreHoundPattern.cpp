@@ -87,6 +87,14 @@ void CoreHoundStand::Update()
 	}
 }
 
+void CoreHoundStand::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		
+	}
+}
+
 void CoreHoundStand::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -150,6 +158,11 @@ void CoreHoundDamaged::Update()
 			Out(L"CoreHoundBattle");
 		}
 	}
+}
+
+void CoreHoundDamaged::UpdateFromServer()
+{
+	cout << "sdfg";
 }
 
 void CoreHoundDamaged::Out(const wstring& nextTransition)
@@ -227,6 +240,11 @@ void CoreHoundDead::Update()
 	}
 }
 
+void CoreHoundDead::UpdateFromServer()
+{
+	cout << "sdfg";
+}
+
 void CoreHoundDead::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -282,26 +300,26 @@ void CoreHoundTrace::Update()
 
 		//Target Update
 		{
-			if (_targetList.lock()->size() > 0)
-			{
-				float minAggro = -1.f;
+			//if (_targetList.lock()->size() > 0)
+			//{
+			//	float minAggro = -1.f;
 
-				shared_ptr<Transform> _lastTarget;
-				for (auto& target : *_targetList.lock())
-				{
-					if (target->AggroValue > minAggro)
-					{
-						minAggro = target->AggroValue;
-						_lastTarget = target->Target->GetTransform();
-					}
-				}
+			//	shared_ptr<Transform> _lastTarget;
+			//	for (auto& target : *_targetList.lock())
+			//	{
+			//		if (target->AggroValue > minAggro)
+			//		{
+			//			minAggro = target->AggroValue;
+			//			_lastTarget = target->Target->GetTransform();
+			//		}
+			//	}
 
-				if (_lastTarget)
-				{
-					_targetTransform = _lastTarget;
-					_controller.lock()->SetTargetTransform(_targetTransform.lock());
-				}
-			}
+			//	if (_lastTarget)
+			//	{
+			//		_targetTransform = _lastTarget;
+			//		_controller.lock()->SetTargetTransform(_targetTransform.lock());
+			//	}
+			//}
 		}
 
 		bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
@@ -369,6 +387,11 @@ void CoreHoundTrace::Update()
 			}
 		}
 	}
+}
+
+void CoreHoundTrace::UpdateFromServer()
+{
+	cout << "sdfg";
 }
 
 void CoreHoundTrace::Out(const wstring& nextTransition)
@@ -470,6 +493,11 @@ void CoreHoundMoveToSpwanPoint::Update()
 	}
 }
 
+void CoreHoundMoveToSpwanPoint::UpdateFromServer()
+{
+	cout << "sdfg";
+}
+
 void CoreHoundMoveToSpwanPoint::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -534,23 +562,23 @@ void CoreHoundBattle::Update()
 		}
 		else
 		{
-			float minAggro = -1.f;
+			//float minAggro = -1.f;
 
-			shared_ptr<Transform> _lastTarget = nullptr;
-			for (auto& target : *_targetList.lock())
-			{
-				if (target->AggroValue > minAggro)
-				{
-					minAggro = target->AggroValue;
-					_lastTarget = target->Target->GetTransform();
-				}
-			}
+			//shared_ptr<Transform> _lastTarget = nullptr;
+			//for (auto& target : *_targetList.lock())
+			//{
+			//	if (target->AggroValue > minAggro)
+			//	{
+			//		minAggro = target->AggroValue;
+			//		_lastTarget = target->Target->GetTransform();
+			//	}
+			//}
 
-			if (_lastTarget != nullptr)
-			{
-				_targetTransform = _lastTarget;
-				_controller.lock()->SetTargetTransform(_targetTransform.lock());
-			}
+			//if (_lastTarget != nullptr)
+			//{
+			//	_targetTransform = _lastTarget;
+			//	_controller.lock()->SetTargetTransform(_targetTransform.lock());
+			//}
 		}
 
 		bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
@@ -627,6 +655,11 @@ void CoreHoundBattle::Update()
 			Out(L"CoreHoundMoveToSpwanPoint");
 		}
 	}
+}
+
+void CoreHoundBattle::UpdateFromServer()
+{
+	cout << "sdfg";
 }
 
 void CoreHoundBattle::Out(const wstring& nextTransition)
@@ -783,6 +816,11 @@ void CoreHoundAttack::Update()
 			}
 		}
 	}
+}
+
+void CoreHoundAttack::UpdateFromServer()
+{
+	cout << "sdfg";
 }
 
 void CoreHoundAttack::Out(const wstring& nextTransition)

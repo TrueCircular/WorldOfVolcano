@@ -15,16 +15,13 @@ public:
 	MoltenGiantStand();
 	virtual ~MoltenGiantStand();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	weak_ptr<TargetList>	_targetList;
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -34,12 +31,11 @@ public:
 	MoltenGiantDamaged();
 	virtual ~MoltenGiantDamaged();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<ModelAnimator>	_animator;
 	shared_ptr<Sounds>		_damagedSound;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -49,14 +45,13 @@ public:
 	MoltenGiantStun();
 	virtual ~MoltenGiantStun();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<ModelAnimator>	_animator;
 	float _stunTime = 1.5f;
 	float _stunTimer = 0.f;
 	float _dt = 0.f;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -66,8 +61,6 @@ public:
 	MoltenGiantDead();
 	virtual ~MoltenGiantDead();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<ModelAnimator>	_animator;
 	shared_ptr<Sounds>		_deadSound;
 	float					_dt = 0.f;
 	float					_soundTimer = 1.0f;
@@ -75,6 +68,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -85,12 +79,8 @@ public:
 	MoltenGiantTrace();
 	virtual ~MoltenGiantTrace();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	uint16					_moveSpeed = 0;
 	float					_dt = 0.f;
 	float					_traceRadius = 0.f;
@@ -99,6 +89,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -108,10 +99,6 @@ public:
 	MoltenGiantMoveToSpwanPoint();
 	virtual ~MoltenGiantMoveToSpwanPoint();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	Vec3					_spwanPos = Vec3(0.f);
 	uint16					_moveSpeed = 0;
 	float					_dt = 0.f;
@@ -120,6 +107,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -130,12 +118,8 @@ public:
 	MoltenGiantBattle();
 	virtual ~MoltenGiantBattle();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	float					_dt = 0.f;
 	float					_traceTime = 0.f;
 	float					_traceWaitingTime = 0.75f;
@@ -147,6 +131,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -156,11 +141,7 @@ public:
 	MoltenGiantAttack();
 	virtual ~MoltenGiantAttack();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	shared_ptr<Sounds>		_attack1Sound;
 	shared_ptr<Sounds>		_attack2Sound;
 	float					_dt = 0.f;
@@ -170,5 +151,6 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };

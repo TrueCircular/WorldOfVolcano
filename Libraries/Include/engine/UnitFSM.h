@@ -20,4 +20,5 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& preTransition);
 	virtual void Update();
+	virtual void UpdateFromServer();
 };

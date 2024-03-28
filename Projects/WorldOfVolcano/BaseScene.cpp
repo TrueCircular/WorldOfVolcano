@@ -271,6 +271,7 @@ void BaseScene::Update()
 		message._messageBox[sizeof(message._messageBox) - 1] = '\0'; // Null 문자 추가
 		_sendBuffer = ClientPacketHandler::Instance().Make_MESSAGE(message);
 		_service->Broadcast(_sendBuffer);
+		MANAGER_IMGUI()->GetLatestMessages().clear();
 	}
 	latestMessageSize = MANAGER_IMGUI()->GetLatestMessages().size();
 

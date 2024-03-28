@@ -26,7 +26,11 @@ public:
 
 	void AddMessage(char message[50]);
 
-	std::vector<std::string> GetLatestMessages() { return chatMessages; }
+	std::vector<std::string> GetLatestMessages()
+	{
+		std::vector<std::string> result = chatMessages;
+		return chatMessages; 
+	}
 	void UpdateHp(uint32 maxHp, uint32 hp);
 	void UpdateMp(uint32 maxMp, uint32 mp);
 	void UpdatePicked(bool isPicked, uint32 maxHp = 0, uint32 hp = 0, wstring name = L"");

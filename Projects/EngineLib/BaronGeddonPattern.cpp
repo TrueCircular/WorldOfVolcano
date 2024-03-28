@@ -254,26 +254,26 @@ void BaronGeddonTrace::Update()
 
 		//Target Update
 		{
-			if (_targetList.lock()->size() > 0)
-			{
-				float minAggro = -1.f;
+			//if (_targetList.lock()->size() > 0)
+			//{
+			//	float minAggro = -1.f;
 
-				shared_ptr<Transform> _lastTarget;
-				for (auto& target : *_targetList.lock())
-				{
-					if (target->AggroValue > minAggro)
-					{
-						minAggro = target->AggroValue;
-						_lastTarget = target->Target->GetTransform();
-					}
-				}
+			//	shared_ptr<Transform> _lastTarget;
+			//	for (auto& target : *_targetList.lock())
+			//	{
+			//		if (target->AggroValue > minAggro)
+			//		{
+			//			minAggro = target->AggroValue;
+			//			_lastTarget = target->Target->GetTransform();
+			//		}
+			//	}
 
-				if (_lastTarget)
-				{
-					_targetTransform = _lastTarget;
-					_controller.lock()->SetTargetTransform(_targetTransform.lock());
-				}
-			}
+			//	if (_lastTarget)
+			//	{
+			//		_targetTransform = _lastTarget;
+			//		_controller.lock()->SetTargetTransform(_targetTransform.lock());
+			//	}
+			//}
 		}
 
 		bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
@@ -538,34 +538,34 @@ void BaronGeddonBattle::Update()
 
 			//타겟 방향으로 회전
 			{
-				if (toTargetDir.Length() > 0)
-				{
-					toTargetDir.Normalize(toTargetDir);
-					{
-						Vec3 myForward = _transform.lock()->GetLookVector();
-						Vec3 myRight = _transform.lock()->GetRightVector();
-						Vec3 myUp = Vec3(0, 1, 0);
+				//if (toTargetDir.Length() > 0)
+				//{
+				//	toTargetDir.Normalize(toTargetDir);
+				//	{
+				//		Vec3 myForward = _transform.lock()->GetLookVector();
+				//		Vec3 myRight = _transform.lock()->GetRightVector();
+				//		Vec3 myUp = Vec3(0, 1, 0);
 
-						myForward.Normalize();
+				//		myForward.Normalize();
 
-						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
-						float angle = acosf(dotAngle);
+				//		float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+				//		float angle = acosf(dotAngle);
 
-						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-						float LeftRight = cross.Dot(myUp);
+				//		Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+				//		float LeftRight = cross.Dot(myUp);
 
-						if (LeftRight < 0)
-						{
-							angle = -angle;
-						}
+				//		if (LeftRight < 0)
+				//		{
+				//			angle = -angle;
+				//		}
 
-						angle = angle * _totargetRotationSpeed * _dt;
+				//		angle = angle * _totargetRotationSpeed * _dt;
 
-						Vec3 myRot = _transform.lock()->GetLocalRotation();
-						myRot.y += angle;
-						_transform.lock()->SetLocalRotation(myRot);
-					}
-				}
+				//		Vec3 myRot = _transform.lock()->GetLocalRotation();
+				//		myRot.y += angle;
+				//		_transform.lock()->SetLocalRotation(myRot);
+				//	}
+				//}
 			}
 
 			_abilityTimer += _dt;

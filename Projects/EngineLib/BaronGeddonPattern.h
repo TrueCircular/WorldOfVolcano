@@ -16,10 +16,6 @@ public:
 	BaronGeddonStand();
 	virtual ~BaronGeddonStand();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	weak_ptr<TargetList>	_targetList;
 	Vec3					_spwanPos = Vec3(0.f);
 	float					_traceRadius = 0.f;
@@ -27,6 +23,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -36,12 +33,11 @@ public:
 	BaronGeddonDamaged();
 	virtual ~BaronGeddonDamaged();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<ModelAnimator>	_animator;
 	shared_ptr<Sounds>		_damagedSound;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -51,8 +47,6 @@ public:
 	BaronGeddonDead();
 	virtual ~BaronGeddonDead();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<ModelAnimator>	_animator;
 	shared_ptr<Sounds>		_deadSound;
 	float					_dt = 0.f;
 	float					_soundTimer = 1.0f;
@@ -60,6 +54,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -70,12 +65,8 @@ public:
 	BaronGeddonTrace();
 	virtual ~BaronGeddonTrace();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	uint16					_moveSpeed = 0;
 	float					_dt = 0.f;
 	float					_traceRadius = 0.f;
@@ -84,6 +75,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -93,10 +85,6 @@ public:
 	BaronGeddonMoveToSpwanPoint();
 	virtual ~BaronGeddonMoveToSpwanPoint();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	Vec3					_spwanPos = Vec3(0.f);
 	uint16					_moveSpeed = 0;
 	float					_dt = 0.f;
@@ -105,6 +93,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -115,12 +104,8 @@ public:
 	BaronGeddonBattle();
 	virtual ~BaronGeddonBattle();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	weak_ptr<AbilitySlot>	_abilitySlot;
 	float					_dt = 0.f;
 	float					_traceTime = 0.f;
@@ -135,6 +120,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -144,11 +130,7 @@ public:
 	BaronGeddonAttack();
 	virtual ~BaronGeddonAttack();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	shared_ptr<Sounds>		_attack1Sound;
 	shared_ptr<Sounds>		_attack2Sound;
 	float					_dt = 0.f;
@@ -158,6 +140,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -167,11 +150,7 @@ public:
 	BaronGeddonAbility();
 	virtual ~BaronGeddonAbility();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	shared_ptr<Sounds>		_abiltySound;
 	weak_ptr<AbilitySlot>	_abilitySlot;
 	float					_dt = 0.f;
@@ -185,5 +164,6 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override {}
 	virtual void Out(const wstring& nextTransition) override;
 };

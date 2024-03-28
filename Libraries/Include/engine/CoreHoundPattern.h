@@ -15,16 +15,13 @@ public:
 	CoreHoundStand();
 	virtual ~CoreHoundStand();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	weak_ptr<TargetList>	_targetList;
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -34,12 +31,11 @@ public:
 	CoreHoundDamaged();
 	virtual ~CoreHoundDamaged();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<ModelAnimator>	_animator;
 	shared_ptr<Sounds>		_damagedSound;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -49,8 +45,6 @@ public:
 	CoreHoundDead();
 	virtual ~CoreHoundDead();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<ModelAnimator>	_animator;
 	shared_ptr<Sounds>		_deadSound;
 	float					_dt = 0.f;
 	float					_soundTimer = 1.0f;
@@ -58,6 +52,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -68,12 +63,8 @@ public:
 	CoreHoundTrace();
 	virtual ~CoreHoundTrace();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	uint16					_moveSpeed = 0;
 	float					_dt = 0.f;
 	float					_traceRadius = 0.f;
@@ -82,6 +73,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -91,10 +83,6 @@ public:
 	CoreHoundMoveToSpwanPoint();
 	virtual ~CoreHoundMoveToSpwanPoint();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	Vec3					_spwanPos = Vec3(0.f);
 	uint16					_moveSpeed = 0;
 	float					_dt = 0.f;
@@ -103,6 +91,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -113,12 +102,8 @@ public:
 	CoreHoundBattle();
 	virtual ~CoreHoundBattle();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<TargetList>	_targetList;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	float					_dt = 0.f;
 	float					_traceTime = 0.f;
 	float					_traceWaitingTime = 0.75f;
@@ -130,6 +115,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -139,11 +125,7 @@ public:
 	CoreHoundAttack();
 	virtual ~CoreHoundAttack();
 private:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
 	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
 	shared_ptr<Sounds>		_attack1Sound;
 	shared_ptr<Sounds>		_attack2Sound;
 	float					_dt = 0.f;
@@ -153,5 +135,6 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
