@@ -50,11 +50,11 @@ void Demo::Init() {
 	//shared_ptr<Scene> scene = make_shared<TitleScene>();
 	//MANAGER_SCENE()->ChangeScene(scene);
 	//
-	//shared_ptr<Scene> scene = make_shared<BaseScene>();
-	//scene->SetSceneName(L"BaseScene");
+	shared_ptr<Scene> scene = make_shared<BaseScene>();
+	scene->SetSceneName(L"BaseScene");
 	// 
-	shared_ptr<Scene> scene = make_shared<DungeonScene>();
-	scene->SetSceneName(L"DungeonScene");
+	//shared_ptr<Scene> scene = make_shared<DungeonScene>();
+	//scene->SetSceneName(L"DungeonScene");
 	//
 	//shared_ptr<Scene> scene = make_shared<TestAbilityScene>();
 	//scene->SetSceneName(L"TestAbility");
