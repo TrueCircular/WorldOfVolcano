@@ -63,7 +63,7 @@ void Ragnaros::CharacterInit()
 		Vec3 rot = _childModel->GetTransform()->GetLocalRotation();
 		rot.x += ::XMConvertToRadians(90.f);
 		rot.y -= ::XMConvertToRadians(90.f);
-		_childModel->GetTransform()->SetLocalScale(Vec3(0.3f));
+		_childModel->GetTransform()->SetLocalScale(Vec3(0.1f));
 		_childModel->GetTransform()->SetLocalRotation(rot);
 		_childModel->GetTransform()->SetLocalPosition(Vec3(0, 10, 0));
 		AddChild(_childModel);

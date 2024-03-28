@@ -168,7 +168,6 @@ void InstancingManager::RenderAnimRenderer(vector<shared_ptr<GameObject>>& gameO
 						gameObject->GetChildByName(L"Model")->GetModelAnimator()->UpdateTweenData();
 						tweenDesc->tweens[i] = *gameObject->GetChildByName(L"Model")->GetModelAnimator()->GetTweenDesc();
 						data.world = gameObject->GetChildByName(L"Model")->GetTransform()->GetWorldMatrix();
-
 					}
 					else
 					{
