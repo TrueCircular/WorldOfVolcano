@@ -101,6 +101,12 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 	}
 	else if (std::is_same_v<T, Ragnaros>)
 	{
+		auto event1 = make_shared<RagnarosEncounterEvent1>();
+		strategyList.push_back(event1);
+
+		auto event2 = make_shared<RagnarosEncounterEvent2>();
+		strategyList.push_back(event2);
+
 		auto stand = make_shared<RagnarosStand>();
 		strategyList.push_back(stand);
 
@@ -116,8 +122,11 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 		auto attack = make_shared<RagnarosAttack>();
 		strategyList.push_back(attack);
 
-		auto ability = make_shared<RagnarosAbility>();
-		strategyList.push_back(ability);
+		auto ability1 = make_shared<RagnarosAbility1>();
+		strategyList.push_back(ability1);
+
+		auto ability2 = make_shared<RagnarosAbility2>();
+		strategyList.push_back(ability2);
 	}
 
 

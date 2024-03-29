@@ -179,6 +179,10 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="AbilitySlot.h" />
     <ClInclude Include="AFireBolt.h" />
     <ClInclude Include="AFireBoltData.h" />
+    <ClInclude Include="AFireExplosion.h" />
+    <ClInclude Include="AFireExplosionData.h" />
+    <ClInclude Include="AFireStorm.h" />
+    <ClInclude Include="AFireStormData.h" />
     <ClInclude Include="AHealPotionData.h" />
     <ClInclude Include="AIController.h" />
     <ClInclude Include="AManaPotionData.h" />
@@ -317,6 +321,10 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="AbilitySlot.cpp" />
     <ClCompile Include="AFireBolt.cpp" />
     <ClCompile Include="AFireBoltData.cpp" />
+    <ClCompile Include="AFireExplosion.cpp" />
+    <ClCompile Include="AFireExplosionData.cpp" />
+    <ClCompile Include="AFireStorm.cpp" />
+    <ClCompile Include="AFireStormData.cpp" />
     <ClCompile Include="AHealPotionData.cpp" />
     <ClCompile Include="AIController.cpp" />
     <ClCompile Include="AManaPotionData.cpp" />

@@ -363,36 +363,77 @@ void PlayerController::PlayerAttack()
 			pickPos.y = myPos.y;
 			float dist = Vec3::Distance(myPos, pickPos);
 
-			if (dist < _attackRange + FLT_EPSILON)
+			if (_pickedObj->GetName() == L"Ragnaros")
 			{
-				if (_pickedObj->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->_type != UnitStrategyType::Dead)
+				if (dist < 120.f + FLT_EPSILON)
 				{
-					if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::RBUTTON))
+					if (_pickedObj->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->_type != UnitStrategyType::Dead)
 					{
-						auto pickController = _pickedObj->GetComponent<AIController>();
-
-						if (pickController != nullptr)
+						if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::RBUTTON))
 						{
-							_isBattle = true;
-							_isAttack = true;
+							auto pickController = _pickedObj->GetComponent<AIController>();
 
-							float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
-							pickController->TakeDamage(GetGameObject(), damage);
-							MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
-
-							*_currentState = PlayerUnitState::Attack;
-
-							::srand(time(NULL));
-
-							int selectAttack = rand() % 2;
-
-							if (selectAttack == 0)
+							if (pickController != nullptr)
 							{
-								SetAnimState(PlayerAnimType::Attack1);
+								_isBattle = true;
+								_isAttack = true;
+
+								float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
+								pickController->TakeDamage(GetGameObject(), damage);
+								MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
+
+								*_currentState = PlayerUnitState::Attack;
+
+								::srand(time(NULL));
+
+								int selectAttack = rand() % 2;
+
+								if (selectAttack == 0)
+								{
+									SetAnimState(PlayerAnimType::Attack1);
+								}
+								else
+								{
+									SetAnimState(PlayerAnimType::Attack2);
+								}
 							}
-							else
+						}
+					}
+				}
+			}
+			else
+			{
+				if (dist < _attackRange + FLT_EPSILON)
+				{
+					if (_pickedObj->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->_type != UnitStrategyType::Dead)
+					{
+						if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::RBUTTON))
+						{
+							auto pickController = _pickedObj->GetComponent<AIController>();
+
+							if (pickController != nullptr)
 							{
-								SetAnimState(PlayerAnimType::Attack2);
+								_isBattle = true;
+								_isAttack = true;
+
+								float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
+								pickController->TakeDamage(GetGameObject(), damage);
+								MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
+
+								*_currentState = PlayerUnitState::Attack;
+
+								::srand(time(NULL));
+
+								int selectAttack = rand() % 2;
+
+								if (selectAttack == 0)
+								{
+									SetAnimState(PlayerAnimType::Attack1);
+								}
+								else
+								{
+									SetAnimState(PlayerAnimType::Attack2);
+								}
 							}
 						}
 					}

@@ -1,8 +1,8 @@
 <AbilityInformation>
-    <Name>FireOfNature</Name>
+    <Name>FireStorm</Name>
     <AbilityType>2</AbilityType>
     <ConsumedMp>0</ConsumedMp>
-    <AbilityCoolTime>30</AbilityCoolTime>
+    <AbilityCoolTime>5</AbilityCoolTime>
     <AbilityPow>2</AbilityPow>
     <AbilityRange>300</AbilityRange>
 </AbilityInformation>

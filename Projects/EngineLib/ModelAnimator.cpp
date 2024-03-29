@@ -316,6 +316,10 @@ bool ModelAnimator::SetNextAnimation(wstring animName)
 				{
 					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
 				}
+				else if (_currentAnim->name == L"Birth" && _nextAnim->name == L"Battle")
+				{
+					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;
+				}
 				else if (_currentAnim->name == L"Damaged" && _nextAnim->name == L"Stand")
 				{
 					_tweenDesc->tweenDuration = 1.f / _nextAnim->duration;

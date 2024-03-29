@@ -1,5 +1,10 @@
 #include "pch.h"
 #include "FireStorm.h"
+#include "CharacterController.h"
+#include "PlayerController.h"
+#include "AIController.h"
+#include "Sounds.h"
+#include "PlayableUnit.h"
 
 void FireStorm::Update()
 {
@@ -21,19 +26,22 @@ void FireStorm::Update()
 		rotation.z += (5.5f / PI) * (MANAGER_TIME()->GetDeltaTime());
 		instanceList[i]->particleTransform->SetLocalRotation(rotation);
 		if (instanceList[i]->isTargeting) {
-			Vec3 velocity = instanceList[i]->particleTransform->GetLocalPosition() - instanceList[i]->targetTransform->GetLocalPosition();
+			Vec3 velocity = instanceList[i]->targetTransform->GetLocalPosition()- instanceList[i]->particleTransform->GetLocalPosition() ;
 			velocity.Normalize();
 			velocity = velocity* (instanceList[i]->speed * MANAGER_TIME()->GetDeltaTime());
 			Vec3 pos = instanceList[i]->particleTransform->GetLocalPosition();
 			pos += velocity;
-			//Vec3 targetPos = instanceList[i]->targetTransform->GetLocalPosition();
-			//float distance = Vec3::Distance(pos,targetPos);
-			//if (distance < instanceList[i]->speed) {
-			//	OnDestroy(instanceList[i]);
-			//	auto iter = instanceList.begin() + i;
-			//	instanceList.erase(iter);
-			//	--i;
-			//}
+
+			Vec3 targetPos = instanceList[i]->targetTransform->GetLocalPosition();
+			float distance = Vec3::Distance(pos, targetPos);
+			if (distance < instanceList[i]->speed * MANAGER_TIME()->GetDeltaTime()) {
+				OnDestroy(instanceList[i]);
+				auto iter = instanceList.begin() + i;
+				instanceList.erase(iter);
+				--i;
+				instanceCounter--;
+				continue;
+			}
 			instanceList[i]->particleTransform->SetLocalPosition(pos);
 		}
 		instanceList[i]->particleTransform->Update();
@@ -61,6 +69,49 @@ void FireStorm::LateUpdate()
 
 void FireStorm::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
+	if (_target != nullptr)
+	{
+		auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"BaronGeddon_Ability1_Impact");
+		shared_ptr<Sounds> sound = nullptr;
+		if (tempSound == nullptr)
+		{
+			shared_ptr<Sounds> sound = make_shared<Sounds>();
+			wstring soundPath = RESOURCES_ADDR_SOUND;
+			soundPath += L"Skill/BaronGeddon/BaronGeddon_Ability1_Impact.mp3";
+			sound->Load(soundPath);
+			sound->SetVolume(50);
+			MANAGER_RESOURCES()->AddResource<Sounds>(L"BaronGeddon_Ability1_Impact", sound);
+
+			sound = sound->Clone();
+		}
+		else
+		{
+			sound = tempSound->Clone();
+		}
+
+		if (sound != nullptr)
+		{
+			sound->Play(false);
+		}
+
+		auto targetList = MANAGER_SCENE()->GetCurrentScene()->GetPlayableUnit();
+
+		if (targetList.size() > 0)
+		{
+			for (auto& target : targetList)
+			{
+				Vec3 targetPos = _target->GetTransform()->GetPosition();
+				Vec3 InRangeTargetPos = target->GetTransform()->GetPosition();
+				InRangeTargetPos.y = targetPos.y;
+				float dist = Vec3::Distance(targetPos, InRangeTargetPos);
+
+				if (dist <= 150.f)
+				{
+					target->GetComponent<PlayerController>()->TakeDamage(_target, _damage);
+				}
+			}
+		}
+	}
 }
 
 FireStorm::FireStorm()

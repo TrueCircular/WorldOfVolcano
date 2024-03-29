@@ -7,6 +7,10 @@
 #include "HeightGetter.h"
 
 #include "AbilitySlot.h"
+#include "AFireExplosion.h"
+#include "AFireExplosionData.h"
+#include "AFireStorm.h"
+#include "AFireStormData.h"
 
 Ragnaros::Ragnaros()
 {
@@ -63,7 +67,7 @@ void Ragnaros::CharacterInit()
 		Vec3 rot = _childModel->GetTransform()->GetLocalRotation();
 		rot.x += ::XMConvertToRadians(90.f);
 		rot.y -= ::XMConvertToRadians(90.f);
-		_childModel->GetTransform()->SetLocalScale(Vec3(0.1f));
+		_childModel->GetTransform()->SetLocalScale(Vec3(0.08f));
 		_childModel->GetTransform()->SetLocalRotation(rot);
 		_childModel->GetTransform()->SetLocalPosition(Vec3(0, 10, 0));
 		AddChild(_childModel);
@@ -77,12 +81,23 @@ void Ragnaros::CharacterInit()
 
 	{
 		auto collider = make_shared<SphereCollider>();
-		collider->SetRadius(35.f);
+		collider->SetRadius(85.f);
+		collider->SetOffset(Vec3(0,50,0));
 		AddComponent(collider);
 	}
 	//Ability Set
 	{
 		auto abilitySlot = make_shared<AbilitySlot>();
+
+		auto fireExplosionData = make_shared<AFireExplosionData>();
+		auto fireExplosion = make_shared<AFireExplosion>();
+		fireExplosion->SetAbilityData(fireExplosionData);
+		abilitySlot->SetAbility(0, fireExplosion);
+
+		auto fireStormData = make_shared<AFireStormData>();
+		auto fireStorm = make_shared<AFireStorm>();
+		fireStorm->SetAbilityData(fireStormData);
+		abilitySlot->SetAbility(1, fireStorm);
 
 		AddComponent(abilitySlot);
 	}

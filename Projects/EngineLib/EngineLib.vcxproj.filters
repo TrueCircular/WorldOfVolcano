@@ -575,6 +575,18 @@
     <ClInclude Include="AHealPotionData.h">
       <Filter>04. Component\Ability\Common\Data</Filter>
     </ClInclude>
+    <ClInclude Include="AFireStorm.h">
+      <Filter>04. Component\Ability\Ragnaros</Filter>
+    </ClInclude>
+    <ClInclude Include="AFireExplosion.h">
+      <Filter>04. Component\Ability\Ragnaros</Filter>
+    </ClInclude>
+    <ClInclude Include="AFireStormData.h">
+      <Filter>04. Component\Ability\Ragnaros\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="AFireExplosionData.h">
+      <Filter>04. Component\Ability\Ragnaros\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -971,6 +983,18 @@
     </ClCompile>
     <ClCompile Include="AHealPotionData.cpp">
       <Filter>04. Component\Ability\Common\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="AFireStorm.cpp">
+      <Filter>04. Component\Ability\Ragnaros</Filter>
+    </ClCompile>
+    <ClCompile Include="AFireExplosion.cpp">
+      <Filter>04. Component\Ability\Ragnaros</Filter>
+    </ClCompile>
+    <ClCompile Include="AFireStormData.cpp">
+      <Filter>04. Component\Ability\Ragnaros\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="AFireExplosionData.cpp">
+      <Filter>04. Component\Ability\Ragnaros\Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

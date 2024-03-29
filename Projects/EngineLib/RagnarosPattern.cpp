@@ -39,9 +39,6 @@ void RagnarosStand::Enter(const shared_ptr<AIController>& controller, const wstr
 
 void RagnarosStand::Update()
 {
-
-
-
 }
 
 void RagnarosStand::Out(const wstring& nextTransition)
@@ -236,7 +233,18 @@ void RagnarosBattle::Enter(const shared_ptr<AIController>& controller, const wst
 
 		_characterInfo = _controller.lock()->GetCharacterInfo();
 		_abilitySlot = _controller.lock()->GetGameObject()->GetComponent<AbilitySlot>();
-		_abilityTime = _abilitySlot.lock()->GetAbility(0)->GetAbilityData().AbilityCoolTime;
+		if (_abilitySlot.lock() != nullptr)
+		{
+			if (_abilitySlot.lock()->GetAbility(0))
+			{
+				_abilityTime = _abilitySlot.lock()->GetAbility(0)->GetAbilityData().AbilityCoolTime;
+			}
+
+			if (_abilitySlot.lock()->GetAbility(1))
+			{
+				_abilityTime2 = _abilitySlot.lock()->GetAbility(1)->GetAbilityData().AbilityCoolTime;
+			}
+		}
 		_targetList = _controller.lock()->GetTargetList();
 		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
 		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
@@ -250,31 +258,38 @@ void RagnarosBattle::Update()
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		bool& tempisAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
-
 		//Target update
-		if (_targetList.lock()->size() <= 0 || tempisAlive == false)
+		if (_targetList.lock()->size() <= 0)
 		{
 			Out(L"RagnarosStand");
 		}
 		else
 		{
-			float minAggro = -1.f;
-
-			shared_ptr<Transform> _lastTarget = nullptr;
-			for (auto& target : *_targetList.lock())
+			if (_targetList.lock()->size() > 0)
 			{
-				if (target->AggroValue > minAggro)
+				float minAggro = 0.f;
+				shared_ptr<Transform> _lastTarget;
+				for (auto& target : *_targetList.lock())
 				{
-					minAggro = target->AggroValue;
-					_lastTarget = target->Target->GetTransform();
-				}
-			}
+					if (target->Target == _targetTransform.lock()->GetGameObject())
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+						continue;
+					}
 
-			if (_lastTarget != nullptr)
-			{
-				_targetTransform = _lastTarget;
-				_controller.lock()->SetTargetTransform(_targetTransform.lock());
+					if (target->AggroValue > minAggro)
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+					}
+				}
+
+				if (_lastTarget)
+				{
+					_targetTransform = _lastTarget;
+					_controller.lock()->SetTargetTransform(_targetTransform.lock());
+				}
 			}
 		}
 
@@ -322,11 +337,17 @@ void RagnarosBattle::Update()
 			//Ability Transition
 			{
 				_abilityTimer += _dt;
+				_abilityTimer2 += _dt;
 
-				if (_abilityTimer > _abilityTime)
+				//if (_abilityTimer > _abilityTime)
+				//{
+				//	_abilityTimer = 0.f;
+				//	Out(L"RagnarosAbility1");
+				//}
+				if (_abilityTimer2 > _abilityTime2)
 				{
-					_abilityTimer = 0.f;
-					Out(L"RagnarosAbility");
+					_abilityTimer2 = 0.f;
+					Out(L"RagnarosAbility2");
 				}
 			}
 
@@ -338,17 +359,11 @@ void RagnarosBattle::Update()
 				_attackTimeCal += _dt;
 
 				//Attack Transition
+				if (_attackTimeCal >= _attackTime)
 				{
-					if (_attackTimeCal >= _attackTime)
-					{
-						_attackTimeCal = 0.f;
-						Out(L"RagnarosAttack");
-					}
+					_attackTimeCal = 0.f;
+					Out(L"RagnarosAttack");
 				}
-			}
-			else if (distance > _attackRange && distance > _traceRadius)
-			{
-				Out(L"RagnarosStand");
 			}
 		}
 		else
@@ -369,6 +384,42 @@ void RagnarosBattle::Out(const wstring& nextTransition)
 RagnarosAttack::RagnarosAttack()
 {
 	_name = L"RagnarosAttack";
+
+	//Attack1 Sound
+	auto tempSound1 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Ragnaros_Attack1");
+	if (tempSound1 == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/Ragnaros/Ragnaros_Attack1.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Ragnaros_Attack1", sound);
+
+		_attack1Sound = sound->Clone();
+	}
+	else
+	{
+		_attack1Sound = tempSound1->Clone();
+	}
+
+	//Attack2 Sound
+	auto tmepSound2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Ragnaros_Attack2");
+	if (tmepSound2 == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/Ragnaros/Ragnaros_Attack2.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Ragnaros_Attack2", sound);
+
+		_attack2Sound = sound->Clone();
+	}
+	else
+	{
+		_attack2Sound = tmepSound2->Clone();
+	}
 }
 
 RagnarosAttack::~RagnarosAttack()
@@ -377,35 +428,353 @@ RagnarosAttack::~RagnarosAttack()
 
 void RagnarosAttack::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
+	if (controller != nullptr)
+	{
+		::srand(time(NULL));
+
+		_controller = controller;
+		_prevTransition = prevTransition;
+
+		if (_controller.lock()->GetTransform() != nullptr)
+			_transform = _controller.lock()->GetTransform();
+
+		if (_controller.lock()->GetTargetTransform() != nullptr)
+			_targetTransform = _controller.lock()->GetTargetTransform();
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_characterInfo = _controller.lock()->GetCharacterInfo();
+			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
+			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
+
+			auto targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
+
+			if (targetCon != nullptr)
+			{
+				float attackDamage = _characterInfo.lock()->GetCharacterInfo()._atk;
+				targetCon->TakeDamage(_transform.lock()->GetGameObject(), attackDamage);
+			}
+
+			_randAttack = rand() % 2;
+
+			if (_randAttack == 0)
+			{
+				_animator.lock()->SetFrameEnd(false);
+				_animator.lock()->SetNextAnimation(L"Attack1");
+				_attack1Sound->Play(false);
+			}
+			else
+			{
+				_animator.lock()->SetFrameEnd(false);
+				_animator.lock()->SetNextAnimation(L"Attack2");
+				_attack2Sound->Play(false);
+			}
+		}
+	}
 }
 
 void RagnarosAttack::Update()
 {
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			Out(L"RagnarosBattle");
+		}
+
+		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		{
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
+			{
+				if (toTargetDir.Length() > 0)
+				{
+					toTargetDir.Normalize(toTargetDir);
+					{
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						myForward.Normalize();
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
+					}
+				}
+			}
+		}
+	}
 }
 
 void RagnarosAttack::Out(const wstring& nextTransition)
 {
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+	}
 }
 
-RagnarosAbility::RagnarosAbility()
+RagnarosAbility1::RagnarosAbility1()
 {
-	_name = L"RagnarosAbility";
+	_name = L"RagnarosAbility1";
+
+	//Ability Sound
+	auto tmepSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"Ragnaros_Ability1");
+	if (tmepSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/Ragnaros/Ragnaros_Ability1.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Ragnaros_Ability1", sound);
+
+		_abiltySound = sound->Clone();
+	}
+	else
+	{
+		_abiltySound = tmepSound->Clone();
+	}
 }
 
-RagnarosAbility::~RagnarosAbility()
+RagnarosAbility1::~RagnarosAbility1()
 {
 }
 
-void RagnarosAbility::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
+void RagnarosAbility1::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
+{
+	if (controller != nullptr)
+	{
+		::srand(time(NULL));
+
+		_controller = controller;
+		_prevTransition = prevTransition;
+
+		if (_controller.lock()->GetTransform() != nullptr)
+			_transform = _controller.lock()->GetTransform();
+
+		if (_controller.lock()->GetTargetTransform() != nullptr)
+			_targetTransform = _controller.lock()->GetTargetTransform();
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_animator.lock()->SetFrameEnd(false);
+			_animator.lock()->SetNextAnimation(L"Ability");
+		}
+		_characterInfo = _controller.lock()->GetCharacterInfo();
+		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
+		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
+		_abilitySlot = _controller.lock()->GetGameObject()->GetComponent<AbilitySlot>();
+		_abiltySound->Play(false);
+	}
+}
+
+void RagnarosAbility1::Update()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			_abilitySlot.lock()->ExecuteAbility(0, _targetTransform.lock()->GetGameObject());
+			Out(L"RagnarosBattle");
+		}
+
+		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		{
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
+			{
+				if (toTargetDir.Length() > 0)
+				{
+					toTargetDir.Normalize(toTargetDir);
+					{
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						myForward.Normalize();
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
+					}
+				}
+			}
+		}
+	}
+}
+
+void RagnarosAbility1::Out(const wstring& nextTransition)
+{
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+	}
+}
+
+RagnarosAbility2::RagnarosAbility2()
+{
+	_name = L"RagnarosAbility2";
+
+	//Ability Sound
+	auto tmepSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"Ragnaros_Ability2");
+	if (tmepSound == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/Ragnaros/Ragnaros_Ability2.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Ragnaros_Ability2", sound);
+
+		_abiltySound = sound->Clone();
+	}
+	else
+	{
+		_abiltySound = tmepSound->Clone();
+	}
+}
+
+RagnarosAbility2::~RagnarosAbility2()
 {
 }
 
-void RagnarosAbility::Update()
+void RagnarosAbility2::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
+	if (controller != nullptr)
+	{
+		::srand(time(NULL));
+
+		_controller = controller;
+		_prevTransition = prevTransition;
+
+		if (_controller.lock()->GetTransform() != nullptr)
+			_transform = _controller.lock()->GetTransform();
+
+		if (_controller.lock()->GetTargetTransform() != nullptr)
+			_targetTransform = _controller.lock()->GetTargetTransform();
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_animator.lock()->SetFrameEnd(false);
+			_animator.lock()->SetNextAnimation(L"Ability");
+		}
+		_characterInfo = _controller.lock()->GetCharacterInfo();
+		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
+		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
+		_abilitySlot = _controller.lock()->GetGameObject()->GetComponent<AbilitySlot>();
+		_abiltySound->Play(false);
+	}
 }
 
-void RagnarosAbility::Out(const wstring& nextTransition)
+void RagnarosAbility2::Update()
 {
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			_abilitySlot.lock()->ExecuteAbility(1, _targetTransform.lock()->GetGameObject());
+			Out(L"RagnarosBattle");
+		}
+
+		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		{
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
+			{
+				if (toTargetDir.Length() > 0)
+				{
+					toTargetDir.Normalize(toTargetDir);
+					{
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						myForward.Normalize();
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
+					}
+				}
+			}
+		}
+	}
+}
+
+void RagnarosAbility2::Out(const wstring& nextTransition)
+{
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+	}
 }
 
 RagnarosEncounterEvent1::RagnarosEncounterEvent1()
@@ -419,13 +788,166 @@ RagnarosEncounterEvent1::~RagnarosEncounterEvent1()
 
 void RagnarosEncounterEvent1::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
 {
+	if (controller != nullptr)
+	{
+		_controller = controller;
+		_prevTransition = prevTransition;
+
+		if (_controller.lock()->GetTransform() != nullptr)
+			_transform = _controller.lock()->GetTransform();
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_animator.lock()->SetFrameEnd(false);
+			_animator.lock()->SetNextAnimation(L"Submerged");
+		}
+
+		_targetList = _controller.lock()->GetTargetList();
+	}
 }
 
 void RagnarosEncounterEvent1::Update()
 {
+	if (_controller.lock() != nullptr)
+	{
+		if (_targetList.lock()->size() > 0)
+		{
+			//Taget 후보 결정
+			map<float, shared_ptr<TargetDesc>> ToTargetList;
+
+			for (const auto& target : *_targetList.lock())
+			{
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = target->Target->GetTransform()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				bool& isAlive = target->Target->GetComponent<CharacterController>()->_isAlive;
+				float Length = Vec3::Distance(myPos, targetPos);
+
+				//자신의 위치와 타겟 위치가 추적거리 안에 존재 할 경우 탐색
+				if (Length <= _encounterDistance && isAlive)
+				{
+					ToTargetList.insert(make_pair(Length, target));
+				}
+			}
+
+			if (ToTargetList.size() > 0)
+			{
+				float minDistance = ToTargetList.begin()->first;
+				shared_ptr<GameObject> FinalTarget;
+				FinalTarget = ToTargetList.begin()->second->Target;
+
+				if (FinalTarget != nullptr)
+				{
+					_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+					Out(L"RagnarosEncounterEvent2");
+				}
+			}
+		}
+	}
 }
 
 void RagnarosEncounterEvent1::Out(const wstring& nextTransition)
 {
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+	}
 }
 
+RagnarosEncounterEvent2::RagnarosEncounterEvent2()
+{
+	_name = L"RagnarosEncounterEvent2";
+
+	//Event Sound
+	auto tempSound1 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Ragnaros_Event");
+	if (tempSound1 == nullptr)
+	{
+		shared_ptr<Sounds> sound = make_shared<Sounds>();
+		wstring soundPath = RESOURCES_ADDR_SOUND;
+		soundPath += L"Character/Enemy/Ragnaros/Ragnaros_Event.mp3";
+		sound->Load(soundPath);
+		sound->SetVolume(50);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"Ragnaros_Event", sound);
+
+		_eventSound = sound->Clone();
+	}
+	else
+	{
+		_eventSound = tempSound1->Clone();
+	}
+}
+
+RagnarosEncounterEvent2::~RagnarosEncounterEvent2()
+{
+}
+
+void RagnarosEncounterEvent2::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
+{
+	if (controller != nullptr)
+	{
+		_controller = controller;
+		_prevTransition = prevTransition;
+
+		if (_controller.lock()->GetTransform() != nullptr)
+			_transform = _controller.lock()->GetTransform();
+
+		if (_controller.lock()->GetAnimator() != nullptr)
+			_animator = _controller.lock()->GetAnimator();
+
+		if (_animator.lock() != nullptr)
+		{
+			_animator.lock()->SetFrameEnd(false);
+			_animator.lock()->SetNextAnimation(L"Birth");
+		}
+
+		_eventSound->Play(false);
+	}
+}
+
+void RagnarosEncounterEvent2::Update()
+{
+	if (_controller.lock() != nullptr)
+	{
+		if (_animator.lock()->GetFrameEnd())
+		{
+			Out(L"RagnarosBattle");
+		}
+	}
+}
+
+void RagnarosEncounterEvent2::Out(const wstring& nextTransition)
+{
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+	}
+}
+
+RagnarosAllDeadEvent::RagnarosAllDeadEvent()
+{
+	_name = L"RagnarosAllDeadEvent";
+
+}
+
+RagnarosAllDeadEvent::~RagnarosAllDeadEvent()
+{
+}
+
+void RagnarosAllDeadEvent::Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition)
+{
+}
+
+void RagnarosAllDeadEvent::Update()
+{
+}
+
+void RagnarosAllDeadEvent::Out(const wstring& nextTransition)
+{
+	if (_controller.lock() != nullptr)
+	{
+		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+	}
+}
