@@ -32,7 +32,6 @@ public:
 	map<uint32, PACKET_Mob_INFO>& GetMobInfoList() { return _mobInfoList; }
 	void UpdateMobInfo(PACKET_Mob_INFO info);
 	void ClearMobInfoList() { _mobInfoList.clear(); }
-	void EnemyIsAttack(PACKET_Player_INFO& target, PACKET_Mob_INFO& enemy);
 	void CheckAndResetMonster();
 
 	void MonsterBattleCalculate(float damage, uint32 tgtId);
@@ -44,6 +43,7 @@ private:
 	Set<GameSessionRef> _sessions;
 private:
 	uint64 sessionIdCount = 0;
+	bool hostExist = false;
 private:
 	map<uint32, PACKET_Mob_INFO> _mobInfoList;
 	map<uint32, PACKET_Player_INFO> _userInfoList;

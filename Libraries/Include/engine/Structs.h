@@ -168,6 +168,7 @@ struct ShadowViewDesc {
 struct CHARACTER_INFO
 {
 	std::wstring _name;
+	std::wstring _strategyName;
 	uint32 _instanceId = 0;
 	MapType _spawnMapType = MapType::Lobby;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 	uint32 _maxHp = 0;
@@ -212,9 +213,7 @@ struct Player_INFO : public CHARACTER_INFO
 
 struct MONSTER_INFO : public CHARACTER_INFO
 {
-	uint32 _monsterId = 0;
-	Vec3 _targetPos = { 0.f, 0.f, 0.f };
-	bool _isMove = false;
+	MonsterType _monsterType = MonsterType::None;
 	EnemyUnitState _animState = EnemyUnitState::Stand;
 };
 

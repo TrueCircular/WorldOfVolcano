@@ -33,9 +33,12 @@ public:
 	//몬스터
 	void SpawnMonster(uint64 uid, MONSTER_INFO mobInfo);
 	void SpawnMonsters();
+	//호스트 스폰
+	map<uint64, shared_ptr<GameObject>> GetMobList() { return _monsters; }
 	int GetOtherPlayersSize() { return _otherPlayers.size(); }
 	void Reset();
 private:
+	map<uint64, std::wstring> _preStrategyName;
 	MapType _spawnMapType = MapType::None;
 	shared_ptr<AIController> _aiCon;
 	map<uint64, shared_ptr<GameObject>> _otherPlayers;

@@ -32,10 +32,8 @@ void Demo::Init() {
 		);
 	}
 
-	//���ҽ� �Ŵ��� �ʱ�ȭ
 	MANAGER_RESOURCES()->Init();
 
-	//���� �Ŵ��� �ʱ�ȭ
 	MANAGER_SOUND()->Init();
 
 	MANATER_PARTICLE()->Init();

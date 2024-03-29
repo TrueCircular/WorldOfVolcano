@@ -53,7 +53,7 @@ void AIController::InitState()
 		*_currentPlayerState = PlayerUnitState::Stand;
 
 		_currentPlayerAnimState = _playerAnimStateList[0];
-		_currentPlayerAnimState->Enter(shared_from_this());
+		_currentPlayerAnimState->Enter(shared_from_this()); 
 	}break;
 	case AIType::EnemyUnit:
 	{
@@ -118,27 +118,26 @@ void AIController::UpdateTargetList()
 			_targetList->insert(temp);
 		}
 	}
-	else if(_targetList->size() > 0)
+	else if (_targetList->size() > 0)
 	{
-		bool find = false;
 		for (auto& unit : tempList)
 		{
+			bool found = false;
 			for (auto& target : *_targetList)
 			{
 				if (unit.get() == target->Target.get())
 				{
-					find = true;
+					found = true;
 					break;
 				}
 			}
 
-			if (find == false)
+			if (found == false)
 			{
 				shared_ptr<TargetDesc> temp = make_shared<TargetDesc>();
 				temp->AggroValue = 0.f;
 				temp->Target = unit;
-				_targetList->insert(temp);
-			}
+				_targetList->insert(temp);	}
 		}
 	}
 }
@@ -313,7 +312,15 @@ void AIController::Update()
 	break;
 	case AIType::EnemyUnit:
 	{
-		_unitFsm->Update();
+		if (_isAiHost)
+		{
+			_unitFsm->Update();
+		}
+		else
+		{
+			_unitFsm->UpdateFromServer();
+		}
+		
 	}
 	break;
 	}

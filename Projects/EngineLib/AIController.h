@@ -45,6 +45,7 @@ private:
 	shared_ptr<PlayerUnitState>			_currentPlayerState;
 	shared_ptr<PlayerAnimState>			_currentPlayerAnimState;
 	vector<shared_ptr<PlayerAnimState>> _playerAnimStateList;
+	bool _isAiHost = false;
 private:
 	void InitState();
 public:
@@ -58,6 +59,7 @@ public:
 	//Animation Controll
 	bool SetAnimState(const PlayerAnimType& type);
 	void SetUnitState(const PlayerUnitState& state) { *_currentPlayerState = state; }
+	void SetIsAiHost(bool isAiHost) { _isAiHost = isAiHost; }
 public:
 	//Getter
 	//State Controll

@@ -5,6 +5,9 @@
 #include "engine/PlayerSoundController.h"
 #include "engine\EquipmentSlot.h"
 #include "engine/StrategyFactory.h"
+#include "engine/AbilitySlot.h"
+#include "engine/UnitFSM.h"
+#include "engine/UnitStrategy.h"
 
 using namespace std::chrono;
 
@@ -124,11 +127,6 @@ void Spawner::SpawnOtherPlayers()
 			if (pair.second._isOnline == false)
 			{
 				//접속중이 아니라면 다른플레이어 목록에서 삭제
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(0);
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(1);
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(2);
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(3);
-				it->second->GetComponent<EquipmentSlot>()->UnEquipmentItem(4);
 				MANAGER_SCENE()->GetCurrentScene()->Remove(it->second);
 				_otherPlayers.erase(it);
 				ClientPacketHandler::Instance().EraseOtherUserInfoMap(pair.first);
@@ -175,23 +173,22 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 	shared_ptr<Shader> _shader = MANAGER_RESOURCES()->GetResource<Shader>(L"Default");
 
 	// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon
-	shared_ptr<EnemyUnit> _chr;
-	switch (mobInfo._monsterId)
+	auto _chr = make_shared<EnemyUnit>();;
+	switch (mobInfo._monsterType)
 	{
-	case 0:
+	case MonsterType::CoreHound:
 		_chr = make_shared<CoreHound>();
 		break;
-	case 1:
+	case MonsterType::MoltenGiant:
 		_chr = make_shared<MoltenGiant>();
 		break;
-	case 2:
+	case MonsterType::BaronGeddon:
 		_chr = make_shared<BaronGeddon>();
 		break;
-	case 3:
+	case MonsterType::Ragnaros:
 		_chr = make_shared<Ragnaros>();
 		break;
 	default:
-		_chr = make_shared<CoreHound>();
 		break;
 	}
 
@@ -199,25 +196,27 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 	{
 		_chr->Awake();
 		_chr->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+		_chr->GetComponent<AIController>()->SetIsAiHost(ClientPacketHandler::Instance().GetIsMapHost());
 
-		switch (mobInfo._monsterId)
+		switch (mobInfo._monsterType)
 		{
-		case 0:
+		case MonsterType::CoreHound:
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<CoreHound>());
 			break;
-		case 1:
+		case MonsterType::MoltenGiant:
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<MoltenGiant>());
 			break;
-		case 2:
+		case MonsterType::BaronGeddon:
+			_chr->GetComponent<AbilitySlot>()->SetController(_chr->GetComponent<AIController>());
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
 			break;
-		case 3:
+		case MonsterType::Ragnaros:
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
 			break;
 		default:
 			break;
 		}
-
+		
 		_chr->SetSpwanPosition(mobInfo._pos);
 		_chr->GetComponent<CharacterInfo>()->SetCharacterInfo(mobInfo);
 		_chr->Start();
@@ -255,7 +254,6 @@ void Spawner::SpawnMonsters()
 				it->second->GetComponent<AIController>()->notifyEnemyDeath();
 				//it->second->GetComponent<AIController>()->SetUnitState(PlayerUnitState::Death); <- 동작수정
 				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
-				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
 				if (it->second->GetComponent<CharacterInfo>()->GetCharacterInfo()._name == L"BaronGeddon")
 				{
 					MANAGER_IMGUI()->NotifyGeddonDeath();
@@ -265,36 +263,80 @@ void Spawner::SpawnMonsters()
 			}
 			else
 			{
-				it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
-				/// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
-				/*auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
-				auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
-				double alpha = fmin(1.0, durationSec / 1.0);
-
-				Vec3 pos = it->second->GetTransform()->GetPosition();
-				Vec3 rot = it->second->GetTransform()->GetLocalRotation();
-
-				Vec3 target = pair.second._targetPos;
-				Vec3 direction = target - pos;
-
-				float distance = IsPlayerInRanger(target, pos);
-
-				if (pair.second._animState == EnemyUnitState::Run)
+				if (ClientPacketHandler::Instance().GetIsMapHost())
 				{
-					pos += interpolate(alpha, direction, Vec3(0.0f, 0.0f, 0.0f)) * MANAGER_TIME()->GetDeltaTime();
+					for (auto mob : _monsters)
+					{
+						CHARACTER_INFO chrInfo = mob.second->GetComponent<CharacterInfo>()->GetCharacterInfo();
+						auto unitFsm = mob.second->GetComponent<AIController>()->GetUnitFsm();
+						if (unitFsm)
+						{
+							auto strategy = unitFsm->GetStrategy();
+							if (strategy)
+							{
+								weak_ptr<Transform> transform = strategy->GetWeakTransform();
+								if (auto sharedTransform = transform.lock())
+								{
+									chrInfo._pos = transform.lock()->GetLocalPosition();
+									chrInfo._Rotate = transform.lock()->GetLocalRotation();
+									mob.second->GetComponent<CharacterInfo>()->SetCharacterInfo(chrInfo);
+								}
+								
+							}
+						};
+					}
 				}
+				else
+				{
+					it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
+					it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->UpdateInfo(pair.second);
+					CHARACTER_INFO chrInfo = it->second->GetComponent<CharacterInfo>()->GetCharacterInfo();
+					wstring stgName = ClientPacketHandler::Instance().GetStrategyName(chrInfo._instanceId);
+			
+					auto preStg = _preStrategyName.find(chrInfo._instanceId);
+					if (preStg != _preStrategyName.end())
+					{
+						it->second->GetComponent<AIController>()->SetCurrentFsmStrategy(preStg->second, stgName);
+						preStg->second = stgName;
+					}
+					else
+					{
+						_preStrategyName.insert(make_pair(chrInfo._instanceId, stgName));
+					}
+				}
+				
+				///// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
+				//if (ClientPacketHandler::Instance().GetIsMapHost() == false)
+				//{
+				//	auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
+				//	auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
+				//	double alpha = fmin(1.0, durationSec / 1.0);
 
-				//회전 보간 계산
-				Vec3 targetRot = pair.second._Rotate;
-				Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
-				Quaternion endRotation = Quaternion::CreateFromYawPitchRoll(targetRot.y, 0.0f, 0.0f);
-				Quaternion calcRot = Quaternion::Slerp(startRotation, endRotation, alpha);
-				rot.y = QuatToEulerAngleY(calcRot);
+				//	Vec3 pos = it->second->GetTransform()->GetPosition();
+				//	Vec3 rot = it->second->GetTransform()->GetLocalRotation();
 
-				it->second->GetTransform()->SetPosition(pos);
-				it->second->GetTransform()->SetLocalRotation(targetRot);
-				//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState); <- 동작수정
-				it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);*/
+				//	Vec3 target = pair.second._pos;
+				//	Vec3 direction = target - pos;
+
+				//	float distance = IsPlayerInRanger(target, pos);
+
+				//	if (pair.second._animState == EnemyUnitState::Run)
+				//	{
+				//		pos += interpolate(alpha, direction, Vec3(0.0f, 0.0f, 0.0f)) * MANAGER_TIME()->GetDeltaTime();
+				//	}
+
+				//	//회전 보간 계산
+				//	Vec3 targetRot = pair.second._Rotate;
+				//	Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
+				//	Quaternion endRotation = Quaternion::CreateFromYawPitchRoll(targetRot.y, 0.0f, 0.0f);
+				//	Quaternion calcRot = Quaternion::Slerp(startRotation, endRotation, alpha);
+				//	rot.y = QuatToEulerAngleY(calcRot);
+
+				//	it->second->GetTransform()->SetPosition(pos);
+				//	it->second->GetTransform()->SetLocalRotation(targetRot);
+				//	//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState); <- 동작수정
+				//	it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
+				//}
 			}
 		}
 		else

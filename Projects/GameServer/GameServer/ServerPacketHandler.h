@@ -10,6 +10,7 @@ enum
 	PACKET_MONSTER_INFO = 3,
 	PACKET_MESSAGE = 4,
 	PACKET_BATTLE = 5,
+	PACKET_HOST = 6,
 	PACKET_DISCONNECT = 99,
 };
 
@@ -69,6 +70,15 @@ enum class SkillType
 	Test_AllAttack,
 };
 
+enum class MonsterType
+{
+	None,
+	CoreHound,
+	MoltenGiant,
+	BaronGeddon,
+	Ragnaros
+};
+
 struct JumpFlag
 {
 	bool isJumpUP = false;
@@ -80,6 +90,7 @@ struct JumpFlag
 struct PACKET_CHARACTER_INFO
 {
 	//wstring _name;
+	//std::wstring _strategyName;
 	uint32 _instanceId = 0;
 	MapType _spawnMapType = MapType::Lobby;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
 	uint32 _maxHp = 1000;
@@ -116,9 +127,7 @@ struct PACKET_Player_INFO : public PACKET_CHARACTER_INFO
 
 struct PACKET_Mob_INFO : public PACKET_CHARACTER_INFO
 {
-	uint32 _monsterId = 0;
-	Vec3 _targetPos = { 0.f, 0.f, 0.f };
-	bool _isMove = false;
+	MonsterType _monsterType = MonsterType::None;
 	EnemyUnitState _animState = EnemyUnitState::Stand;
 };
 
@@ -132,8 +141,11 @@ public:
 	static void Handle_BATTLE(BYTE* buffer, int32 len);
 
 	static SendBufferRef Make_USER_CONNECT();
-	static SendBufferRef Make_USER_INFO(PACKET_Player_INFO userInfo, wstring name, bool otherPacket);
+	static SendBufferRef Make_USER_INFO(PACKET_Player_INFO userInfo, wstring name, bool otherPacket, bool isMapHost);
 	static SendBufferRef Make_MONSTER_INFO(map<uint32, PACKET_Mob_INFO> mobInfo);
 	static SendBufferRef Make_USER_DISCONNECT(uint64 uid);
 	static SendBufferRef Make_MESSAGE(MESSAGE message);
+	static SendBufferRef Make_HOST(bool isMapHost);
+private:
+	static map<uint64, std::wstring> _strategyName;
 };

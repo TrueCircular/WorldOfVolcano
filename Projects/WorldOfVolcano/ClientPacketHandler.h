@@ -10,6 +10,7 @@ enum
 	PACKET_MONSTER_INFO = 3,
 	PACKET_MESSAGE = 4,
 	PACKET_BATTLE = 5,
+	PACKET_HOST = 6,
 	PACKET_DISCONNECT = 99,
 };
 
@@ -46,9 +47,7 @@ struct PACKET_Player_INFO : public PACKET_CHARACTER_INFO
 
 struct PACKET_Mob_INFO : public PACKET_CHARACTER_INFO
 {
-	uint32 _monsterId = 0;
-	Vec3 _targetPos = { 0.f, 0.f, 0.f };
-	bool _isMove = false;
+	MonsterType _monsterType = MonsterType::None;
 	EnemyUnitState _animState = EnemyUnitState::Stand;
 };
 
@@ -64,16 +63,23 @@ public:
 	void Handle_USER_INFO(BYTE* buffer, int32 len);
 	void Handle_MONSTER_INFO(BYTE* buffer, int32 len);
 	void Handle_MESSAGE(BYTE* buffer, int32 len);
+	void Handle_HOST(BYTE* buffer, int32 len);
 	void Handle_USER_DISCONNECT(BYTE* buffer, int32 len);
 
 	SendBufferRef Make_USER_INFO(Player_INFO userInfo, wstring name);
-	SendBufferRef Make_MONSTER_INFO(MONSTER_INFO info, wstring name);
+	SendBufferRef Make_MONSTER_INFO(MONSTER_INFO info, wstring strategyName);
 	SendBufferRef Make_MESSAGE(MESSAGE message);
 	SendBufferRef Make_BATTLE(float damage, uint32 targerId);
 
-
+	void GenerateMobList();
+	bool GetIsMapHost() { return _isMapHost; }
 	Player_INFO GetUserInfo() { return _userInfo; }
 	map<uint64, MONSTER_INFO> GetMobInfoList() { return _mobInfoList; }
+	MONSTER_INFO GetMobInfo(uint64 uid);
+	wstring GetStrategyName(uint64 id);
+	MONSTER_INFO CopyChraracterToMobInfo(CHARACTER_INFO chrInfo, MONSTER_INFO mobInfo);
+	void AddMobInfoList(uint64 uid, MONSTER_INFO mobInfo) { _mobInfoList.insert(make_pair(uid, mobInfo)); }
+	void UpdateMobInfo(uint64 uid, MONSTER_INFO mobInfo);
 	map<uint64, Player_INFO> GetOtherUserInfoMap()
 	{
 		std::lock_guard<std::mutex> lock(_mutex);
@@ -102,6 +108,8 @@ private:
 	ClientPacketHandler() = default;
 	~ClientPacketHandler() = default;
 
+	bool _isMapHost = false;
+	map<uint64, std::wstring> _strategyName;
 	Player_INFO _userInfo;
 	map<uint64, Player_INFO> otherUserInfoMap;
 	std::mutex _mutex;

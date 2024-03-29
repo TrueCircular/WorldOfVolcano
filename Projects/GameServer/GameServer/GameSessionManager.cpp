@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "GameSessionManager.h"
-#include "ObjectExporter.h"
 
 GameSessionManager GSessionManager;
 bool isUpdate = true;
@@ -14,7 +13,7 @@ void GameSessionManager::Add(GameSessionRef session)
 	userInfo._pos = { 0.f, 0.f, 0.f };
 	userInfo._isOnline = true;
 	_userInfoList.insert(make_pair(sessionIdCount, userInfo));
-	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, L"noname", false);
+	SendBufferRef sendBuffer = ServerPacketHandler::Make_USER_INFO(userInfo, L"Warrior", false, false);
 	session->Send(sendBuffer);
 	session->SetSessionId(sessionIdCount++);
 	_sessions.insert(session);
@@ -54,9 +53,9 @@ void GameSessionManager::UpdateUserInfo(PACKET_Player_INFO info)
 
 void GameSessionManager::GenerateMobList()
 {
-	ObjectExporter exporter;
-	exporter.OpenFile(L"MobDungeon.dat");
-	for (int id = 0; id < exporter.enemyListforServer.size(); ++id)
+	//ObjectExporter exporter;
+	//exporter.OpenFile(L"MobDungeon.dat");
+	/*for (int id = 0; id < exporter.enemyListforServer.size(); ++id)
 	{
 		PACKET_Mob_INFO mobInfo;
 
@@ -69,52 +68,19 @@ void GameSessionManager::GenerateMobList()
 		// monsterId : 0. CoreHound    1. MoltenGiant    2. BaronGeddon
 		if (name == L"CoreHound")
 		{
-			mobInfo._monsterId = 0;
-			mobInfo._hp = 12000;
-			mobInfo._maxHp = mobInfo._hp;
-			mobInfo._mp = 500;
-			mobInfo._maxMp = mobInfo._mp;
-			mobInfo._atk = 1200;
-			mobInfo._def = 250;
-			mobInfo._moveSpeed = 35;
-			mobInfo._aggroLevel = 0;
-			mobInfo._attackRange = 40;
-			mobInfo._attackTime = 1.5;
-			mobInfo._traceRadius = 80;
+			mobInfo._monsterType = MonsterType::CoreHound;
 		}
 		if (name == L"MoltenGiant")
 		{
-			mobInfo._monsterId = 1;
-			mobInfo._hp = 18000;
-			mobInfo._maxHp = mobInfo._hp;
-			mobInfo._mp = 800;
-			mobInfo._maxMp = mobInfo._mp;
-			mobInfo._atk = 1500;
-			mobInfo._def = 250;
-			mobInfo._moveSpeed = 30;
-			mobInfo._aggroLevel = 0;
-			mobInfo._attackRange = 40;
-			mobInfo._attackTime = 2.0;
-			mobInfo._traceRadius = 100;
+			mobInfo._monsterType = MonsterType::MoltenGiant;
 		}
 		if (name == L"BaronGeddon")
 		{
-			mobInfo._monsterId = 2;
-			mobInfo._hp = 50000;
-			mobInfo._maxHp = mobInfo._hp;
-			mobInfo._mp = 1000;
-			mobInfo._maxMp = mobInfo._mp;
-			mobInfo._atk = 2000;
-			mobInfo._def = 400;
-			mobInfo._moveSpeed = 35;
-			mobInfo._aggroLevel = 0;
-			mobInfo._attackRange = 40;
-			mobInfo._attackTime = 1.5;
-			mobInfo._traceRadius = 150;
+			mobInfo._monsterType = MonsterType::BaronGeddon;
 		}
 
 		_mobInfoList.insert(make_pair(id, mobInfo));
-	}
+	}*/
 }
 
 void GameSessionManager::UpdateMobInfo(PACKET_Mob_INFO info)
@@ -124,54 +90,44 @@ void GameSessionManager::UpdateMobInfo(PACKET_Mob_INFO info)
 	{
 		it->second = info;
 	}
-}
-
-void GameSessionManager::EnemyIsAttack(PACKET_Player_INFO& target, PACKET_Mob_INFO& enemy)
-{
-	WRITE_LOCK
-		if (attackTimer > attackTime)
-		{
-			if (enemy._atk >= target._hp) //¸·Å¸
-			{
-				target._hp = 0;
-				target._isAlive = false;
-			}
-			else
-			{
-				target._hp -= enemy._atk;
-			}
-
-			for (const auto& session : GSessionManager.GetSessionsRef()) {
-				if (session->GetSessionId() == target._uid)
-				{
-					cout << "attack for " << target._uid << endl;
-					SendBufferRef sendbuffer = ServerPacketHandler::Make_USER_INFO(target, L"noname", false);
-					session->Send(sendbuffer);
-					break;
-				}
-			}
-
-			attackTimer = 0.0f;
-		}
-		else
-		{
-			attackTimer += TIMER().getDeltaTime();
-		}
+	else
+	{
+		_mobInfoList.insert(make_pair(info._instanceId, info));
+	}
 }
 
 void GameSessionManager::CheckAndResetMonster()
 {
+	if (hostExist == true)
+	{
+		return;
+	}
+
 	bool isDungeon = false;
 	for (const auto& user : _userInfoList) {
 		if (user.second._spawnMapType == MapType::Dungeon)
 		{
 			isDungeon = true;
+			
+			for (GameSessionRef session : _sessions)
+			{
+				uint64 sessionId = session->GetSessionId();
+				if (user.first == sessionId)
+				{
+					SendBufferRef sendBuffer = ServerPacketHandler::Make_HOST(true);
+					session->Send(sendBuffer);
+					hostExist = true;
+					break;
+				}
+			}
+			break;
 		}
 	}
 
 	if (_userInfoList.empty() == false &&
 		isDungeon == false)
 	{
+		hostExist = false;
 		GSessionManager.ClearMobInfoList();
 		GSessionManager.GenerateMobList();
 	}

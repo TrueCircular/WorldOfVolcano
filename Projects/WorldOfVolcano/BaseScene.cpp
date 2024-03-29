@@ -222,6 +222,13 @@ void BaseScene::Update()
 
 	{
 		sendInfo = ClientPacketHandler::Instance().GetUserInfo();
+
+		CHARACTER_INFO chrInfo = _warrior->GetComponent<CharacterInfo>()->GetCharacterInfo();
+		sendInfo._hp = chrInfo._hp;
+		sendInfo._mp = chrInfo._mp;
+		sendInfo._atk = chrInfo._atk;
+		sendInfo._def = chrInfo._def;
+
 		sendInfo._pos = _warrior->GetTransform()->GetPosition();
 		sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
 		sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
@@ -265,6 +272,7 @@ void BaseScene::Update()
 		message._messageBox[sizeof(message._messageBox) - 1] = '\0'; // Null 문자 추가
 		_sendBuffer = ClientPacketHandler::Instance().Make_MESSAGE(message);
 		_service->Broadcast(_sendBuffer);
+		MANAGER_IMGUI()->GetLatestMessages().clear();
 	}
 	latestMessageSize = MANAGER_IMGUI()->GetLatestMessages().size();
 
