@@ -83,9 +83,6 @@
     <ClCompile Include="Spawner.cpp">
       <Filter>Scripts\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="TestAbilityScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="BossScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -149,9 +146,6 @@
     </ClInclude>
     <ClInclude Include="Spawner.h">
       <Filter>Scripts\GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="TestAbilityScene.h">
-      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="BossScene.h">
       <Filter>Scene</Filter>

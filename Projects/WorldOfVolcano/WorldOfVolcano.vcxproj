@@ -178,7 +178,6 @@
     <ClInclude Include="SpawnManager.h" />
     <ClInclude Include="StructList.h" />
     <ClInclude Include="StruectedLavaSprite.h" />
-    <ClInclude Include="TestAbilityScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseScene.cpp" />
@@ -211,7 +210,6 @@
     <ClCompile Include="SpawnManager.cpp" />
     <ClCompile Include="StructList.cpp" />
     <ClCompile Include="StruectedLavaSprite.cpp" />
-    <ClCompile Include="TestAbilityScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Resources\Shader\Global.fx" />

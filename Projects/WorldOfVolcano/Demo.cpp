@@ -6,7 +6,6 @@
 #include "BaseScene.h"
 #include "DungeonScene.h"
 #include "BossScene.h"
-#include "TestAbilityScene.h"
 
 ClientServiceRef _service;
 
