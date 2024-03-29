@@ -2,7 +2,7 @@
     <Name>FireExplosion</Name>
     <AbilityType>1</AbilityType>
     <ConsumedMp>0</ConsumedMp>
-    <AbilityCoolTime>8</AbilityCoolTime>
+    <AbilityCoolTime>10</AbilityCoolTime>
     <AbilityPow>2.5</AbilityPow>
     <AbilityRange>1000</AbilityRange>
 </AbilityInformation>
