@@ -142,7 +142,7 @@ void AWarriorCharge::Enter(const shared_ptr<GameObject>& target)
 		_ownerPicked = target;
 
 	}
-	if(target){
+	if(target&& !_isCharging){
 		auto tInfo = _ownerInfo.lock()->GetCharacterInfo();
 		float mpSomo = tInfo._mp - (float)_consumedMp;
 
@@ -200,10 +200,10 @@ void AWarriorCharge::Enter(const shared_ptr<GameObject>& target)
 		}
 
 	}
-	else
-	{
-		_ownerAbilitySlot.lock()->_selectNumber = -1;
-	}
+	//else
+	//{
+	//	_ownerAbilitySlot.lock()->_selectNumber = -1;
+	//}
 }
 
 void AWarriorCharge::Execute()

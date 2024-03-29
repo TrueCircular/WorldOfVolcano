@@ -7,7 +7,7 @@
 #include "CharacterInfo.h"
 #include "UnitFSM.h"
 #include "AbilitySlot.h"
-
+#include "Utils.h"
 PlayerController::PlayerController()
 {
 }
@@ -176,6 +176,8 @@ void PlayerController::PlayerInput()
 		PlayerAttack();
 		PlayerAbility1();
 		PlayerAbility2();
+		PlayerAbility3();
+		PlayerAbility4();
 	}
 
 	_animState->Update();
@@ -415,6 +417,20 @@ void PlayerController::PlayerAbility2()
 		_abilitySlot.lock()->ExecuteAbility(1, _pickedObj);
 	}
 }
+void PlayerController::PlayerAbility3()
+{
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::KEY_3))
+	{
+		_abilitySlot.lock()->ExecuteAbility(2, _pickedObj);
+	}
+}
+void PlayerController::PlayerAbility4()
+{
+	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::KEY_4))
+	{
+		_abilitySlot.lock()->ExecuteAbility(3, _pickedObj);
+	}
+}
 
 void PlayerController::PlayerPicking()
 {
@@ -611,7 +627,7 @@ void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float da
 			{
 				auto myInfo = _unitInfo.lock()->GetCharacterInfo();
 				float defEff = pow(myInfo._def * log(2), 0.5) * 3;
-				float calDamage = damage * (1 - defEff / 100);
+				float calDamage = (damage * (1 - defEff / 100)) * Utils::Randstep(0.8, 1.2);
 				float finalHp = myInfo._hp - calDamage;
 
 				if (finalHp < 1.f + FLT_EPSILON)

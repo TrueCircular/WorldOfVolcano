@@ -5,6 +5,7 @@
 #include "UnitFSM.h"
 #include "PlayableUnit.h"
 
+#include "Utils.h"
 void AIController::InitState()
 {
 	switch (_aiType)
@@ -166,7 +167,7 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 		{
 			auto myInfo = _characterInfo.lock()->GetCharacterInfo();
 			float defEff = pow(myInfo._def * log(2), 0.5) * 3;
-			float calDamage = damage * (1 - defEff / 100);
+			float calDamage = (damage * (1 - defEff / 100))*Utils::Randstep(0.8,1.2);
 			float finalHp = myInfo._hp - calDamage;
 
 			DamageIndiCatorBox box;

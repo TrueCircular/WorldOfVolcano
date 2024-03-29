@@ -19,7 +19,7 @@
 #include "Demo.h"
 
 #include "engine\PlayerSoundController.h"
-
+#include "engine/AbilitySlot.h"
 
 void BossScene::Init()
 {
@@ -117,14 +117,15 @@ void BossScene::Init()
 	}
 	//Character
 	{
+
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
-		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		_warrior->SetCharacterController(make_shared<PlayerController>());
+		_warrior->GetComponent<AbilitySlot>()->SetController(_warrior->GetComponent<PlayerController>());
 		_warrior->SetSpwanPosition(Vec3(-44.f, 0.f, 277.f));
-		_warrior->GetTransform()->SetLocalPosition(Vec3(-44.f, 0.f, 277.f));
 		_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
 		_warrior->Start();
+
 
 		Add(_warrior);
 		AddShadow(_warrior);
@@ -210,10 +211,12 @@ void BossScene::Init()
 	else {
 		bgm->Play(true);
 	}
+	auto _playerAbSlot = _warrior->GetComponent<AbilitySlot>();
+	MANAGER_IMGUI()->SetAbilitySlot(_playerAbSlot);
 	///	bool isplaynsd;
 	//	chs->isPlaying(&isplaynsd);
 
-	SpawnManager::GetInstance().Init();
+	//SpawnManager::GetInstance().Init();
 }
 void BossScene::Start()
 {
@@ -225,15 +228,15 @@ void BossScene::Update()
 	quadTreeTerrain->Frame((*frustom->frustomBox.get()));
 	MANAGER_SOUND()->Update();
 
-	sendInfo = ClientPacketHandler::Instance().GetUserInfo();
-	sendInfo._pos = _warrior->GetTransform()->GetPosition();
-	sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
-	sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
-	sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
-	sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
-
-	_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
-	SpawnManager::GetInstance().Update();
+	//sendInfo = ClientPacketHandler::Instance().GetUserInfo();
+	//sendInfo._pos = _warrior->GetTransform()->GetPosition();
+	//sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
+	//sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
+	//sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
+	//sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
+	//
+	//_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
+	//SpawnManager::GetInstance().Update();
 
 #pragma region Client Thread
 	//12����1�� = 83.33ms

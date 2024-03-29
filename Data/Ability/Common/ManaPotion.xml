@@ -1,0 +1,8 @@
+<AbilityInformation>
+    <Name>ManaPotion</Name>
+    <AbilityType>1</AbilityType>
+    <ConsumedMp>0</ConsumedMp>
+    <AbilityCoolTime>5</AbilityCoolTime>
+    <AbilityPow>0.5</AbilityPow>
+    <AbilityRange>0</AbilityRange>
+</AbilityInformation>

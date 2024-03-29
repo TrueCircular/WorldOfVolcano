@@ -303,6 +303,8 @@ void DungeonScene::Init()
 		}
 	}
 
+	auto _playerAbSlot = _warrior->GetComponent<AbilitySlot>();
+	MANAGER_IMGUI()->SetAbilitySlot(_playerAbSlot);
 	SpawnManager::GetInstance().Init();
 }
 void DungeonScene::Start()

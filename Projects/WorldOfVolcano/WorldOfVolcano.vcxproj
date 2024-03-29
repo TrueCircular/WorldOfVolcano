@@ -163,6 +163,7 @@
     <ClInclude Include="LayerSplatter.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="ObjectExporter2.h" />
+    <ClInclude Include="SceneWarper.h" />
     <ClInclude Include="SkyDome.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="ManagerCleaner.h" />
@@ -191,6 +192,7 @@
     <ClCompile Include="LayerSplatter.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectExporter2.cpp" />
+    <ClCompile Include="SceneWarper.cpp" />
     <ClCompile Include="SkyDome.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="ManagerCleaner.cpp" />

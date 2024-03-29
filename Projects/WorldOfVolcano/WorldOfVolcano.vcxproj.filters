@@ -91,6 +91,7 @@
     </ClCompile>
     <ClCompile Include="SkyDome.cpp" />
     <ClCompile Include="ObjectExporter2.cpp" />
+    <ClCompile Include="SceneWarper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -157,6 +158,7 @@
     </ClInclude>
     <ClInclude Include="SkyDome.h" />
     <ClInclude Include="ObjectExporter2.h" />
+    <ClInclude Include="SceneWarper.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\Resources\Shader\Global.fx">

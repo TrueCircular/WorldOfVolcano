@@ -200,7 +200,8 @@ void BaseScene::Init()
 	//else {
 	//	bgm->Play(true);
 	}
-
+	auto _playerAbSlot = _warrior->GetComponent<AbilitySlot>();
+	MANAGER_IMGUI()->SetAbilitySlot(_playerAbSlot);
 	SpawnManager::GetInstance().Init();
 }
 void BaseScene::Start()

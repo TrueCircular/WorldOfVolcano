@@ -2,6 +2,7 @@
 #include "GUIInterface.h"
 
 class CharacterInfo;
+class AbilitySlot;
 
 class ImGuiManager
 {
@@ -38,11 +39,14 @@ public:
 	int GetChangeSceneQueueSize();
 	bool CheckGameStart() { return _isGameStart; }
 	void BeginDialogue() { show_dialogue_window = true; }
+	void SetAbilitySlot(shared_ptr<AbilitySlot> abilitySlot) { _playerAbilitySlot=abilitySlot; }
 private:
 	//Player Stat
 	float _hp = 1.0f;
 	float _mp = 1.0f;
 	char* _name;
+	//Player AbilitySlot
+	weak_ptr<AbilitySlot> _playerAbilitySlot;
 	//Picked Object Stat
 	float _pickedHp = 1.0f;
 	//Rebirth

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ImGuiManager.h"
 #include "CharacterInfo.h"
-
+#include "AbilitySlot.h"
 ImGuiManager* ImGuiManager::_instance = nullptr;
 
 ImGuiManager::ImGuiManager()
@@ -232,7 +232,6 @@ void ImGuiManager::Update()
             wstring MpBarImgPath = RESOURCES_ADDR_TEXTURE;
             MpBarImgPath += L"MPLINE.PNG";
             shared_ptr<Texture> MPbarImg = MANAGER_RESOURCES()->LoadResource<Texture>(L"MpBar", MpBarImgPath);
-
             ImGui::Begin("Hp Window", &show_hp_window, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoScrollWithMouse| ImGuiWindowFlags_NoScrollbar);
 
             ImGui::SetCursorPos(ImVec2(-10, -10));
@@ -462,6 +461,10 @@ void ImGuiManager::Update()
             frameImgPath += L"Frame_red.PNG";
             shared_ptr<Texture> frameImg = MANAGER_RESOURCES()->LoadResource<Texture>(L"SkillFrame", frameImgPath);
 
+            wstring coolDownImgPath = RESOURCES_ADDR_TEXTURE;
+            coolDownImgPath += L"CoolDownBar.PNG";
+            shared_ptr<Texture> cooldownImg = MANAGER_RESOURCES()->LoadResource<Texture>(L"CooldownBar", coolDownImgPath);
+
 
             ImGui::SetNextWindowSize(ImVec2(windowSizeX*6, windowSizeY+25), ImGuiCond_Always);
             ImGui::SetNextWindowPos(ImVec2(windowPosX-7.5, windowPosY-5), ImGuiCond_Always);
@@ -482,6 +485,16 @@ void ImGuiManager::Update()
                 ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
                 ImGui::SetCursorPos(ImVec2(3, 3));
                 ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX - 6, windowSizeY - 6));
+                if (_playerAbilitySlot.lock()) {
+                    auto& _ability = _playerAbilitySlot.lock()->GetAbility(0);
+                    bool isCoolDown = _ability->IsCoolTime();
+                    if (isCoolDown) {
+                        float _abCooltime =_ability->GetCoolTime();
+                        float _abCooltimer = _ability->GetCoolTimer();
+                        ImGui::SetCursorPos(ImVec2(3, 3));
+                        ImGui::Image((void*)cooldownImg->GetTexture().Get(), ImVec2(windowSizeX - 6, (windowSizeY - 6)*(1-(_abCooltimer/_abCooltime))));
+                    }
+                }
                 ImGui::SetCursorPos(ImVec2(9, 3));
                 ImGui::TextColored(ImVec4(1, 1, 1, 1), "1");
                 ImGui::End();
@@ -499,6 +512,16 @@ void ImGuiManager::Update()
                 ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
                 ImGui::SetCursorPos(ImVec2(3, 3));
                 ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX - 6, windowSizeY - 6));
+                if (_playerAbilitySlot.lock()) {
+                    auto& _ability = _playerAbilitySlot.lock()->GetAbility(1);
+                    bool isCoolDown = _ability->IsCoolTime();
+                    if (isCoolDown) {
+                        float _abCooltime = _ability->GetCoolTime();
+                        float _abCooltimer = _ability->GetCoolTimer();
+                        ImGui::SetCursorPos(ImVec2(3, 3));
+                        ImGui::Image((void*)cooldownImg->GetTexture().Get(), ImVec2(windowSizeX - 6, (windowSizeY - 6) * (1 - (_abCooltimer / _abCooltime))));
+                    }
+                }
                 ImGui::SetCursorPos(ImVec2(9, 3));
                 ImGui::TextColored(ImVec4(1, 1, 1, 1), "2");
                 ImGui::End();
@@ -517,6 +540,16 @@ void ImGuiManager::Update()
                 ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
                 ImGui::SetCursorPos(ImVec2(3, 3));
                 ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX - 6, windowSizeY - 6));
+                if (_playerAbilitySlot.lock()) {
+                    auto& _ability = _playerAbilitySlot.lock()->GetAbility(2);
+                    bool isCoolDown = _ability->IsCoolTime();
+                    if (isCoolDown) {
+                        float _abCooltime = _ability->GetCoolTime();
+                        float _abCooltimer = _ability->GetCoolTimer();
+                        ImGui::SetCursorPos(ImVec2(3, 3));
+                        ImGui::Image((void*)cooldownImg->GetTexture().Get(), ImVec2(windowSizeX - 6, (windowSizeY - 6) * (1 - (_abCooltimer / _abCooltime))));
+                    }
+                }
                 ImGui::SetCursorPos(ImVec2(9, 3));
                 ImGui::TextColored(ImVec4(1, 1, 1, 1), "3");
                 ImGui::End();
@@ -535,6 +568,16 @@ void ImGuiManager::Update()
                 ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
                 ImGui::SetCursorPos(ImVec2(3, 3));
                 ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX-6 , windowSizeY-6));
+                if (_playerAbilitySlot.lock()) {
+                    auto& _ability = _playerAbilitySlot.lock()->GetAbility(3);
+                    bool isCoolDown = _ability->IsCoolTime();
+                    if (isCoolDown) {
+                        float _abCooltime = _ability->GetCoolTime();
+                        float _abCooltimer = _ability->GetCoolTimer();
+                        ImGui::SetCursorPos(ImVec2(3, 3));
+                        ImGui::Image((void*)cooldownImg->GetTexture().Get(), ImVec2(windowSizeX - 6, (windowSizeY - 6) * (1 - (_abCooltimer / _abCooltime))));
+                    }
+                }
                 ImGui::SetCursorPos(ImVec2(9, 3));
                 ImGui::TextColored(ImVec4(1, 1, 1, 1), "4");
                 ImGui::End();
@@ -791,9 +834,10 @@ void ImGuiManager::UpdatePicked(bool isPicked, const shared_ptr<GameObject>& pic
 {
     if (pickObj->GetObjectType() == ObjectType::PlayableUnit)
     {
-        auto infomation = pickObj->GetComponent<CharacterInfo>()->GetCharacterInfo();
+        auto& infomation = pickObj->GetComponent<CharacterInfo>()->GetCharacterInfo();
         _hp = static_cast<float>(infomation._hp) / static_cast<float>(infomation._maxHp);
         _mp = static_cast<float>(infomation._mp) / static_cast<float>(infomation._maxMp);
+
     }
     else if(pickObj->GetObjectType() == ObjectType::EnemyUnit)
     {
