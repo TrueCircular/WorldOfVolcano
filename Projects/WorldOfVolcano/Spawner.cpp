@@ -274,7 +274,6 @@ void Spawner::SpawnMonsters()
 							auto strategy = unitFsm->GetStrategy();
 							if (strategy)
 							{
-								wstring name = strategy->GetStrategyName();
 								weak_ptr<Transform> transform = strategy->GetWeakTransform();
 								if (auto sharedTransform = transform.lock())
 								{
@@ -291,7 +290,19 @@ void Spawner::SpawnMonsters()
 				{
 					it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
 					it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->UpdateInfo(pair.second);
-					//it->second->GetComponent<AIController>()->SetCurrentFsmStrategy();
+					CHARACTER_INFO chrInfo = it->second->GetComponent<CharacterInfo>()->GetCharacterInfo();
+					wstring stgName = ClientPacketHandler::Instance().GetStrategyName(chrInfo._instanceId);
+			
+					auto preStg = _preStrategyName.find(chrInfo._instanceId);
+					if (preStg != _preStrategyName.end())
+					{
+						it->second->GetComponent<AIController>()->SetCurrentFsmStrategy(preStg->second, stgName);
+						preStg->second = stgName;
+					}
+					else
+					{
+						_preStrategyName.insert(make_pair(chrInfo._instanceId, stgName));
+					}
 				}
 				
 				///// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)

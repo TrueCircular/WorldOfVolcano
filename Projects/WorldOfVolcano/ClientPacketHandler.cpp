@@ -163,6 +163,22 @@ void ClientPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 		PACKET_Mob_INFO mobInfo;
 		br >> mobInfo;
 
+		wstring stgName;
+		uint16 stgNameLen;
+		br >> stgNameLen;
+		stgName.resize(stgNameLen);
+		br.Read((void*)stgName.data(), stgNameLen * sizeof(WCHAR));
+
+		auto stg = _strategyName.find(mobInfo._instanceId);
+		if (stg != _strategyName.end())
+		{
+			stg->second = stgName;
+		}
+		else
+		{
+			_strategyName.insert(make_pair(mobInfo._instanceId, stgName));
+		}
+
 		wstring name = L"";
 		switch (mobInfo._monsterType)
 		{
@@ -325,7 +341,7 @@ SendBufferRef ClientPacketHandler::Make_USER_INFO(Player_INFO userInfo, wstring 
 	return sendBuffer;
 }
 
-SendBufferRef ClientPacketHandler::Make_MONSTER_INFO(MONSTER_INFO info, wstring name)
+SendBufferRef ClientPacketHandler::Make_MONSTER_INFO(MONSTER_INFO info, wstring strategyName)
 {
 	std::lock_guard<std::mutex> lock(_mutex);
 
@@ -337,8 +353,8 @@ SendBufferRef ClientPacketHandler::Make_MONSTER_INFO(MONSTER_INFO info, wstring 
 
 	bw << sendMobInfo;
 
-	bw << (uint16)name.size();
-	bw.Write((void*)name.data(), name.size() * sizeof(WCHAR));
+	bw << (uint16)strategyName.size();
+	bw.Write((void*)strategyName.data(), strategyName.size() * sizeof(WCHAR));
 
 	header->size = bw.WriteSize();
 	header->id = PACKET_MONSTER_INFO;
@@ -446,6 +462,19 @@ MONSTER_INFO ClientPacketHandler::GetMobInfo(uint64 uid)
 	}
 
 	return MONSTER_INFO();
+}
+
+wstring ClientPacketHandler::GetStrategyName(uint64 id)
+{
+	auto it = _strategyName.find(id);
+	if (it != _strategyName.end())
+	{
+		return it->second;
+	}
+	else
+	{
+		return L"crashDummy";
+	}
 }
 
 MONSTER_INFO ClientPacketHandler::CopyChraracterToMobInfo(CHARACTER_INFO chrInfo, MONSTER_INFO mobInfo)

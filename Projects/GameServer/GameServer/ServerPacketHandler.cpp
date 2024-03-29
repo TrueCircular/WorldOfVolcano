@@ -5,6 +5,8 @@
 #include "GameSession.h"
 #include "GameSessionManager.h"
 
+std::map<uint64_t, std::wstring> ServerPacketHandler::_strategyName;
+
 void ServerPacketHandler::HandlePacket(BYTE* buffer, int32 len)
 {
 	BufferReader br(buffer, len);
@@ -69,7 +71,15 @@ void ServerPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 	name.resize(nameLen);
 	br.Read((void*)name.data(), nameLen * sizeof(WCHAR));
 
-	_strategyName = name;
+	auto it = _strategyName.find(info._instanceId);
+	if (it != _strategyName.end())
+	{
+		it->second = name;
+	}
+	else
+	{
+		_strategyName.insert(make_pair(info._instanceId, name));
+	}
 
 	GSessionManager.UpdateMobInfo(info);
 }
@@ -142,8 +152,12 @@ SendBufferRef ServerPacketHandler::Make_MONSTER_INFO(map<uint32, PACKET_Mob_INFO
 		
 		bw << info;
 
-		bw << (uint16)_strategyName.size();
-		bw.Write((void*)_strategyName.data(), _strategyName.size() * sizeof(WCHAR));
+		auto it = _strategyName.find(pair.second._instanceId);
+		if (it != _strategyName.end())
+		{
+			bw << (uint16)it->second.size();
+			bw.Write((void*)it->second.data(), it->second.size() * sizeof(WCHAR));
+		}
 	}
 
 	header->size = bw.WriteSize();

@@ -147,5 +147,5 @@ public:
 	static SendBufferRef Make_MESSAGE(MESSAGE message);
 	static SendBufferRef Make_HOST(bool isMapHost);
 private:
-	static std::wstring _strategyName;
+	static map<uint64, std::wstring> _strategyName;
 };

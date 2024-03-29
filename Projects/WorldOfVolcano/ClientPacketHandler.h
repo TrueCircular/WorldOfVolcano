@@ -67,7 +67,7 @@ public:
 	void Handle_USER_DISCONNECT(BYTE* buffer, int32 len);
 
 	SendBufferRef Make_USER_INFO(Player_INFO userInfo, wstring name);
-	SendBufferRef Make_MONSTER_INFO(MONSTER_INFO info, wstring name);
+	SendBufferRef Make_MONSTER_INFO(MONSTER_INFO info, wstring strategyName);
 	SendBufferRef Make_MESSAGE(MESSAGE message);
 	SendBufferRef Make_BATTLE(float damage, uint32 targerId);
 
@@ -76,6 +76,7 @@ public:
 	Player_INFO GetUserInfo() { return _userInfo; }
 	map<uint64, MONSTER_INFO> GetMobInfoList() { return _mobInfoList; }
 	MONSTER_INFO GetMobInfo(uint64 uid);
+	wstring GetStrategyName(uint64 id);
 	MONSTER_INFO CopyChraracterToMobInfo(CHARACTER_INFO chrInfo, MONSTER_INFO mobInfo);
 	void AddMobInfoList(uint64 uid, MONSTER_INFO mobInfo) { _mobInfoList.insert(make_pair(uid, mobInfo)); }
 	void UpdateMobInfo(uint64 uid, MONSTER_INFO mobInfo);
@@ -108,6 +109,7 @@ private:
 	~ClientPacketHandler() = default;
 
 	bool _isMapHost = false;
+	map<uint64, std::wstring> _strategyName;
 	Player_INFO _userInfo;
 	map<uint64, Player_INFO> otherUserInfoMap;
 	std::mutex _mutex;

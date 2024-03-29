@@ -23,7 +23,8 @@
 #include "engine/StrategyFactory.h"
 #include "engine\PlayerSoundController.h"
 #include "engine/AbilitySlot.h"
-
+#include "engine/UnitFSM.h"
+#include "engine/UnitStrategy.h"
 #include "ObjectExporter2.h"
 void DungeonScene::Init()
 {
@@ -247,7 +248,8 @@ void DungeonScene::Update()
 				CHARACTER_INFO chrInfo = pair.second->GetComponent<CharacterInfo>()->GetCharacterInfo();
 				mobInfo = ClientPacketHandler::Instance().CopyChraracterToMobInfo(chrInfo, mobInfo);
 				ClientPacketHandler::Instance().UpdateMobInfo(pair.first, mobInfo);
-				mobBuffer = ClientPacketHandler::Instance().Make_MONSTER_INFO(mobInfo, mobInfo._name);
+				wstring mobName = pair.second->GetComponent<AIController>()->GetUnitFsm()->GetStrategyName();
+				mobBuffer = ClientPacketHandler::Instance().Make_MONSTER_INFO(mobInfo, mobName);
 				_service->Broadcast(mobBuffer);
 			}
 		}
