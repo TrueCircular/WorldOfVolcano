@@ -7,7 +7,6 @@
 #include "CharacterInfo.h"
 
 #include "RagExplode.h"
-
 AFireExplosion::AFireExplosion()
 {
 	auto FireExplosion = dynamic_pointer_cast<RagExplode>(MANATER_PARTICLE()->GetParticleFromName(L"RagExplode"));
@@ -72,6 +71,7 @@ void AFireExplosion::Execute()
 		{
 			_fireExplosionParticle->SetTargetObject(_ownerTargetTransform.lock()->GetGameObject());
 			_fireExplosionParticle->SetEffectDamage(_abilityDamage);
+			_fireExplosionInstance->Reset();
 			_fireExplosionParticle->AddParticle(_fireExplosionInstance);
 			_ownerAbilitySlot.lock()->_selectNumber = -1;
 		}

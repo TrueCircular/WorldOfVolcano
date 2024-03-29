@@ -41,7 +41,7 @@ void Demo::Init(){
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"HealthPotion", L"../../Resources/Texture/Item/Consumable/HealthPotion.png");
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"ManaPotion", L"../../Resources/Texture/Item/Consumable/ManaPotion.png");
 
-	shared_ptr<Scene> scene = make_shared<BaseScene>();
+	shared_ptr<Scene> scene = make_shared<TestScene>();
 	scene->SetSceneName(L"TyestScene");
 	//shared_ptr<Scene> scene = make_shared<MainScene>();
 	MANAGER_SCENE()->ChangeScene(scene);

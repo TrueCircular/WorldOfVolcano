@@ -27,6 +27,30 @@ void AManaPotion::ManaPotion()
 	_ownerInfo.lock()->SetCharacterInfo(tempInfo);
 	MANAGER_IMGUI()->UpdatePicked(true, _playerController.lock()->GetGameObject());
 
+	{
+		auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"PotionSound");
+		shared_ptr<Sounds> sound = nullptr;
+		if (tempSound == nullptr)
+		{
+			shared_ptr<Sounds> sound = make_shared<Sounds>();
+			wstring soundPath = RESOURCES_ADDR_SOUND;
+			soundPath += L"Item/Potion.mp3";
+			sound->Load(soundPath);
+			sound->SetVolume(100);
+			MANAGER_RESOURCES()->AddResource<Sounds>(L"PotionSound", sound);
+
+			sound = sound->Clone();
+		}
+		else
+		{
+			sound = tempSound->Clone();
+		}
+
+		if (sound != nullptr)
+		{
+			sound->Play(false);
+		}
+	}
 	_ownerAbilitySlot.lock()->_selectNumber = -1;
 	_isCoolTime = true;
 

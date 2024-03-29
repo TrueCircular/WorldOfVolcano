@@ -7,6 +7,7 @@
 #include "CharacterInfo.h"
 
 #include "FireStorm.h"
+#include "MagicCircle.h"
 
 AFireStorm::AFireStorm()
 {
@@ -20,8 +21,19 @@ AFireStorm::AFireStorm()
 		_fireStormParticle = make_shared<FireStorm>();
 		MANATER_PARTICLE()->AddManagingParticle(L"FireStorm", _fireStormParticle);
 	}
+	auto tempMagicCircle = dynamic_pointer_cast<MagicCircle>(MANATER_PARTICLE()->GetParticleFromName(L"MagicCircleEffect"));
+	if (tempMagicCircle != nullptr)
+	{
+		_magicCircleParticle = tempMagicCircle;
+	}
+	else
+	{
+		_magicCircleParticle = make_shared<MagicCircle>();
+		MANATER_PARTICLE()->AddManagingParticle(L"MagicCircleEffect", _magicCircleParticle);
+	}
 
 	_fireStormInstance = make_shared<ParticleInstance>();
+	_magicCircleInstance = make_shared<ParticleInstance>();
 }
 
 AFireStorm::~AFireStorm()
@@ -60,19 +72,34 @@ void AFireStorm::Enter(const shared_ptr<GameObject>& target)
 
 		_fireStormInstance->SetInstance(100, pos, _ownerTargetTransform.lock(), 100, false);
 	}
+	if (_magicCircleInstance != nullptr)
+	{
+		shared_ptr<Transform> pos = make_shared<Transform>();
+		pos->SetParent(_ownerTargetTransform.lock());
+		pos->SetPosition(Vec3(0, 0, 0));
+		pos->SetScale(Vec3(30));
+		_magicCircleInstance->SetInstance(3, pos, nullptr, 0, false);
+	}
 }
 
 void AFireStorm::Execute()
 {
 	if (_isCoolTime == false)
 	{
+		if (_magicCircleParticle != nullptr)
+		{
+			_magicCircleInstance->Reset();
+			_magicCircleParticle->AddParticle(_magicCircleInstance);
+		}
 		if (_fireStormParticle != nullptr)
 		{
 			_fireStormParticle->SetTargetObject(_ownerTargetTransform.lock()->GetGameObject());
 			_fireStormParticle->SetEffectDamage(_abilityDamage);
+			_fireStormInstance->Reset();
+			_fireStormInstance->particleTransform->SetLocalPosition(_ownerTransform.lock()->GetLocalPosition());
 			_fireStormParticle->AddParticle(_fireStormInstance);
 			_ownerAbilitySlot.lock()->_selectNumber = -1;
-		}
+		}		
 	}
 }
 
