@@ -77,6 +77,8 @@ private:
 	void PlayerAttack();
 	void PlayerAbility1();
 	void PlayerAbility2();
+	void PlayerAbility3();
+	void PlayerAbility4();
 	void PlayerPicking();
 	void PlayerTargetControll();
 	void KeyStateCheck();

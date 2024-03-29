@@ -163,6 +163,12 @@
     <Filter Include="04. Component\Ability\BaronGeddon\Data">
       <UniqueIdentifier>{7c9fd712-c552-4729-adff-4743176eb494}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Component\Ability\Common">
+      <UniqueIdentifier>{8550026f-901c-4ddd-b822-9604d351b0a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\Ability\Common\Data">
+      <UniqueIdentifier>{e6c6712a-54dc-4dbf-8a35-67a1a2cf0f82}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -557,6 +563,18 @@
     <ClInclude Include="Smoke4.h">
       <Filter>07. Particle</Filter>
     </ClInclude>
+    <ClInclude Include="AHealPotion.h">
+      <Filter>04. Component\Ability\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AManaPotion.h">
+      <Filter>04. Component\Ability\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AManaPotionData.h">
+      <Filter>04. Component\Ability\Common\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="AHealPotionData.h">
+      <Filter>04. Component\Ability\Common\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -941,6 +959,18 @@
     </ClCompile>
     <ClCompile Include="Smoke4.cpp">
       <Filter>07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="AHealPotion.cpp">
+      <Filter>04. Component\Ability\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="AManaPotion.cpp">
+      <Filter>04. Component\Ability\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="AManaPotionData.cpp">
+      <Filter>04. Component\Ability\Common\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="AHealPotionData.cpp">
+      <Filter>04. Component\Ability\Common\Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

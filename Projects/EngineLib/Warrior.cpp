@@ -21,6 +21,11 @@
 #include "AWarriorRoar.h"
 #include "AWarriorChargeData.h"
 #include "AWarriorCharge.h"
+//CommonAbility
+#include "AManaPotion.h"
+#include "AManaPotionData.h"
+#include "AHealPotion.h"
+#include "AHealPotionData.h"
 
 Warrior::Warrior()
 {
@@ -166,6 +171,16 @@ void Warrior::CharacterInit()
 		auto roar = make_shared<AWarriorRoar>();
 		roar->SetAbilityData(roarData);
 		abSlot->SetAbility(1, roar);
+
+		auto healPotionData = make_shared<AHealPotionData>();
+		auto healPotion = make_shared<AHealPotion>();
+		healPotion->SetAbilityData(healPotionData);
+		abSlot->SetAbility(2, healPotion);
+
+		auto manaPotionData = make_shared<AManaPotionData>();
+		auto manaPotion = make_shared<AManaPotion>();
+		manaPotion->SetAbilityData(manaPotionData);
+		abSlot->SetAbility(3, manaPotion);
 
 		AddComponent(abSlot);
 	}

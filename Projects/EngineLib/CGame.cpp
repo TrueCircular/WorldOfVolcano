@@ -147,10 +147,10 @@ WPARAM CGame::Run(CGameDesc& desc)
 
 void CGame::ShowFps()
 {
-	uint32 fps = MANAGER_TIME()->GetFPS();
-
-	WCHAR text[100] = L"";
-	::wsprintf(text, L"FPS : %d", fps);
-
-	::SetWindowTextW(g_gameDesc.hWnd, text);
+//	uint32 fps = MANAGER_TIME()->GetFPS();
+//
+//	WCHAR text[100] = L"";
+//	::wsprintf(text, L"FPS : %d", fps);
+//
+//	::SetWindowTextW(g_gameDesc.hWnd, text);
 }

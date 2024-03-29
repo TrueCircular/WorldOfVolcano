@@ -27,6 +27,8 @@ public:
 	void SetAbilityData(const shared_ptr<AbilityData>& data) { _abilityData = data; }
 	//Getter
 	const bool& IsCoolTime() const { return _isCoolTime; }
+	const float& GetCoolTime() const { return _coolTime; }
+	const float& GetCoolTimer() const { return _coolTimer; }
 	const AbilityDataDesc& GetAbilityData() const { return _abilityData->GetAbilityData(); }
 public:
 	virtual void Enter(const shared_ptr<GameObject>& target) {}

@@ -2,7 +2,7 @@
 #include "MonoBehaviour.h"
 #include "Ability.h"
 
-#define MAX_ABILITY_SLOT (size_t)2
+#define MAX_ABILITY_SLOT (size_t)4
 
 class CharacterController;
 
