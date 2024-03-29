@@ -120,7 +120,6 @@ void BossScene::Init()
 	}
 	//Character
 	{
-
 		_warrior = make_shared<Warrior>();
 		_warrior->Awake();
 		_warrior->SetCharacterController(make_shared<PlayerController>());
@@ -132,7 +131,7 @@ void BossScene::Init()
 		Add(_warrior);
 		AddShadow(_warrior);
 
-
+		_childCamera->GetCamera()->SetTargetTransform(_warrior->GetTransform());
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
 
@@ -170,7 +169,8 @@ void BossScene::Init()
 	}
 	///	bool isplaynsd;
 	//	chs->isPlaying(&isplaynsd);
-
+	auto _playerAbSlot = _warrior->GetComponent<AbilitySlot>();
+	MANAGER_IMGUI()->SetAbilitySlot(_playerAbSlot);
 	//SpawnManager::GetInstance().Init();
 }
 void BossScene::Start()
@@ -226,6 +226,9 @@ void BossScene::Update()
 	latestMessageSize = MANAGER_IMGUI()->GetLatestMessages().size();
 
 	Scene::Update();
+
+	MANATER_PARTICLE()->Update();
+	MANAGER_SOUND()->Update();
 	MANAGER_INDICATOR()->Frame();
 
 	{
@@ -258,6 +261,6 @@ void BossScene::LateUpdate()
 {
 	Scene::LateUpdate();
 	quadTreeTerrain->Update();
-
+	MANATER_PARTICLE()->Render();
 	MANAGER_INDICATOR()->Render();
 }
