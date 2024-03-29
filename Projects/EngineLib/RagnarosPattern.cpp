@@ -339,15 +339,17 @@ void RagnarosBattle::Update()
 				_abilityTimer += _dt;
 				_abilityTimer2 += _dt;
 
-				//if (_abilityTimer > _abilityTime)
-				//{
-				//	_abilityTimer = 0.f;
-				//	Out(L"RagnarosAbility1");
-				//}
 				if (_abilityTimer2 > _abilityTime2)
 				{
 					_abilityTimer2 = 0.f;
 					Out(L"RagnarosAbility2");
+					return;
+				}
+				else if (_abilityTimer > _abilityTime)
+				{
+					_abilityTimer = 0.f;
+					Out(L"RagnarosAbility1");
+					return;
 				}
 			}
 

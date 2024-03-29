@@ -1,6 +1,13 @@
 #include "pch.h"
 #include "RagExplode.h"
 #include "Utils.h"
+
+#include "CharacterController.h"
+#include "PlayerController.h"
+#include "AIController.h"
+#include "Sounds.h"
+#include "PlayableUnit.h"
+
 void RagExplode::Update()
 {
 	ParticleObj::Update();
@@ -83,6 +90,33 @@ void RagExplode::LateUpdate()
 
 void RagExplode::OnDestroy(shared_ptr<ParticleInstance>& instance)
 {
+	if (_target != nullptr)
+	{
+		auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"Ragnaros_Ability1_Impact");
+		shared_ptr<Sounds> sound = nullptr;
+		if (tempSound == nullptr)
+		{
+			shared_ptr<Sounds> sound = make_shared<Sounds>();
+			wstring soundPath = RESOURCES_ADDR_SOUND;
+			soundPath += L"Skill/Ragnaros/Ragnaros_Ability1_Impact.mp3";
+			sound->Load(soundPath);
+			sound->SetVolume(50);
+			MANAGER_RESOURCES()->AddResource<Sounds>(L"Ragnaros_Ability1_Impact", sound);
+
+			sound = sound->Clone();
+		}
+		else
+		{
+			sound = tempSound->Clone();
+		}
+
+		if (sound != nullptr)
+		{
+			sound->Play(false);
+		}
+
+		_target->GetComponent<CharacterController>()->TakeDamage(_target, _damage);
+	}
 }
 
 RagExplode::RagExplode()

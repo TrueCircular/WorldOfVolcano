@@ -107,7 +107,7 @@ void FireStorm::OnDestroy(shared_ptr<ParticleInstance>& instance)
 
 				if (dist <= 150.f)
 				{
-					target->GetComponent<PlayerController>()->TakeDamage(_target, _damage);
+					target->GetComponent<CharacterController>()->TakeDamage(_target, _damage);
 				}
 			}
 		}

@@ -6,8 +6,22 @@
 #include "AbilitySlot.h"
 #include "CharacterInfo.h"
 
+#include "RagExplode.h"
+
 AFireExplosion::AFireExplosion()
 {
+	auto FireExplosion = dynamic_pointer_cast<RagExplode>(MANATER_PARTICLE()->GetParticleFromName(L"RagExplode"));
+	if (FireExplosion != nullptr)
+	{
+		_fireExplosionParticle = FireExplosion;
+	}
+	else
+	{
+		_fireExplosionParticle = make_shared<RagExplode>();
+		MANATER_PARTICLE()->AddManagingParticle(L"RagExplode", _fireExplosionParticle);
+	}
+
+	_fireExplosionInstance = make_shared<ParticleInstance>();
 }
 
 AFireExplosion::~AFireExplosion()
@@ -38,29 +52,29 @@ void AFireExplosion::Enter(const shared_ptr<GameObject>& target)
 		_abilityDamage = _ownerAtk * _abilityData->GetAbilityData().AbilityPow;
 	}
 
-	//if (_fireStormInstance != nullptr)
-	//{
-	//	shared_ptr<Transform> pos = make_shared<Transform>();
-	//	pos->SetLocalPosition(_ownerTransform.lock()->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition());
-	//	pos->SetLocalScale(Vec3(2.5f));
+	if (_fireExplosionInstance != nullptr)
+	{
+		shared_ptr<Transform> pos = make_shared<Transform>();
+		Vec3 offset = _ownerTargetTransform.lock()->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition();
+		offset.y += 10.f;
+		pos->SetLocalPosition(offset);
+		pos->SetLocalScale(Vec3(50.f));
 
-	//	_fireStormInstance->SetInstance(100, pos, _ownerTargetTransform.lock(), 10, false);
-	//}
+		_fireExplosionInstance->SetInstance(1, pos, nullptr, 100, false);
+	}
 }
 
 void AFireExplosion::Execute()
 {
 	if (_isCoolTime == false)
 	{
-		//if (_fireStormParticle != nullptr)
-		//{
-		//	_isCoolTime = true;
-
-		//	_fireStormParticle->SetTargetObject(_ownerTargetTransform.lock()->GetGameObject());
-		//	_fireStormParticle->SetEffectDamage(_abilityDamage);
-		//	_fireStormParticle->AddParticle(_fireStormInstance);
-		//	_ownerAbilitySlot.lock()->_selectNumber = -1;
-		//}
+		if (_fireExplosionParticle != nullptr)
+		{
+			_fireExplosionParticle->SetTargetObject(_ownerTargetTransform.lock()->GetGameObject());
+			_fireExplosionParticle->SetEffectDamage(_abilityDamage);
+			_fireExplosionParticle->AddParticle(_fireExplosionInstance);
+			_ownerAbilitySlot.lock()->_selectNumber = -1;
+		}
 	}
 }
 
