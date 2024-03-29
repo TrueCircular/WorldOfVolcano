@@ -47,6 +47,7 @@ struct PACKET_Player_INFO : public PACKET_CHARACTER_INFO
 
 struct PACKET_Mob_INFO : public PACKET_CHARACTER_INFO
 {
+	uint32 _targetId = 0;
 	MonsterType _monsterType = MonsterType::None;
 	EnemyUnitState _animState = EnemyUnitState::Stand;
 };

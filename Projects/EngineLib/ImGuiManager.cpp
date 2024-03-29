@@ -852,7 +852,7 @@ void ImGuiManager::UpdatePicked(bool isPicked, const shared_ptr<GameObject>& pic
 
 }
 
-int ImGuiManager::GetAttackQueueSize()
+int ImGuiManager::GetRebirthQueueSize()
 {
     if (_rebirthQueue.empty() == false)
     {

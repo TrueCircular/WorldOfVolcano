@@ -39,7 +39,7 @@ public:
 
 	void NotifyPlayerAlive(bool isAlive) { show_death_window = !isAlive;}
 	void NotifyGeddonDeath() { ++geddonCount;}
-	int GetAttackQueueSize();
+	int GetRebirthQueueSize();
 	int GetChangeSceneQueueSize();
 	bool CheckGameStart() { return _isGameStart; }
 	void BeginDialogue() { show_dialogue_window = true; }

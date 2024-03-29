@@ -205,7 +205,7 @@ struct MESSAGE
 
 struct Player_INFO : public CHARACTER_INFO
 {
-	uint32 _uid;
+	uint32 _uid = 0;
 	bool _isOnline = false;
 	PlayerUnitState _animState = PlayerUnitState::Stand;
 	JumpFlag _jumpFlag;
@@ -213,6 +213,7 @@ struct Player_INFO : public CHARACTER_INFO
 
 struct MONSTER_INFO : public CHARACTER_INFO
 {
+	uint32 _targetId = 0;
 	MonsterType _monsterType = MonsterType::None;
 	EnemyUnitState _animState = EnemyUnitState::Stand;
 };

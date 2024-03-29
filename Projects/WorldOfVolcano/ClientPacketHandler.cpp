@@ -5,6 +5,7 @@
 
 #include "ObjectExporter2.h"
 #include "engine/CharacterInfo.h"
+#include "SpawnManager.h"
 
 void ClientPacketHandler::HandlePacket(BYTE* buffer, int32 len)
 {
@@ -41,6 +42,7 @@ Player_INFO CopyPacketPlayerInfo(const PACKET_Player_INFO& playerInfo, wstring n
 	Player_INFO realPlayerInfo;
 	realPlayerInfo._name = name;
 	realPlayerInfo._instanceId = playerInfo._instanceId;
+	realPlayerInfo._uid = playerInfo._uid;
 	realPlayerInfo._spawnMapType = playerInfo._spawnMapType;
 	realPlayerInfo._maxHp = playerInfo._maxHp;
 	realPlayerInfo._maxMp = playerInfo._maxMp;
@@ -60,7 +62,6 @@ Player_INFO CopyPacketPlayerInfo(const PACKET_Player_INFO& playerInfo, wstring n
 	realPlayerInfo._isBattle = playerInfo._isBattle;
 	realPlayerInfo._timeStamp = playerInfo._timeStamp;
 
-	realPlayerInfo._uid = playerInfo._uid;
 	realPlayerInfo._isOnline = playerInfo._isOnline;
 	realPlayerInfo._animState = playerInfo._animState;
 	realPlayerInfo._jumpFlag = playerInfo._jumpFlag;
@@ -91,6 +92,7 @@ MONSTER_INFO CopyPacketMonsterInfo(const PACKET_Mob_INFO& mobInfo, wstring name)
 	realMobInfo._isBattle = mobInfo._isBattle;
 	realMobInfo._timeStamp = mobInfo._timeStamp;
 
+	realMobInfo._targetId = mobInfo._targetId;
 	realMobInfo._monsterType = mobInfo._monsterType;
 	realMobInfo._animState = mobInfo._animState;
 
@@ -162,7 +164,7 @@ void ClientPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 	{
 		PACKET_Mob_INFO mobInfo;
 		br >> mobInfo;
-
+		
 		wstring stgName;
 		uint16 stgNameLen;
 		br >> stgNameLen;
@@ -263,6 +265,7 @@ void ClientPacketHandler::Handle_USER_DISCONNECT(BYTE* buffer, int32 len)
 PACKET_Player_INFO CopyPlayerInfo(const Player_INFO& playerInfo) {
 	PACKET_Player_INFO sendPlayerInfo;
 	sendPlayerInfo._instanceId = playerInfo._instanceId;
+	sendPlayerInfo._uid = playerInfo._uid;
 	sendPlayerInfo._spawnMapType = playerInfo._spawnMapType;
 	sendPlayerInfo._maxHp = playerInfo._maxHp;
 	sendPlayerInfo._maxMp = playerInfo._maxMp;
@@ -282,7 +285,6 @@ PACKET_Player_INFO CopyPlayerInfo(const Player_INFO& playerInfo) {
 	sendPlayerInfo._isBattle = playerInfo._isBattle;
 	sendPlayerInfo._timeStamp = playerInfo._timeStamp;
 
-	sendPlayerInfo._uid = playerInfo._uid;
 	sendPlayerInfo._isOnline = playerInfo._isOnline;
 	sendPlayerInfo._animState = playerInfo._animState;
 	sendPlayerInfo._jumpFlag = playerInfo._jumpFlag;
@@ -312,6 +314,7 @@ PACKET_Mob_INFO CopyMonsterInfo(const MONSTER_INFO& mobInfo) {
 	sendMobInfo._isBattle = mobInfo._isBattle;
 	sendMobInfo._timeStamp = mobInfo._timeStamp;
 
+	sendMobInfo._targetId = mobInfo._targetId;
 	sendMobInfo._monsterType = mobInfo._monsterType;
 	sendMobInfo._animState = mobInfo._animState;
 
@@ -445,7 +448,9 @@ void ClientPacketHandler::GenerateMobList()
 		}
 
 		mobInfo._hp = chrInfo._hp;
+		mobInfo._maxHp = mobInfo._hp;
 		mobInfo._mp = chrInfo._mp;
+		mobInfo._maxMp = chrInfo._mp;
 		mobInfo._atk = chrInfo._atk;
 		mobInfo._def = chrInfo._def;
 

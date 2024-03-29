@@ -59,6 +59,22 @@ void BaronGeddonStand::Update()
 	}
 }
 
+void BaronGeddonStand::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		Vec3 myPos = _transform.lock()->GetLocalPosition();
+		_spwanPos.y = myPos.y;
+
+		float dist = Vec3::Distance(myPos, _spwanPos);
+
+		if (dist > 5.f + FLT_EPSILON)
+		{
+			Out(L"BaronGeddonMoveToSpwanPoint");
+		}
+	}
+}
+
 void BaronGeddonStand::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -114,6 +130,17 @@ void BaronGeddonDamaged::Enter(const shared_ptr<AIController>& controller, const
 }
 
 void BaronGeddonDamaged::Update()
+{
+	if (_controller.lock() != nullptr)
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			Out(L"BaronGeddonBattle");
+		}
+	}
+}
+
+void BaronGeddonDamaged::UpdateFromServer()
 {
 	if (_controller.lock() != nullptr)
 	{
@@ -199,6 +226,25 @@ void BaronGeddonDead::Update()
 	}
 }
 
+void BaronGeddonDead::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt += MANAGER_TIME()->GetDeltaTime();
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			_controller.lock()->DeadEvent();
+		}
+
+		if (_dt > _soundTimer && _soundFlag == false)
+		{
+			_deadSound->Play(false);
+			_soundFlag = true;
+		}
+	}
+}
+
 void BaronGeddonDead::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -247,6 +293,109 @@ void BaronGeddonTrace::Enter(const shared_ptr<AIController>& controller, const w
 }
 
 void BaronGeddonTrace::Update()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		//Target Update
+		{
+			if (_targetList.lock()->size() > 0)
+			{
+				float minAggro = 0.f;
+				shared_ptr<Transform> _lastTarget;
+				for (auto& target : *_targetList.lock())
+				{
+					if (target->Target == _targetTransform.lock()->GetGameObject())
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+						continue;
+					}
+
+					if (target->AggroValue > minAggro)
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+					}
+				}
+
+				if (_lastTarget)
+				{
+					_targetTransform = _lastTarget;
+					_controller.lock()->SetTargetTransform(_targetTransform.lock());
+				}
+			}
+		}
+
+		bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+		if (isAlive == false)
+		{
+			Out(L"BaronGeddonMoveToSpwanPoint");
+		}
+		else
+		{
+			//자신의 위치에서 타겟방향으로 향하는 정규화 된 방향 벡터 계산(Normal Vector)
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
+			{
+				if (toTargetDir.Length() > 0)
+				{
+					toTargetDir.Normalize(toTargetDir);
+					{
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
+					}
+				}
+			}
+
+			toTargetDir.Normalize(toTargetDir);
+
+			//타겟 방향으로 이동 & Attack Range 체크 후 도달 시 Trasition
+			{
+				Vec3 toTargetTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
+				_transform.lock()->SetPosition(toTargetTranslate);
+
+				Vec3 targetPos2 = _targetTransform.lock()->GetLocalPosition();
+
+				float distance = Vec3::Distance(toTargetTranslate, targetPos2);
+
+				if (distance <= _attackRange && distance <= _traceRadius)
+				{
+					Out(L"BaronGeddonBattle");
+				}
+				else if (distance > _attackRange && distance > _traceRadius)
+				{
+					Out(L"BaronGeddonMoveToSpwanPoint");
+				}
+			}
+		}
+	}
+}
+
+void BaronGeddonTrace::UpdateFromServer()
 {
 	if (_controller.lock() != nullptr)
 	{
@@ -448,6 +597,63 @@ void BaronGeddonMoveToSpwanPoint::Update()
 	}
 }
 
+void BaronGeddonMoveToSpwanPoint::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		Vec3 myPos = _transform.lock()->GetLocalPosition();
+		_spwanPos.y = myPos.y;
+		Vec3 toTargetDir = _spwanPos - myPos;
+
+		//타겟 방향으로 회전
+		{
+			if (toTargetDir.Length() > 0)
+			{
+				toTargetDir.Normalize(toTargetDir);
+				{
+					Vec3 myForward = _transform.lock()->GetLookVector();
+					Vec3 myRight = _transform.lock()->GetRightVector();
+					Vec3 myUp = Vec3(0, 1, 0);
+
+					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+					float angle = acosf(dotAngle);
+
+					Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+					float LeftRight = cross.Dot(myUp);
+
+					if (LeftRight < 0)
+					{
+						angle = -angle;
+					}
+
+					angle = angle * _totargetRotationSpeed * _dt;
+
+					Vec3 myRot = _transform.lock()->GetLocalRotation();
+					myRot.y += angle;
+					_transform.lock()->SetLocalRotation(myRot);
+				}
+			}
+		}
+
+		toTargetDir.Normalize(toTargetDir);
+
+		float moveToLength = Vec3::Distance(myPos, _spwanPos);
+
+		if (moveToLength > 2.f + FLT_EPSILON)
+		{
+			Vec3 toSpwanPosTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
+			_transform.lock()->SetLocalPosition(toSpwanPosTranslate);
+		}
+		else
+		{
+			_transform.lock()->SetLocalPosition(_spwanPos);
+			Out(L"BaronGeddonStand");
+		}
+	}
+}
+
 void BaronGeddonMoveToSpwanPoint::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -499,6 +705,137 @@ void BaronGeddonBattle::Enter(const shared_ptr<AIController>& controller, const 
 }
 
 void BaronGeddonBattle::Update()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+		_traceTime += _dt;
+
+		bool& tempisAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+
+		//Target update
+		if (_targetList.lock()->size() <= 0 || tempisAlive == false)
+		{
+			Out(L"BaronGeddonMoveToSpwanPoint");
+		}
+		else
+		{
+			if (_targetList.lock()->size() > 0)
+			{
+				float minAggro = 0.f;
+				shared_ptr<Transform> _lastTarget;
+				for (auto& target : *_targetList.lock())
+				{
+					if (target->Target == _targetTransform.lock()->GetGameObject())
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+						continue;
+					}
+
+					if (target->AggroValue > minAggro)
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+					}
+				}
+
+				if (_lastTarget)
+				{
+					_targetTransform = _lastTarget;
+					_controller.lock()->SetTargetTransform(_targetTransform.lock());
+				}
+			}
+		}
+
+		bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+
+		if (isAlive)
+		{
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
+			{
+				if (toTargetDir.Length() > 0)
+				{
+					toTargetDir.Normalize(toTargetDir);
+					{
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						myForward.Normalize();
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
+					}
+				}
+			}
+
+			_abilityTimer += _dt;
+
+			//Ability Transition
+			{
+				if (_abilityTimer >= _abilityTime)
+				{
+					_abilityTimer = 0.f;
+					Out(L"BaronGeddonAbility");
+				}
+			}
+
+			toTargetDir.Normalize(toTargetDir);
+			float distance = Vec3::Distance(myPos, targetPos);
+
+			if (distance <= _attackRange)
+			{
+				_attackTimeCal += _dt;
+
+				//Attack Transition
+				{
+					if (_attackTimeCal >= _attackTime)
+					{
+						_attackTimeCal = 0.f;
+						Out(L"BaronGeddonAttack");
+					}
+				}
+			}
+			else if (distance > _attackRange && distance <= _traceRadius)
+			{
+				if (_traceTime + FLT_EPSILON > _traceWaitingTime)
+				{
+					Out(L"BaronGeddonTrace");
+				}
+			}
+			else if (distance > _attackRange && distance > _traceRadius)
+			{
+				Out(L"BaronGeddonMoveToSpwanPoint");
+			}
+		}
+		else
+		{
+			Out(L"BaronGeddonMoveToSpwanPoint");
+		}
+	}
+}
+
+void BaronGeddonBattle::UpdateFromServer()
 {
 	if (_controller.lock() != nullptr)
 	{
@@ -785,6 +1122,59 @@ void BaronGeddonAttack::Update()
 	}
 }
 
+void BaronGeddonAttack::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			Out(L"BaronGeddonBattle");
+		}
+
+		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		{
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
+			{
+				if (toTargetDir.Length() > 0)
+				{
+					toTargetDir.Normalize(toTargetDir);
+					{
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						myForward.Normalize();
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
+					}
+				}
+			}
+		}
+	}
+}
+
 void BaronGeddonAttack::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -853,6 +1243,67 @@ void BaronGeddonAbility::Enter(const shared_ptr<AIController>& controller, const
 }
 
 void BaronGeddonAbility::Update()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+		_abTimer += _dt;
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			Out(L"BaronGeddonBattle");
+		}
+
+		if (_abTimer > _abTime && _abFlag == false)
+		{
+			_abilitySlot.lock()->ExecuteAbility(0, _targetTransform.lock()->GetGameObject());
+			_abiltySound->Play(false);
+			_abFlag = true;
+		}
+
+		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		{
+			Vec3 myPos = _transform.lock()->GetLocalPosition();
+			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			targetPos.y = myPos.y;
+			Vec3 toTargetDir = targetPos - myPos;
+
+			//타겟 방향으로 회전
+			{
+				if (toTargetDir.Length() > 0)
+				{
+					toTargetDir.Normalize(toTargetDir);
+					{
+						Vec3 myForward = _transform.lock()->GetLookVector();
+						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myUp = Vec3(0, 1, 0);
+
+						myForward.Normalize();
+
+						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+						float angle = acosf(dotAngle);
+
+						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+						float LeftRight = cross.Dot(myUp);
+
+						if (LeftRight < 0)
+						{
+							angle = -angle;
+						}
+
+						angle = angle * _totargetRotationSpeed * _dt;
+
+						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						myRot.y += angle;
+						_transform.lock()->SetLocalRotation(myRot);
+					}
+				}
+			}
+		}
+	}
+}
+
+void BaronGeddonAbility::UpdateFromServer()
 {
 	if (_controller.lock() != nullptr)
 	{

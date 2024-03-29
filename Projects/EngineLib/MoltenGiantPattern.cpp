@@ -88,6 +88,51 @@ void MoltenGiantStand::Update()
 	}
 }
 
+void MoltenGiantStand::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		if (_targetList.lock()->size() > 0)
+		{
+			//Taget 후보 결정
+			map<float, shared_ptr<TargetDesc>> ToTargetList;
+
+			for (const auto& target : *_targetList.lock())
+			{
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = target->Target->GetTransform()->GetLocalPosition();
+				bool& isAlive = target->Target->GetComponent<CharacterController>()->_isAlive;
+				float Length = Vec3::Distance(myPos, targetPos);
+
+				//자신의 위치와 타겟 위치가 추적거리 안에 존재 할 경우 탐색
+				if (Length <= _traceRadius && isAlive)
+				{
+					ToTargetList.insert(make_pair(Length, target));
+				}
+			}
+
+			if (ToTargetList.size() > 0)
+			{
+				float minDistance = ToTargetList.begin()->first;
+				shared_ptr<GameObject> FinalTarget;
+				FinalTarget = ToTargetList.begin()->second->Target;
+
+				if (FinalTarget != nullptr)
+				{
+					if (minDistance <= _attackRange && minDistance <= _traceRadius)
+					{
+						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+					}
+					else if (minDistance > _attackRange && minDistance <= _traceRadius)
+					{
+						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+					}
+				}
+			}
+		}
+	}
+}
+
 void MoltenGiantStand::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -153,6 +198,11 @@ void MoltenGiantDamaged::Update()
 	}
 }
 
+void MoltenGiantDamaged::UpdateFromServer()
+{
+
+}
+
 void MoltenGiantDamaged::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -204,6 +254,10 @@ void MoltenGiantStun::Update()
 		}
 
 	}
+}
+
+void MoltenGiantStun::UpdateFromServer()
+{
 }
 
 void MoltenGiantStun::Out(const wstring& nextTransition)
@@ -279,6 +333,11 @@ void MoltenGiantDead::Update()
 			_soundFlag = true;
 		}
 	}
+}
+
+void MoltenGiantDead::UpdateFromServer()
+{
+
 }
 
 void MoltenGiantDead::Out(const wstring& nextTransition)
@@ -431,6 +490,41 @@ void MoltenGiantTrace::Update()
 	}
 }
 
+void MoltenGiantTrace::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		if (_targetList.lock()->size() > 0)
+		{
+			float minAggro = 0.f;
+			shared_ptr<Transform> _lastTarget;
+			for (auto& target : *_targetList.lock())
+			{
+				if (target->Target == _targetTransform.lock()->GetGameObject())
+				{
+					minAggro = target->AggroValue;
+					_lastTarget = target->Target->GetTransform();
+					continue;
+				}
+
+				if (target->AggroValue > minAggro)
+				{
+					minAggro = target->AggroValue;
+					_lastTarget = target->Target->GetTransform();
+				}
+			}
+
+			if (_lastTarget)
+			{
+				_targetTransform = _lastTarget;
+				_controller.lock()->SetTargetTransform(_targetTransform.lock());
+			}
+		}
+	}
+}
+
 void MoltenGiantTrace::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -528,6 +622,11 @@ void MoltenGiantMoveToSpwanPoint::Update()
 			Out(L"MoltenGiantStand");
 		}
 	}
+}
+
+void MoltenGiantMoveToSpwanPoint::UpdateFromServer()
+{
+
 }
 
 void MoltenGiantMoveToSpwanPoint::Out(const wstring& nextTransition)
@@ -698,6 +797,49 @@ void MoltenGiantBattle::Update()
 	}
 }
 
+void MoltenGiantBattle::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+		_traceTime += _dt;
+
+		bool& tempisAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+
+		//Target update
+		if (_targetList.lock()->size() <= 0 || tempisAlive == false)
+		{
+			cout << "true";
+		}
+		else
+		{
+			float minAggro = 0.f;
+			shared_ptr<Transform> _lastTarget;
+			for (auto& target : *_targetList.lock())
+			{
+				if (target->Target == _targetTransform.lock()->GetGameObject())
+				{
+					minAggro = target->AggroValue;
+					_lastTarget = target->Target->GetTransform();
+					continue;
+				}
+
+				if (target->AggroValue > minAggro)
+				{
+					minAggro = target->AggroValue;
+					_lastTarget = target->Target->GetTransform();
+				}
+			}
+
+			if (_lastTarget)
+			{
+				_targetTransform = _lastTarget;
+				_controller.lock()->SetTargetTransform(_targetTransform.lock());
+			}
+		}
+	}
+}
+
 void MoltenGiantBattle::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -852,6 +994,11 @@ void MoltenGiantAttack::Update()
 			}
 		}
 	}
+}
+
+void MoltenGiantAttack::UpdateFromServer()
+{
+	cout << "server";
 }
 
 void MoltenGiantAttack::Out(const wstring& nextTransition)

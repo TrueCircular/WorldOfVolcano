@@ -230,7 +230,7 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 
 void Spawner::SpawnMonsters()
 {
-	for (const auto& pair : ClientPacketHandler::Instance().GetMobInfoList()) {
+	for (auto pair : ClientPacketHandler::Instance().GetMobInfoList()) {
 		if (pair.second._spawnMapType != _spawnMapType)
 		{
 			//내 Map정보가 아니면 스킵
@@ -268,6 +268,7 @@ void Spawner::SpawnMonsters()
 					for (auto mob : _monsters)
 					{
 						CHARACTER_INFO chrInfo = mob.second->GetComponent<CharacterInfo>()->GetCharacterInfo();
+						MANAGER_EVENT()->SetIsMapHost(true);
 						auto unitFsm = mob.second->GetComponent<AIController>()->GetUnitFsm();
 						if (unitFsm)
 						{
@@ -288,55 +289,55 @@ void Spawner::SpawnMonsters()
 				}
 				else
 				{
-					it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
-					it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->UpdateInfo(pair.second);
+					auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
+					auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
+					double alpha = fmin(1.0, durationSec / 1.0);
+
+					Vec3 pos;
+					Vec3 rot;
+
+					weak_ptr<Transform> transform = it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->GetWeakTransform().lock();
+					if (auto sharedTransform = transform.lock())
+					{
+						pos = transform.lock()->GetLocalPosition();
+						rot = transform.lock()->GetLocalRotation();
+					}
+
+					Vec3 target = pair.second._pos;
+					Vec3 direction = target - pos;
+
+					pos += interpolate(alpha, direction, Vec3(0.0f, 0.0f, 0.0f)) * MANAGER_TIME()->GetDeltaTime();
+
+					//회전 보간 계산
+					Vec3 targetRot = pair.second._Rotate;
+					/*Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
+					Quaternion endRotation = Quaternion::CreateFromYawPitchRoll(targetRot.y, 0.0f, 0.0f);
+					Quaternion calcRot = Quaternion::Slerp(startRotation, endRotation, alpha);
+					rot.y = QuatToEulerAngleY(calcRot);*/
+
+					pair.second._pos = pos;
+					//it->second->GetTransform()->SetLocalRotation(targetRot);
+					
 					CHARACTER_INFO chrInfo = it->second->GetComponent<CharacterInfo>()->GetCharacterInfo();
 					wstring stgName = ClientPacketHandler::Instance().GetStrategyName(chrInfo._instanceId);
-			
+
+					it->second->GetComponent<CharacterInfo>()->SetCharacterInfo(pair.second);
+					it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->UpdateInfo(pair.second); // 정보 동기화
+
 					auto preStg = _preStrategyName.find(chrInfo._instanceId);
 					if (preStg != _preStrategyName.end())
 					{
-						it->second->GetComponent<AIController>()->SetCurrentFsmStrategy(preStg->second, stgName);
-						preStg->second = stgName;
+						if (preStg->second != stgName)
+						{
+							it->second->GetComponent<AIController>()->SetCurrentFsmStrategy(preStg->second, stgName);
+							preStg->second = stgName;
+						}
 					}
 					else
 					{
 						_preStrategyName.insert(make_pair(chrInfo._instanceId, stgName));
 					}
 				}
-				
-				///// 보간을 위한 시간 계산 (0.0에서 1.0 사이의 값)
-				//if (ClientPacketHandler::Instance().GetIsMapHost() == false)
-				//{
-				//	auto calcTime = high_resolution_clock::now() - seconds(static_cast<int>(pair.second._timeStamp));
-				//	auto durationSec = duration_cast<duration<double>>(calcTime.time_since_epoch()).count();
-				//	double alpha = fmin(1.0, durationSec / 1.0);
-
-				//	Vec3 pos = it->second->GetTransform()->GetPosition();
-				//	Vec3 rot = it->second->GetTransform()->GetLocalRotation();
-
-				//	Vec3 target = pair.second._pos;
-				//	Vec3 direction = target - pos;
-
-				//	float distance = IsPlayerInRanger(target, pos);
-
-				//	if (pair.second._animState == EnemyUnitState::Run)
-				//	{
-				//		pos += interpolate(alpha, direction, Vec3(0.0f, 0.0f, 0.0f)) * MANAGER_TIME()->GetDeltaTime();
-				//	}
-
-				//	//회전 보간 계산
-				//	Vec3 targetRot = pair.second._Rotate;
-				//	Quaternion startRotation = Quaternion::CreateFromYawPitchRoll(rot.y, rot.x, rot.z);
-				//	Quaternion endRotation = Quaternion::CreateFromYawPitchRoll(targetRot.y, 0.0f, 0.0f);
-				//	Quaternion calcRot = Quaternion::Slerp(startRotation, endRotation, alpha);
-				//	rot.y = QuatToEulerAngleY(calcRot);
-
-				//	it->second->GetTransform()->SetPosition(pos);
-				//	it->second->GetTransform()->SetLocalRotation(targetRot);
-				//	//it->second->GetComponent<AIController>()->SetUnitState(pair.second._animState); <- 동작수정
-				//	it->second->GetComponent<CharacterInfo>()->SetDefaultCharacterInfo(pair.second);
-				//}
 			}
 		}
 		else
@@ -346,8 +347,6 @@ void Spawner::SpawnMonsters()
 			{
 				SpawnMonster(pair.first, pair.second);
 			}
-
-			cout << "find not key, new player spawn" << endl;
 		}
 	}
 }
