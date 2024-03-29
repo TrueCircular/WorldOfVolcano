@@ -14,6 +14,7 @@
 #include "LineSpark.h"
 #include "ShineHelper.h"
 #include "Explode.h"
+#include "RagExplode.h"
 
 ParticleManager::ParticleManager()
 {
@@ -51,6 +52,7 @@ void ParticleManager::AddDefaultParticle()
 	shared_ptr<LineSpark> lineSpark = make_shared<LineSpark>();
 	shared_ptr<Explode> explode = make_shared<Explode>();
 	shared_ptr<ShineHelper> sparkHelper = make_shared<ShineHelper>();
+	shared_ptr<RagExplode> ragExplode = make_shared<RagExplode>();
 
 	AddManagingParticle(L"WarriorRoar", warriorRoar);
 	AddManagingParticle(L"Explode", explode);
@@ -64,6 +66,7 @@ void ParticleManager::AddDefaultParticle()
 	AddManagingParticle(L"FireBall", fireBall);
 	AddManagingParticle(L"Polar", polar);
 	AddManagingParticle(L"MagicCircle", magicCircle);
+	AddManagingParticle(L"RagExplode", ragExplode);
 	AddManagingParticle(L"LineSpark", lineSpark);
 }
 

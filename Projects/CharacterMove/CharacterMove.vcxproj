@@ -225,6 +225,7 @@
     <FxCompile Include="..\..\Resources\Shader\Polar.fx" />
     <FxCompile Include="..\..\Resources\Shader\PolarLegacy.fx" />
     <FxCompile Include="..\..\Resources\Shader\RadialGradientExponetial.fx" />
+    <FxCompile Include="..\..\Resources\Shader\RagExplode.fx" />
     <FxCompile Include="..\..\Resources\Shader\Render.fx" />
     <FxCompile Include="..\..\Resources\Shader\SkyDome.fx" />
     <FxCompile Include="..\..\Resources\Shader\Smoke.fx" />

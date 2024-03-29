@@ -587,6 +587,9 @@
     <ClInclude Include="AFireExplosionData.h">
       <Filter>04. Component\Ability\Ragnaros\Data</Filter>
     </ClInclude>
+    <ClInclude Include="RagExplode.h">
+      <Filter>07. Particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -995,6 +998,9 @@
     </ClCompile>
     <ClCompile Include="AFireExplosionData.cpp">
       <Filter>04. Component\Ability\Ragnaros\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="RagExplode.cpp">
+      <Filter>07. Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
