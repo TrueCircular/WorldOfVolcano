@@ -164,7 +164,7 @@ void ClientPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 	{
 		PACKET_Mob_INFO mobInfo;
 		br >> mobInfo;
-
+		
 		wstring stgName;
 		uint16 stgNameLen;
 		br >> stgNameLen;
@@ -448,7 +448,9 @@ void ClientPacketHandler::GenerateMobList()
 		}
 
 		mobInfo._hp = chrInfo._hp;
+		mobInfo._maxHp = mobInfo._hp;
 		mobInfo._mp = chrInfo._mp;
+		mobInfo._maxMp = chrInfo._mp;
 		mobInfo._atk = chrInfo._atk;
 		mobInfo._def = chrInfo._def;
 
