@@ -17,7 +17,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void UpdateFromServer() override {}
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -29,7 +29,7 @@ public:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void UpdateFromServer() override {}
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -44,7 +44,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void UpdateFromServer() override {}
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -59,7 +59,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void UpdateFromServer() override {}
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -86,7 +86,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void UpdateFromServer() override {}
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -107,7 +107,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void UpdateFromServer() override {}
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -127,7 +127,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void UpdateFromServer() override {}
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -147,7 +147,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
-	virtual void UpdateFromServer() override {}
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -164,6 +164,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -177,6 +178,7 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };
 
@@ -190,5 +192,6 @@ private:
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;
 	virtual void Update() override;
+	virtual void UpdateFromServer() override;
 	virtual void Out(const wstring& nextTransition) override;
 };

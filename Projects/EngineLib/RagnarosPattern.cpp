@@ -41,6 +41,10 @@ void RagnarosStand::Update()
 {
 }
 
+void RagnarosStand::UpdateFromServer()
+{
+}
+
 void RagnarosStand::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -68,6 +72,14 @@ void RagnarosDamaged::Enter(const shared_ptr<AIController>& controller, const ws
 }
 
 void RagnarosDamaged::Update()
+{
+	if (_controller.lock() != nullptr)
+	{
+		Out(_prevTransition);
+	}
+}
+
+void RagnarosDamaged::UpdateFromServer()
 {
 	if (_controller.lock() != nullptr)
 	{
@@ -114,6 +126,16 @@ void RagnarosStun::Enter(const shared_ptr<AIController>& controller, const wstri
 }
 
 void RagnarosStun::Update()
+{
+	_stunTimer += MANAGER_TIME()->GetDeltaTime();
+
+	if (_stunTimer > _stunTime)
+	{
+		Out(L"RagnarosBattle");
+	}
+}
+
+void RagnarosStun::UpdateFromServer()
 {
 	_stunTimer += MANAGER_TIME()->GetDeltaTime();
 
@@ -180,6 +202,19 @@ void RagnarosDead::Enter(const shared_ptr<AIController>& controller, const wstri
 }
 
 void RagnarosDead::Update()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt += MANAGER_TIME()->GetDeltaTime();
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			_controller.lock()->DeadEvent();
+		}
+	}
+}
+
+void RagnarosDead::UpdateFromServer()
 {
 	if (_controller.lock() != nullptr)
 	{
@@ -271,11 +306,14 @@ void RagnarosBattle::Update()
 				shared_ptr<Transform> _lastTarget;
 				for (auto& target : *_targetList.lock())
 				{
-					if (target->Target == _targetTransform.lock()->GetGameObject())
+					if (_targetTransform.lock())
 					{
-						minAggro = target->AggroValue;
-						_lastTarget = target->Target->GetTransform();
-						continue;
+						if (target->Target == _targetTransform.lock()->GetGameObject())
+						{
+							minAggro = target->AggroValue;
+							_lastTarget = target->Target->GetTransform();
+							continue;
+						}
 					}
 
 					if (target->AggroValue > minAggro)
@@ -293,84 +331,214 @@ void RagnarosBattle::Update()
 			}
 		}
 
-		bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
-
-		if (isAlive)
+		if (_targetTransform.lock())
 		{
-			Vec3 myPos = _transform.lock()->GetLocalPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
-			targetPos.y = myPos.y;
-			Vec3 toTargetDir = targetPos - myPos;
+			bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
 
-			//타겟 방향으로 회전
+			if (isAlive)
 			{
-				if (toTargetDir.Length() > 0)
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
 				{
-					toTargetDir.Normalize(toTargetDir);
+					if (toTargetDir.Length() > 0)
 					{
-						Vec3 myForward = _transform.lock()->GetLookVector();
-						Vec3 myRight = _transform.lock()->GetRightVector();
-						Vec3 myUp = Vec3(0, 1, 0);
-
-						myForward.Normalize();
-
-						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
-						float angle = acosf(dotAngle);
-
-						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-						float LeftRight = cross.Dot(myUp);
-
-						if (LeftRight < 0)
+						toTargetDir.Normalize(toTargetDir);
 						{
-							angle = -angle;
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
 						}
+					}
+				}
 
-						angle = angle * _totargetRotationSpeed * _dt;
+				//Ability Transition
+				{
+					_abilityTimer += _dt;
+					_abilityTimer2 += _dt;
 
-						Vec3 myRot = _transform.lock()->GetLocalRotation();
-						myRot.y += angle;
-						_transform.lock()->SetLocalRotation(myRot);
+					if (_abilityTimer2 > _abilityTime2)
+					{
+						_abilityTimer2 = 0.f;
+						Out(L"RagnarosAbility2");
+						return;
+					}
+					else if (_abilityTimer > _abilityTime)
+					{
+						_abilityTimer = 0.f;
+						Out(L"RagnarosAbility1");
+						return;
+					}
+				}
+
+				toTargetDir.Normalize(toTargetDir);
+				float distance = Vec3::Distance(myPos, targetPos);
+
+				if (distance <= _attackRange)
+				{
+					_attackTimeCal += _dt;
+
+					//Attack Transition
+					if (_attackTimeCal >= _attackTime)
+					{
+						_attackTimeCal = 0.f;
+						Out(L"RagnarosAttack");
 					}
 				}
 			}
-
-			//Ability Transition
+			else
 			{
-				_abilityTimer += _dt;
-				_abilityTimer2 += _dt;
-
-				if (_abilityTimer2 > _abilityTime2)
-				{
-					_abilityTimer2 = 0.f;
-					Out(L"RagnarosAbility2");
-					return;
-				}
-				else if (_abilityTimer > _abilityTime)
-				{
-					_abilityTimer = 0.f;
-					Out(L"RagnarosAbility1");
-					return;
-				}
+				Out(L"RagnarosStand");
 			}
+		}
+	}
+}
 
-			toTargetDir.Normalize(toTargetDir);
-			float distance = Vec3::Distance(myPos, targetPos);
+void RagnarosBattle::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
 
-			if (distance <= _attackRange)
-			{
-				_attackTimeCal += _dt;
-
-				//Attack Transition
-				if (_attackTimeCal >= _attackTime)
-				{
-					_attackTimeCal = 0.f;
-					Out(L"RagnarosAttack");
-				}
-			}
+		//Target update
+		if (_targetList.lock()->size() <= 0)
+		{
+			Out(L"RagnarosStand");
 		}
 		else
 		{
-			Out(L"RagnarosStand");
+			if (_targetList.lock()->size() > 0)
+			{
+				float minAggro = 0.f;
+				shared_ptr<Transform> _lastTarget;
+				for (auto& target : *_targetList.lock())
+				{
+					if (_targetTransform.lock())
+					{
+						if (target->Target == _targetTransform.lock()->GetGameObject())
+						{
+							minAggro = target->AggroValue;
+							_lastTarget = target->Target->GetTransform();
+							continue;
+						}
+					}
+
+					if (target->AggroValue > minAggro)
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+					}
+				}
+
+				if (_lastTarget)
+				{
+					_targetTransform = _lastTarget;
+					_controller.lock()->SetTargetTransform(_targetTransform.lock());
+				}
+			}
+		}
+
+		if (_targetTransform.lock())
+		{
+			bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+
+			if (isAlive)
+			{
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
+				{
+					if (toTargetDir.Length() > 0)
+					{
+						toTargetDir.Normalize(toTargetDir);
+						{
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
+						}
+					}
+				}
+
+				//Ability Transition
+				{
+					_abilityTimer += _dt;
+					_abilityTimer2 += _dt;
+
+					if (_abilityTimer2 > _abilityTime2)
+					{
+						_abilityTimer2 = 0.f;
+						Out(L"RagnarosAbility2");
+						return;
+					}
+					else if (_abilityTimer > _abilityTime)
+					{
+						_abilityTimer = 0.f;
+						Out(L"RagnarosAbility1");
+						return;
+					}
+				}
+
+				toTargetDir.Normalize(toTargetDir);
+				float distance = Vec3::Distance(myPos, targetPos);
+
+				if (distance <= _attackRange)
+				{
+					_attackTimeCal += _dt;
+
+					//Attack Transition
+					if (_attackTimeCal >= _attackTime)
+					{
+						_attackTimeCal = 0.f;
+						Out(L"RagnarosAttack");
+					}
+				}
+			}
+			else
+			{
+				Out(L"RagnarosStand");
+			}
 		}
 	}
 }
@@ -452,12 +620,15 @@ void RagnarosAttack::Enter(const shared_ptr<AIController>& controller, const wst
 			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
 			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
 
-			auto targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
-
-			if (targetCon != nullptr)
+			if (_targetTransform.lock())
 			{
-				float attackDamage = _characterInfo.lock()->GetCharacterInfo()._atk;
-				targetCon->TakeDamage(_transform.lock()->GetGameObject(), attackDamage);
+				auto targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
+
+				if (targetCon != nullptr)
+				{
+					float attackDamage = _characterInfo.lock()->GetCharacterInfo()._atk;
+					targetCon->TakeDamage(_transform.lock()->GetGameObject(), attackDamage);
+				}
 			}
 
 			_randAttack = rand() % 2;
@@ -489,41 +660,98 @@ void RagnarosAttack::Update()
 			Out(L"RagnarosBattle");
 		}
 
-		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		if (_targetTransform.lock())
 		{
-			Vec3 myPos = _transform.lock()->GetLocalPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
-			targetPos.y = myPos.y;
-			Vec3 toTargetDir = targetPos - myPos;
-
-			//타겟 방향으로 회전
+			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 			{
-				if (toTargetDir.Length() > 0)
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
 				{
-					toTargetDir.Normalize(toTargetDir);
+					if (toTargetDir.Length() > 0)
 					{
-						Vec3 myForward = _transform.lock()->GetLookVector();
-						Vec3 myRight = _transform.lock()->GetRightVector();
-						Vec3 myUp = Vec3(0, 1, 0);
-
-						myForward.Normalize();
-
-						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
-						float angle = acosf(dotAngle);
-
-						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-						float LeftRight = cross.Dot(myUp);
-
-						if (LeftRight < 0)
+						toTargetDir.Normalize(toTargetDir);
 						{
-							angle = -angle;
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
 						}
+					}
+				}
+			}
+		}
+	}
+}
 
-						angle = angle * _totargetRotationSpeed * _dt;
+void RagnarosAttack::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
 
-						Vec3 myRot = _transform.lock()->GetLocalRotation();
-						myRot.y += angle;
-						_transform.lock()->SetLocalRotation(myRot);
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			Out(L"RagnarosBattle");
+		}
+
+		if (_targetTransform.lock())
+		{
+			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			{
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
+				{
+					if (toTargetDir.Length() > 0)
+					{
+						toTargetDir.Normalize(toTargetDir);
+						{
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
+						}
 					}
 				}
 			}
@@ -605,45 +833,109 @@ void RagnarosAbility1::Update()
 
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_abilitySlot.lock()->ExecuteAbility(0, _targetTransform.lock()->GetGameObject());
+			if (_targetTransform.lock())
+			{
+				_abilitySlot.lock()->ExecuteAbility(0, _targetTransform.lock()->GetGameObject());
+			}
 			Out(L"RagnarosBattle");
 		}
 
-		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		if (_targetTransform.lock())
 		{
-			Vec3 myPos = _transform.lock()->GetLocalPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
-			targetPos.y = myPos.y;
-			Vec3 toTargetDir = targetPos - myPos;
-
-			//타겟 방향으로 회전
+			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 			{
-				if (toTargetDir.Length() > 0)
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
 				{
-					toTargetDir.Normalize(toTargetDir);
+					if (toTargetDir.Length() > 0)
 					{
-						Vec3 myForward = _transform.lock()->GetLookVector();
-						Vec3 myRight = _transform.lock()->GetRightVector();
-						Vec3 myUp = Vec3(0, 1, 0);
-
-						myForward.Normalize();
-
-						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
-						float angle = acosf(dotAngle);
-
-						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-						float LeftRight = cross.Dot(myUp);
-
-						if (LeftRight < 0)
+						toTargetDir.Normalize(toTargetDir);
 						{
-							angle = -angle;
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
 						}
+					}
+				}
+			}
+		}
+	}
+}
 
-						angle = angle * _totargetRotationSpeed * _dt;
+void RagnarosAbility1::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
 
-						Vec3 myRot = _transform.lock()->GetLocalRotation();
-						myRot.y += angle;
-						_transform.lock()->SetLocalRotation(myRot);
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			if (_targetTransform.lock())
+			{
+				_abilitySlot.lock()->ExecuteAbility(0, _targetTransform.lock()->GetGameObject());
+			}
+			Out(L"RagnarosBattle");
+		}
+
+		if (_targetTransform.lock())
+		{
+			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			{
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
+				{
+					if (toTargetDir.Length() > 0)
+					{
+						toTargetDir.Normalize(toTargetDir);
+						{
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
+						}
 					}
 				}
 			}
@@ -725,48 +1017,114 @@ void RagnarosAbility2::Update()
 
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			_abilitySlot.lock()->ExecuteAbility(1, _targetTransform.lock()->GetGameObject());
+			if (_targetTransform.lock())
+			{
+				_abilitySlot.lock()->ExecuteAbility(1, _targetTransform.lock()->GetGameObject());
+			}
 			Out(L"RagnarosBattle");
 		}
 
-		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		if (_targetTransform.lock())
 		{
-			Vec3 myPos = _transform.lock()->GetLocalPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
-			targetPos.y = myPos.y;
-			Vec3 toTargetDir = targetPos - myPos;
-
-			//타겟 방향으로 회전
+			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 			{
-				if (toTargetDir.Length() > 0)
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
 				{
-					toTargetDir.Normalize(toTargetDir);
+					if (toTargetDir.Length() > 0)
 					{
-						Vec3 myForward = _transform.lock()->GetLookVector();
-						Vec3 myRight = _transform.lock()->GetRightVector();
-						Vec3 myUp = Vec3(0, 1, 0);
-
-						myForward.Normalize();
-
-						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
-						float angle = acosf(dotAngle);
-
-						Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
-						float LeftRight = cross.Dot(myUp);
-
-						if (LeftRight < 0)
+						toTargetDir.Normalize(toTargetDir);
 						{
-							angle = -angle;
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
 						}
-
-						angle = angle * _totargetRotationSpeed * _dt;
-
-						Vec3 myRot = _transform.lock()->GetLocalRotation();
-						myRot.y += angle;
-						_transform.lock()->SetLocalRotation(myRot);
 					}
 				}
 			}
+
+		}
+	}
+}
+
+void RagnarosAbility2::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			if (_targetTransform.lock())
+			{
+				_abilitySlot.lock()->ExecuteAbility(1, _targetTransform.lock()->GetGameObject());
+			}
+			Out(L"RagnarosBattle");
+		}
+
+		if (_targetTransform.lock())
+		{
+			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			{
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
+				{
+					if (toTargetDir.Length() > 0)
+					{
+						toTargetDir.Normalize(toTargetDir);
+						{
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
+						}
+					}
+				}
+			}
+
 		}
 	}
 }
@@ -817,7 +1175,6 @@ void RagnarosEncounterEvent1::Update()
 	{
 		if (_targetList.lock()->size() > 0)
 		{
-			//Taget 후보 결정
 			map<float, shared_ptr<TargetDesc>> ToTargetList;
 
 			for (const auto& target : *_targetList.lock())
@@ -828,7 +1185,44 @@ void RagnarosEncounterEvent1::Update()
 				bool& isAlive = target->Target->GetComponent<CharacterController>()->_isAlive;
 				float Length = Vec3::Distance(myPos, targetPos);
 
-				//자신의 위치와 타겟 위치가 추적거리 안에 존재 할 경우 탐색
+				if (Length <= _encounterDistance && isAlive)
+				{
+					ToTargetList.insert(make_pair(Length, target));
+				}
+			}
+
+			if (ToTargetList.size() > 0)
+			{
+				float minDistance = ToTargetList.begin()->first;
+				shared_ptr<GameObject> FinalTarget;
+				FinalTarget = ToTargetList.begin()->second->Target;
+
+				if (FinalTarget != nullptr)
+				{
+					_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+					Out(L"RagnarosEncounterEvent2");
+				}
+			}
+		}
+	}
+}
+
+void RagnarosEncounterEvent1::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		if (_targetList.lock()->size() > 0)
+		{
+			map<float, shared_ptr<TargetDesc>> ToTargetList;
+
+			for (const auto& target : *_targetList.lock())
+			{
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = target->Target->GetTransform()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				bool& isAlive = target->Target->GetComponent<CharacterController>()->_isAlive;
+				float Length = Vec3::Distance(myPos, targetPos);
+
 				if (Length <= _encounterDistance && isAlive)
 				{
 					ToTargetList.insert(make_pair(Length, target));
@@ -920,6 +1314,17 @@ void RagnarosEncounterEvent2::Update()
 	}
 }
 
+void RagnarosEncounterEvent2::UpdateFromServer()
+{
+	if (_controller.lock() != nullptr)
+	{
+		if (_animator.lock()->GetFrameEnd())
+		{
+			Out(L"RagnarosBattle");
+		}
+	}
+}
+
 void RagnarosEncounterEvent2::Out(const wstring& nextTransition)
 {
 	if (_controller.lock() != nullptr)
@@ -943,6 +1348,10 @@ void RagnarosAllDeadEvent::Enter(const shared_ptr<AIController>& controller, con
 }
 
 void RagnarosAllDeadEvent::Update()
+{
+}
+
+void RagnarosAllDeadEvent::UpdateFromServer()
 {
 }
 

@@ -19,7 +19,7 @@ class BossScene : public Scene
 	//Map
 	shared_ptr<FrustomCamera> frustom;
 	//Spawn Pos
-	Vec3 spawnPos = Vec3(0,0,0);
+	Vec3 spawnPos = Vec3(14,36,305);
 	//obj
 	shared_ptr<Terrain> _terrain;
 	shared_ptr<QuadTreeTerrain> quadTreeTerrain;

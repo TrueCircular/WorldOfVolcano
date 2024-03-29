@@ -203,7 +203,70 @@ void DungeonScene::Update()
 		sendInfo._pos = _warrior->GetTransform()->GetPosition();
 		sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
 		sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
-		sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
+		PlayerAnimType animType = _warrior->GetComponent<PlayerController>()->GetCurrentAnimType();
+		PlayerUnitState unitState = PlayerUnitState::Stand;
+		switch (animType)
+		{
+		case PlayerAnimType::Stand:
+			unitState = PlayerUnitState::Stand;
+			break;
+		case PlayerAnimType::FrontWalk:
+			unitState = PlayerUnitState::FrontMove;
+			break;
+		case PlayerAnimType::BackWalk:
+			unitState = PlayerUnitState::BackMove;
+			break;
+		case PlayerAnimType::FrontRun:
+			unitState = PlayerUnitState::FrontMove;
+			break;
+		case PlayerAnimType::BackRun:
+			unitState = PlayerUnitState::BackMove;
+			break;
+		case PlayerAnimType::JumpStart:
+			unitState = PlayerUnitState::Jump;
+			break;
+		case PlayerAnimType::JumpFall:
+			unitState = PlayerUnitState::Jump;
+			break;
+		case PlayerAnimType::JumpEnd:
+			unitState = PlayerUnitState::Jump;
+			break;
+		case PlayerAnimType::Stun:
+			unitState = PlayerUnitState::Stun;
+			break;
+		case PlayerAnimType::Loot:
+			unitState = PlayerUnitState::Loot;
+			break;
+		case PlayerAnimType::Damaged:
+			unitState = PlayerUnitState::Damaged;
+			break;
+		case PlayerAnimType::Death:
+			unitState = PlayerUnitState::Death;
+			break;
+		case PlayerAnimType::Battle:
+			unitState = PlayerUnitState::Battle;
+			break;
+		case PlayerAnimType::Attack1:
+			unitState = PlayerUnitState::Attack;
+			break;
+		case PlayerAnimType::Attack2:
+			unitState = PlayerUnitState::Attack;
+			break;
+		case PlayerAnimType::Casting:
+			break;
+		case PlayerAnimType::Ability1:
+			unitState = PlayerUnitState::Ability1;
+			break;
+		case PlayerAnimType::Ability2:
+			unitState = PlayerUnitState::Ability2;
+			break;
+		case PlayerAnimType::None:
+			unitState = PlayerUnitState::None;
+			break;
+		default:
+			break;
+		}
+		sendInfo._animState = unitState;
 		sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
 
 		//SendBuffer
@@ -219,22 +282,6 @@ void DungeonScene::Update()
 	if (MANAGER_IMGUI()->GetRebirthQueueSize() > 0)
 	{
 		_warrior->GetComponent<PlayerController>()->Respawn();
-	}
-
-	//Event
-	{
-		PacketEvent packetEvent = MANAGER_EVENT()->PopEvent();
-		SendBufferRef eventBuffer;
-
-		switch (packetEvent.type)
-		{
-		case PacketEventType::DamageRequest:
-			eventBuffer = ClientPacketHandler::Instance().Make_BATTLE(packetEvent.damage, packetEvent.targetId);
-			_service->Broadcast(eventBuffer);
-			break;
-		default:
-			break;
-		}
 	}
 
 	SendBufferRef mobBuffer;
@@ -253,15 +300,35 @@ void DungeonScene::Update()
 	}
 	else
 	{
+		bool isBattle = false;
+		//Event
+		{
+			PacketEvent packetEvent = MANAGER_EVENT()->PopEvent();
+			SendBufferRef eventBuffer;
+
+			switch (packetEvent.type)
+			{
+			case PacketEventType::DamageRequest:
+				eventBuffer = ClientPacketHandler::Instance().Make_BATTLE(packetEvent.damage, packetEvent.targetId);
+				_service->Broadcast(eventBuffer);
+				isBattle = true;
+				break;
+			default:
+				break;
+			}
+		}
+
 		if (ClientPacketHandler::Instance().GetIsMapHost() == true)
 		{
 			for (auto pair : SpawnManager::GetInstance().GetCurrentMobList())
 			{
+				if (isBattle == true) break;
 				MONSTER_INFO mobInfo = ClientPacketHandler::Instance().GetMobInfo(pair.first);
 				CHARACTER_INFO chrInfo = pair.second->GetComponent<CharacterInfo>()->GetCharacterInfo();
 				mobInfo = ClientPacketHandler::Instance().CopyChraracterToMobInfo(chrInfo, mobInfo);
 				ClientPacketHandler::Instance().UpdateMobInfo(pair.first, mobInfo);
 				wstring mobName = pair.second->GetComponent<AIController>()->GetUnitFsm()->GetStrategyName();
+
 				mobBuffer = ClientPacketHandler::Instance().Make_MONSTER_INFO(mobInfo, mobName);
 				_service->Broadcast(mobBuffer);
 			}
@@ -328,10 +395,10 @@ void DungeonScene::Update()
 		MANAGER_SCENE()->ChangeScene(scene);
 	}
 
-	if (MANAGER_INPUT()->GetButton(KEY_TYPE::E))
+	/*if (MANAGER_INPUT()->GetButton(KEY_TYPE::E))
 	{
 		_warrior->GetComponent<PlayerController>()->Respawn();
-	}
+	}*/
 }
 
 void DungeonScene::LateUpdate()

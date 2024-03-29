@@ -279,9 +279,6 @@ void AIController::Start()
 		}
 	}
 
-	//Test
-	_isAiHost = true;
-
 	InitState();
 }
 

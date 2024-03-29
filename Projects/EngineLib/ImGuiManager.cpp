@@ -420,11 +420,7 @@ void ImGuiManager::Update()
                     WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
                     if (ImGui::Button(charBuffer, buttonSize))
                     {
-                        //TODO
-                        for (int i = 0; i < 10; ++i)
-                        {
-                            _rebirthQueue.push(true);
-                        }
+                        _rebirthQueue.push(true);
 
                         show_death_window = false;
                     }
@@ -857,7 +853,12 @@ int ImGuiManager::GetRebirthQueueSize()
     if (_rebirthQueue.empty() == false)
     {
         int queueSize = _rebirthQueue.size();
-        _rebirthQueue.pop();
+
+        while (_rebirthQueue.empty() == false)
+        {
+            _rebirthQueue.pop();
+        }
+
         return queueSize;
     }
 

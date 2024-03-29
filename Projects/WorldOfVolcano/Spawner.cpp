@@ -106,6 +106,11 @@ void Spawner::SpawnOtherPlayer(uint64 uid, Vec3 spawnPos)
 void Spawner::SpawnOtherPlayers()
 {
 	for (const auto& pair : ClientPacketHandler::Instance().GetOtherUserInfoMap()) {
+		if (pair.second._spawnMapType == MapType::BossRoom)
+		{
+			cout << "sgd";
+		}
+		
 		if (pair.second._spawnMapType != _spawnMapType)
 		{
 			//내 Map정보가 아니면 스킵
@@ -343,9 +348,14 @@ void Spawner::SpawnMonsters()
 		else
 		{
 			//다른플레이어 처음 등장시 스폰
-			if (pair.second._isAlive == true)
+			if (pair.second._isAlive == true && ragnarosSpawned == false)
 			{
 				SpawnMonster(pair.first, pair.second);
+				// 만약 Ragnaros를 소환하면 플래그를 설정하여 다음 소환을 막음
+				if (pair.second._monsterType == MonsterType::Ragnaros)
+				{
+					ragnarosSpawned = true;
+				}
 			}
 		}
 	}

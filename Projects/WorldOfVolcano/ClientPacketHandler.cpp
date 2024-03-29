@@ -152,14 +152,14 @@ void ClientPacketHandler::Handle_USER_INFO(BYTE* buffer, int32 len)
 
 void ClientPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 {
+	std::lock_guard<std::mutex> lock(_mutex);
+
 	BufferReader br(buffer, len);
 
 	PacketHeader header;
 	br >> header;
 
 	//br의 커서가 끝에 도달할때까지 계속 뽑아냄
-	std::lock_guard<std::mutex> lock(_mutex);
-
 	while (br.ReadSize() < br.Size())
 	{
 		PACKET_Mob_INFO mobInfo;
@@ -204,10 +204,12 @@ void ClientPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 		if (it != _mobInfoList.end())
 		{
 			MONSTER_INFO realMobInfo = CopyPacketMonsterInfo(mobInfo, name);
+
 			if (realMobInfo._hp == 0)
 			{
 				realMobInfo._isAlive = false;
 			}
+
 			it->second = realMobInfo;
 		}
 		else
@@ -456,6 +458,33 @@ void ClientPacketHandler::GenerateMobList()
 
 		AddMobInfoList(id, mobInfo);
 	}
+
+	MONSTER_INFO mobInfo;
+
+	mobInfo._instanceId = 99;
+
+	wstring name = L"Ragnaros";
+	mobInfo._pos = Vec3(30, 30, 30);
+	mobInfo._spawnMapType = MapType::BossRoom;
+
+	auto chinfo = make_shared<CharacterInfo>();
+	CHARACTER_INFO chrInfo;
+
+	wstring LoadPath = DATA_ADDR_UNIT;
+	LoadPath += L"Ragnaros/Information.xml";
+	chinfo->LoadCharacterInformationFromFile(LoadPath);
+	chrInfo = chinfo->GetCharacterInfo();
+	mobInfo._monsterType = MonsterType::Ragnaros;
+	mobInfo._name = L"Ragnaros";
+
+	mobInfo._hp = chrInfo._hp;
+	mobInfo._maxHp = mobInfo._hp;
+	mobInfo._mp = chrInfo._mp;
+	mobInfo._maxMp = chrInfo._mp;
+	mobInfo._atk = chrInfo._atk;
+	mobInfo._def = chrInfo._def;
+
+	AddMobInfoList(99, mobInfo);
 }
 
 MONSTER_INFO ClientPacketHandler::GetMobInfo(uint64 uid)

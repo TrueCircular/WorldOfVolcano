@@ -55,10 +55,14 @@ void AFireExplosion::Enter(const shared_ptr<GameObject>& target)
 	if (_fireExplosionInstance != nullptr)
 	{
 		shared_ptr<Transform> pos = make_shared<Transform>();
-		Vec3 offset = _ownerTargetTransform.lock()->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition();
-		offset.y += 10.f;
-		pos->SetLocalPosition(offset);
-		pos->SetLocalScale(Vec3(50.f));
+		//임시수정
+		if (_ownerTargetTransform.lock())
+		{
+			Vec3 offset = _ownerTargetTransform.lock()->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition();
+			offset.y += 10.f;
+			pos->SetLocalPosition(offset);
+			pos->SetLocalScale(Vec3(50.f));
+		}
 
 		_fireExplosionInstance->SetInstance(1, pos, nullptr, 100, false);
 	}

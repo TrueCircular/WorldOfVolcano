@@ -81,6 +81,12 @@ void ServerPacketHandler::Handle_MONSTER_INFO(BYTE* buffer, int32 len)
 		_strategyName.insert(make_pair(info._instanceId, name));
 	}
 
+	auto infoIt = GSessionManager.GetMobInfoList().find(info._instanceId);
+	if (infoIt != GSessionManager.GetMobInfoList().end())
+	{
+		info._hp = infoIt->second._hp;
+	}
+	
 	GSessionManager.UpdateMobInfo(info);
 }
 

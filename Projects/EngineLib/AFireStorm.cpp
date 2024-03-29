@@ -55,10 +55,14 @@ void AFireStorm::Enter(const shared_ptr<GameObject>& target)
 	if (_fireStormInstance != nullptr)
 	{
 		shared_ptr<Transform> pos = make_shared<Transform>();
-		pos->SetLocalPosition(_ownerTransform.lock()->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition());
-		pos->SetLocalScale(Vec3(2.5f));
+		//임시수정
+		if (_ownerTransform.lock())
+		{
+			pos->SetLocalPosition(_ownerTransform.lock()->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition());
+			pos->SetLocalScale(Vec3(2.5f));
 
-		_fireStormInstance->SetInstance(100, pos, _ownerTargetTransform.lock(), 100, false);
+			_fireStormInstance->SetInstance(100, pos, _ownerTargetTransform.lock(), 100, false);
+		}
 	}
 }
 

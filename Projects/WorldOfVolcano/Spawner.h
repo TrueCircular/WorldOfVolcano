@@ -43,4 +43,5 @@ private:
 	shared_ptr<AIController> _aiCon;
 	map<uint64, shared_ptr<GameObject>> _otherPlayers;
 	map<uint64, shared_ptr<GameObject>> _monsters;
+	bool ragnarosSpawned = false;
 };

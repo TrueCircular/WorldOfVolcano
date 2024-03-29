@@ -200,7 +200,13 @@ void MoltenGiantDamaged::Update()
 
 void MoltenGiantDamaged::UpdateFromServer()
 {
-
+	if (_controller.lock() != nullptr)
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			Out(L"MoltenGiantBattle");
+		}
+	}
 }
 
 void MoltenGiantDamaged::Out(const wstring& nextTransition)
@@ -258,6 +264,17 @@ void MoltenGiantStun::Update()
 
 void MoltenGiantStun::UpdateFromServer()
 {
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+		_stunTimer += _dt;
+
+		if (_stunTimer > _stunTime)
+		{
+			Out(_prevTransition);
+		}
+
+	}
 }
 
 void MoltenGiantStun::Out(const wstring& nextTransition)
@@ -337,7 +354,21 @@ void MoltenGiantDead::Update()
 
 void MoltenGiantDead::UpdateFromServer()
 {
+	if (_controller.lock() != nullptr)
+	{
+		_dt += MANAGER_TIME()->GetDeltaTime();
 
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			_controller.lock()->DeadEvent();
+		}
+
+		if (_dt > _soundTimer && _soundFlag == false)
+		{
+			_deadSound->Play(false);
+			_soundFlag = true;
+		}
+	}
 }
 
 void MoltenGiantDead::Out(const wstring& nextTransition)
@@ -496,30 +527,36 @@ void MoltenGiantTrace::UpdateFromServer()
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_targetList.lock()->size() > 0)
+		//Target Update
 		{
-			float minAggro = 0.f;
-			shared_ptr<Transform> _lastTarget;
-			for (auto& target : *_targetList.lock())
+			if (_targetList.lock()->size() > 0)
 			{
-				if (target->Target == _targetTransform.lock()->GetGameObject())
+				float minAggro = 0.f;
+				shared_ptr<Transform> _lastTarget;
+				for (auto& target : *_targetList.lock())
 				{
-					minAggro = target->AggroValue;
-					_lastTarget = target->Target->GetTransform();
-					continue;
+					if (_targetTransform.lock())
+					{
+						if (target->Target == _targetTransform.lock()->GetGameObject())
+						{
+							minAggro = target->AggroValue;
+							_lastTarget = target->Target->GetTransform();
+							continue;
+						}
+					}
+
+					if (target->AggroValue > minAggro)
+					{
+						minAggro = target->AggroValue;
+						_lastTarget = target->Target->GetTransform();
+					}
 				}
 
-				if (target->AggroValue > minAggro)
+				if (_lastTarget)
 				{
-					minAggro = target->AggroValue;
-					_lastTarget = target->Target->GetTransform();
+					_targetTransform = _lastTarget;
+					_controller.lock()->SetTargetTransform(_targetTransform.lock());
 				}
-			}
-
-			if (_lastTarget)
-			{
-				_targetTransform = _lastTarget;
-				_controller.lock()->SetTargetTransform(_targetTransform.lock());
 			}
 		}
 	}
@@ -626,7 +663,56 @@ void MoltenGiantMoveToSpwanPoint::Update()
 
 void MoltenGiantMoveToSpwanPoint::UpdateFromServer()
 {
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
 
+		Vec3 myPos = _transform.lock()->GetLocalPosition();
+		_spwanPos.y = myPos.y;
+		Vec3 toTargetDir = _spwanPos - myPos;
+
+		//타겟 방향으로 회전
+		{
+			if (toTargetDir.Length() > 0)
+			{
+				toTargetDir.Normalize(toTargetDir);
+				{
+					Vec3 myForward = _transform.lock()->GetLookVector();
+					Vec3 myRight = _transform.lock()->GetRightVector();
+					Vec3 myUp = Vec3(0, 1, 0);
+
+					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+					float angle = acosf(dotAngle);
+
+					Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+					float LeftRight = cross.Dot(myUp);
+
+					if (LeftRight < 0)
+					{
+						angle = -angle;
+					}
+
+					angle = angle * _totargetRotationSpeed * _dt;
+
+					Vec3 myRot = _transform.lock()->GetLocalRotation();
+					myRot.y += angle;
+					_transform.lock()->SetLocalRotation(myRot);
+				}
+			}
+		}
+
+		toTargetDir.Normalize(toTargetDir);
+
+		float moveToLength = Vec3::Distance(myPos, _spwanPos);
+
+		if (moveToLength > 2.f + FLT_EPSILON)
+		{
+		}
+		else
+		{
+			Out(L"MoltenGiantStand");
+		}
+	}
 }
 
 void MoltenGiantMoveToSpwanPoint::Out(const wstring& nextTransition)
@@ -804,37 +890,118 @@ void MoltenGiantBattle::UpdateFromServer()
 		_dt = MANAGER_TIME()->GetDeltaTime();
 		_traceTime += _dt;
 
-		bool& tempisAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+		if (_targetTransform.lock())
+		{
 
-		//Target update
-		if (_targetList.lock()->size() <= 0 || tempisAlive == false)
-		{
-			cout << "true";
-		}
-		else
-		{
-			float minAggro = 0.f;
-			shared_ptr<Transform> _lastTarget;
-			for (auto& target : *_targetList.lock())
+			bool& tempisAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+
+			//Target update
+			if (_targetList.lock()->size() <= 0 || tempisAlive == false)
 			{
-				if (target->Target == _targetTransform.lock()->GetGameObject())
+				Out(L"MoltenGiantMoveToSpwanPoint");
+			}
+			else
+			{
+				if (_targetList.lock()->size() > 0)
 				{
-					minAggro = target->AggroValue;
-					_lastTarget = target->Target->GetTransform();
-					continue;
-				}
+					float minAggro = 0.f;
+					shared_ptr<Transform> _lastTarget;
+					for (auto& target : *_targetList.lock())
+					{
+						if (target->Target == _targetTransform.lock()->GetGameObject())
+						{
+							minAggro = target->AggroValue;
+							_lastTarget = target->Target->GetTransform();
+							continue;
+						}
 
-				if (target->AggroValue > minAggro)
-				{
-					minAggro = target->AggroValue;
-					_lastTarget = target->Target->GetTransform();
+						if (target->AggroValue > minAggro)
+						{
+							minAggro = target->AggroValue;
+							_lastTarget = target->Target->GetTransform();
+						}
+					}
+
+					if (_lastTarget)
+					{
+						_targetTransform = _lastTarget;
+						_controller.lock()->SetTargetTransform(_targetTransform.lock());
+					}
 				}
 			}
 
-			if (_lastTarget)
+			bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+
+			if (isAlive)
 			{
-				_targetTransform = _lastTarget;
-				_controller.lock()->SetTargetTransform(_targetTransform.lock());
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
+				//타겟 방향으로 회전
+				{
+					if (toTargetDir.Length() > 0)
+					{
+						toTargetDir.Normalize(toTargetDir);
+						{
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
+						}
+					}
+				}
+
+				toTargetDir.Normalize(toTargetDir);
+				float distance = Vec3::Distance(myPos, targetPos);
+
+				if (distance <= _attackRange)
+				{
+					_attackTimeCal += _dt;
+
+					//Attack Transition
+					{
+						if (_attackTimeCal >= _attackTime)
+						{
+							_attackTimeCal = 0.f;
+							Out(L"MoltenGiantAttack");
+						}
+					}
+				}
+				else if (distance > _attackRange && distance <= _traceRadius)
+				{
+					if (_traceTime + FLT_EPSILON > _traceWaitingTime)
+					{
+						Out(L"MoltenGiantTrace");
+					}
+				}
+				else if (distance > _attackRange && distance > _traceRadius)
+				{
+					Out(L"MoltenGiantMoveToSpwanPoint");
+				}
+			}
+			else
+			{
+				Out(L"MoltenGiantMoveToSpwanPoint");
 			}
 		}
 	}
@@ -917,12 +1084,19 @@ void MoltenGiantAttack::Enter(const shared_ptr<AIController>& controller, const 
 			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
 			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
 
-			auto targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
-
-			if (targetCon != nullptr)
+			if (_targetTransform.lock())
 			{
-				float attackDamage = _characterInfo.lock()->GetCharacterInfo()._atk;
-				targetCon->TakeDamage(_transform.lock()->GetGameObject(), attackDamage);
+				auto targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
+
+				if (targetCon != nullptr)
+				{
+					float distance = Vec3::Distance(_transform.lock()->GetLocalPosition(), _targetTransform.lock()->GetLocalPosition());
+					if (distance < 60)
+					{
+						float attackDamage = _characterInfo.lock()->GetCharacterInfo()._atk;
+						targetCon->TakeDamage(_transform.lock()->GetGameObject(), attackDamage);
+					}
+				}
 			}
 
 			int randAttack = rand() % 2;
@@ -998,7 +1172,58 @@ void MoltenGiantAttack::Update()
 
 void MoltenGiantAttack::UpdateFromServer()
 {
-	cout << "server";
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			Out(L"MoltenGiantBattle");
+		}
+
+		if (_targetTransform.lock())
+		{
+			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			{
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				targetPos.y = myPos.y;
+				Vec3 toTargetDir = targetPos - myPos;
+
+				//타겟 방향으로 회전
+				{
+					if (toTargetDir.Length() > 0)
+					{
+						toTargetDir.Normalize(toTargetDir);
+						{
+							Vec3 myForward = _transform.lock()->GetLookVector();
+							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myUp = Vec3(0, 1, 0);
+
+							myForward.Normalize();
+
+							float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
+							float angle = acosf(dotAngle);
+
+							Vec3 cross = ::XMVector3Cross(myForward, toTargetDir);
+							float LeftRight = cross.Dot(myUp);
+
+							if (LeftRight < 0)
+							{
+								angle = -angle;
+							}
+
+							angle = angle * _totargetRotationSpeed * _dt;
+
+							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							myRot.y += angle;
+							_transform.lock()->SetLocalRotation(myRot);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void MoltenGiantAttack::Out(const wstring& nextTransition)

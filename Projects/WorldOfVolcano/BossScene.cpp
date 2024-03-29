@@ -18,7 +18,10 @@
 #include "engine/SphereCollider.h"
 #include "engine/AbilitySlot.h"
 #include "engine/StrategyFactory.h"
+#include "engine/UnitFSM.h"
+#include "engine/UnitStrategy.h"
 #include "ObjectExporter.h"
+#include "ObjectExporter2.h"
 #include "Demo.h"
 
 #include "engine\PlayerSoundController.h"
@@ -137,7 +140,7 @@ void BossScene::Init()
 
 	//monster
 	{
-		auto height = make_shared<HeightGetter>();
+		/*auto height = make_shared<HeightGetter>();
 		height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
 		Vec3 spwanPos = Vec3(103, 0, 240);
 		spwanPos.y = height->GetHeight(spwanPos);
@@ -149,7 +152,7 @@ void BossScene::Init()
 		ragnaros->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
 		ragnaros->Start();
 
-		Add(ragnaros);
+		Add(ragnaros);*/
 	}
 
 	MANAGER_INDICATOR()->SetCamera(_childCamera->GetCamera());
@@ -171,7 +174,7 @@ void BossScene::Init()
 	//	chs->isPlaying(&isplaynsd);
 	auto _playerAbSlot = _warrior->GetComponent<AbilitySlot>();
 	MANAGER_IMGUI()->SetAbilitySlot(_playerAbSlot);
-	//SpawnManager::GetInstance().Init();
+	SpawnManager::GetInstance().Init();
 }
 void BossScene::Start()
 {
@@ -194,11 +197,88 @@ void BossScene::Update()
 	sendInfo._pos = _warrior->GetTransform()->GetPosition();
 	sendInfo._Rotate = _warrior->GetTransform()->GetLocalRotation();
 	sendInfo._jumpFlag = *_warrior->GetComponent<PlayerController>()->GetJumpState();
-	sendInfo._animState = *_warrior->GetComponent<PlayerController>()->GetCurrentUnitState();
+	PlayerAnimType animType = _warrior->GetComponent<PlayerController>()->GetCurrentAnimType();
+	PlayerUnitState unitState = PlayerUnitState::Stand;
+	switch (animType)
+	{
+	case PlayerAnimType::Stand:
+		unitState = PlayerUnitState::Stand;
+		break;
+	case PlayerAnimType::FrontWalk:
+		unitState = PlayerUnitState::FrontMove;
+		break;
+	case PlayerAnimType::BackWalk:
+		unitState = PlayerUnitState::BackMove;
+		break;
+	case PlayerAnimType::FrontRun:
+		unitState = PlayerUnitState::FrontMove;
+		break;
+	case PlayerAnimType::BackRun:
+		unitState = PlayerUnitState::BackMove;
+		break;
+	case PlayerAnimType::JumpStart:
+		unitState = PlayerUnitState::Jump;
+		break;
+	case PlayerAnimType::JumpFall:
+		unitState = PlayerUnitState::Jump;
+		break;
+	case PlayerAnimType::JumpEnd:
+		unitState = PlayerUnitState::Jump;
+		break;
+	case PlayerAnimType::Stun:
+		unitState = PlayerUnitState::Stun;
+		break;
+	case PlayerAnimType::Loot:
+		unitState = PlayerUnitState::Loot;
+		break;
+	case PlayerAnimType::Damaged:
+		unitState = PlayerUnitState::Damaged;
+		break;
+	case PlayerAnimType::Death:
+		unitState = PlayerUnitState::Death;
+		break;
+	case PlayerAnimType::Battle:
+		unitState = PlayerUnitState::Battle;
+		break;
+	case PlayerAnimType::Attack1:
+		unitState = PlayerUnitState::Attack;
+		break;
+	case PlayerAnimType::Attack2:
+		unitState = PlayerUnitState::Attack;
+		break;
+	case PlayerAnimType::Casting:
+		break;
+	case PlayerAnimType::Ability1:
+		unitState = PlayerUnitState::Ability1;
+		break;
+	case PlayerAnimType::Ability2:
+		unitState = PlayerUnitState::Ability2;
+		break;
+	case PlayerAnimType::None:
+		unitState = PlayerUnitState::None;
+		break;
+	default:
+		break;
+	}
+	sendInfo._animState = unitState;
 	sendInfo._spawnMapType = SpawnManager::GetInstance().GetSpawnMapType();
 
 	_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
+
+	//Dead
+	if (sendInfo._hp <= 0)
+	{
+		MANAGER_IMGUI()->NotifyPlayerAlive(false);
+	}
+	//Rebirth
+	if (MANAGER_IMGUI()->GetRebirthQueueSize() > 0)
+	{
+		_warrior->GetComponent<PlayerController>()->Respawn(spawnPos);
+	}
+
+	SendBufferRef mobBuffer;
 	SpawnManager::GetInstance().Update();
+
 
 #pragma region Client Thread
 	//12����1�� = 83.33ms
@@ -211,6 +291,39 @@ void BossScene::Update()
 	}
 	else
 	{
+		bool isBattle = false;
+		//Event
+		{
+			PacketEvent packetEvent = MANAGER_EVENT()->PopEvent();
+			SendBufferRef eventBuffer;
+
+			switch (packetEvent.type)
+			{
+			case PacketEventType::DamageRequest:
+				eventBuffer = ClientPacketHandler::Instance().Make_BATTLE(packetEvent.damage, packetEvent.targetId);
+				_service->Broadcast(eventBuffer);
+				isBattle = true;
+				break;
+			default:
+				break;
+			}
+		}
+
+		if (ClientPacketHandler::Instance().GetIsMapHost() == true)
+		{
+			for (auto pair : SpawnManager::GetInstance().GetCurrentMobList())
+			{
+				MONSTER_INFO mobInfo = ClientPacketHandler::Instance().GetMobInfo(pair.first);
+				CHARACTER_INFO chrInfo = pair.second->GetComponent<CharacterInfo>()->GetCharacterInfo();
+				mobInfo = ClientPacketHandler::Instance().CopyChraracterToMobInfo(chrInfo, mobInfo);
+				ClientPacketHandler::Instance().UpdateMobInfo(pair.first, mobInfo);
+				wstring mobName = pair.second->GetComponent<AIController>()->GetUnitFsm()->GetStrategyName();
+
+				mobBuffer = ClientPacketHandler::Instance().Make_MONSTER_INFO(mobInfo, mobName);
+				_service->Broadcast(mobBuffer);
+			}
+		}
+
 		if (_sendBuffer != nullptr)
 		{
 			_service->Broadcast(_sendBuffer);

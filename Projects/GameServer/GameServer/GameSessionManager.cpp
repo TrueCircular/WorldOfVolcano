@@ -122,6 +122,23 @@ void GameSessionManager::CheckAndResetMonster()
 			}
 			break;
 		}
+		if (user.second._spawnMapType == MapType::BossRoom)
+		{
+			isDungeon = true;
+
+			for (GameSessionRef session : _sessions)
+			{
+				uint64 sessionId = session->GetSessionId();
+				if (user.first == sessionId)
+				{
+					SendBufferRef sendBuffer = ServerPacketHandler::Make_HOST(true);
+					session->Send(sendBuffer);
+					hostExist = true;
+					break;
+				}
+			}
+			break;
+		}
 	}
 
 	if (_userInfoList.empty() == false &&

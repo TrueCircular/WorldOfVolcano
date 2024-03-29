@@ -55,6 +55,31 @@ bool PlayerAnimState::Update()
 			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}break;
+		case PlayerUnitState::Death:
+		{
+			//_contoller.lock()->SetAnimState(PlayerAnimType::Death);
+			//return true;
+		}break;
+		case PlayerUnitState::Attack:
+		{
+			_contoller.lock()->SetAnimState(PlayerAnimType::Attack1);
+			return true;
+		}break;
+		case PlayerUnitState::Ability1:
+		{
+			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
+			return true;
+		}break;
+		case PlayerUnitState::Ability2:
+		{
+			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
+			return true;
+		}break;
+		case PlayerUnitState::Damaged:
+		{
+			_contoller.lock()->SetAnimState(PlayerAnimType::Damaged);
+			return true;
+		}break;
 		}
 	}
 	else if (_aiContoller.lock())
@@ -100,6 +125,31 @@ bool PlayerAnimState::Update()
 		case PlayerUnitState::Battle:
 		{
 			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
+		}break;
+		case PlayerUnitState::Death:
+		{
+			//_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
+			//return true;
+		}break;
+		case PlayerUnitState::Attack:
+		{
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack1);
+			return true;
+		}break;
+		case PlayerUnitState::Ability1:
+		{
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
+			return true;
+		}break;
+		case PlayerUnitState::Ability2:
+		{
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
+			return true;
+		}break;
+		case PlayerUnitState::Damaged:
+		{
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Damaged);
 			return true;
 		}break;
 		}
@@ -566,18 +616,39 @@ bool PlayerAnimDamaged::Enter(const shared_ptr<CharacterController>& playerContr
 	}
 	_animator.lock()->SetNextAnimation(L"Damaged");
 	_damagedSound->Play(false);
-	_contoller.lock()->_isBattle = true;
+
+	if (_contoller.lock())
+	{
+		_contoller.lock()->_isBattle = true;
+	}
+	else
+	{
+		_aiContoller.lock()->_isBattle = true;
+	}
+
+	
 
 	return false;
 }
 
 bool PlayerAnimDamaged::Update()
 {
-	if (_contoller.lock())
+	if (_contoller.lock() != nullptr)
 	{
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
-			Super::Update();
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
+		}
+	}
+	else if (_aiContoller.lock())
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
 		}
 	}
 
@@ -635,13 +706,40 @@ bool PlayerAnimDeath::Enter(const shared_ptr<CharacterController>& playerControl
 	_animator.lock()->SetNextAnimation(L"Death");
 	_animator.lock()->SetLoop(false);
 	_deathSound->Play(false);
-	_contoller.lock()->_isAlive = false;
+
+	if (_contoller.lock())
+	{
+		_contoller.lock()->_isAlive = false;
+	}
+	else
+	{
+		_aiContoller.lock()->_isAlive = false;
+	}
+	
 
 	return false;
 }
 
 bool PlayerAnimDeath::Update()
 {
+	if (_aiContoller.lock())
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			*_playerState.lock() = PlayerUnitState::Stand;
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
+			_animator.lock()->SetFrameEnd(false);
+		}
+
+		if (_playerState.lock() != nullptr)
+		{
+			if (*_playerState.lock() != PlayerUnitState::Death)
+			{
+				Super::Update();
+			}
+		}
+	}
+
 	return false;
 }
 
@@ -932,6 +1030,16 @@ bool PlayerAnimAbility1::Enter(const shared_ptr<CharacterController>& playerCont
 
 bool PlayerAnimAbility1::Update()
 {
+	if (_aiContoller.lock())
+	{
+		if (_animator.lock()->GetFrameEnd() == true)
+		{
+			*_playerState.lock() = PlayerUnitState::Battle;
+			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			return true;
+		}
+	}
+
 	return false;
 }
 
