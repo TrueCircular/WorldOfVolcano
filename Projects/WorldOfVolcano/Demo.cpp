@@ -1,15 +1,16 @@
 #include "pch.h"
 #include "Demo.h"
 
-#include "DungeonScene.h"
-#include "BaseScene.h"
-#include "TitleScene.h"
 
+#include "TitleScene.h"
+#include "BaseScene.h"
+#include "DungeonScene.h"
+#include "BossScene.h"
 #include "TestAbilityScene.h"
 
 ClientServiceRef _service;
 
-void Demo::Init(){
+void Demo::Init() {
 #pragma region Client Thread
 	_service = MakeShared<ClientService>(
 		NetAddress(L"127.0.0.1", 7777),
@@ -36,7 +37,7 @@ void Demo::Init(){
 
 	//���� �Ŵ��� �ʱ�ȭ
 	MANAGER_SOUND()->Init();
-	
+
 	MANATER_PARTICLE()->Init();
 	shared_ptr<Texture> tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"mainTitle", L"../../Resources/Texture/MainTitle2.png");
 	tex = MANAGER_RESOURCES()->LoadResource<Texture>(L"logo", L"../../Resources/Texture/logo.png");
@@ -49,14 +50,16 @@ void Demo::Init(){
 	//shared_ptr<Scene> scene = make_shared<TitleScene>();
 	//MANAGER_SCENE()->ChangeScene(scene);
 	//
-	shared_ptr<Scene> scene = make_shared<BaseScene>();
-	scene->SetSceneName(L"BaseScene");
+	//shared_ptr<Scene> scene = make_shared<BaseScene>();
+	//scene->SetSceneName(L"BaseScene");
 	// 
 	//shared_ptr<Scene> scene = make_shared<DungeonScene>();
 	//scene->SetSceneName(L"DungeonScene");
 	//
 	//shared_ptr<Scene> scene = make_shared<TestAbilityScene>();
 	//scene->SetSceneName(L"TestAbility");
+	shared_ptr<Scene> scene = make_shared<BossScene>();
+	scene->SetSceneName(L"BossScene");
 
 	MANAGER_SCENE()->ChangeScene(scene);
 }

@@ -110,9 +110,6 @@ inline vector<shared_ptr<UnitStrategy>> StrategyFactory::GetStrategyList()
 		auto dead = make_shared<RagnarosDead>();
 		strategyList.push_back(dead);
 
-		auto trace = make_shared<RagnarosTrace>();
-		strategyList.push_back(trace);
-
 		auto battle = make_shared<RagnarosBattle>();
 		strategyList.push_back(battle);
 

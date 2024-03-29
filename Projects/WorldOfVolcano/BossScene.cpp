@@ -13,8 +13,11 @@
 #include "engine\Utils.h"
 #include "engine/Warrior.h"
 #include "engine/CoreHound.h"
-#include "engine/BaronGeddon.h"
+#include "engine/MoltenGaint.h"
+#include "engine/Ragnaros.h"
 #include "engine/SphereCollider.h"
+#include "engine/AbilitySlot.h"
+#include "engine/StrategyFactory.h"
 #include "ObjectExporter.h"
 #include "Demo.h"
 
@@ -111,7 +114,7 @@ void BossScene::Init()
 		_childCamera->AddComponent(frustom);
 		_childCamera->Start();
 		_childCamera->SetName(L"Camera");
-		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 125.f);
+		_childCamera->GetCamera()->Init(Vec3(0, 100.f, -100.f), CameraType::Target, ProjectionType::Perspective, 200.f);
 		_childCamera->GetCamera()->SetCameraToTargetOffset(Vec3(0, 10, 0));
 		MANAGER_SCENE()->GetCurrentScene()->Add(_childCamera);
 	}
@@ -123,78 +126,32 @@ void BossScene::Init()
 		_warrior->SetCharacterController(make_shared<PlayerController>());
 		_warrior->GetComponent<AbilitySlot>()->SetController(_warrior->GetComponent<PlayerController>());
 		_warrior->SetSpwanPosition(Vec3(-44.f, 0.f, 277.f));
-		_warrior->GetTransform()->SetLocalRotation(Vec3(0, ::XMConvertToRadians(105.f), 0));
 		_warrior->Start();
 
 
 		Add(_warrior);
 		AddShadow(_warrior);
 
-		shared_ptr< PlayerSoundController> soundController = make_shared<PlayerSoundController>();
-
-		soundController->Set(_warrior->GetTransform());
-		shared_ptr<Sounds> bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Attack");
-		if (bgm2 == nullptr) {
-			bgm2 = make_shared<Sounds>();
-			wstring bgmpath = RESOURCES_ADDR_SOUND;
-			bgmpath += L"Character/Playable/Warrior/Warrior_Attack1.mp3";
-			bgm2->Load(bgmpath);
-			MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Attack", bgm2);
-		}
-		soundController->SetSound(PlayerAnimType::Attack1, bgm2);
-
-		bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Attack2");
-		if (bgm2 == nullptr) {
-			bgm2 = make_shared<Sounds>();
-			wstring bgmpath = RESOURCES_ADDR_SOUND;
-			bgmpath += L"Character/Playable/Warrior/Warrior_Attack2.mp3";
-			bgm2->Load(bgmpath);
-			MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Attack2", bgm2);
-		}
-		soundController->SetSound(PlayerAnimType::Attack2, bgm2);
-
-		bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Damaged");
-		if (bgm2 == nullptr) {
-			bgm2 = make_shared<Sounds>();
-			wstring bgmpath = RESOURCES_ADDR_SOUND;
-			bgmpath += L"Character/Playable/Warrior/Warrior_Damaged.mp3";
-			bgm2->Load(bgmpath);
-			MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Damaged", bgm2);
-		}
-		soundController->SetSound(PlayerAnimType::Damaged, bgm2);
-
-		bgm2 = MANAGER_RESOURCES()->GetResource<Sounds>(L"Warrior_Death");
-		if (bgm2 == nullptr) {
-			bgm2 = make_shared<Sounds>();
-			wstring bgmpath = RESOURCES_ADDR_SOUND;
-			bgmpath += L"Character/Playable/Warrior/Warrior_Death.mp3";
-			bgm2->Load(bgmpath);
-			MANAGER_RESOURCES()->AddResource<Sounds>(L"Warrior_Death", bgm2);
-		}
-		soundController->SetSound(PlayerAnimType::Death, bgm2);
-
-		//_warrior->GetComponent<PlayerController>()->SetSoundController(soundController);
 
 		MANAGER_SOUND()->SetTransForm(_warrior->GetTransform());
 	}
 
 	//monster
-	//{
-	//	auto height = make_shared<HeightGetter>();
-	//	height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
-	//	Vec3 spwanPos = Vec3(103, 0, 240);
-	//	spwanPos.y = height->GetHeight(spwanPos);
+	{
+		auto height = make_shared<HeightGetter>();
+		height->Set(MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain().get());
+		Vec3 spwanPos = Vec3(103, 0, 240);
+		spwanPos.y = height->GetHeight(spwanPos);
 
+		auto ragnaros = make_shared<Ragnaros>();
+		ragnaros->Awake();
+		ragnaros->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
+		ragnaros->GetComponent<AbilitySlot>()->SetController(ragnaros->GetComponent<AIController>());
+		ragnaros->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
+		ragnaros->Start();
 
-	//	auto baronGeddon = make_shared<BaronGeddon>();
-	//	baronGeddon->Awake();
-	//	baronGeddon->SetCharacterController(make_shared<AIController>(), AIType::EnemyUnit);
-	//	baronGeddon->SetSpwanPosition(spwanPos);
-	//	baronGeddon->Start();
-	//	baronGeddon->GetTransform()->SetPosition(spwanPos);
-
-	//	Add(baronGeddon);
-	//}
+		Add(ragnaros);
+	}
 
 	MANAGER_INDICATOR()->SetCamera(_childCamera->GetCamera());
 
@@ -211,8 +168,6 @@ void BossScene::Init()
 	else {
 		bgm->Play(true);
 	}
-	auto _playerAbSlot = _warrior->GetComponent<AbilitySlot>();
-	MANAGER_IMGUI()->SetAbilitySlot(_playerAbSlot);
 	///	bool isplaynsd;
 	//	chs->isPlaying(&isplaynsd);
 
@@ -270,12 +225,6 @@ void BossScene::Update()
 	}
 	latestMessageSize = MANAGER_IMGUI()->GetLatestMessages().size();
 
-	//DamageIndiCatorBox box;
-	//box.damage = 444;
-	//box.pos = _warrior->GetTransform()->GetLocalPosition();
-	//box.textDuration = 20; sexkinghfghfghrttrrtherethrteh
-	//MANAGER_INDICATOR()->Add(box);
-
 	Scene::Update();
 	MANAGER_INDICATOR()->Frame();
 
@@ -293,16 +242,16 @@ void BossScene::Update()
 		OutputDebugString(Pstring.c_str());
 	}
 
-	shared_ptr<Scene> scene = make_shared<BaseScene>();
-	scene->SetSceneName(L"BaseScene");
+	//shared_ptr<Scene> scene = make_shared<BaseScene>();
+	//scene->SetSceneName(L"BaseScene");
 
-	if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
-	{
-		wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
-		SpawnManager::GetInstance().Reset(name);
-		SpawnManager::GetInstance().EraseSpawnerMap(name);
-		MANAGER_SCENE()->ChangeScene(scene);
-	}
+	//if (MANAGER_INPUT()->GetButton(KEY_TYPE::Q))
+	//{
+	//	wstring name = MANAGER_SCENE()->GetCurrentScene()->GetSceneName();
+	//	SpawnManager::GetInstance().Reset(name);
+	//	SpawnManager::GetInstance().EraseSpawnerMap(name);
+	//	MANAGER_SCENE()->ChangeScene(scene);
+	//}
 }
 
 void BossScene::LateUpdate()

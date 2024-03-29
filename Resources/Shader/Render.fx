@@ -2,8 +2,8 @@
 #define _RENDER_FX_
 #include "Global.fx"
 
-#define MAX_MODEL_TRANSFORMS 250
-#define MAX_MODEL_KEYFRAMES 250
+#define MAX_MODEL_TRANSFORMS 350
+#define MAX_MODEL_KEYFRAMES 350
 #define MAX_MODEL_INSTANCE 500
 
 //Mesh Render//

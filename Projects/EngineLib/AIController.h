@@ -31,6 +31,7 @@ private:
 	float _currentSpeed = 0.f;
 	float _slowSpeed = 0.f;
 	bool _isSlow = false;
+	bool _eventTrigger = false;
 private:
 	shared_ptr<TargetList>		_targetList;
 	weak_ptr<Transform>			_targetTransform;
