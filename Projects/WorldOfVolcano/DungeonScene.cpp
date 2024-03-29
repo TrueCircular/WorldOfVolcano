@@ -210,6 +210,17 @@ void DungeonScene::Update()
 		_sendBuffer = ClientPacketHandler::Instance().Make_USER_INFO(sendInfo, sendInfo._name);
 	}
 
+	//Dead
+	if (sendInfo._hp <= 0)
+	{
+		MANAGER_IMGUI()->NotifyPlayerAlive(false);
+	}
+	//Rebirth
+	if (MANAGER_IMGUI()->GetRebirthQueueSize() > 0)
+	{
+		_warrior->GetComponent<PlayerController>()->Respawn();
+	}
+
 	//Event
 	{
 		PacketEvent packetEvent = MANAGER_EVENT()->PopEvent();

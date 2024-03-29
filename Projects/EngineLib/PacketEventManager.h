@@ -17,6 +17,9 @@ public:
 public:
 	void AddEvent(PacketEvent event);
 	PacketEvent PopEvent();
+	bool GetIsMapHost() { return _isMapHost; }
+	void SetIsMapHost(bool isHost) { _isMapHost = isHost; }
 private:
 	std::queue<PacketEvent> eventQueue;
+	bool _isMapHost = false;
 };

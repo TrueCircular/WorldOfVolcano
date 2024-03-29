@@ -91,7 +91,44 @@ void CoreHoundStand::UpdateFromServer()
 {
 	if (_controller.lock() != nullptr)
 	{
-		
+		if (_targetList.lock()->size() > 0)
+		{
+			//Taget 후보 결정
+			map<float, shared_ptr<TargetDesc>> ToTargetList;
+
+			for (const auto& target : *_targetList.lock())
+			{
+				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 targetPos = target->Target->GetTransform()->GetLocalPosition();
+				bool& isAlive = target->Target->GetComponent<CharacterController>()->_isAlive;
+				float Length = Vec3::Distance(myPos, targetPos);
+
+				//자신의 위치와 타겟 위치가 추적거리 안에 존재 할 경우 탐색
+				if (Length <= _traceRadius && isAlive)
+				{
+					ToTargetList.insert(make_pair(Length, target));
+				}
+			}
+
+			if (ToTargetList.size() > 0)
+			{
+				float minDistance = ToTargetList.begin()->first;
+				shared_ptr<GameObject> FinalTarget;
+				FinalTarget = ToTargetList.begin()->second->Target;
+
+				if (FinalTarget != nullptr)
+				{
+					if (minDistance <= _attackRange && minDistance <= _traceRadius)
+					{
+						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+					}
+					else if (minDistance > _attackRange && minDistance <= _traceRadius)
+					{
+						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -162,7 +199,7 @@ void CoreHoundDamaged::Update()
 
 void CoreHoundDamaged::UpdateFromServer()
 {
-	cout << "sdfg";
+	cout << "server";
 }
 
 void CoreHoundDamaged::Out(const wstring& nextTransition)
@@ -242,7 +279,7 @@ void CoreHoundDead::Update()
 
 void CoreHoundDead::UpdateFromServer()
 {
-	cout << "sdfg";
+	cout << "server";
 }
 
 void CoreHoundDead::Out(const wstring& nextTransition)
@@ -397,7 +434,37 @@ void CoreHoundTrace::Update()
 
 void CoreHoundTrace::UpdateFromServer()
 {
-	cout << "sdfg";
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+
+		if (_targetList.lock()->size() > 0)
+		{
+			float minAggro = 0.f;
+			shared_ptr<Transform> _lastTarget;
+			for (auto& target : *_targetList.lock())
+			{
+				if (target->Target == _targetTransform.lock()->GetGameObject())
+				{
+					minAggro = target->AggroValue;
+					_lastTarget = target->Target->GetTransform();
+					continue;
+				}
+
+				if (target->AggroValue > minAggro)
+				{
+					minAggro = target->AggroValue;
+					_lastTarget = target->Target->GetTransform();
+				}
+			}
+
+			if (_lastTarget)
+			{
+				_targetTransform = _lastTarget;
+				_controller.lock()->SetTargetTransform(_targetTransform.lock());
+			}
+		}
+	}
 }
 
 void CoreHoundTrace::Out(const wstring& nextTransition)
@@ -501,7 +568,7 @@ void CoreHoundMoveToSpwanPoint::Update()
 
 void CoreHoundMoveToSpwanPoint::UpdateFromServer()
 {
-	cout << "sdfg";
+
 }
 
 void CoreHoundMoveToSpwanPoint::Out(const wstring& nextTransition)
@@ -671,7 +738,45 @@ void CoreHoundBattle::Update()
 
 void CoreHoundBattle::UpdateFromServer()
 {
-	cout << "sdfg";
+	if (_controller.lock() != nullptr)
+	{
+		_dt = MANAGER_TIME()->GetDeltaTime();
+		_traceTime += _dt;
+
+		bool& tempisAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+
+		//Target update
+		if (_targetList.lock()->size() <= 0 || tempisAlive == false)
+		{
+			cout << "true";
+		}
+		else
+		{
+			float minAggro = 0.f;
+			shared_ptr<Transform> _lastTarget;
+			for (auto& target : *_targetList.lock())
+			{
+				if (target->Target == _targetTransform.lock()->GetGameObject())
+				{
+					minAggro = target->AggroValue;
+					_lastTarget = target->Target->GetTransform();
+					continue;
+				}
+
+				if (target->AggroValue > minAggro)
+				{
+					minAggro = target->AggroValue;
+					_lastTarget = target->Target->GetTransform();
+				}
+			}
+
+			if (_lastTarget)
+			{
+				_targetTransform = _lastTarget;
+				_controller.lock()->SetTargetTransform(_targetTransform.lock());
+			}
+		}
+	}
 }
 
 void CoreHoundBattle::Out(const wstring& nextTransition)
@@ -751,7 +856,8 @@ void CoreHoundAttack::Enter(const shared_ptr<AIController>& controller, const ws
 			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
 			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
 
-			auto targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
+			
+			shared_ptr<CharacterController> targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
 
 			if (targetCon != nullptr)
 			{
@@ -832,7 +938,7 @@ void CoreHoundAttack::Update()
 
 void CoreHoundAttack::UpdateFromServer()
 {
-	cout << "sdfg";
+	cout << "server";
 }
 
 void CoreHoundAttack::Out(const wstring& nextTransition)
