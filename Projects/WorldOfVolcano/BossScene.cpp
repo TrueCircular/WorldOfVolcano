@@ -170,6 +170,17 @@ void BossScene::Init()
 	else {
 		bgm->Play(true);
 	}
+
+	EndBGM = MANAGER_RESOURCES()->GetResource<Sounds>(L"ending");
+	if (EndBGM == nullptr) {
+		EndBGM = make_shared<Sounds>();
+		wstring bgmpath = RESOURCES_ADDR_SOUND;
+		bgmpath += L"Scene/ending.mp3";
+		EndBGM->Load(bgmpath);
+		MANAGER_RESOURCES()->AddResource<Sounds>(L"ending", EndBGM);
+	}
+
+
 	///	bool isplaynsd;
 	//	chs->isPlaying(&isplaynsd);
 	auto _playerAbSlot = _warrior->GetComponent<AbilitySlot>();
@@ -274,6 +285,22 @@ void BossScene::Update()
 	if (MANAGER_IMGUI()->GetRebirthQueueSize() > 0)
 	{
 		_warrior->GetComponent<PlayerController>()->Respawn(spawnPos);
+	}
+	//ending
+	{
+		if (MANAGER_IMGUI()->GetIsEnding())
+		{
+			if (_isEnding == false)
+			{
+				_isEnding = true; 
+				MANAGER_SOUND()->Init();
+
+				if (EndBGM != nullptr)
+				{
+					EndBGM->Play(true);
+				}
+			}
+		}
 	}
 
 	SendBufferRef mobBuffer;

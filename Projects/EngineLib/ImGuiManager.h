@@ -44,6 +44,13 @@ public:
 	bool CheckGameStart() { return _isGameStart; }
 	void BeginDialogue() { show_dialogue_window = true; }
 	void SetAbilitySlot(shared_ptr<AbilitySlot> abilitySlot) { _playerAbilitySlot=abilitySlot; }
+	void NotifyEnding()
+	{
+		show_all_window = false;
+		show_main_window = false;
+		show_ending_window = true;
+	}
+	bool GetIsEnding() { return show_ending_window; }
 private:
 	//Player Stat
 	float _hp = 1.0f;
@@ -71,6 +78,8 @@ private:
 	bool show_death_window = false;
 	bool show_dialogue_window = false;
 	bool show_nickname_window = false;
+	//½Â¸®
+	bool show_ending_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	//Äù½ºÆ®
 	int geddonCount = 0;

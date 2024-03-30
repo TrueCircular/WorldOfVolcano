@@ -210,6 +210,7 @@ void RagnarosDead::Update()
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
 			_controller.lock()->DeadEvent();
+			MANAGER_IMGUI()->NotifyEnding();
 		}
 	}
 }
@@ -223,6 +224,7 @@ void RagnarosDead::UpdateFromServer()
 		if (_animator.lock()->GetFrameEnd() == true)
 		{
 			_controller.lock()->DeadEvent();
+			MANAGER_IMGUI()->NotifyEnding();
 		}
 	}
 }

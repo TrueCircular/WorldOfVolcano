@@ -216,6 +216,7 @@ void Spawner::SpawnMonster(uint64 uid, MONSTER_INFO mobInfo)
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<BaronGeddon>());
 			break;
 		case MonsterType::Ragnaros:
+			_chr->GetComponent<AbilitySlot>()->SetController(_chr->GetComponent<AIController>());
 			_chr->GetComponent<AIController>()->SetFsmStrategyList(StrategyFactory::GetStrategyList<Ragnaros>());
 			break;
 		default:

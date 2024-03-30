@@ -44,6 +44,10 @@ class BossScene : public Scene
 
 	//Camera
 	shared_ptr<GameObject> _camera;
+	//BGM
+	shared_ptr<Sounds> EndBGM;
+
+	bool _isEnding = false;
 public:
 	virtual void Init();
 	virtual void Start();

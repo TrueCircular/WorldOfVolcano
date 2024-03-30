@@ -161,26 +161,26 @@ void ImGuiManager::Update()
                     delete[] charBuffer;
                     ImGui::PopStyleColor(2);
                 }
-                ImGui::NewLine();
-                {
-                    wchar_t buffer[256] = L"옵션";
-                    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
-                    char* charBuffer = new char[bufferSize];
-                    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
-                    ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
-                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
+                //ImGui::NewLine();
+                //{
+                //    wchar_t buffer[256] = L"옵션";
+                //    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+                //    char* charBuffer = new char[bufferSize];
+                //    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
+                //    ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+                //    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, buttonHoveredColor);
 
-                    shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"mainTitle");
-                    ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
+                //    shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"mainTitle");
+                //    ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
 
-                    //if (ImGui::ImageButton(textureID, buttonSize))
-                    if (ImGui::Button(charBuffer, buttonSize))
-                    {
-                        // 그런건없다.
-                    }
-                    delete[] charBuffer;
-                    ImGui::PopStyleColor(2);
-                }
+                //    //if (ImGui::ImageButton(textureID, buttonSize))
+                //    if (ImGui::Button(charBuffer, buttonSize))
+                //    {
+                //        // 그런건없다.
+                //    }
+                //    delete[] charBuffer;
+                //    ImGui::PopStyleColor(2);
+                //}
                 ImGui::NewLine();
                 {
                     wchar_t buffer[256] = L"종료";
@@ -200,6 +200,61 @@ void ImGuiManager::Update()
             ImGui::PopStyleColor();
             ImGui::End();
         } 
+    }
+
+    //show_ending_window
+    if (show_ending_window)
+    {
+        ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+        //텍스쳐
+        {
+            ImGui::SetNextWindowSize(ImVec2(displaySize.x + 100.0f, displaySize.y + 100.0f), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(-10.0f, -10.0f), ImGuiCond_Always);
+            //ImGui::Begin("Texture Window", &show_main_window, ImGuiWindowFlags_NoDecoration);
+            ImGui::Begin("ending Window", &show_main_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMouseInputs);
+            shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"victory");
+            ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
+            ImGui::Image(textureID, ImVec2(displaySize.x, displaySize.y)); // 텍스쳐의 크기를 조정할 수 있습니다.
+            ImGui::End();
+        }
+        //텍스쳐
+        {
+            ImVec2 windowSize = ImVec2(1000.0f, 250.0f);
+            ImGui::SetNextWindowSize(windowSize, ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(displaySize.x / 2 - windowSize.x / 2, displaySize.y / 2), ImGuiCond_Always);
+            ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.0f));
+            ImGui::Begin("endlogo Window", &show_main_window, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMouseInputs);
+            shared_ptr<Texture> tex = MANAGER_RESOURCES()->GetResource<Texture>(L"endlogo");
+            ImTextureID textureID = reinterpret_cast<ImTextureID>(tex->GetTexture().Get());
+            ImGui::Image(textureID, windowSize); // 텍스쳐의 크기를 조정할 수 있습니다.
+            ImGui::End();
+            ImGui::PopStyleColor();
+        }
+        //텍스트
+        {
+            //float windowSizeX = 800;
+            //float windowSizeY = 150;
+            //// Set the window size to a fixed value
+            //ImGui::SetNextWindowSize(ImVec2(windowSizeX, windowSizeY), ImGuiCond_Always);
+            //ImGui::SetNextWindowPos(ImVec2(100, 50), ImGuiCond_Always);
+            //float r = 200.0f / 255.0f;
+            //float g = 15.0f / 255.0f;
+            //float b = 15.0f / 255.0f;
+            //ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(r, g, b, 0.0f));
+            //ImGui::Begin("TitleWindow", &show_main_window, ImGuiWindowFlags_NoDecoration);
+            //
+            //ImGui::SetWindowFontScale(5.0f);
+            //{
+            //    wchar_t buffer[256] = L"World of VVocano";
+            //    int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
+            //    char* charBuffer = new char[bufferSize];
+            //    WideCharToMultiByte(CP_UTF8, 0, buffer, -1, charBuffer, bufferSize, nullptr, nullptr);
+            //    ImGui::TextColored(ImVec4(r, g, b, 1.0f), charBuffer);
+            //    delete[] charBuffer;
+            //}
+            //ImGui::End();
+            //ImGui::PopStyleColor();
+        }
     }
 
     //show_all_window
