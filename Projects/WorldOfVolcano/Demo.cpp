@@ -12,7 +12,7 @@ ClientServiceRef _service;
 void Demo::Init() {
 #pragma region Client Thread
 	_service = MakeShared<ClientService>(
-		NetAddress(L"192.168.0.122", 7777),
+		NetAddress(L"192.168.0.45", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<ServerSession>,
 		1);
