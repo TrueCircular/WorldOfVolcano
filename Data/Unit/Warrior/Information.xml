@@ -2,7 +2,7 @@
     <Name>Warrior</Name>
     <HP>2000</HP>
     <MP>350</MP>
-    <ATK>50000</ATK>
+    <ATK>1000</ATK>
     <DEF>600</DEF>
     <MoveSpeed>40</MoveSpeed>
     <AggroPow>100</AggroPow>
