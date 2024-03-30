@@ -323,8 +323,8 @@ void TestScene::Update()
 		auto data = effShader6->GetConstantBuffer("ColorBuffer");
 
 		ColorDesc _desc;
-		_desc.baseColor = Vec4(0, 0.7, 0.8, 1);
-		_desc.subColor = Vec4(1.0, 1.0, 0.0, 1);
+		_desc.baseColor = Vec4(0, 0.2, 0.8, 1);
+		_desc.subColor = Vec4(0.0, 0.0, 0.0, 1);
 		_materialBuffer->CopyData(_desc);
 		data->SetConstantBuffer(_materialBuffer->GetBuffer().Get());
 
