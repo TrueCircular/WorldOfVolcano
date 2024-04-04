@@ -16,7 +16,7 @@ int main()
 	TIMER().start();
 
 	ServerServiceRef service = MakeShared<ServerService>(
-		NetAddress(L"0.0.0.0", 7777),
+		NetAddress(L"192.168.35.77", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<GameSession>, // TODO : SessionManager 등
 		100);
