@@ -10,15 +10,15 @@
 # Files
 
 # Play
+## 로비
 ![Lobby](Resources/intro/loby.gif)
 ***
-로비
+## 던전
 ![dungeon](Resources/intro/dungeon.gif)
 ***
-던전
+## 중간보스
 ![boss1](Resources/intro/mid.gif)
 ***
-중간 보스
+## 최종보스
 ![boos2](Resources/intro/boss.gif)
 ***
-최종 보스
