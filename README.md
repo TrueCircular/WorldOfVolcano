@@ -1,5 +1,6 @@
 # Team Cheetah
   * DirectX Team Project KGCA 42 TeamCheetah
+  * 제작기간 2024 01 ~ 2024 03
 #  Description
  ![예시](Resources/intro/main.png)
   * 주인공(전사)를 조작하여 던전에 입장 한 후 중간보스(바론 남작)과 최종보스(라그나로스)를 물리치는 게임
