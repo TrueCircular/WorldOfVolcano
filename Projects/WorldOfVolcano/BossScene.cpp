@@ -43,7 +43,7 @@ void BossScene::Init()
 	}
 
 	ObjectExporter exporter;
-	exporter.OpenFile(L"../../Resources/Assets/dungeonboss.dat");
+	exporter.OpenFile(wstring(RESOURCES_ADDR_ASSET) + L"dungeonboss.dat");
 	for (int i = 0; i < exporter._structureList.size(); ++i) {
 		Add(exporter._structureList[i]);
 	}
@@ -292,7 +292,7 @@ void BossScene::Update()
 		{
 			if (_isEnding == false)
 			{
-				_isEnding = true; 
+				_isEnding = true;
 				MANAGER_SOUND()->Init();
 
 				if (EndBGM != nullptr)

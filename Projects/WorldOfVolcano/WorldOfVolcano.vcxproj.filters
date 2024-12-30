@@ -155,16 +155,16 @@
     <ClInclude Include="SceneWarper.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\Resources\Shader\Global.fx">
+    <FxCompile Include="Resources\Shader\Light.fx">
       <Filter>Shader\Common</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\Resources\Shader\Light.fx">
-      <Filter>Shader\Common</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\Resources\Shader\Instancing.fx">
+    <FxCompile Include="Resources\Shader\Instancing.fx">
       <Filter>Shader</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\Resources\Shader\Render.fx">
+    <FxCompile Include="Resources\Shader\Global.fx">
+      <Filter>Shader\Common</Filter>
+    </FxCompile>
+    <FxCompile Include="Resources\Shader\Render.fx">
       <Filter>Shader\Common</Filter>
     </FxCompile>
   </ItemGroup>

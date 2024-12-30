@@ -69,7 +69,7 @@ Smoke4::Smoke4()
 	smokeTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"Smoke2");
 	if (smokeTexture == nullptr) {
 		smokeTexture = make_shared<Texture>();
-		smokeTexture->Load(L"../../Resources/Texture/Effect/T_ky_smoke_kai.PNG");
+		smokeTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_smoke_kai.PNG");
 		MANAGER_RESOURCES()->AddResource(L"Smoke2", smokeTexture);
 	}
 

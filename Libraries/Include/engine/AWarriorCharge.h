@@ -17,10 +17,10 @@ public:
 
 private:
 	bool _isCharging = false;
-	weak_ptr<PlayerController>   _playerController;
-	weak_ptr<ModelAnimator>		 _ownerAnimator;
+	shared_ptr<PlayerController>   _playerController;
+	shared_ptr<ModelAnimator>		 _ownerAnimator;
 	
-	weak_ptr<GameObject>	 _ownerPicked;
+	shared_ptr<GameObject>	 _ownerPicked;
 	shared_ptr<Polar>		 _polarParticle;
 	shared_ptr<Explode>		 _explodeParticle;
 

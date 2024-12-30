@@ -80,13 +80,13 @@ Smoke2::Smoke2()
 	noiseTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"distNoiseMap");
 	if (noiseTexture == nullptr) {
 		noiseTexture = make_shared<Texture>();
-		noiseTexture->Load(L"../../Resources/Texture/Effect/T_ky_dist_noise.PNG");
+		noiseTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_dist_noise.PNG");
 		MANAGER_RESOURCES()->AddResource(L"distNoiseMap", noiseTexture);
 	}
 	smokeTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"Smoke2");
 	if (smokeTexture == nullptr) {
 		smokeTexture = make_shared<Texture>();
-		smokeTexture->Load(L"../../Resources/Texture/Effect/T_ky_smoke_kai.PNG");
+		smokeTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_smoke_kai.PNG");
 		MANAGER_RESOURCES()->AddResource(L"Smoke2", smokeTexture);
 	}
 

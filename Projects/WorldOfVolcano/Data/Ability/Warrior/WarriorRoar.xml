@@ -1,0 +1,8 @@
+<AbilityInformation>
+    <Name>WarriorRoar</Name>
+    <AbilityType>2</AbilityType>
+    <ConsumedMp>100</ConsumedMp>
+    <AbilityCoolTime>8</AbilityCoolTime>
+    <AbilityPow>5</AbilityPow>
+    <AbilityRange>100</AbilityRange>
+</AbilityInformation>

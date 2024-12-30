@@ -36,7 +36,7 @@ void DungeonScene::Init()
 		lightDesc.ambient = Vec4(0.4f);
 		lightDesc.diffuse = Vec4(1.f);
 		lightDesc.specular = Vec4(0.1f);
-		lightDesc.direction = Vec3(0.0f,-1.0f, 0.0f);
+		lightDesc.direction = Vec3(0.0f, -1.0f, 0.0f);
 		light->GetLight()->SetLightDesc(lightDesc);
 		MANAGER_SCENE()->GetCurrentScene()->Add(light);
 	}
@@ -44,7 +44,7 @@ void DungeonScene::Init()
 	//Terrain Object Load
 	{
 		ObjectExporter exporter;
-		exporter.OpenFile(L"../../Resources/Assets/dungeon1fix.dat");
+		exporter.OpenFile(wstring(RESOURCES_ADDR_ASSET) + L"dungeon1fix.dat");
 		for (int i = 0; i < exporter._structureList.size(); ++i) {
 			Add(exporter._structureList[i]);
 		}
@@ -285,10 +285,10 @@ void DungeonScene::Update()
 	}
 
 	SendBufferRef mobBuffer;
-	
+
 	SpawnManager::GetInstance().Update();
 
-	
+
 #pragma region Client Thread
 	//12분의1초 = 83.33ms
 	//30분의1초 = 33.33ms
@@ -367,7 +367,7 @@ void DungeonScene::Update()
 
 	_quadTreeTerrain->Frame((*_frustom->frustomBox.get()));
 	{
-		Vec3 pos =  _warrior->GetTransform()->GetPosition();
+		Vec3 pos = _warrior->GetTransform()->GetPosition();
 
 		wstring Pstring = L"Player Pos X:";
 		Pstring += ::to_wstring(pos.x);
@@ -376,7 +376,7 @@ void DungeonScene::Update()
 		Pstring += L" Z:";
 		Pstring += ::to_wstring(pos.z);
 		Pstring += L"\n";
-		
+
 		OutputDebugString(Pstring.c_str());
 	}
 

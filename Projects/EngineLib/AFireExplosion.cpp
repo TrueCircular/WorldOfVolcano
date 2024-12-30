@@ -29,9 +29,9 @@ AFireExplosion::~AFireExplosion()
 
 void AFireExplosion::Enter(const shared_ptr<GameObject>& target)
 {
-	if (_ownerController.lock() != nullptr && _aiController.lock() == nullptr)
+	if (_ownerController != nullptr && _aiController == nullptr)
 	{
-		const auto& temp = dynamic_pointer_cast<AIController>(_ownerController.lock());
+		const auto& temp = dynamic_pointer_cast<AIController>(_ownerController);
 
 		if (temp != nullptr)
 		{
@@ -39,14 +39,14 @@ void AFireExplosion::Enter(const shared_ptr<GameObject>& target)
 		}
 	}
 
-	if (_aiController.lock() != nullptr)
+	if (_aiController != nullptr)
 	{
-		_ownerTransform = _aiController.lock()->GetTransform();
-		_ownerTargetTransform = _aiController.lock()->GetTargetTransform();
-		_ownerInfo = _aiController.lock()->GetCharacterInfo();
-		_ownerAbilitySlot = _aiController.lock()->GetGameObject()->GetComponent<AbilitySlot>();
+		_ownerTransform = _aiController->GetTransform();
+		_ownerTargetTransform = _aiController->GetTargetTransform();
+		_ownerInfo = _aiController->GetCharacterInfo();
+		_ownerAbilitySlot = _aiController->GetGameObject()->GetComponent<AbilitySlot>();
 		_coolTime = _abilityData->GetAbilityData().AbilityCoolTime;
-		_ownerAtk = _ownerInfo.lock()->GetCharacterInfo()._atk;
+		_ownerAtk = _ownerInfo->GetCharacterInfo()._atk;
 		_abilityRange = _abilityData->GetAbilityData().AbilityRange;
 		_abilityDamage = _ownerAtk * _abilityData->GetAbilityData().AbilityPow;
 	}
@@ -55,9 +55,9 @@ void AFireExplosion::Enter(const shared_ptr<GameObject>& target)
 	{
 		shared_ptr<Transform> pos = make_shared<Transform>();
 		//임시수정
-		if (_ownerTargetTransform.lock())
+		if (_ownerTargetTransform)
 		{
-			Vec3 offset = _ownerTargetTransform.lock()->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition();
+			Vec3 offset = _ownerTargetTransform->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition();
 			offset.y += 10.f;
 			pos->SetLocalPosition(offset);
 			pos->SetLocalScale(Vec3(50.f));
@@ -73,11 +73,11 @@ void AFireExplosion::Execute()
 	{
 		if (_fireExplosionParticle != nullptr)
 		{
-			_fireExplosionParticle->SetTargetObject(_ownerTargetTransform.lock()->GetGameObject());
+			_fireExplosionParticle->SetTargetObject(_ownerTargetTransform->GetGameObject());
 			_fireExplosionParticle->SetEffectDamage(_abilityDamage);
 			_fireExplosionInstance->Reset();
 			_fireExplosionParticle->AddParticle(_fireExplosionInstance);
-			_ownerAbilitySlot.lock()->_selectNumber = -1;
+			_ownerAbilitySlot->_selectNumber = -1;
 		}
 	}
 }

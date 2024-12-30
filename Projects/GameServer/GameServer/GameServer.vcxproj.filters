@@ -42,6 +42,9 @@
     <ClInclude Include="ServerPacketHandler.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleMath.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Main">
@@ -59,5 +62,10 @@
     <Filter Include="xml">
       <UniqueIdentifier>{d2ef341f-5c54-41a5-b48d-da223bad672e}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SimpleMath.inl">
+      <Filter>Utils</Filter>
+    </None>
   </ItemGroup>
 </Project>

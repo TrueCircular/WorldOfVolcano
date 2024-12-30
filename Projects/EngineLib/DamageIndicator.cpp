@@ -150,7 +150,8 @@ DamageIndicator* DamageIndicator::_instance = nullptr;
 			CreateMesh();
 
 			for (int i = 0; i < 10; ++i) {
-				std::wstring string = L"../../Resources/Font/num/";
+				std::wstring string = RESOURCES_ADDR_FONT;
+				string += L"num/";
 				string += std::to_wstring(i);
 				string += L".png";
 

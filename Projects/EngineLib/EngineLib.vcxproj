@@ -208,7 +208,6 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClInclude Include="ConsumableItem.h" />
     <ClInclude Include="CoreHoundPattern.h" />
     <ClInclude Include="DamageIndicator.h" />
-    <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="EnemySoundController.h" />
     <ClInclude Include="EquipmentSlot.h" />
     <ClInclude Include="Explode.h" />
@@ -351,7 +350,6 @@ copy "Bin\\Release\\*.pdb" "..\\..\\Libraries\\lib\\engine"</Command>
     <ClCompile Include="ConsumableItem.cpp" />
     <ClCompile Include="CoreHoundPattern.cpp" />
     <ClCompile Include="DamageIndicator.cpp" />
-    <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EnemySoundController.cpp" />
     <ClCompile Include="EquipmentSlot.cpp" />
     <ClCompile Include="Explode.cpp" />

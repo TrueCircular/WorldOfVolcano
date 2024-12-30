@@ -42,9 +42,9 @@ AFireStorm::~AFireStorm()
 
 void AFireStorm::Enter(const shared_ptr<GameObject>& target)
 {
-	if (_ownerController.lock() != nullptr && _aiController.lock() == nullptr)
+	if (_ownerController != nullptr && _aiController == nullptr)
 	{
-		const auto& temp = dynamic_pointer_cast<AIController>(_ownerController.lock());
+		const auto& temp = dynamic_pointer_cast<AIController>(_ownerController);
 
 		if (temp != nullptr)
 		{
@@ -52,14 +52,14 @@ void AFireStorm::Enter(const shared_ptr<GameObject>& target)
 		}
 	}
 
-	if (_aiController.lock() != nullptr)
+	if (_aiController != nullptr)
 	{
-		_ownerTransform = _aiController.lock()->GetTransform();
-		_ownerTargetTransform = _aiController.lock()->GetTargetTransform();
-		_ownerInfo = _aiController.lock()->GetCharacterInfo();
-		_ownerAbilitySlot = _aiController.lock()->GetGameObject()->GetComponent<AbilitySlot>();
+		_ownerTransform = _aiController->GetTransform();
+		_ownerTargetTransform = _aiController->GetTargetTransform();
+		_ownerInfo = _aiController->GetCharacterInfo();
+		_ownerAbilitySlot = _aiController->GetGameObject()->GetComponent<AbilitySlot>();
 		_coolTime = _abilityData->GetAbilityData().AbilityCoolTime;
-		_ownerAtk = _ownerInfo.lock()->GetCharacterInfo()._atk;
+		_ownerAtk = _ownerInfo->GetCharacterInfo()._atk;
 		_abilityRange = _abilityData->GetAbilityData().AbilityRange;
 		_abilityDamage = _ownerAtk * _abilityData->GetAbilityData().AbilityPow;
 	}
@@ -68,18 +68,18 @@ void AFireStorm::Enter(const shared_ptr<GameObject>& target)
 	{
 		shared_ptr<Transform> pos = make_shared<Transform>();
 		//임시수정
-		if (_ownerTransform.lock())
+		if (_ownerTransform)
 		{
-			pos->SetLocalPosition(_ownerTransform.lock()->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition());
+			pos->SetLocalPosition(_ownerTransform->GetGameObject()->GetChildByName(L"Model")->GetTransform()->GetPosition());
 			pos->SetLocalScale(Vec3(2.5f));
 
-			_fireStormInstance->SetInstance(100, pos, _ownerTargetTransform.lock(), 100, false);
+			_fireStormInstance->SetInstance(100, pos, _ownerTargetTransform, 100, false);
 		}
 	}
 	if (_magicCircleInstance != nullptr)
 	{
 		shared_ptr<Transform> pos = make_shared<Transform>();
-		pos->SetParent(_ownerTargetTransform.lock());
+		pos->SetParent(_ownerTargetTransform);
 		pos->SetPosition(Vec3(0, 0, 0));
 		pos->SetScale(Vec3(30));
 		_magicCircleInstance->SetInstance(3, pos, nullptr, 0, false);
@@ -97,12 +97,12 @@ void AFireStorm::Execute()
 		}
 		if (_fireStormParticle != nullptr)
 		{
-			_fireStormParticle->SetTargetObject(_ownerTargetTransform.lock()->GetGameObject());
+			_fireStormParticle->SetTargetObject(_ownerTargetTransform->GetGameObject());
 			_fireStormParticle->SetEffectDamage(_abilityDamage);
 			_fireStormInstance->Reset();
-			_fireStormInstance->particleTransform->SetLocalPosition(_ownerTransform.lock()->GetLocalPosition());
+			_fireStormInstance->particleTransform->SetLocalPosition(_ownerTransform->GetLocalPosition());
 			_fireStormParticle->AddParticle(_fireStormInstance);
-			_ownerAbilitySlot.lock()->_selectNumber = -1;
+			_ownerAbilitySlot->_selectNumber = -1;
 		}		
 	}
 }

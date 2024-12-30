@@ -13,8 +13,8 @@ public:
 	AFireBolt();
 	virtual ~AFireBolt();
 private:
-	weak_ptr<AIController>			_aiController;
-	weak_ptr<Transform>				_ownerTargetTransform;
+	shared_ptr<AIController>			_aiController;
+	shared_ptr<Transform>				_ownerTargetTransform;
 	shared_ptr<FireBall>			_fireBoltParticle;
 	shared_ptr<ParticleInstance>	_fireBoltInstance;
 	uint16							_ownerAtk = 0;

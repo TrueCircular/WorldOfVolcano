@@ -13,8 +13,8 @@ public:
 	AFireExplosion();
 	virtual ~AFireExplosion();
 private:
-	weak_ptr<AIController>			_aiController;
-	weak_ptr<Transform>				_ownerTargetTransform;
+	shared_ptr<AIController>			_aiController;
+	shared_ptr<Transform>				_ownerTargetTransform;
 	shared_ptr<RagExplode>			_fireExplosionParticle;
 	shared_ptr<ParticleInstance>	_fireExplosionInstance;
 	uint16							_ownerAtk = 0;

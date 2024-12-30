@@ -73,7 +73,7 @@ LineSpark::LineSpark()
 	smokeTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"LineSpark");
 	if (smokeTexture == nullptr) {
 		smokeTexture = make_shared<Texture>();
-		smokeTexture->Load(L"../../Resources/Texture/Effect/T_Sparks.PNG");
+		smokeTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_Sparks.PNG");
 		MANAGER_RESOURCES()->AddResource(L"LineSpark", smokeTexture);
 	}
 

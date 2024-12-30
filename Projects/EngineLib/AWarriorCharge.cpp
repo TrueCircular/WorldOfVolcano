@@ -44,16 +44,16 @@ AWarriorCharge::~AWarriorCharge()
 void AWarriorCharge::Charging()
 {
 
-	if (_ownerPicked.lock()->GetComponent<AIController>()->_isAlive) {
-		Vec3 ownerPos = _ownerTransform.lock()->GetLocalPosition();
-		Vec3 targetPos = _ownerPicked.lock()->GetTransform()->GetLocalPosition();
+	if (_ownerPicked->GetComponent<AIController>()->_isAlive) {
+		Vec3 ownerPos = _ownerTransform->GetLocalPosition();
+		Vec3 targetPos = _ownerPicked->GetTransform()->GetLocalPosition();
 		Vec3 velocity = targetPos - ownerPos;
 		velocity.y = 0;
 		velocity.Normalize();
 		float height=MANAGER_SCENE()->GetCurrentScene()->GetCurrentTerrain()->GetHeight(ownerPos.x,ownerPos.z);
 		ownerPos += velocity * (_chargeSpeed * MANAGER_TIME()->GetDeltaTime());
 		ownerPos.y = height;
-		_ownerTransform.lock()->SetLocalPosition(ownerPos);
+		_ownerTransform->SetLocalPosition(ownerPos);
 		targetPos.y = 0;
 		ownerPos.y = 0;
 		float dist = Vec3::Distance(targetPos, ownerPos);
@@ -82,7 +82,7 @@ void AWarriorCharge::DamageToTargets()
 
 	//적에게 데미지, 이펙트 재생
 
-	auto targets = _ownerPicked.lock();
+	auto targets = _ownerPicked;
 	if(targets!=nullptr){
 					
 		 auto targetCon = targets->GetComponent<CharacterController>();
@@ -90,7 +90,7 @@ void AWarriorCharge::DamageToTargets()
 		{
 			if (targetCon->_isAlive == true)
 			{
-				targetCon->TakeDamage(_playerController.lock()->GetGameObject(), _abilityDamage);
+				targetCon->TakeDamage(_playerController->GetGameObject(), _abilityDamage);
 				MANAGER_IMGUI()->UpdatePicked(true, targetCon->GetGameObject());
 			}
 		}
@@ -110,31 +110,31 @@ void AWarriorCharge::DamageToTargets()
 		_explodeParticle->AddParticle(_explodeInstance);
 	}
 
-	_playerController.lock()->SetCurrentState(PlayerUnitState::Stand);
-	_playerController.lock()->SetAnimState(PlayerAnimType::Stand);
-	_ownerAbilitySlot.lock()->_selectNumber = -1;
+	_playerController->SetCurrentState(PlayerUnitState::Stand);
+	_playerController->SetAnimState(PlayerAnimType::Stand);
+	_ownerAbilitySlot->_selectNumber = -1;
 	_isCoolTime = true;
 
 }
 
 void AWarriorCharge::Enter(const shared_ptr<GameObject>& target)
 {
-	if (_ownerController.lock() != nullptr && _playerController.lock() == nullptr)
+	if (_ownerController != nullptr && _playerController == nullptr)
 	{
-		const auto& temp = dynamic_pointer_cast<PlayerController>(_ownerController.lock());
+		const auto& temp = dynamic_pointer_cast<PlayerController>(_ownerController);
 
 		if (temp != nullptr)
 		{
 			_playerController = temp;
 		}
 	}
-	if (_playerController.lock() != nullptr)
+	if (_playerController != nullptr)
 	{
-		_ownerAnimator = _playerController.lock()->GetAnimator();
-		_ownerTransform = _playerController.lock()->GetTransform();
-		_ownerInfo = _playerController.lock()->GetUnitInformation();
-		_ownerAbilitySlot = _playerController.lock()->GetGameObject()->GetComponent<AbilitySlot>();
-		_ownerAtk = _ownerInfo.lock()->GetCharacterInfo()._atk;
+		_ownerAnimator = _playerController->GetAnimator();
+		_ownerTransform = _playerController->GetTransform();
+		_ownerInfo = _playerController->GetUnitInformation();
+		_ownerAbilitySlot = _playerController->GetGameObject()->GetComponent<AbilitySlot>();
+		_ownerAtk = _ownerInfo->GetCharacterInfo()._atk;
 		_coolTime = _abilityData->GetAbilityData().AbilityCoolTime;
 		_abilityRange = _abilityData->GetAbilityData().AbilityRange;
 		_abilityDamage = _ownerAtk * _abilityData->GetAbilityData().AbilityPow;
@@ -143,21 +143,21 @@ void AWarriorCharge::Enter(const shared_ptr<GameObject>& target)
 
 	}
 	if(target&& !_isCharging){
-		auto tInfo = _ownerInfo.lock()->GetCharacterInfo();
+		auto tInfo = _ownerInfo->GetCharacterInfo();
 		float mpSomo = tInfo._mp - (float)_consumedMp;
 
 		if (mpSomo > 1.f + FLT_EPSILON)
 		{
 			uint32 lastMp = (uint32)mpSomo;
-			auto tempInfo = _ownerInfo.lock()->GetCharacterInfo();
+			auto tempInfo = _ownerInfo->GetCharacterInfo();
 			tempInfo._mp = lastMp;
 
-			_ownerInfo.lock()->SetCharacterInfo(tempInfo);
-			MANAGER_IMGUI()->UpdatePicked(true, _playerController.lock()->GetGameObject());
+			_ownerInfo->SetCharacterInfo(tempInfo);
+			MANAGER_IMGUI()->UpdatePicked(true, _playerController->GetGameObject());
 
-			if (_ownerController.lock() != nullptr && _playerController.lock() == nullptr)
+			if (_ownerController != nullptr && _playerController == nullptr)
 			{
-				const auto& temp = dynamic_pointer_cast<PlayerController>(_ownerController.lock());
+				const auto& temp = dynamic_pointer_cast<PlayerController>(_ownerController);
 
 				if (temp != nullptr)
 				{
@@ -168,7 +168,7 @@ void AWarriorCharge::Enter(const shared_ptr<GameObject>& target)
 			if (_polarInstance != nullptr)
 			{
 				shared_ptr<Transform> pos = make_shared<Transform>();	
-				pos->SetParent(_ownerTransform.lock()->GetTransform());
+				pos->SetParent(_ownerTransform->GetTransform());
 				pos->SetLocalPosition(Vec3(-1, 8,3));
 				pos->SetLocalRotation(Vec3(::XMConvertToRadians(90), ::XMConvertToRadians(90),::XMConvertToRadians(-90)));
 				pos->SetLocalScale(Vec3(1.5, 1.5, 1.5));
@@ -178,7 +178,7 @@ void AWarriorCharge::Enter(const shared_ptr<GameObject>& target)
 			if (_explodeInstance != nullptr)
 			{
 				shared_ptr<Transform> pos = make_shared<Transform>();
-				pos->SetLocalPosition(_playerController.lock()->GetTransform()->GetLocalPosition());
+				pos->SetLocalPosition(_playerController->GetTransform()->GetLocalPosition());
 				pos->SetScale(Vec3(100.f));
 				_explodeInstance->SetInstance(1.6f, pos, nullptr, false);
 			}
@@ -195,14 +195,14 @@ void AWarriorCharge::Enter(const shared_ptr<GameObject>& target)
 	/// Disable Player Controll When Charging
 	/// 
 			_isCharging = true;
-			_playerController.lock()->SetCurrentState(PlayerUnitState::Ability1);
-			_playerController.lock()->SetAnimState(PlayerAnimType::Ability1);
+			_playerController->SetCurrentState(PlayerUnitState::Ability1);
+			_playerController->SetAnimState(PlayerAnimType::Ability1);
 		}
 
 	}
 	//else
 	//{
-	//	_ownerAbilitySlot.lock()->_selectNumber = -1;
+	//	_ownerAbilitySlot->_selectNumber = -1;
 	//}
 }
 

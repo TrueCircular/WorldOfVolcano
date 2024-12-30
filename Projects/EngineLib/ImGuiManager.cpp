@@ -2,6 +2,13 @@
 #include "ImGuiManager.h"
 #include "CharacterInfo.h"
 #include "AbilitySlot.h"
+
+#ifdef _DEBUG
+#define FONTWIDE "../../Resources/Font/"
+#else
+#define FONTWIDE "Resources/Font/"
+#endif
+
 ImGuiManager* ImGuiManager::_instance = nullptr;
 
 ImGuiManager::ImGuiManager()
@@ -32,8 +39,9 @@ void ImGuiManager::Init()
         ImGuiIO& io = ImGui::GetIO(); (void)io;
 
         //한글 폰트 추가 - add kor font
-        io.Fonts->AddFontFromFileTTF("../../Resources/Font/LINESeedKR-Bd.ttf", 22.0f, NULL, io.Fonts->GetGlyphRangesKorean());
-        //io.Fonts->AddFontFromFileTTF("../../Resources/Font/Warhaven_Bold.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesKorean());
+        string mpont = (FONTWIDE);
+        mpont += "LINESeedKR-Bd.ttf";
+        io.Fonts->AddFontFromFileTTF(mpont.c_str(), 22.0f, NULL, io.Fonts->GetGlyphRangesKorean());
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();

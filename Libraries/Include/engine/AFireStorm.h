@@ -14,8 +14,8 @@ public:
 	AFireStorm();
 	virtual ~AFireStorm();
 private:
-	weak_ptr<AIController>			_aiController;
-	weak_ptr<Transform>				_ownerTargetTransform;
+	shared_ptr<AIController>			_aiController;
+	shared_ptr<Transform>				_ownerTargetTransform;
 	shared_ptr<FireStorm>			_fireStormParticle;
 	shared_ptr<ParticleInstance>	_fireStormInstance;
 	shared_ptr<MagicCircle>			_magicCircleParticle;

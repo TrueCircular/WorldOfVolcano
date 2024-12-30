@@ -17,9 +17,9 @@ public:
 	AWarriorRoar();
 	virtual ~AWarriorRoar();
 private:
-	weak_ptr<PlayerController>   _playerController;
-	weak_ptr<ModelAnimator>		 _ownerAnimator;
-	weak_ptr<TweenDesc>			 _tweenDesc;
+	shared_ptr<PlayerController>   _playerController;
+	shared_ptr<ModelAnimator>		 _ownerAnimator;
+	shared_ptr<TweenDesc>			 _tweenDesc;
 	shared_ptr<WarriorRoar>		 _roarParticle;
 	shared_ptr<Clap>			 _clapParticle;
 	shared_ptr<ShineHelper>      _sparkParticle;

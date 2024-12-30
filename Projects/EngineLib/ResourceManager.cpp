@@ -35,13 +35,13 @@ void ResourceManager::CreateDefaultTexture()
 {
 	{
 		shared_ptr<Texture> texture = make_shared<Texture>();
-		texture->CreateTexture(L"..\\..\\Resources\\Texture\\NormalAlpha.png");
+		texture->CreateTexture(wstring(RESOURCES_ADDR_TEXTURE) + L"NormalAlpha.png");
 		AddResource(L"DefaultNormal", texture);
 
 	}
 	{
 		shared_ptr<Texture> texture = make_shared<Texture>();
-		texture->CreateTexture(L"..\\..\\Resources\\Texture\\SpecularNormal.png");
+		texture->CreateTexture(wstring(RESOURCES_ADDR_TEXTURE) + L"SpecularNormal.png");
 		AddResource(L"DefaultSpecular", texture);
 	}
 	{

@@ -75,6 +75,11 @@
     <OutDir>../../Output/Debug/</OutDir>
     <IntDir>../../Output/Debug/WorldOfVolcano/</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>Bin/Game</OutDir>
+    <IntDir>Bin/Game/WorldOfVolcano</IntDir>
+    <IncludePath>$(SolutionDir)Libraries\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -137,19 +142,42 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>Libraries/Include; Libraries/Include/server;</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>Libraries/lib; Libraries/lib/server;</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <EntryPointName />
+    </FxCompile>
+    <FxCompile>
+      <DisableOptimizations>true</DisableOptimizations>
+    </FxCompile>
+    <FxCompile>
+      <EnableDebuggingInformation>false</EnableDebuggingInformation>
+    </FxCompile>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
+    <PreBuildEvent>
+      <Command>mkdir "Bin"
+copy "..\\..\\Libraries\\lib\\fmod\\*.dll" "Bin\\Game"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BaseScene.h" />
@@ -212,15 +240,10 @@
     <ClCompile Include="StruectedLavaSprite.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\Resources\Shader\Global.fx" />
-    <FxCompile Include="..\..\Resources\Shader\Instancing.fx" />
-    <FxCompile Include="..\..\Resources\Shader\Light.fx" />
-    <FxCompile Include="..\..\Resources\Shader\Render.fx" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EngineLib\EngineLib.vcxproj">
-      <Project>{beb44029-16eb-44e8-91b6-af8b3208e491}</Project>
-    </ProjectReference>
+    <FxCompile Include="Resources\Shader\Global.fx" />
+    <FxCompile Include="Resources\Shader\Instancing.fx" />
+    <FxCompile Include="Resources\Shader\Light.fx" />
+    <FxCompile Include="Resources\Shader\Render.fx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,10 +22,10 @@ public:
 	AIController(){}
 	virtual ~AIController(){}
 private:
-	weak_ptr<HeightGetter>		_heightGetterCom;
-	weak_ptr<ModelAnimator>		_animator;
-	weak_ptr<Transform>			_transform;
-	weak_ptr<CharacterInfo>		_characterInfo;
+	shared_ptr<HeightGetter>		_heightGetterCom;
+	shared_ptr<ModelAnimator>	_animator;
+	shared_ptr<Transform>			_transform;
+	shared_ptr<CharacterInfo>		_characterInfo;
 	shared_ptr<JumpFlag>		_jumpState;
 	float _defaultSpeed = 0.f;
 	float _currentSpeed = 0.f;
@@ -34,7 +34,7 @@ private:
 	bool _eventTrigger = false;
 private:
 	shared_ptr<TargetList>		_targetList;
-	weak_ptr<Transform>			_targetTransform;
+	shared_ptr<Transform>			_targetTransform;
 	Vec3						_targetPos = Vec3(0.f);
 	float						_traceRadius = 0.f;
 private:
@@ -63,16 +63,16 @@ public:
 public:
 	//Getter
 	//State Controll
-	const shared_ptr<Transform>& GetTransform() const { return _transform.lock(); }
-	const shared_ptr<Transform>& GetTargetTransform() const { return _targetTransform.lock(); }
-	const shared_ptr<CharacterInfo>& GetCharacterInfo() const { return _characterInfo.lock(); }
+	const shared_ptr<Transform>& GetTransform() const { return _transform; }
+	const shared_ptr<Transform>& GetTargetTransform() const { return _targetTransform; }
+	const shared_ptr<CharacterInfo>& GetCharacterInfo() const { return _characterInfo; }
 	const shared_ptr<JumpFlag>& GetJumpState() const { return _jumpState; }
 	const float& GetDefaultSpeed() const { return _defaultSpeed; }
 	const float& GetCurrentSpeed() const { return _currentSpeed; }
 	const shared_ptr<UnitFSM>& GetUnitFsm() const { return _unitFsm; }
 	const shared_ptr<TargetList>& GetTargetList() const { return _targetList; }
 	//Animation Controll
-	const shared_ptr<ModelAnimator>& GetAnimator() const { return _animator.lock(); }
+	const shared_ptr<ModelAnimator> GetAnimator() const { return _animator; }
 	const shared_ptr<PlayerUnitState>& GetCurrentPlayerUnitState() const { return _currentPlayerState; }
 	const PlayerAnimType& GetCurrentPlayerAnimType() const { return _currentPlayerAnimState->GetStateAnimtype(); }
 private:

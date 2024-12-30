@@ -144,7 +144,7 @@ FireStorm::FireStorm()
 	noiseTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"NoiseMap17");
 	if (noiseTexture == nullptr) {
 		noiseTexture = make_shared<Texture>();
-		noiseTexture->Load(L"../../Resources/Texture/Effect/T_ky_noise17.PNG");
+		noiseTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_noise17.PNG");
 		MANAGER_RESOURCES()->AddResource(L"NoiseMap17", noiseTexture);
 	}
 

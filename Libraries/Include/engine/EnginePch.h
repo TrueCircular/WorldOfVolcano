@@ -23,6 +23,7 @@
 #define RESOURCES_ADDR_TEXTURE_EFFECT L"../../Resources/Texture/Effect/"
 #define RESOURCES_ADDR_SPRITE L"../../Resources/Sprite/"
 #define RESOURCES_ADDR_SOUND L"../../Resources/Sound/"
+#define RESOURCES_ADDR_FONT L"../../Resources/Font/"
 //data
 #define DATA_ADDR_SAVE L"../../Data/Save/"
 #define DATA_ADDR_LOAD L"../../Data/Load/"
@@ -52,6 +53,7 @@
 #define RESOURCES_ADDR_TEXTURE_EFFECT L"Resources/Texture/Effect/"
 #define RESOURCES_ADDR_SPRITE L"Resources/Sprite/"
 #define RESOURCES_ADDR_SOUND L"Resources/Sound/"
+#define RESOURCES_ADDR_FONT L"Resources/Font/"
 //data
 #define DATA_ADDR_SAVE L"Data/Save/"
 #define DATA_ADDR_LOAD L"Data/Load/"
@@ -136,14 +138,14 @@ using namespace Microsoft::WRL;
 #pragma comment(lib, "dxtex\\DirectXTex_d.lib")
 #pragma comment(lib, "dxtk\\DirectXTK_d.lib")
 #pragma comment(lib, "fx11\\Effects11d.lib")
-////Imgui
+//Imgui
 #pragma comment(lib, "imgui\\Imgui_d.lib")
 #else
 //DX
 #pragma comment(lib, "dxtex\\DirectXTex.lib")
 #pragma comment(lib, "dxtk\\DirectXTK.lib")
 #pragma comment(lib, "fx11\\Effects11.lib")
-////Imgui
+//Imgui
 #pragma comment(lib, "imgui\\Imgui.lib")
 #endif
 

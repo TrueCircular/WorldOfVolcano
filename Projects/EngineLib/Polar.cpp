@@ -58,7 +58,7 @@ Polar::Polar()
 	maskTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"Polar");
 	if (maskTexture == nullptr) {
 		maskTexture = make_shared<Texture>();
-		maskTexture->Load(L"../../Resources/Texture/Effect/T_ky_decoLinesB.PNG");
+		maskTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_decoLinesB.PNG");
 		MANAGER_RESOURCES()->AddResource(L"Polar", maskTexture);
 	}
 	maskSRV = shader->GetSRV("NoiseMap");

@@ -57,7 +57,7 @@ MagicCircle::MagicCircle()
 	circleTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"MagicCircle");
 	if (circleTexture == nullptr) {
 		circleTexture = make_shared<Texture>();
-		circleTexture->Load(L"../../Resources/Texture/Effect/T_ky_magicCircle020.PNG");
+		circleTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_magicCircle020.PNG");
 		MANAGER_RESOURCES()->AddResource(L"MagicCircle", circleTexture);
 	}
 

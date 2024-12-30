@@ -15,9 +15,9 @@ public:
 
 private:
 
-	weak_ptr<PlayerController>   _playerController;
+	shared_ptr<PlayerController>   _playerController;
 
-	weak_ptr<GameObject>	 _ownerPicked;
+	shared_ptr<GameObject>	 _ownerPicked;
 
 
 

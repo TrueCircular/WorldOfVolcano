@@ -408,7 +408,7 @@ SendBufferRef ClientPacketHandler::Make_BATTLE(float damage, uint32 targerId)
 void ClientPacketHandler::GenerateMobList()
 {
 	ObjectExporter2 exporter;
-	exporter.OpenFile(L"../../Resources/Assets/MobDungeon.dat");
+	exporter.OpenFile(wstring(RESOURCES_ADDR_ASSET) + L"MobDungeon.dat");
 	for (int id = 0; id < exporter.enemyListforServer.size(); id++)
 	{
 		MONSTER_INFO mobInfo;

@@ -56,17 +56,17 @@ AWarriorRoar::~AWarriorRoar()
 
 void AWarriorRoar::AoeDamageToTargets()
 {
-	auto tInfo = _ownerInfo.lock()->GetCharacterInfo();
+	auto tInfo = _ownerInfo->GetCharacterInfo();
 	float mpSomo = tInfo._mp - (float)_consumedMp;
 
 	if (mpSomo > 1.f + FLT_EPSILON)
 	{
 		uint32 lastMp = (uint32)mpSomo;
-		auto tempInfo = _ownerInfo.lock()->GetCharacterInfo();
+		auto tempInfo = _ownerInfo->GetCharacterInfo();
 		tempInfo._mp = lastMp;
 
-		_ownerInfo.lock()->SetCharacterInfo(tempInfo);
-		MANAGER_IMGUI()->UpdatePicked(true, _playerController.lock()->GetGameObject());
+		_ownerInfo->SetCharacterInfo(tempInfo);
+		MANAGER_IMGUI()->UpdatePicked(true, _playerController->GetGameObject());
 
 		//적에게 데미지, 이펙트 재생
 		{
@@ -76,7 +76,7 @@ void AWarriorRoar::AoeDamageToTargets()
 
 			for (auto& target : targets)
 			{
-				Vec3 myPos = _ownerTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _ownerTransform->GetLocalPosition();
 				Vec3 targetPos = target->GetTransform()->GetLocalPosition();
 				targetPos.y = myPos.y;
 				float dist = Vec3::Distance(myPos, targetPos);
@@ -96,21 +96,21 @@ void AWarriorRoar::AoeDamageToTargets()
 					{
 						if (targetCon->_isAlive == true)
 						{
-							targetCon->TakeDamage(_playerController.lock()->GetGameObject(), _abilityDamage);
+							targetCon->TakeDamage(_playerController->GetGameObject(), _abilityDamage);
 							MANAGER_IMGUI()->UpdatePicked(true, targetCon->GetGameObject());
 						}
 					}
 				}
 			}
 
-			_playerController.lock()->SetCurrentState(PlayerUnitState::Ability2);
-			_playerController.lock()->SetAnimState(PlayerAnimType::Ability2);
+			_playerController->SetCurrentState(PlayerUnitState::Ability2);
+			_playerController->SetAnimState(PlayerAnimType::Ability2);
 
 			if (_roarParticle != nullptr)
 			{
-				_roarParticle->SetAnimator(_ownerAnimator.lock());
+				_roarParticle->SetAnimator(_ownerAnimator);
 				_roarInstance->Reset();
-				_roarParticle->AddParticle(_roarInstance, _tweenDesc.lock());
+				_roarParticle->AddParticle(_roarInstance, _tweenDesc);
 			}
 			if (_clapParticle != nullptr) 
 			{
@@ -122,21 +122,21 @@ void AWarriorRoar::AoeDamageToTargets()
 				_sparkInstance->Reset();
 				_sparkParticle->AddParticle(_sparkInstance);
 			}
-			_ownerAbilitySlot.lock()->_selectNumber = -1;
+			_ownerAbilitySlot->_selectNumber = -1;
 			_isCoolTime = true;
 		}
 	}
 	else
 	{
-		_ownerAbilitySlot.lock()->_selectNumber = -1;
+		_ownerAbilitySlot->_selectNumber = -1;
 	}
 }
 
 void AWarriorRoar::Enter(const shared_ptr<GameObject>& target)
 {
-	if (_ownerController.lock() != nullptr && _playerController.lock() == nullptr)
+	if (_ownerController != nullptr && _playerController == nullptr)
 	{
-		const auto& temp = dynamic_pointer_cast<PlayerController>(_ownerController.lock());
+		const auto& temp = dynamic_pointer_cast<PlayerController>(_ownerController);
 
 		if (temp != nullptr)
 		{
@@ -144,14 +144,14 @@ void AWarriorRoar::Enter(const shared_ptr<GameObject>& target)
 		}
 	}
 
-	if (_playerController.lock() != nullptr)
+	if (_playerController != nullptr)
 	{
-		_ownerAnimator = _playerController.lock()->GetAnimator();
-		_tweenDesc = _ownerAnimator.lock()->GetTweenDesc();
-		_ownerTransform = _playerController.lock()->GetTransform();
-		_ownerInfo = _playerController.lock()->GetUnitInformation();
-		_ownerAbilitySlot = _playerController.lock()->GetGameObject()->GetComponent<AbilitySlot>();
-		_ownerAtk = _ownerInfo.lock()->GetCharacterInfo()._atk;
+		_ownerAnimator = _playerController->GetAnimator();
+		_tweenDesc = _ownerAnimator->GetTweenDesc();
+		_ownerTransform = _playerController->GetTransform();
+		_ownerInfo = _playerController->GetUnitInformation();
+		_ownerAbilitySlot = _playerController->GetGameObject()->GetComponent<AbilitySlot>();
+		_ownerAtk = _ownerInfo->GetCharacterInfo()._atk;
 		_coolTime = _abilityData->GetAbilityData().AbilityCoolTime;
 		_abilityRange = _abilityData->GetAbilityData().AbilityRange;
 		_abilityDamage = _ownerAtk * _abilityData->GetAbilityData().AbilityPow;
@@ -161,7 +161,7 @@ void AWarriorRoar::Enter(const shared_ptr<GameObject>& target)
 	if (_roarInstance != nullptr)
 	{
 		shared_ptr<Transform> pos = make_shared<Transform>();
-		pos->SetParent(_playerController.lock()->GetGameObject()->GetChildByName(L"Model")->GetTransform());
+		pos->SetParent(_playerController->GetGameObject()->GetChildByName(L"Model")->GetTransform());
 
 		_roarInstance->SetInstance(1.2f, pos, nullptr, false);
 	}
@@ -169,7 +169,7 @@ void AWarriorRoar::Enter(const shared_ptr<GameObject>& target)
 	if (_clapInstance != nullptr)
 	{
 		shared_ptr<Transform> pos = make_shared<Transform>();
-		pos->SetLocalPosition(_playerController.lock()->GetTransform()->GetLocalPosition());
+		pos->SetLocalPosition(_playerController->GetTransform()->GetLocalPosition());
 		pos->SetScale(Vec3(100.f));
 
 		_clapInstance->SetInstance(1.6f, pos, nullptr, false);
@@ -178,7 +178,7 @@ void AWarriorRoar::Enter(const shared_ptr<GameObject>& target)
 	if (_sparkInstance != nullptr)
 	{
 		shared_ptr<Transform> pos = make_shared<Transform>();
-		pos->SetLocalPosition(_playerController.lock()->GetTransform()->GetLocalPosition());
+		pos->SetLocalPosition(_playerController->GetTransform()->GetLocalPosition());
 		pos->SetScale(Vec3(100.f));
 
 		_sparkInstance->SetInstance(1.6f, pos, nullptr, false);

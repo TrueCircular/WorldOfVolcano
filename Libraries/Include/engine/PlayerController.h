@@ -23,10 +23,10 @@ private:
 	Vec3 _playerRight = { 0,0,0 };
 	Vec3 _playerUp = { 0,0,0 };
 	shared_ptr<PlayerUnitState>	_currentState;
-	weak_ptr<Transform>			_transform;
-	weak_ptr<CharacterInfo>		_unitInfo;
-	weak_ptr<HeightGetter>		_heightGetterCom;
-	weak_ptr<AbilitySlot>		_abilitySlot;
+	shared_ptr<Transform>			_transform;
+	shared_ptr<CharacterInfo>		_unitInfo;
+	shared_ptr<HeightGetter>		_heightGetterCom;
+	shared_ptr<AbilitySlot>		_abilitySlot;
 	uint16 _defaultSpeed = 0;
 	uint16 _currentSpeed = 0;
 	uint16 _slowSpeed = 0;
@@ -53,7 +53,7 @@ public:
 	float _attackRange = 0.f;
 private:
 	//Animation Controll
-	weak_ptr<ModelAnimator>				_animator;
+	shared_ptr<ModelAnimator>				_animator;
 	shared_ptr<PlayerAnimState>			_animState;
 	vector<shared_ptr<PlayerAnimState>> _animStateList;
 private:
@@ -61,7 +61,7 @@ private:
 	Vec3 _currentMousePos = Vec3(0.f);
 private:
 	//Camera Controll
-	weak_ptr<GameObject> _camera;
+	shared_ptr<GameObject> _camera;
 	Vec3 _camPos;
 	Vec3 _camRot;
 	float _camDist = 0.f;
@@ -90,7 +90,7 @@ public:
 	void SetCurrentState(PlayerUnitState state) { *_currentState = state; }
 public:
 	//Getter Animation State
-	const shared_ptr<ModelAnimator>& GetAnimator() { return _animator.lock(); }
+	const shared_ptr<ModelAnimator>& GetAnimator() { return _animator; }
 	const shared_ptr<PlayerUnitState> GetCurrentUnitState() { return _currentState; }
 	shared_ptr<PlayerAnimState> GetAnimState() { return _animState; }
 	const PlayerAnimType GetCurrentAnimType();
@@ -101,7 +101,7 @@ public:
 	const float& GetDefaultSpeed() const { return _defaultSpeed; }
 	const float& GetCurrentSpeed() const { return _currentSpeed; }
 	void NotifyPlayerAlive(bool isAlive);
-	const shared_ptr< CharacterInfo>& GetUnitInformation() const { return _unitInfo.lock(); }
+	const shared_ptr< CharacterInfo>& GetUnitInformation() const { return _unitInfo; }
 	const CHARACTER_INFO& GetPickedInfo() const { return _pickedInfo; }
 protected:
 	virtual void InitController() override;

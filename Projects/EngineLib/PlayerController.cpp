@@ -69,25 +69,25 @@ void PlayerController::CameraMove()
 	if (g_gameDesc.WheelState == 1)
 	{
 		_camDist -= _camSpeed * _dt;
-		_camPos = _camera.lock()->GetCamera()->GetCameraPosition();
+		_camPos = _camera->GetCamera()->GetCameraPosition();
 
 		if (_camDist < _camMinDist)
 		{
 			_camDist = _camMinDist;
 		}
 
-		Vec3 cameraDirection = _camera.lock()->GetCamera()->GetCameraLookVector();
+		Vec3 cameraDirection = _camera->GetCamera()->GetCameraLookVector();
 		Vec3 newCamPos = _playerPos - cameraDirection * _camDist; // 타깃에서 카메라 방향으로 _camDist만큼 떨어진 위치
-		newCamPos += _camera.lock()->GetCamera()->GetCameraToTargetOffset();
+		newCamPos += _camera->GetCamera()->GetCameraToTargetOffset();
 
-		_camera.lock()->GetCamera()->SetCameraPosition(newCamPos);
-		_camera.lock()->GetCamera()->Update();
+		_camera->GetCamera()->SetCameraPosition(newCamPos);
+		_camera->GetCamera()->Update();
 	}
 	//휠 내렸을 때(시점 뒤로)
 	else if (g_gameDesc.WheelState == -1)
 	{
 		_camDist += _camSpeed * _dt;
-		_camPos = _camera.lock()->GetCamera()->GetCameraPosition();
+		_camPos = _camera->GetCamera()->GetCameraPosition();
 
 		if (_camDist > _camMaxDist)
 		{
@@ -95,25 +95,25 @@ void PlayerController::CameraMove()
 		}
 
 
-		Vec3 cameraDirection = _camera.lock()->GetCamera()->GetCameraLookVector();
+		Vec3 cameraDirection = _camera->GetCamera()->GetCameraLookVector();
 		cameraDirection.Normalize(cameraDirection);
 		Vec3 newCamPos = _playerPos - cameraDirection * _camDist; // 타깃에서 카메라 방향으로 _camDist만큼 떨어진 위치
-		newCamPos += _camera.lock()->GetCamera()->GetCameraToTargetOffset();
+		newCamPos += _camera->GetCamera()->GetCameraToTargetOffset();
 
-		_camera.lock()->GetCamera()->SetCameraPosition(newCamPos);
-		_camera.lock()->GetCamera()->SetCameraDistance(_camDist);
-		_camera.lock()->GetCamera()->Update();
+		_camera->GetCamera()->SetCameraPosition(newCamPos);
+		_camera->GetCamera()->SetCameraDistance(_camDist);
+		_camera->GetCamera()->Update();
 
 	}
 	//마우스 오른쪽 버튼 누르고 있을 때(캐릭터회전 = 카메라 회전(위치이동))
 	if (MANAGER_INPUT()->GetButton(KEY_TYPE::RBUTTON) && _isAlive == true)
 	{
 		{
-			_playerRot = _transform.lock()->GetLocalRotation();
+			_playerRot = _transform->GetLocalRotation();
 			float deltaX = _currentMousePos.x - _prevMousePos.x;
 			_playerRot.y += ::XMConvertToRadians(deltaX) * _dt * (10.f);
-			_transform.lock()->SetLocalRotation(_playerRot);
-			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+			_transform->SetLocalRotation(_playerRot);
+			_camera->GetCamera()->SetCameraRotationYaw(_playerRot.y);
 		}
 	}
 	//마우스 왼쪽 버튼 누르고 있을 때(카메라만 시점 변경)
@@ -127,11 +127,11 @@ void PlayerController::CameraMove()
 			_camRot.y = ::XMConvertToRadians(deltaX) * 0.1f;
 			_camRot.z = 0.f;
 
-			_camera.lock()->GetCamera()->RotateAroundToTarget(_playerPos, _camRot);
+			_camera->GetCamera()->RotateAroundToTarget(_playerPos, _camRot);
 		}
 	}
 
-	_camera.lock()->GetCamera()->SetCameraDistance(_camDist);
+	_camera->GetCamera()->SetCameraDistance(_camDist);
 	_prevMousePos = _currentMousePos;
 }
 
@@ -186,14 +186,14 @@ void PlayerController::PlayerInput()
 void PlayerController::PlayerMove()
 {
 	_dt = MANAGER_TIME()->GetDeltaTime();
-	_playerPos = _transform.lock()->GetPosition();
-	_playerForward = _transform.lock()->GetLookVector();
-	_playerRight = _transform.lock()->GetRightVector();
+	_playerPos = _transform->GetPosition();
+	_playerForward = _transform->GetLookVector();
+	_playerRight = _transform->GetRightVector();
 
-	if (_heightGetterCom.lock())
+	if (_heightGetterCom)
 	{
 		if (_jumpState->isJump == false)
-			_playerPos.y = _heightGetterCom.lock()->GetHeight();
+			_playerPos.y = _heightGetterCom->GetHeight();
 	}
 
 	if (_isSlow)
@@ -227,9 +227,9 @@ void PlayerController::PlayerMove()
 			_isSlow = false;
 
 			_playerPos -= _playerRight * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_playerPos);
-			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+			_transform->SetPosition(_playerPos);
+			_camera->GetCamera()->SetCameraIsRotationAround(false);
+			_camera->GetCamera()->SetCameraRotationYaw(_playerRot.y);
 		}
 
 	}
@@ -241,9 +241,9 @@ void PlayerController::PlayerMove()
 			_isSlow = false;
 
 			_playerPos += _playerRight * _currentSpeed * _dt;
-			_transform.lock()->SetPosition(_playerPos);
-			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-			_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+			_transform->SetPosition(_playerPos);
+			_camera->GetCamera()->SetCameraIsRotationAround(false);
+			_camera->GetCamera()->SetCameraRotationYaw(_playerRot.y);
 		}
 	}
 	//앞
@@ -253,9 +253,9 @@ void PlayerController::PlayerMove()
 		*_currentState = PlayerUnitState::FrontMove;
 
 		_playerPos += _playerForward * _currentSpeed * _dt;
-		_transform.lock()->SetPosition(_playerPos);
-		_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-		_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+		_transform->SetPosition(_playerPos);
+		_camera->GetCamera()->SetCameraIsRotationAround(false);
+		_camera->GetCamera()->SetCameraRotationYaw(_playerRot.y);
 	}
 	//뒤
 	else if (MANAGER_INPUT()->GetButton(KEY_TYPE::S))
@@ -264,9 +264,9 @@ void PlayerController::PlayerMove()
 		*_currentState = PlayerUnitState::BackMove;
 
 		_playerPos -= _playerForward * _currentSpeed * _dt;
-		_transform.lock()->SetPosition(_playerPos);
-		_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
-		_camera.lock()->GetCamera()->SetCameraRotationYaw(_playerRot.y);
+		_transform->SetPosition(_playerPos);
+		_camera->GetCamera()->SetCameraIsRotationAround(false);
+		_camera->GetCamera()->SetCameraRotationYaw(_playerRot.y);
 	}
 
 	PlayerJump();
@@ -285,7 +285,7 @@ void PlayerController::PlayerJump()
 			_jumpState->isJumpUP = true;
 			_jumpUpMaxPos = _playerPos + (_jumpUpDir * _jumpPower);
 			*_currentState = PlayerUnitState::Jump;
-			_camera.lock()->GetCamera()->SetCameraIsRotationAround(false);
+			_camera->GetCamera()->SetCameraIsRotationAround(false);
 		}
 	}
 
@@ -296,7 +296,7 @@ void PlayerController::PlayerJump()
 			if (_playerPos.y < _jumpUpMaxPos.y + FLT_EPSILON)
 			{
 				_playerPos = Vec3::Lerp(_playerPos, Vec3(_playerPos + _jumpUpDir * _jumpPower), 2.0f * _dt);
-				_transform.lock()->SetPosition(_playerPos);
+				_transform->SetPosition(_playerPos);
 			}
 			else
 			{
@@ -306,7 +306,7 @@ void PlayerController::PlayerJump()
 		}
 		if (_jumpState->isJumpFall)
 		{
-			float height = _heightGetterCom.lock()->GetHeight();
+			float height = _heightGetterCom->GetHeight();
 			float test = height + _jumpPower;
 			if (_playerPos.y < (height + _jumpPower) / 1.4f)
 			{
@@ -316,15 +316,15 @@ void PlayerController::PlayerJump()
 			else
 			{
 				_playerPos = Vec3::Lerp(_playerPos, Vec3(_playerPos + _jumpDownDir * _jumpPower), 1.5f * _dt);
-				_transform.lock()->SetPosition(_playerPos);
+				_transform->SetPosition(_playerPos);
 			}
 		}
 		if (_jumpState->isJumEnd)
 		{
-			if (_playerPos.y < _heightGetterCom.lock()->GetHeight() + FLT_EPSILON)
+			if (_playerPos.y < _heightGetterCom->GetHeight() + FLT_EPSILON)
 			{
-				_playerPos.y = _heightGetterCom.lock()->GetHeight();
-				_transform.lock()->SetLocalPosition(_playerPos);
+				_playerPos.y = _heightGetterCom->GetHeight();
+				_transform->SetLocalPosition(_playerPos);
 				_jumpState->isJumEnd = false;
 				_jumpState->isJump = false;
 				return;
@@ -332,7 +332,7 @@ void PlayerController::PlayerJump()
 			else
 			{
 				_playerPos = Vec3::Lerp(_playerPos, Vec3(_playerPos + _jumpDownDir * _jumpPower), 1.5f * _dt);
-				_transform.lock()->SetPosition(_playerPos);
+				_transform->SetPosition(_playerPos);
 			}
 		}
 	}
@@ -358,7 +358,7 @@ void PlayerController::PlayerAttack()
 		if (_pickedObj != nullptr)
 		{
 			auto pickTransform = _pickedObj->GetTransform();
-			Vec3 myPos = _transform.lock()->GetPosition();
+			Vec3 myPos = _transform->GetPosition();
 			Vec3 pickPos = pickTransform->GetPosition();
 			pickPos.y = myPos.y;
 			float dist = Vec3::Distance(myPos, pickPos);
@@ -378,7 +378,7 @@ void PlayerController::PlayerAttack()
 								_isBattle = true;
 								_isAttack = true;
 
-								float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
+								float damage = _unitInfo->GetCharacterInfo()._atk;
 								pickController->TakeDamage(GetGameObject(), damage);
 								MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
 
@@ -416,7 +416,7 @@ void PlayerController::PlayerAttack()
 								_isBattle = true;
 								_isAttack = true;
 
-								float damage = _unitInfo.lock()->GetCharacterInfo()._atk;
+								float damage = _unitInfo->GetCharacterInfo()._atk;
 								pickController->TakeDamage(GetGameObject(), damage);
 								MANAGER_IMGUI()->UpdatePicked(true, _pickedObj);
 
@@ -447,7 +447,7 @@ void PlayerController::PlayerAbility1()
 {
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::KEY_1))
 	{
-		_abilitySlot.lock()->ExecuteAbility(0, _pickedObj);
+		_abilitySlot->ExecuteAbility(0, _pickedObj);
 	}
 }
 
@@ -455,21 +455,21 @@ void PlayerController::PlayerAbility2()
 {
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::KEY_2))
 	{
-		_abilitySlot.lock()->ExecuteAbility(1, _pickedObj);
+		_abilitySlot->ExecuteAbility(1, _pickedObj);
 	}
 }
 void PlayerController::PlayerAbility3()
 {
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::KEY_3))
 	{
-		_abilitySlot.lock()->ExecuteAbility(2, _pickedObj);
+		_abilitySlot->ExecuteAbility(2, _pickedObj);
 	}
 }
 void PlayerController::PlayerAbility4()
 {
 	if (MANAGER_INPUT()->GetButtonDown(KEY_TYPE::KEY_4))
 	{
-		_abilitySlot.lock()->ExecuteAbility(3, _pickedObj);
+		_abilitySlot->ExecuteAbility(3, _pickedObj);
 	}
 }
 
@@ -629,7 +629,7 @@ void PlayerController::InitController()
 		_slowSpeed = 20.f;
 		_dt = 0.f;
 		_isSlow = false;
-		_unitInfo.lock()->InitInformation();
+		_unitInfo->InitInformation();
 	}
 
 	//Picking
@@ -649,7 +649,7 @@ void PlayerController::InitController()
 	{
 		//_camPos = Vec3(0.f);
 		_camRot = Vec3(0.f);
-		_camDist = _camera.lock()->GetCamera()->GetCameraDistance();
+		_camDist = _camera->GetCamera()->GetCameraDistance();
 		_camMaxDist = _camDist + FLT_EPSILON;
 		_camMinDist = 25.f;
 	}
@@ -658,7 +658,7 @@ void PlayerController::InitController()
 
 void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float damage)
 {
-	if (_unitInfo.lock() == nullptr)
+	if (_unitInfo == nullptr)
 		return;
 	else
 	{
@@ -666,7 +666,7 @@ void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float da
 		{
 			//Damage Calculate
 			{
-				auto myInfo = _unitInfo.lock()->GetCharacterInfo();
+				auto myInfo = _unitInfo->GetCharacterInfo();
 				float defEff = pow(myInfo._def * log(2), 0.5) * 3;
 				float calDamage = (damage * (1 - defEff / 100)) * Utils::Randstep(0.8, 1.2);
 				float finalHp = myInfo._hp - calDamage;
@@ -676,7 +676,7 @@ void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float da
 					finalHp = 0;
 
 					myInfo._hp = (uint32)finalHp;
-					_unitInfo.lock()->SetCharacterInfo(myInfo);
+					_unitInfo->SetCharacterInfo(myInfo);
 					MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
 
 					*_currentState = PlayerUnitState::Death;
@@ -685,7 +685,7 @@ void PlayerController::TakeDamage(const shared_ptr<GameObject>& sender, float da
 				else
 				{
 					myInfo._hp = (uint32)finalHp;
-					_unitInfo.lock()->SetCharacterInfo(myInfo);
+					_unitInfo->SetCharacterInfo(myInfo);
 					MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
 
 					if (_animState->GetStateAnimtype() != PlayerAnimType::Damaged &&
@@ -721,11 +721,11 @@ void PlayerController::Respawn(const Vec3& spawnPos)
 		_isAttack = false;
 		_isBattle = false;
 		_isAbility = false;
-		_animator.lock()->SetLoop(true);
-		_animator.lock()->SetPlay(true);
+		_animator->SetLoop(true);
+		_animator->SetPlay(true);
 
 		InitController();
-		_transform.lock()->SetPosition(spawnPos);
+		_transform->SetPosition(spawnPos);
 		MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
 	}
 	else
@@ -734,11 +734,11 @@ void PlayerController::Respawn(const Vec3& spawnPos)
 		_isAttack = false;
 		_isBattle = false;
 		_isAbility = false;
-		_animator.lock()->SetLoop(true);
-		_animator.lock()->SetPlay(true);
+		_animator->SetLoop(true);
+		_animator->SetPlay(true);
 
 		InitController();
-		_transform.lock()->SetPosition(_spawnPos);
+		_transform->SetPosition(_spawnPos);
 		MANAGER_IMGUI()->UpdatePicked(true, GetGameObject());
 	}
 }
@@ -758,22 +758,22 @@ void PlayerController::Start()
 		_abilitySlot = GetGameObject()->GetComponent<AbilitySlot>();
 
 		_unitInfo = GetGameObject()->GetComponent<CharacterInfo>();
-		_attackTime = _unitInfo.lock()->GetDefaultCharacterInfo()._attackTime;
-		_attackRange = _unitInfo.lock()->GetDefaultCharacterInfo()._attackRange;
-		_defaultSpeed = _unitInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
+		_attackTime = _unitInfo->GetDefaultCharacterInfo()._attackTime;
+		_attackRange = _unitInfo->GetDefaultCharacterInfo()._attackRange;
+		_defaultSpeed = _unitInfo->GetDefaultCharacterInfo()._moveSpeed;
 		_currentSpeed = _defaultSpeed;
 		_slowSpeed = _defaultSpeed / 2;
 
-		if (_transform.lock() && _heightGetterCom.lock() != nullptr)
+		if (_transform && _heightGetterCom != nullptr)
 		{
-			Vec3 temPos = _transform.lock()->GetLocalPosition();
-			temPos.y = _heightGetterCom.lock()->GetHeight();
-			_transform.lock()->SetLocalPosition(temPos);
+			Vec3 temPos = _transform->GetLocalPosition();
+			temPos.y = _heightGetterCom->GetHeight();
+			_transform->SetLocalPosition(temPos);
 		}
 	}
 
 	{
-		_camDist = _camera.lock()->GetCamera()->GetCameraDistance();
+		_camDist = _camera->GetCamera()->GetCameraDistance();
 		_camMaxDist = _camDist + FLT_EPSILON;
 		_camMinDist = 25.f;
 	}

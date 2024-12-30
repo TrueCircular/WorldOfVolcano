@@ -1,0 +1,12 @@
+<CharacterInfo>
+    <Name>Warrior</Name>
+    <HP>2000</HP>
+    <MP>350</MP>
+    <ATK>1000</ATK>
+    <DEF>600</DEF>
+    <MoveSpeed>40</MoveSpeed>
+    <AggroPow>100</AggroPow>
+    <AttackRange>40</AttackRange>
+    <AttackTime>1.8</AttackTime>
+    <TraceRadius>0</TraceRadius>
+</CharacterInfo>

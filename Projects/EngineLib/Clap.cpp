@@ -53,7 +53,7 @@ Clap::Clap()
 	quakeTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"EarthCrack");
 	if (quakeTexture == nullptr) {
 		quakeTexture = make_shared<Texture>();
-		quakeTexture->Load(L"../../Resources/Texture/Effect/T_Earth_Crack.PNG");
+		quakeTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_Earth_Crack.PNG");
 		MANAGER_RESOURCES()->AddResource(L"EarthCrack", quakeTexture);
 	}
 

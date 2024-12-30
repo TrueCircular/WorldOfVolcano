@@ -89,7 +89,7 @@ WarriorRoar::WarriorRoar()
 	maskTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"NoiseMap17");
 	if (maskTexture == nullptr) {
 		maskTexture = make_shared<Texture>();
-		maskTexture->Load(L"../../Resources/Texture/Effect/T_ky_noise17.PNG");
+		maskTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_noise17.PNG");
 		MANAGER_RESOURCES()->AddResource(L"NoiseMap17", maskTexture);
 	}
 

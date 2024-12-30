@@ -144,7 +144,7 @@ void AIController::UpdateTargetList()
 
 void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage)
 {
-	if (_characterInfo.lock() == nullptr)
+	if (_characterInfo == nullptr)
 		return;
 
 	if (_isAlive)
@@ -164,7 +164,7 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 
 		//Damage Calculate
 		{
-			auto myInfo = _characterInfo.lock()->GetCharacterInfo();
+			auto myInfo = _characterInfo->GetCharacterInfo();
 			float defEff = pow(myInfo._def * log(2), 0.5) * 3;
 			float calDamage = (damage * (1 - defEff / 100))*Utils::Randstep(0.8,1.2);
 			float finalHp = myInfo._hp - calDamage;
@@ -180,7 +180,7 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 			{
 				finalHp = 0;
 				myInfo._hp = (uint32)finalHp;
-				_characterInfo.lock()->SetCharacterInfo(myInfo);
+				_characterInfo->SetCharacterInfo(myInfo);
 				for (auto& st : _unitStrategyList)
 				{
 					if (st->_type == UnitStrategyType::Dead)
@@ -192,13 +192,13 @@ void AIController::TakeDamage(const shared_ptr<GameObject>& sender, float damage
 			else
 			{
 				myInfo._hp = (uint32)finalHp;
-				_characterInfo.lock()->SetCharacterInfo(myInfo);
+				_characterInfo->SetCharacterInfo(myInfo);
 			}
 
 			PacketEvent damageEvent{
 				PacketEventType::DamageRequest,
 				damage,
-				_characterInfo.lock()->GetCharacterInfo()._instanceId
+				_characterInfo->GetCharacterInfo()._instanceId
 			};
 			MANAGER_EVENT()->AddEvent(damageEvent);
 		}
@@ -271,11 +271,11 @@ void AIController::Start()
 
 	_heightGetterCom = GetGameObject()->GetComponent<HeightGetter>();
 	{
-		if (_transform.lock())
+		if (_transform)
 		{
-			Vec3 temPos = _transform.lock()->GetLocalPosition();
-			temPos.y = _heightGetterCom.lock()->GetHeight();
-			_transform.lock()->SetLocalPosition(temPos);
+			Vec3 temPos = _transform->GetLocalPosition();
+			temPos.y = _heightGetterCom->GetHeight();
+			_transform->SetLocalPosition(temPos);
 		}
 	}
 
@@ -294,11 +294,11 @@ void AIController::Update()
 
 		if (_jumpState->isJump == false)
 		{
-			if (_heightGetterCom.lock())
+			if (_heightGetterCom)
 			{
-				Vec3 tempPos = _transform.lock()->GetLocalPosition();
-				tempPos.y = _heightGetterCom.lock()->GetHeight();
-				_transform.lock()->SetLocalPosition(tempPos);
+				Vec3 tempPos = _transform->GetLocalPosition();
+				tempPos.y = _heightGetterCom->GetHeight();
+				_transform->SetLocalPosition(tempPos);
 			}
 		}
 	}

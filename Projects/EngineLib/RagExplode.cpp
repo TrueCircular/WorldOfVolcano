@@ -138,13 +138,13 @@ RagExplode::RagExplode()
 	noiseTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"NoiseMap6");
 	if (noiseTexture == nullptr) {
 		noiseTexture = make_shared<Texture>();
-		noiseTexture->Load(L"../../Resources/Texture/Effect/T_ky_noise6.PNG");
+		noiseTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_noise6.PNG");
 		MANAGER_RESOURCES()->AddResource(L"NoiseMap6", noiseTexture);
 	}
 	smokeTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"Smoke1");
 	if (smokeTexture == nullptr) {
 		smokeTexture = make_shared<Texture>();
-		smokeTexture->Load(L"../../Resources/Texture/Effect/T_ky_smoke1.PNG");
+		smokeTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_smoke1.PNG");
 		MANAGER_RESOURCES()->AddResource(L"Smoke1", smokeTexture);
 	}
 

@@ -13,10 +13,10 @@ public:
 	Ability();
 	virtual ~Ability();
 protected:
-	weak_ptr<CharacterController>	_ownerController;
-	weak_ptr<Transform>				_ownerTransform;
-	weak_ptr<CharacterInfo>			_ownerInfo;
-	weak_ptr<AbilitySlot>			_ownerAbilitySlot;
+	shared_ptr<CharacterController>	_ownerController;
+	shared_ptr<Transform>				_ownerTransform;
+	shared_ptr<CharacterInfo>			_ownerInfo;
+	shared_ptr<AbilitySlot>			_ownerAbilitySlot;
 	shared_ptr<AbilityData>			_abilityData;
 	bool							_isCoolTime = false;
 	float							_coolTime = 0.f;

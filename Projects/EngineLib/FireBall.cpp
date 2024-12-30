@@ -151,13 +151,13 @@ FireBall::FireBall()
 	noiseTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"NoiseMap18");
 	if (noiseTexture == nullptr) {
 		noiseTexture = make_shared<Texture>();
-		noiseTexture->Load(L"../../Resources/Texture/Effect/T_ky_maskRGB5.PNG");
+		noiseTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_maskRGB5.PNG");
 		MANAGER_RESOURCES()->AddResource(L"NoiseMap18", noiseTexture);
 	}
 	maskTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"FireMask");
 	if (maskTexture == nullptr) {
 		maskTexture = make_shared<Texture>();
-		maskTexture->Load(L"../../Resources/Texture/Effect/T_ky_flare3.PNG");
+		maskTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_flare3.PNG");
 		MANAGER_RESOURCES()->AddResource(L"FireMask", maskTexture);
 	}
 	noiseSRV = shader->GetSRV("FireNoise");

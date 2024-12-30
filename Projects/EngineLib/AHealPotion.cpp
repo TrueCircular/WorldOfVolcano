@@ -17,16 +17,16 @@ AHealPotion::~AHealPotion()
 
 void AHealPotion::HealPotion()
 {
-	auto tInfo = _ownerInfo.lock()->GetCharacterInfo();
+	auto tInfo = _ownerInfo->GetCharacterInfo();
 
 
-	auto tempInfo = _ownerInfo.lock()->GetCharacterInfo();
+	auto tempInfo = _ownerInfo->GetCharacterInfo();
 	tempInfo._hp = tInfo._hp+(tInfo._maxHp * _abilityData->GetAbilityData().AbilityPow);
 	if (tempInfo._hp >= tInfo._maxHp) {
 		tempInfo._hp = tInfo._maxHp;
 	}
-	_ownerInfo.lock()->SetCharacterInfo(tempInfo);
-	MANAGER_IMGUI()->UpdatePicked(true, _playerController.lock()->GetGameObject());
+	_ownerInfo->SetCharacterInfo(tempInfo);
+	MANAGER_IMGUI()->UpdatePicked(true, _playerController->GetGameObject());
 	{
 		auto tempSound = MANAGER_RESOURCES()->GetResource<Sounds>(L"PotionSound");
 		shared_ptr<Sounds> sound = nullptr;
@@ -51,9 +51,9 @@ void AHealPotion::HealPotion()
 			sound->Play(false);
 		}
 	}
-	_ownerAbilitySlot.lock()->_selectNumber = -1;
+	_ownerAbilitySlot->_selectNumber = -1;
 	_isCoolTime = true;
-	_ownerAbilitySlot.lock()->_selectNumber = -1;
+	_ownerAbilitySlot->_selectNumber = -1;
 	_isCoolTime = true;
 	
 
@@ -61,20 +61,20 @@ void AHealPotion::HealPotion()
 
 void AHealPotion::Enter(const shared_ptr<GameObject>& target)
 {
-	if (_ownerController.lock() != nullptr && _playerController.lock() == nullptr)
+	if (_ownerController != nullptr && _playerController == nullptr)
 	{
-		const auto& temp = dynamic_pointer_cast<PlayerController>(_ownerController.lock());
+		const auto& temp = dynamic_pointer_cast<PlayerController>(_ownerController);
 
 		if (temp != nullptr)
 		{
 			_playerController = temp;
 		}
 	}
-	if (_playerController.lock() != nullptr)
+	if (_playerController != nullptr)
 	{
-		_ownerTransform = _playerController.lock()->GetTransform();
-		_ownerInfo = _playerController.lock()->GetUnitInformation();
-		_ownerAbilitySlot = _playerController.lock()->GetGameObject()->GetComponent<AbilitySlot>();
+		_ownerTransform = _playerController->GetTransform();
+		_ownerInfo = _playerController->GetUnitInformation();
+		_ownerAbilitySlot = _playerController->GetGameObject()->GetComponent<AbilitySlot>();
 		_coolTime = _abilityData->GetAbilityData().AbilityCoolTime;
 
 

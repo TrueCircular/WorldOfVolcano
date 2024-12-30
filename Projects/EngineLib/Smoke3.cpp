@@ -69,7 +69,7 @@ Smoke3::Smoke3()
 	smokeTexture = MANAGER_RESOURCES()->GetResource<Texture>(L"Smoke3");
 	if (smokeTexture == nullptr) {
 		smokeTexture = make_shared<Texture>();
-		smokeTexture->Load(L"../../Resources/Texture/Effect/T_ky_circleDust.PNG");
+		smokeTexture->Load(wstring(RESOURCES_ADDR_TEXTURE_EFFECT) + L"T_ky_circleDust.PNG");
 		MANAGER_RESOURCES()->AddResource(L"Smoke3", smokeTexture);
 	}
 
