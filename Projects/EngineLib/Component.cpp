@@ -11,9 +11,9 @@ Component::~Component()
 
 shared_ptr<GameObject> Component::GetGameObject()
 {
-	return _gameObject.lock();
+	return _gameObject;
 }
 shared_ptr<Transform> Component::GetTransform()
 {
-	return _gameObject.lock()->GetTransform();
+	return _gameObject->GetTransform();
 }

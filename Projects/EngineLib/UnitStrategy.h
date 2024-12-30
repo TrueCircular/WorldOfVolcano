@@ -14,10 +14,10 @@ public:
 	wstring			 _prevTransition;
 	UnitStrategyType _type;
 protected:
-	weak_ptr<AIController>	_controller;
-	weak_ptr<Transform>		_transform;
-	weak_ptr<ModelAnimator>	_animator;
-	weak_ptr<CharacterInfo>	_characterInfo;
+	shared_ptr<AIController>	_controller;
+	shared_ptr<Transform>		_transform;
+	shared_ptr<ModelAnimator>	_animator;
+	shared_ptr<CharacterInfo>	_characterInfo;
 	shared_ptr<Transform> _hostTargetTransform;
 	uint32 _targetId = 0;
 public:
@@ -25,7 +25,7 @@ public:
 	void SetHostTarget(shared_ptr<Transform> hostTarget);
 	wstring GetStrategyName() { return _name; }
 	void UpdateInfo(MONSTER_INFO info);
-	weak_ptr<Transform> GetWeakTransform() { return _transform; }
+	shared_ptr<Transform> GetWeakTransform() { return _transform; }
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) = 0;
 	virtual void Update() = 0;

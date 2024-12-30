@@ -28,13 +28,13 @@ void AbilitySlot::SetController(const shared_ptr<CharacterController>& controlle
 		_controller = controller;
 	}
 
-	if (_controller.lock())
+	if (_controller)
 	{
 		for (auto& ability : _abilitySlot)
 		{
 			if (ability != nullptr)
 			{
-				ability->SetOwnerController(_controller.lock());
+				ability->SetOwnerController(_controller);
 			}
 		}
 	}
@@ -66,7 +66,7 @@ void AbilitySlot::ExecuteAbility(uint16 slotNum, shared_ptr<GameObject> target)
 
 void AbilitySlot::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		for (const auto& ability : _abilitySlot)
 		{

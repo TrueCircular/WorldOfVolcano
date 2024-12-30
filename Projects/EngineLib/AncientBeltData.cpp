@@ -17,7 +17,7 @@ AncientBeltData::~AncientBeltData()
 
 bool AncientBeltData::ItemEffectToSelf(bool active)
 {
-	if (_itemOwnerUnitInfo.lock() == nullptr)
+	if (_itemOwnerUnitInfo == nullptr)
 	{
 		return false;
 	}
@@ -25,11 +25,11 @@ bool AncientBeltData::ItemEffectToSelf(bool active)
 	{
 		if (active)
 		{
-			_itemOwnerUnitInfo.lock()->UpdateAddInformation(shared_from_this(), true);
+			_itemOwnerUnitInfo->UpdateAddInformation(shared_from_this(), true);
 		}
 		else
 		{
-			_itemOwnerUnitInfo.lock()->UpdateAddInformation(shared_from_this(), false);
+			_itemOwnerUnitInfo->UpdateAddInformation(shared_from_this(), false);
 		}
 	}
 

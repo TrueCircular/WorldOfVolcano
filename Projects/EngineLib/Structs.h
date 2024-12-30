@@ -151,7 +151,7 @@ public:
 //Event Protocol
 struct EventArgs
 {
-	std::weak_ptr<GameObject> _sender;
+	std::shared_ptr<GameObject> _sender;
 	DWORD _protocol;
 };
 

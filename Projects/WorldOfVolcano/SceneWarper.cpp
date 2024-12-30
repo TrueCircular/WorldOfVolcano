@@ -3,10 +3,10 @@
 
 void SceneWarper::Update()
 {	
-	if (playerTransform.lock()) {
+	if (playerTransform) {
 		auto objTransform = GetGameObject()->GetTransform();
 		Vec3 objPos = objTransform->GetLocalPosition();
-		Vec3 playerPos = playerTransform.lock()->GetLocalPosition();
+		Vec3 playerPos = playerTransform->GetLocalPosition();
 
 		objPos.y = 0;
 		playerPos.y = 0;

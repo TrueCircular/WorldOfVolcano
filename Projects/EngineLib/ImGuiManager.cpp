@@ -544,8 +544,8 @@ void ImGuiManager::Update()
                 ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
                 ImGui::SetCursorPos(ImVec2(3, 3));
                 ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX - 6, windowSizeY - 6));
-                if (_playerAbilitySlot.lock()) {
-                    auto& _ability = _playerAbilitySlot.lock()->GetAbility(0);
+                if (_playerAbilitySlot) {
+                    auto& _ability = _playerAbilitySlot->GetAbility(0);
                     bool isCoolDown = _ability->IsCoolTime();
                     if (isCoolDown) {
                         float _abCooltime =_ability->GetCoolTime();
@@ -571,8 +571,8 @@ void ImGuiManager::Update()
                 ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
                 ImGui::SetCursorPos(ImVec2(3, 3));
                 ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX - 6, windowSizeY - 6));
-                if (_playerAbilitySlot.lock()) {
-                    auto& _ability = _playerAbilitySlot.lock()->GetAbility(1);
+                if (_playerAbilitySlot) {
+                    auto& _ability = _playerAbilitySlot->GetAbility(1);
                     bool isCoolDown = _ability->IsCoolTime();
                     if (isCoolDown) {
                         float _abCooltime = _ability->GetCoolTime();
@@ -599,8 +599,8 @@ void ImGuiManager::Update()
                 ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
                 ImGui::SetCursorPos(ImVec2(3, 3));
                 ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX - 6, windowSizeY - 6));
-                if (_playerAbilitySlot.lock()) {
-                    auto& _ability = _playerAbilitySlot.lock()->GetAbility(2);
+                if (_playerAbilitySlot) {
+                    auto& _ability = _playerAbilitySlot->GetAbility(2);
                     bool isCoolDown = _ability->IsCoolTime();
                     if (isCoolDown) {
                         float _abCooltime = _ability->GetCoolTime();
@@ -627,8 +627,8 @@ void ImGuiManager::Update()
                 ImGui::Image(textureID, ImVec2(windowSizeX - 6, windowSizeY - 6));
                 ImGui::SetCursorPos(ImVec2(3, 3));
                 ImGui::Image((void*)frameImg->GetTexture().Get(), ImVec2(windowSizeX-6 , windowSizeY-6));
-                if (_playerAbilitySlot.lock()) {
-                    auto& _ability = _playerAbilitySlot.lock()->GetAbility(3);
+                if (_playerAbilitySlot) {
+                    auto& _ability = _playerAbilitySlot->GetAbility(3);
                     bool isCoolDown = _ability->IsCoolTime();
                     if (isCoolDown) {
                         float _abCooltime = _ability->GetCoolTime();

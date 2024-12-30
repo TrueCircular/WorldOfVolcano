@@ -281,11 +281,11 @@ void Spawner::SpawnMonsters()
 							auto strategy = unitFsm->GetStrategy();
 							if (strategy)
 							{
-								weak_ptr<Transform> transform = strategy->GetWeakTransform();
-								if (auto sharedTransform = transform.lock())
+								shared_ptr<Transform> transform = strategy->GetWeakTransform();
+								if (auto sharedTransform = transform)
 								{
-									chrInfo._pos = transform.lock()->GetLocalPosition();
-									chrInfo._Rotate = transform.lock()->GetLocalRotation();
+									chrInfo._pos = transform->GetLocalPosition();
+									chrInfo._Rotate = transform->GetLocalRotation();
 									mob.second->GetComponent<CharacterInfo>()->SetCharacterInfo(chrInfo);
 								}
 								
@@ -302,11 +302,11 @@ void Spawner::SpawnMonsters()
 					Vec3 pos;
 					Vec3 rot;
 
-					weak_ptr<Transform> transform = it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->GetWeakTransform().lock();
-					if (auto sharedTransform = transform.lock())
+					shared_ptr<Transform> transform = it->second->GetComponent<AIController>()->GetUnitFsm()->GetStrategy()->GetWeakTransform();
+					if (auto sharedTransform = transform)
 					{
-						pos = transform.lock()->GetLocalPosition();
-						rot = transform.lock()->GetLocalRotation();
+						pos = transform->GetLocalPosition();
+						rot = transform->GetLocalRotation();
 					}
 
 					Vec3 target = pair.second._pos;

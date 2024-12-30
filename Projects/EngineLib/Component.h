@@ -33,7 +33,7 @@ public:
 protected:
 	string					_comName;
 	ComponentType			_type;
-	weak_ptr<GameObject>	_gameObject;
+	shared_ptr<GameObject>	_gameObject;
 	MetaData				_metaData;
 private:
 	void SetGameObject(shared_ptr<GameObject> obj) { _gameObject = obj; }

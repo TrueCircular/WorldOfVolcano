@@ -26,7 +26,7 @@ public:
 	ResourceBase(ResourceType type);
 	virtual ~ResourceBase();
 protected:
-	weak_ptr<GameObject>	_gameObject;
+	shared_ptr<GameObject>	_gameObject;
 	ResourceType _type = ResourceType::None;
 	wstring _name;
 	wstring _path;

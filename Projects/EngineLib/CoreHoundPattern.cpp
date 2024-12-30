@@ -22,36 +22,36 @@ void CoreHoundStand::Enter(const shared_ptr<AIController>& controller, const wst
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Stand");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Stand");
 		}
-		_characterInfo = _controller.lock()->GetCharacterInfo();
-		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
-		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
-		_targetList = _controller.lock()->GetTargetList();
+		_characterInfo = _controller->GetCharacterInfo();
+		_traceRadius = _characterInfo->GetDefaultCharacterInfo()._traceRadius;
+		_attackRange = _characterInfo->GetDefaultCharacterInfo()._attackRange;
+		_targetList = _controller->GetTargetList();
 	}
 }
 
 void CoreHoundStand::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		if (_targetList.lock()->size() > 0)
+		if (_targetList->size() > 0)
 		{
 			//Taget 후보 결정
 			map<float, shared_ptr<TargetDesc>> ToTargetList;
 
-			for (const auto& target : *_targetList.lock())
+			for (const auto& target : *_targetList)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
 				Vec3 targetPos = target->Target->GetTransform()->GetLocalPosition();
 				bool& isAlive = target->Target->GetComponent<CharacterController>()->_isAlive;
 				float Length = Vec3::Distance(myPos, targetPos);
@@ -73,12 +73,12 @@ void CoreHoundStand::Update()
 				{
 					if (minDistance <= _attackRange && minDistance <= _traceRadius)
 					{
-						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+						_controller->SetTargetTransform(FinalTarget->GetTransform());
 						Out(L"CoreHoundBattle");
 					}
 					else if (minDistance > _attackRange && minDistance <= _traceRadius)
 					{
-						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+						_controller->SetTargetTransform(FinalTarget->GetTransform());
 						Out(L"CoreHoundTrace");
 					}
 				}
@@ -89,16 +89,16 @@ void CoreHoundStand::Update()
 
 void CoreHoundStand::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		if (_targetList.lock()->size() > 0)
+		if (_targetList->size() > 0)
 		{
 			//Taget 후보 결정
 			map<float, shared_ptr<TargetDesc>> ToTargetList;
 
-			for (const auto& target : *_targetList.lock())
+			for (const auto& target : *_targetList)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
 				Vec3 targetPos = target->Target->GetTransform()->GetLocalPosition();
 				bool& isAlive = target->Target->GetComponent<CharacterController>()->_isAlive;
 				float Length = Vec3::Distance(myPos, targetPos);
@@ -120,11 +120,11 @@ void CoreHoundStand::UpdateFromServer()
 				{
 					if (minDistance <= _attackRange && minDistance <= _traceRadius)
 					{
-						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+						_controller->SetTargetTransform(FinalTarget->GetTransform());
 					}
 					else if (minDistance > _attackRange && minDistance <= _traceRadius)
 					{
-						_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+						_controller->SetTargetTransform(FinalTarget->GetTransform());
 					}
 				}
 			}
@@ -134,9 +134,9 @@ void CoreHoundStand::UpdateFromServer()
 
 void CoreHoundStand::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -174,13 +174,13 @@ void CoreHoundDamaged::Enter(const shared_ptr<AIController>& controller, const w
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Damaged");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Damaged");
 		}
 		_damagedSound->Play(false);
 	}
@@ -188,9 +188,9 @@ void CoreHoundDamaged::Enter(const shared_ptr<AIController>& controller, const w
 
 void CoreHoundDamaged::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
 			Out(L"CoreHoundBattle");
 		}
@@ -199,9 +199,9 @@ void CoreHoundDamaged::Update()
 
 void CoreHoundDamaged::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
 			Out(L"CoreHoundBattle");
 		}
@@ -210,9 +210,9 @@ void CoreHoundDamaged::UpdateFromServer()
 
 void CoreHoundDamaged::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -250,29 +250,29 @@ void CoreHoundDead::Enter(const shared_ptr<AIController>& controller, const wstr
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Death");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Death");
 		}
 		_dt = 0.f;
 		_soundFlag = false;
-		_controller.lock()->_isAlive = false;
+		_controller->_isAlive = false;
 	}
 }
 
 void CoreHoundDead::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt += MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			_controller.lock()->DeadEvent();
+			_controller->DeadEvent();
 		}
 
 		if (_dt > _soundTimer && _soundFlag == false)
@@ -285,13 +285,13 @@ void CoreHoundDead::Update()
 
 void CoreHoundDead::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt += MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			_controller.lock()->DeadEvent();
+			_controller->DeadEvent();
 		}
 
 		if (_dt > _soundTimer && _soundFlag == false)
@@ -304,9 +304,9 @@ void CoreHoundDead::UpdateFromServer()
 
 void CoreHoundDead::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -326,44 +326,44 @@ void CoreHoundTrace::Enter(const shared_ptr<AIController>& controller, const wst
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetTargetTransform() != nullptr)
-			_targetTransform = _controller.lock()->GetTargetTransform();
+		if (_controller->GetTargetTransform() != nullptr)
+			_targetTransform = _controller->GetTargetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Run");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Run");
 		}
 
-		_characterInfo = _controller.lock()->GetCharacterInfo();
-		_targetList = _controller.lock()->GetTargetList();
-		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
-		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
-		_moveSpeed = _characterInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
+		_characterInfo = _controller->GetCharacterInfo();
+		_targetList = _controller->GetTargetList();
+		_traceRadius = _characterInfo->GetDefaultCharacterInfo()._traceRadius;
+		_attackRange = _characterInfo->GetDefaultCharacterInfo()._attackRange;
+		_moveSpeed = _characterInfo->GetDefaultCharacterInfo()._moveSpeed;
 	}
 }
 
 void CoreHoundTrace::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
 		//Target Update
 		{
-			if (_targetList.lock()->size() > 0)
+			if (_targetList->size() > 0)
 			{
 				float minAggro = 0.f;
 				shared_ptr<Transform> _lastTarget;
-				for (auto& target : *_targetList.lock())
+				for (auto& target : *_targetList)
 				{
-					if (target->Target == _targetTransform.lock()->GetGameObject())
+					if (target->Target == _targetTransform->GetGameObject())
 					{
 						minAggro = target->AggroValue;
 						_lastTarget = target->Target->GetTransform();
@@ -380,12 +380,12 @@ void CoreHoundTrace::Update()
 				if (_lastTarget)
 				{
 					_targetTransform = _lastTarget;
-					_controller.lock()->SetTargetTransform(_targetTransform.lock());
+					_controller->SetTargetTransform(_targetTransform);
 				}
 			}
 		}
 
-		bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+		bool& isAlive = _targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
 		if (isAlive == false)
 		{
 			Out(L"CoreHoundMoveToSpwanPoint");
@@ -393,8 +393,8 @@ void CoreHoundTrace::Update()
 		else
 		{
 			//자신의 위치에서 타겟방향으로 향하는 정규화 된 방향 벡터 계산(Normal Vector)
-			Vec3 myPos = _transform.lock()->GetLocalPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetPosition();
+			Vec3 myPos = _transform->GetLocalPosition();
+			Vec3 targetPos = _targetTransform->GetPosition();
 			targetPos.y = myPos.y;
 			Vec3 toTargetDir = targetPos - myPos;
 
@@ -404,8 +404,8 @@ void CoreHoundTrace::Update()
 				{
 					toTargetDir.Normalize(toTargetDir);
 					{
-						Vec3 myForward = _transform.lock()->GetLookVector();
-						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myForward = _transform->GetLookVector();
+						Vec3 myRight = _transform->GetRightVector();
 						Vec3 myUp = Vec3(0, 1, 0);
 
 						float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
@@ -421,9 +421,9 @@ void CoreHoundTrace::Update()
 
 						angle = angle * _totargetRotationSpeed * _dt;
 
-						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						Vec3 myRot = _transform->GetLocalRotation();
 						myRot.y += angle;
-						_transform.lock()->SetLocalRotation(myRot);
+						_transform->SetLocalRotation(myRot);
 					}
 				}
 			}
@@ -433,9 +433,9 @@ void CoreHoundTrace::Update()
 			//타겟 방향으로 이동 & Attack Range 체크 후 도달 시 Trasition
 			{
 				Vec3 toTargetTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
-				_transform.lock()->SetPosition(toTargetTranslate);
+				_transform->SetPosition(toTargetTranslate);
 
-				Vec3 targetPos2 = _targetTransform.lock()->GetLocalPosition();
+				Vec3 targetPos2 = _targetTransform->GetLocalPosition();
 
 				float distance = Vec3::Distance(toTargetTranslate, targetPos2);
 
@@ -454,19 +454,19 @@ void CoreHoundTrace::Update()
 
 void CoreHoundTrace::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_targetList.lock()->size() > 0)
+		if (_targetList->size() > 0)
 		{
 			float minAggro = 0.f;
 			shared_ptr<Transform> _lastTarget;
-			for (auto& target : *_targetList.lock())
+			for (auto& target : *_targetList)
 			{
-				if (_targetTransform.lock())
+				if (_targetTransform)
 				{
-					if (target->Target == _targetTransform.lock()->GetGameObject())
+					if (target->Target == _targetTransform->GetGameObject())
 					{
 						minAggro = target->AggroValue;
 						_lastTarget = target->Target->GetTransform();
@@ -484,7 +484,7 @@ void CoreHoundTrace::UpdateFromServer()
 			if (_lastTarget)
 			{
 				_targetTransform = _lastTarget;
-				_controller.lock()->SetTargetTransform(_targetTransform.lock());
+				_controller->SetTargetTransform(_targetTransform);
 			}
 		}
 	}
@@ -492,9 +492,9 @@ void CoreHoundTrace::UpdateFromServer()
 
 void CoreHoundTrace::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -514,31 +514,31 @@ void CoreHoundMoveToSpwanPoint::Enter(const shared_ptr<AIController>& controller
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Run");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Run");
 		}
 
-		_characterInfo = _controller.lock()->GetCharacterInfo();
-		_spwanPos = _controller.lock()->GetSpawnPosition();
-		_moveSpeed = _characterInfo.lock()->GetDefaultCharacterInfo()._moveSpeed;
+		_characterInfo = _controller->GetCharacterInfo();
+		_spwanPos = _controller->GetSpawnPosition();
+		_moveSpeed = _characterInfo->GetDefaultCharacterInfo()._moveSpeed;
 	}
 }
 
 void CoreHoundMoveToSpwanPoint::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		Vec3 myPos = _transform.lock()->GetLocalPosition();
+		Vec3 myPos = _transform->GetLocalPosition();
 		_spwanPos.y = myPos.y;
 		Vec3 toTargetDir = _spwanPos - myPos;
 
@@ -548,8 +548,8 @@ void CoreHoundMoveToSpwanPoint::Update()
 			{
 				toTargetDir.Normalize(toTargetDir);
 				{
-					Vec3 myForward = _transform.lock()->GetLookVector();
-					Vec3 myRight = _transform.lock()->GetRightVector();
+					Vec3 myForward = _transform->GetLookVector();
+					Vec3 myRight = _transform->GetRightVector();
 					Vec3 myUp = Vec3(0, 1, 0);
 
 					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
@@ -565,9 +565,9 @@ void CoreHoundMoveToSpwanPoint::Update()
 
 					angle = angle * _totargetRotationSpeed * _dt;
 
-					Vec3 myRot = _transform.lock()->GetLocalRotation();
+					Vec3 myRot = _transform->GetLocalRotation();
 					myRot.y += angle;
-					_transform.lock()->SetLocalRotation(myRot);
+					_transform->SetLocalRotation(myRot);
 				}
 			}
 		}
@@ -579,11 +579,11 @@ void CoreHoundMoveToSpwanPoint::Update()
 		if (moveToLength > 2.f + FLT_EPSILON)
 		{
 			Vec3 toSpwanPosTranslate = myPos + (toTargetDir * _moveSpeed * _dt);
-			_transform.lock()->SetLocalPosition(toSpwanPosTranslate);
+			_transform->SetLocalPosition(toSpwanPosTranslate);
 		}
 		else
 		{
-			_transform.lock()->SetLocalPosition(_spwanPos);
+			_transform->SetLocalPosition(_spwanPos);
 			Out(L"CoreHoundStand");
 		}
 	}
@@ -591,11 +591,11 @@ void CoreHoundMoveToSpwanPoint::Update()
 
 void CoreHoundMoveToSpwanPoint::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		Vec3 myPos = _transform.lock()->GetLocalPosition();
+		Vec3 myPos = _transform->GetLocalPosition();
 		_spwanPos.y = myPos.y;
 		Vec3 toTargetDir = _spwanPos - myPos;
 
@@ -605,8 +605,8 @@ void CoreHoundMoveToSpwanPoint::UpdateFromServer()
 			{
 				toTargetDir.Normalize(toTargetDir);
 				{
-					Vec3 myForward = _transform.lock()->GetLookVector();
-					Vec3 myRight = _transform.lock()->GetRightVector();
+					Vec3 myForward = _transform->GetLookVector();
+					Vec3 myRight = _transform->GetRightVector();
 					Vec3 myUp = Vec3(0, 1, 0);
 
 					float dotAngle = max(-1.0f, min(1.0f, myForward.Dot(toTargetDir)));
@@ -622,9 +622,9 @@ void CoreHoundMoveToSpwanPoint::UpdateFromServer()
 
 					angle = angle * _totargetRotationSpeed * _dt;
 
-					Vec3 myRot = _transform.lock()->GetLocalRotation();
+					Vec3 myRot = _transform->GetLocalRotation();
 					myRot.y += angle;
-					_transform.lock()->SetLocalRotation(myRot);
+					_transform->SetLocalRotation(myRot);
 				}
 			}
 		}
@@ -646,9 +646,9 @@ void CoreHoundMoveToSpwanPoint::UpdateFromServer()
 
 void CoreHoundMoveToSpwanPoint::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -668,41 +668,41 @@ void CoreHoundBattle::Enter(const shared_ptr<AIController>& controller, const ws
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetTargetTransform() != nullptr)
-			_targetTransform = _controller.lock()->GetTargetTransform();
+		if (_controller->GetTargetTransform() != nullptr)
+			_targetTransform = _controller->GetTargetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Battle");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Battle");
 		}
 
-		_characterInfo = _controller.lock()->GetCharacterInfo();
-		_targetList = _controller.lock()->GetTargetList();
-		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
-		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
-		_attackTime = _characterInfo.lock()->GetDefaultCharacterInfo()._attackTime;
+		_characterInfo = _controller->GetCharacterInfo();
+		_targetList = _controller->GetTargetList();
+		_traceRadius = _characterInfo->GetDefaultCharacterInfo()._traceRadius;
+		_attackRange = _characterInfo->GetDefaultCharacterInfo()._attackRange;
+		_attackTime = _characterInfo->GetDefaultCharacterInfo()._attackTime;
 		_traceTime = 0.f;
 	}
 }
 
 void CoreHoundBattle::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 		_traceTime += _dt;
 
-		bool& tempisAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+		bool& tempisAlive = _targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
 
 		//Target update
-		if (_targetList.lock()->size() <= 0 || tempisAlive == false)
+		if (_targetList->size() <= 0 || tempisAlive == false)
 		{
 			Out(L"CoreHoundMoveToSpwanPoint");
 		}
@@ -710,9 +710,9 @@ void CoreHoundBattle::Update()
 		{
 			float minAggro = 0.f;
 			shared_ptr<Transform> _lastTarget;
-			for (auto& target : *_targetList.lock())
+			for (auto& target : *_targetList)
 			{
-				if (target->Target == _targetTransform.lock()->GetGameObject())
+				if (target->Target == _targetTransform->GetGameObject())
 				{
 					minAggro = target->AggroValue;
 					_lastTarget = target->Target->GetTransform();
@@ -729,16 +729,16 @@ void CoreHoundBattle::Update()
 			if (_lastTarget)
 			{
 				_targetTransform = _lastTarget;
-				_controller.lock()->SetTargetTransform(_targetTransform.lock());
+				_controller->SetTargetTransform(_targetTransform);
 			}
 		}
 
-		bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+		bool& isAlive = _targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
 
 		if (isAlive)
 		{
-			Vec3 myPos = _transform.lock()->GetLocalPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			Vec3 myPos = _transform->GetLocalPosition();
+			Vec3 targetPos = _targetTransform->GetLocalPosition();
 			targetPos.y = myPos.y;
 			Vec3 toTargetDir = targetPos - myPos;
 
@@ -748,8 +748,8 @@ void CoreHoundBattle::Update()
 				{
 					toTargetDir.Normalize(toTargetDir);
 					{
-						Vec3 myForward = _transform.lock()->GetLookVector();
-						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myForward = _transform->GetLookVector();
+						Vec3 myRight = _transform->GetRightVector();
 						Vec3 myUp = Vec3(0, 1, 0);
 
 						myForward.Normalize();
@@ -767,9 +767,9 @@ void CoreHoundBattle::Update()
 
 						angle = angle * _totargetRotationSpeed * _dt;
 
-						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						Vec3 myRot = _transform->GetLocalRotation();
 						myRot.y += angle;
-						_transform.lock()->SetLocalRotation(myRot);
+						_transform->SetLocalRotation(myRot);
 					}
 				}
 			}
@@ -811,17 +811,17 @@ void CoreHoundBattle::Update()
 
 void CoreHoundBattle::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 		_traceTime += _dt;
 
-		if (_targetTransform.lock())
+		if (_targetTransform)
 		{
-			bool& tempisAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+			bool& tempisAlive = _targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
 
 			//Target update
-			if (_targetList.lock()->size() <= 0 || tempisAlive == false)
+			if (_targetList->size() <= 0 || tempisAlive == false)
 			{
 				Out(L"CoreHoundMoveToSpwanPoint");
 			}
@@ -829,9 +829,9 @@ void CoreHoundBattle::UpdateFromServer()
 			{
 				float minAggro = 0.f;
 				shared_ptr<Transform> _lastTarget;
-				for (auto& target : *_targetList.lock())
+				for (auto& target : *_targetList)
 				{
-					if (target->Target == _targetTransform.lock()->GetGameObject())
+					if (target->Target == _targetTransform->GetGameObject())
 					{
 						minAggro = target->AggroValue;
 						_lastTarget = target->Target->GetTransform();
@@ -848,16 +848,16 @@ void CoreHoundBattle::UpdateFromServer()
 				if (_lastTarget)
 				{
 					_targetTransform = _lastTarget;
-					_controller.lock()->SetTargetTransform(_targetTransform.lock());
+					_controller->SetTargetTransform(_targetTransform);
 				}
 			}
 
-			bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+			bool& isAlive = _targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
 
 			if (isAlive)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
-				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
+				Vec3 targetPos = _targetTransform->GetLocalPosition();
 				targetPos.y = myPos.y;
 				Vec3 toTargetDir = targetPos - myPos;
 
@@ -867,8 +867,8 @@ void CoreHoundBattle::UpdateFromServer()
 					{
 						toTargetDir.Normalize(toTargetDir);
 						{
-							Vec3 myForward = _transform.lock()->GetLookVector();
-							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myForward = _transform->GetLookVector();
+							Vec3 myRight = _transform->GetRightVector();
 							Vec3 myUp = Vec3(0, 1, 0);
 
 							myForward.Normalize();
@@ -886,9 +886,9 @@ void CoreHoundBattle::UpdateFromServer()
 
 							angle = angle * _totargetRotationSpeed * _dt;
 
-							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							Vec3 myRot = _transform->GetLocalRotation();
 							myRot.y += angle;
-							_transform.lock()->SetLocalRotation(myRot);
+							_transform->SetLocalRotation(myRot);
 						}
 					}
 				}
@@ -931,9 +931,9 @@ void CoreHoundBattle::UpdateFromServer()
 
 void CoreHoundBattle::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -991,32 +991,32 @@ void CoreHoundAttack::Enter(const shared_ptr<AIController>& controller, const ws
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetTargetTransform() != nullptr)
-			_targetTransform = _controller.lock()->GetTargetTransform();
+		if (_controller->GetTargetTransform() != nullptr)
+			_targetTransform = _controller->GetTargetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_characterInfo = _controller.lock()->GetCharacterInfo();
-			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
-			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
+			_characterInfo = _controller->GetCharacterInfo();
+			_traceRadius = _characterInfo->GetDefaultCharacterInfo()._traceRadius;
+			_attackRange = _characterInfo->GetDefaultCharacterInfo()._attackRange;
 
-			if (_targetTransform.lock())
+			if (_targetTransform)
 			{
-				auto targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
+				auto targetCon = _targetTransform->GetGameObject()->GetComponent<CharacterController>();
 
 				if (targetCon != nullptr)
 				{
-					float distance = Vec3::Distance(_transform.lock()->GetLocalPosition(), _targetTransform.lock()->GetLocalPosition());
+					float distance = Vec3::Distance(_transform->GetLocalPosition(), _targetTransform->GetLocalPosition());
 					if (distance < 60)
 					{
-						float attackDamage = _characterInfo.lock()->GetCharacterInfo()._atk;
-						targetCon->TakeDamage(_transform.lock()->GetGameObject(), attackDamage);
+						float attackDamage = _characterInfo->GetCharacterInfo()._atk;
+						targetCon->TakeDamage(_transform->GetGameObject(), attackDamage);
 					}
 				}
 			}
@@ -1025,14 +1025,14 @@ void CoreHoundAttack::Enter(const shared_ptr<AIController>& controller, const ws
 
 			if (randAttack == 0)
 			{
-				_animator.lock()->SetFrameEnd(false);
-				_animator.lock()->SetNextAnimation(L"Attack1");
+				_animator->SetFrameEnd(false);
+				_animator->SetNextAnimation(L"Attack1");
 				_attack1Sound->Play(false);
 			}
 			else
 			{
-				_animator.lock()->SetFrameEnd(false);
-				_animator.lock()->SetNextAnimation(L"Attack2");
+				_animator->SetFrameEnd(false);
+				_animator->SetNextAnimation(L"Attack2");
 				_attack2Sound->Play(false);
 			}
 		}
@@ -1041,19 +1041,19 @@ void CoreHoundAttack::Enter(const shared_ptr<AIController>& controller, const ws
 
 void CoreHoundAttack::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
 			Out(L"CoreHoundBattle");
 		}
 
-		if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+		if (_targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 		{
-			Vec3 myPos = _transform.lock()->GetLocalPosition();
-			Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+			Vec3 myPos = _transform->GetLocalPosition();
+			Vec3 targetPos = _targetTransform->GetLocalPosition();
 			targetPos.y = myPos.y;
 			Vec3 toTargetDir = targetPos - myPos;
 
@@ -1063,8 +1063,8 @@ void CoreHoundAttack::Update()
 				{
 					toTargetDir.Normalize(toTargetDir);
 					{
-						Vec3 myForward = _transform.lock()->GetLookVector();
-						Vec3 myRight = _transform.lock()->GetRightVector();
+						Vec3 myForward = _transform->GetLookVector();
+						Vec3 myRight = _transform->GetRightVector();
 						Vec3 myUp = Vec3(0, 1, 0);
 
 						myForward.Normalize();
@@ -1082,9 +1082,9 @@ void CoreHoundAttack::Update()
 
 						angle = angle * _totargetRotationSpeed * _dt;
 
-						Vec3 myRot = _transform.lock()->GetLocalRotation();
+						Vec3 myRot = _transform->GetLocalRotation();
 						myRot.y += angle;
-						_transform.lock()->SetLocalRotation(myRot);
+						_transform->SetLocalRotation(myRot);
 					}
 				}
 			}
@@ -1094,9 +1094,9 @@ void CoreHoundAttack::Update()
 
 void CoreHoundAttack::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
 			Out(L"CoreHoundBattle");
 		}
@@ -1105,8 +1105,8 @@ void CoreHoundAttack::UpdateFromServer()
 
 void CoreHoundAttack::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }

@@ -9,9 +9,9 @@ void UnitStrategy::SetHostTarget(shared_ptr<Transform> hostTarget)
 
 void UnitStrategy::UpdateInfo(MONSTER_INFO info)
 {
-	if (auto sharedTransform = _transform.lock())
+	if (auto sharedTransform = _transform)
 	{
-		_transform.lock()->SetLocalPosition(info._pos);
-		_transform.lock()->SetLocalRotation(info._Rotate);
+		_transform->SetLocalPosition(info._pos);
+		_transform->SetLocalRotation(info._Rotate);
 	}
 }

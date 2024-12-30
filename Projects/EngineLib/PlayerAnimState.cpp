@@ -10,13 +10,13 @@
 
 bool PlayerAnimState::Update()
 {
-	if (_contoller.lock())
+	if (_contoller)
 	{
-		switch (*_playerState.lock())
+		switch (*_playerState)
 		{
 		case PlayerUnitState::Stand:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stand);
+			_contoller->SetAnimState(PlayerAnimType::Stand);
 			return true;
 		}break;
 		case PlayerUnitState::FrontMove:
@@ -25,70 +25,70 @@ bool PlayerAnimState::Update()
 		case PlayerUnitState::RightMove:
 		case PlayerUnitState::LeftMove:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
+			_contoller->SetAnimState(PlayerAnimType::FrontRun);
 			return true;
 		}break;
 		case PlayerUnitState::BackMove:
 		case PlayerUnitState::BackRightMove:
 		case PlayerUnitState::BackLeftMove:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::BackRun);
+			_contoller->SetAnimState(PlayerAnimType::BackRun);
 			return true;
 		}break;
 		case PlayerUnitState::Jump:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
+			_contoller->SetAnimState(PlayerAnimType::JumpStart);
 			return true;
 		}break;
 		case PlayerUnitState::Stun:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Stun);
+			_contoller->SetAnimState(PlayerAnimType::Stun);
 			return true;
 		}break;
 		case PlayerUnitState::Loot:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Loot);
+			_contoller->SetAnimState(PlayerAnimType::Loot);
 			return true;
 		}break;
 		case PlayerUnitState::Battle:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			_contoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}break;
 		case PlayerUnitState::Death:
 		{
-			//_contoller.lock()->SetAnimState(PlayerAnimType::Death);
+			//_contoller->SetAnimState(PlayerAnimType::Death);
 			//return true;
 		}break;
 		case PlayerUnitState::Attack:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Attack1);
+			_contoller->SetAnimState(PlayerAnimType::Attack1);
 			return true;
 		}break;
 		case PlayerUnitState::Ability1:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability1);
+			_contoller->SetAnimState(PlayerAnimType::Ability1);
 			return true;
 		}break;
 		case PlayerUnitState::Ability2:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Ability2);
+			_contoller->SetAnimState(PlayerAnimType::Ability2);
 			return true;
 		}break;
 		case PlayerUnitState::Damaged:
 		{
-			_contoller.lock()->SetAnimState(PlayerAnimType::Damaged);
+			_contoller->SetAnimState(PlayerAnimType::Damaged);
 			return true;
 		}break;
 		}
 	}
-	else if (_aiContoller.lock())
+	else if (_aiContoller)
 	{
-		switch (*_playerState.lock())
+		switch (*_playerState)
 		{
 		case PlayerUnitState::Stand:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
+			_aiContoller->SetAnimState(PlayerAnimType::Stand);
 			return true;
 		}break;
 		case PlayerUnitState::FrontMove:
@@ -97,59 +97,59 @@ bool PlayerAnimState::Update()
 		case PlayerUnitState::RightMove:
 		case PlayerUnitState::LeftMove:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::FrontRun);
+			_aiContoller->SetAnimState(PlayerAnimType::FrontRun);
 			return true;
 		}break;
 		case PlayerUnitState::BackMove:
 		case PlayerUnitState::BackRightMove:
 		case PlayerUnitState::BackLeftMove:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::BackRun);
+			_aiContoller->SetAnimState(PlayerAnimType::BackRun);
 			return true;
 		}break;
 		case PlayerUnitState::Jump:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::JumpStart);
+			_aiContoller->SetAnimState(PlayerAnimType::JumpStart);
 			return true;
 		}break;
 		case PlayerUnitState::Stun:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stun);
+			_aiContoller->SetAnimState(PlayerAnimType::Stun);
 			return true;
 		}break;
 		case PlayerUnitState::Loot:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Loot);
+			_aiContoller->SetAnimState(PlayerAnimType::Loot);
 			return true;
 		}break;
 		case PlayerUnitState::Battle:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			_aiContoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}break;
 		case PlayerUnitState::Death:
 		{
-			//_aiContoller.lock()->SetAnimState(PlayerAnimType::Death);
+			//_aiContoller->SetAnimState(PlayerAnimType::Death);
 			//return true;
 		}break;
 		case PlayerUnitState::Attack:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Attack1);
+			_aiContoller->SetAnimState(PlayerAnimType::Attack1);
 			return true;
 		}break;
 		case PlayerUnitState::Ability1:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability1);
+			_aiContoller->SetAnimState(PlayerAnimType::Ability1);
 			return true;
 		}break;
 		case PlayerUnitState::Ability2:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Ability2);
+			_aiContoller->SetAnimState(PlayerAnimType::Ability2);
 			return true;
 		}break;
 		case PlayerUnitState::Damaged:
 		{
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Damaged);
+			_aiContoller->SetAnimState(PlayerAnimType::Damaged);
 			return true;
 		}break;
 		}
@@ -164,30 +164,30 @@ bool PlayerAnimIdle::Enter(const shared_ptr<CharacterController>& playerControll
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"Stand");
+	_animator->SetNextAnimation(L"Stand");
 
 	return true;
 }
 
 bool PlayerAnimIdle::Update()
 {
-	if (_playerState.lock() != nullptr)
+	if (_playerState != nullptr)
 	{
-		if (*_playerState.lock() != PlayerUnitState::Stand)
+		if (*_playerState != PlayerUnitState::Stand)
 		{
 			Super::Update();
 		}
@@ -206,32 +206,32 @@ bool PlayerAnimFrontWalk::Enter(const shared_ptr<CharacterController>& playerCon
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"Walk");
+	_animator->SetNextAnimation(L"Walk");
 
 	return true;
 }
 
 bool PlayerAnimFrontWalk::Update()
 {
-	if (_playerState.lock() != nullptr)
+	if (_playerState != nullptr)
 	{
-		if (*_playerState.lock() != PlayerUnitState::FrontMove ||
-			*_playerState.lock() != PlayerUnitState::FrontLeftMove ||
-			*_playerState.lock() != PlayerUnitState::FrontRightMove)
+		if (*_playerState != PlayerUnitState::FrontMove ||
+			*_playerState != PlayerUnitState::FrontLeftMove ||
+			*_playerState != PlayerUnitState::FrontRightMove)
 		{
 			Super::Update();
 		}
@@ -250,30 +250,30 @@ bool PlayerAnimBackWalk::Enter(const shared_ptr<CharacterController>& playerCont
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"BackWalk");
+	_animator->SetNextAnimation(L"BackWalk");
 
 	return true;
 }
 
 bool PlayerAnimBackWalk::Update()
 {
-	if (_playerState.lock() != nullptr)
+	if (_playerState != nullptr)
 	{
-		if (*_playerState.lock() != PlayerUnitState::BackMove)
+		if (*_playerState != PlayerUnitState::BackMove)
 		{
 			Super::Update();
 		}
@@ -292,34 +292,34 @@ bool PlayerAnimFrontRun::Enter(const shared_ptr<CharacterController>& playerCont
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"FrontRun");
+	_animator->SetNextAnimation(L"FrontRun");
 
 	return true;
 }
 
 bool PlayerAnimFrontRun::Update()
 {
-	if (_playerState.lock() != nullptr)
+	if (_playerState != nullptr)
 	{
-		if (*_playerState.lock() != PlayerUnitState::FrontMove &&
-			*_playerState.lock() != PlayerUnitState::FrontLeftMove &&
-			*_playerState.lock() != PlayerUnitState::FrontRightMove &&
-			*_playerState.lock() != PlayerUnitState::RightMove &&
-			*_playerState.lock() != PlayerUnitState::LeftMove)
+		if (*_playerState != PlayerUnitState::FrontMove &&
+			*_playerState != PlayerUnitState::FrontLeftMove &&
+			*_playerState != PlayerUnitState::FrontRightMove &&
+			*_playerState != PlayerUnitState::RightMove &&
+			*_playerState != PlayerUnitState::LeftMove)
 		{
 			Super::Update();
 		}
@@ -338,32 +338,32 @@ bool PlayerAnimBackRun::Enter(const shared_ptr<CharacterController>& playerContr
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"BackRun");
+	_animator->SetNextAnimation(L"BackRun");
 
 	return true;
 }
 
 bool PlayerAnimBackRun::Update()
 {
-	if (_playerState.lock() != nullptr)
+	if (_playerState != nullptr)
 	{
-		if (*_playerState.lock() != PlayerUnitState::BackMove &&
-			*_playerState.lock() != PlayerUnitState::BackRightMove &&
-			*_playerState.lock() != PlayerUnitState::BackLeftMove)
+		if (*_playerState != PlayerUnitState::BackMove &&
+			*_playerState != PlayerUnitState::BackRightMove &&
+			*_playerState != PlayerUnitState::BackLeftMove)
 		{
 			Super::Update();
 		}
@@ -382,47 +382,47 @@ bool PlayerAnimJumpStart::Enter(const shared_ptr<CharacterController>& playerCon
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
-		_jumpState = _contoller.lock()->GetJumpState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
+		_jumpState = _contoller->GetJumpState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
-		_jumpState = _aiContoller.lock()->GetJumpState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
+		_jumpState = _aiContoller->GetJumpState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"JumpStart");
+	_animator->SetNextAnimation(L"JumpStart");
 
 	return true;
 }
 
 bool PlayerAnimJumpStart::Update()
 {
-	if (_contoller.lock())
+	if (_contoller)
 	{
-		if (_jumpState.lock())
+		if (_jumpState)
 		{
-			if (_jumpState.lock()->isJumpFall)
+			if (_jumpState->isJumpFall)
 			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::JumpFall);
+				_contoller->SetAnimState(PlayerAnimType::JumpFall);
 				return true;
 			}
 		}
 	}
-	else if (_aiContoller.lock())
+	else if (_aiContoller)
 	{
-		if (_jumpState.lock())
+		if (_jumpState)
 		{
-			if (_jumpState.lock()->isJumpFall)
+			if (_jumpState->isJumpFall)
 			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::JumpFall);
+				_aiContoller->SetAnimState(PlayerAnimType::JumpFall);
 				return true;
 			}
 		}
@@ -441,47 +441,47 @@ bool PlayerAnimJumpFall::Enter(const shared_ptr<CharacterController>& playerCont
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
-		_jumpState = _contoller.lock()->GetJumpState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
+		_jumpState = _contoller->GetJumpState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
-		_jumpState = _aiContoller.lock()->GetJumpState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
+		_jumpState = _aiContoller->GetJumpState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"JumpFall");
+	_animator->SetNextAnimation(L"JumpFall");
 
 	return true;
 }
 
 bool PlayerAnimJumpFall::Update()
 {
-	if (_contoller.lock())
+	if (_contoller)
 	{
-		if (_jumpState.lock())
+		if (_jumpState)
 		{
-			if (_jumpState.lock()->isJumEnd)
+			if (_jumpState->isJumEnd)
 			{
-				_contoller.lock()->SetAnimState(PlayerAnimType::JumpEnd);
+				_contoller->SetAnimState(PlayerAnimType::JumpEnd);
 				return true;
 			}
 		}
 	}
-	else if (_aiContoller.lock())
+	else if (_aiContoller)
 	{
-		if (_jumpState.lock())
+		if (_jumpState)
 		{
-			if (_jumpState.lock()->isJumEnd)
+			if (_jumpState->isJumEnd)
 			{
-				_aiContoller.lock()->SetAnimState(PlayerAnimType::JumpEnd);
+				_aiContoller->SetAnimState(PlayerAnimType::JumpEnd);
 				return true;
 			}
 		}
@@ -500,34 +500,34 @@ bool PlayerAnimJumpEnd::Enter(const shared_ptr<CharacterController>& playerContr
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
-		_jumpState = _contoller.lock()->GetJumpState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
+		_jumpState = _contoller->GetJumpState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
-		_jumpState = _aiContoller.lock()->GetJumpState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
+		_jumpState = _aiContoller->GetJumpState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"JumpEnd");
+	_animator->SetNextAnimation(L"JumpEnd");
 
 	return true;
 }
 
 bool PlayerAnimJumpEnd::Update()
 {
-	if (_contoller.lock())
+	if (_contoller)
 	{
-		if (_jumpState.lock())
+		if (_jumpState)
 		{
-			if (_jumpState.lock()->isJump == false)
+			if (_jumpState->isJump == false)
 			{
 				Super::Update();
 			}
@@ -600,30 +600,30 @@ bool PlayerAnimDamaged::Enter(const shared_ptr<CharacterController>& playerContr
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"Damaged");
+	_animator->SetNextAnimation(L"Damaged");
 	_damagedSound->Play(false);
 
-	if (_contoller.lock())
+	if (_contoller)
 	{
-		_contoller.lock()->_isBattle = true;
+		_contoller->_isBattle = true;
 	}
 	else
 	{
-		_aiContoller.lock()->_isBattle = true;
+		_aiContoller->_isBattle = true;
 	}
 
 	
@@ -633,21 +633,21 @@ bool PlayerAnimDamaged::Enter(const shared_ptr<CharacterController>& playerContr
 
 bool PlayerAnimDamaged::Update()
 {
-	if (_contoller.lock() != nullptr)
+	if (_contoller != nullptr)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			*_playerState = PlayerUnitState::Battle;
+			_contoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}
 	}
-	else if (_aiContoller.lock())
+	else if (_aiContoller)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			*_playerState = PlayerUnitState::Battle;
+			_aiContoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}
 	}
@@ -688,32 +688,32 @@ bool PlayerAnimDeath::Enter(const shared_ptr<CharacterController>& playerControl
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
 
-	_animator.lock()->SetNextAnimation(L"Death");
-	_animator.lock()->SetLoop(false);
+	_animator->SetNextAnimation(L"Death");
+	_animator->SetLoop(false);
 	_deathSound->Play(false);
 
-	if (_contoller.lock())
+	if (_contoller)
 	{
-		_contoller.lock()->_isAlive = false;
+		_contoller->_isAlive = false;
 	}
 	else
 	{
-		_aiContoller.lock()->_isAlive = false;
+		_aiContoller->_isAlive = false;
 	}
 	
 
@@ -722,18 +722,18 @@ bool PlayerAnimDeath::Enter(const shared_ptr<CharacterController>& playerControl
 
 bool PlayerAnimDeath::Update()
 {
-	if (_aiContoller.lock())
+	if (_aiContoller)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Stand;
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Stand);
-			_animator.lock()->SetFrameEnd(false);
+			*_playerState = PlayerUnitState::Stand;
+			_aiContoller->SetAnimState(PlayerAnimType::Stand);
+			_animator->SetFrameEnd(false);
 		}
 
-		if (_playerState.lock() != nullptr)
+		if (_playerState != nullptr)
 		{
-			if (*_playerState.lock() != PlayerUnitState::Death)
+			if (*_playerState != PlayerUnitState::Death)
 			{
 				Super::Update();
 			}
@@ -753,30 +753,30 @@ bool PlayerAnimBattle::Enter(const shared_ptr<CharacterController>& playerContro
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"Battle");
+	_animator->SetNextAnimation(L"Battle");
 
 	return false;
 }
 
 bool PlayerAnimBattle::Update()
 {
-	if (_playerState.lock() != nullptr)
+	if (_playerState != nullptr)
 	{
-		if (*_playerState.lock() != PlayerUnitState::Battle)
+		if (*_playerState != PlayerUnitState::Battle)
 		{
 			Super::Update();
 		}
@@ -818,43 +818,43 @@ bool PlayerAnimAttack1::Enter(const shared_ptr<CharacterController>& playerContr
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
 
-	_animator.lock()->SetNextAnimation(L"Attack1");
+	_animator->SetNextAnimation(L"Attack1");
 	_attackSound->Play(false);
 	return false;
 }
 
 bool PlayerAnimAttack1::Update()
 {
-	if (_contoller.lock())
+	if (_contoller)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			*_playerState = PlayerUnitState::Battle;
+			_contoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}
 	}
-	else if (_aiContoller.lock())
+	else if (_aiContoller)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			*_playerState = PlayerUnitState::Battle;
+			_aiContoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}
 	}
@@ -895,23 +895,23 @@ bool PlayerAnimAttack2::Enter(const shared_ptr<CharacterController>& playerContr
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 
 	}
 
-	_animator.lock()->SetNextAnimation(L"Attack2");
+	_animator->SetNextAnimation(L"Attack2");
 	_attackSound->Play(false);
 
 	return false;
@@ -919,21 +919,21 @@ bool PlayerAnimAttack2::Enter(const shared_ptr<CharacterController>& playerContr
 
 bool PlayerAnimAttack2::Update()
 {
-	if (_contoller.lock())
+	if (_contoller)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			*_playerState = PlayerUnitState::Battle;
+			_contoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}
 	}
-	else if (_aiContoller.lock())
+	else if (_aiContoller)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			*_playerState = PlayerUnitState::Battle;
+			_aiContoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}
 	}
@@ -951,21 +951,21 @@ bool PlayerAnimCasting::Enter(const shared_ptr<CharacterController>& playerContr
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"Casting");
+	_animator->SetNextAnimation(L"Casting");
 
 	return false;
 }
@@ -1008,21 +1008,21 @@ bool PlayerAnimAbility1::Enter(const shared_ptr<CharacterController>& playerCont
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"Ability1");
+	_animator->SetNextAnimation(L"Ability1");
 	_abilitySound->Play(false);
 
 	return false;
@@ -1030,12 +1030,12 @@ bool PlayerAnimAbility1::Enter(const shared_ptr<CharacterController>& playerCont
 
 bool PlayerAnimAbility1::Update()
 {
-	if (_aiContoller.lock())
+	if (_aiContoller)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			*_playerState = PlayerUnitState::Battle;
+			_aiContoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}
 	}
@@ -1077,21 +1077,21 @@ bool PlayerAnimAbility2::Enter(const shared_ptr<CharacterController>& playerCont
 	if (dynamic_pointer_cast<PlayerController>(playerController))
 	{
 		_contoller = dynamic_pointer_cast<PlayerController>(playerController);
-		_animator = _contoller.lock()->GetAnimator();
-		_playerState = _contoller.lock()->GetCurrentUnitState();
+		_animator = _contoller->GetAnimator();
+		_playerState = _contoller->GetCurrentUnitState();
 	}
 	else
 	{
 		_aiContoller = dynamic_pointer_cast<AIController>(playerController);
-		_animator = _aiContoller.lock()->GetAnimator();
-		_playerState = _aiContoller.lock()->GetCurrentPlayerUnitState();
+		_animator = _aiContoller->GetAnimator();
+		_playerState = _aiContoller->GetCurrentPlayerUnitState();
 	}
 
-	if (_animator.lock()->GetFrameEnd() == true)
+	if (_animator->GetFrameEnd() == true)
 	{
-		_animator.lock()->SetFrameEnd(false);
+		_animator->SetFrameEnd(false);
 	}
-	_animator.lock()->SetNextAnimation(L"Ability2");
+	_animator->SetNextAnimation(L"Ability2");
 	_abilitySound->Play(false);
 
 	return false;
@@ -1099,21 +1099,21 @@ bool PlayerAnimAbility2::Enter(const shared_ptr<CharacterController>& playerCont
 
 bool PlayerAnimAbility2::Update()
 {
-	if (_contoller.lock() != nullptr)
+	if (_contoller != nullptr)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_contoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			*_playerState = PlayerUnitState::Battle;
+			_contoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}
 	}
-	else if (_aiContoller.lock())
+	else if (_aiContoller)
 	{
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			*_playerState.lock() = PlayerUnitState::Battle;
-			_aiContoller.lock()->SetAnimState(PlayerAnimType::Battle);
+			*_playerState = PlayerUnitState::Battle;
+			_aiContoller->SetAnimState(PlayerAnimType::Battle);
 			return true;
 		}
 	}

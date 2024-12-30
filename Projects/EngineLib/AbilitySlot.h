@@ -13,7 +13,7 @@ public:
 	virtual ~AbilitySlot();
 public:
 	array<shared_ptr<Ability>, MAX_ABILITY_SLOT> _abilitySlot;
-	weak_ptr<CharacterController> _controller;
+	shared_ptr<CharacterController> _controller;
 	int _selectNumber = -1;
 public:
 	void SetAbility(uint16 slotNum, const shared_ptr<Ability>& ability);

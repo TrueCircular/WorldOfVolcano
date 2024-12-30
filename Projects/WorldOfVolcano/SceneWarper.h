@@ -6,7 +6,7 @@ class SceneWarper :public MonoBehaviour
 {
 	bool* isEnable = nullptr;
 	shared_ptr<Scene> targetScene=nullptr;
-	weak_ptr<Transform> playerTransform;
+	shared_ptr<Transform> playerTransform;
 	float distance = 10.0f;
 public:
 	void SetFlag(bool* flag) { isEnable = flag; };

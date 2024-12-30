@@ -70,9 +70,9 @@ public:
 	RagnarosBattle();
 	virtual ~RagnarosBattle();
 private:
-	weak_ptr<TargetList>	_targetList;
-	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<AbilitySlot>	_abilitySlot;
+	shared_ptr<TargetList>	_targetList;
+	shared_ptr<Transform>		_targetTransform;
+	shared_ptr<AbilitySlot>	_abilitySlot;
 	float					_dt = 0.f;
 	float					_traceRadius = 0.f;
 	float					_attackTime = 0.f;
@@ -96,7 +96,7 @@ public:
 	RagnarosAttack();
 	virtual ~RagnarosAttack();
 private:
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<Transform>		_targetTransform;
 	shared_ptr<Sounds>		_attack1Sound;
 	shared_ptr<Sounds>		_attack2Sound;
 	int						_randAttack = 0;
@@ -117,9 +117,9 @@ public:
 	RagnarosAbility1();
 	virtual ~RagnarosAbility1();
 private:
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<Transform>		_targetTransform;
 	shared_ptr<Sounds>		_abiltySound;
-	weak_ptr<AbilitySlot>	_abilitySlot;
+	shared_ptr<AbilitySlot>	_abilitySlot;
 	float					_dt = 0.f;
 	float					_attackRange = 0.f;
 	float					_traceRadius = 0.f;
@@ -137,9 +137,9 @@ public:
 	RagnarosAbility2();
 	virtual ~RagnarosAbility2();
 private:
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<Transform>		_targetTransform;
 	shared_ptr<Sounds>		_abiltySound;
-	weak_ptr<AbilitySlot>	_abilitySlot;
+	shared_ptr<AbilitySlot>	_abilitySlot;
 	float					_dt = 0.f;
 	float					_attackRange = 0.f;
 	float					_traceRadius = 0.f;
@@ -158,8 +158,8 @@ public:
 	RagnarosEncounterEvent1();
 	virtual ~RagnarosEncounterEvent1();
 private:
-	weak_ptr<TargetList>	_targetList;
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<TargetList>	_targetList;
+	shared_ptr<Transform>		_targetTransform;
 	float					_encounterDistance = 100.f;
 public:
 	virtual void Enter(const shared_ptr<AIController>& controller, const wstring& prevTransition) override;

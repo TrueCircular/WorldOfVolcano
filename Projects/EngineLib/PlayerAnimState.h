@@ -12,10 +12,10 @@ struct JumpFlag;
 class PlayerAnimState
 {
 protected:
-	weak_ptr<PlayerController>		_contoller;
-	weak_ptr<AIController>			_aiContoller;
-	weak_ptr<ModelAnimator>			_animator;
-	weak_ptr<PlayerUnitState>		_playerState;
+	shared_ptr<PlayerController>		_contoller;
+	shared_ptr<AIController>			_aiContoller;
+	shared_ptr<ModelAnimator>			_animator;
+	shared_ptr<PlayerUnitState>		_playerState;
 	PlayerAnimType					_stateAnim;
 public:
 	PlayerAnimState() { _stateAnim = PlayerAnimType::None; };
@@ -91,7 +91,7 @@ class PlayerAnimJumpStart : public PlayerAnimState
 {
 	using Super = PlayerAnimState;
 private:
-	weak_ptr<JumpFlag> _jumpState;
+	shared_ptr<JumpFlag> _jumpState;
 public:
 	PlayerAnimJumpStart() { _stateAnim = PlayerAnimType::JumpStart; };
 	virtual ~PlayerAnimJumpStart() {};
@@ -105,7 +105,7 @@ class PlayerAnimJumpFall : public PlayerAnimState
 {
 	using Super = PlayerAnimState;
 private:
-	weak_ptr<JumpFlag> _jumpState;
+	shared_ptr<JumpFlag> _jumpState;
 public:
 	PlayerAnimJumpFall() { _stateAnim = PlayerAnimType::JumpFall; };
 	virtual ~PlayerAnimJumpFall() {};
@@ -119,7 +119,7 @@ class PlayerAnimJumpEnd : public PlayerAnimState
 {
 	using Super = PlayerAnimState;
 private:
-	weak_ptr<JumpFlag> _jumpState;
+	shared_ptr<JumpFlag> _jumpState;
 public:
 	PlayerAnimJumpEnd() { _stateAnim = PlayerAnimType::JumpEnd; };
 	virtual ~PlayerAnimJumpEnd() {};

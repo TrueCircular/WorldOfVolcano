@@ -16,7 +16,7 @@ public:
 	BaronGeddonStand();
 	virtual ~BaronGeddonStand();
 private:
-	weak_ptr<TargetList>	_targetList;
+	shared_ptr<TargetList>	_targetList;
 	Vec3					_spwanPos = Vec3(0.f);
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
@@ -65,8 +65,8 @@ public:
 	BaronGeddonTrace();
 	virtual ~BaronGeddonTrace();
 private:
-	weak_ptr<TargetList>	_targetList;
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<TargetList>	_targetList;
+	shared_ptr<Transform>		_targetTransform;
 	uint16					_moveSpeed = 0;
 	float					_dt = 0.f;
 	float					_traceRadius = 0.f;
@@ -104,9 +104,9 @@ public:
 	BaronGeddonBattle();
 	virtual ~BaronGeddonBattle();
 private:
-	weak_ptr<TargetList>	_targetList;
-	weak_ptr<Transform>		_targetTransform;
-	weak_ptr<AbilitySlot>	_abilitySlot;
+	shared_ptr<TargetList>	_targetList;
+	shared_ptr<Transform>		_targetTransform;
+	shared_ptr<AbilitySlot>	_abilitySlot;
 	float					_dt = 0.f;
 	float					_traceTime = 0.f;
 	float					_traceWaitingTime = 0.75f;
@@ -130,7 +130,7 @@ public:
 	BaronGeddonAttack();
 	virtual ~BaronGeddonAttack();
 private:
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<Transform>		_targetTransform;
 	shared_ptr<Sounds>		_attack1Sound;
 	shared_ptr<Sounds>		_attack2Sound;
 	float					_dt = 0.f;
@@ -150,9 +150,9 @@ public:
 	BaronGeddonAbility();
 	virtual ~BaronGeddonAbility();
 private:
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<Transform>		_targetTransform;
 	shared_ptr<Sounds>		_abiltySound;
-	weak_ptr<AbilitySlot>	_abilitySlot;
+	shared_ptr<AbilitySlot>	_abilitySlot;
 	float					_dt = 0.f;
 	float					_attackRange = 0.f;
 	float					_traceRadius = 0.f;

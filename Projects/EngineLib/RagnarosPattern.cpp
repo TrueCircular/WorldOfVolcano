@@ -23,16 +23,16 @@ void RagnarosStand::Enter(const shared_ptr<AIController>& controller, const wstr
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Stand");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Stand");
 		}
 	}
 }
@@ -47,9 +47,9 @@ void RagnarosStand::UpdateFromServer()
 
 void RagnarosStand::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -73,7 +73,7 @@ void RagnarosDamaged::Enter(const shared_ptr<AIController>& controller, const ws
 
 void RagnarosDamaged::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		Out(_prevTransition);
 	}
@@ -81,7 +81,7 @@ void RagnarosDamaged::Update()
 
 void RagnarosDamaged::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		Out(_prevTransition);
 	}
@@ -89,9 +89,9 @@ void RagnarosDamaged::UpdateFromServer()
 
 void RagnarosDamaged::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -112,13 +112,13 @@ void RagnarosStun::Enter(const shared_ptr<AIController>& controller, const wstri
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Stun");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Stun");
 		}
 
 		_stunTimer = 0.f;
@@ -147,9 +147,9 @@ void RagnarosStun::UpdateFromServer()
 
 void RagnarosStun::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -187,29 +187,29 @@ void RagnarosDead::Enter(const shared_ptr<AIController>& controller, const wstri
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Death");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Death");
 		}
 		_dt = 0.f;
-		_controller.lock()->_isAlive = false;
+		_controller->_isAlive = false;
 		_deadSound->Play(false);
 	}
 }
 
 void RagnarosDead::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt += MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			_controller.lock()->DeadEvent();
+			_controller->DeadEvent();
 			MANAGER_IMGUI()->NotifyEnding();
 		}
 	}
@@ -217,13 +217,13 @@ void RagnarosDead::Update()
 
 void RagnarosDead::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt += MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			_controller.lock()->DeadEvent();
+			_controller->DeadEvent();
 			MANAGER_IMGUI()->NotifyEnding();
 		}
 	}
@@ -231,9 +231,9 @@ void RagnarosDead::UpdateFromServer()
 
 void RagnarosDead::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -253,64 +253,64 @@ void RagnarosBattle::Enter(const shared_ptr<AIController>& controller, const wst
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetTargetTransform() != nullptr)
-			_targetTransform = _controller.lock()->GetTargetTransform();
+		if (_controller->GetTargetTransform() != nullptr)
+			_targetTransform = _controller->GetTargetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Battle");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Battle");
 		}
 
-		_characterInfo = _controller.lock()->GetCharacterInfo();
-		_abilitySlot = _controller.lock()->GetGameObject()->GetComponent<AbilitySlot>();
-		if (_abilitySlot.lock() != nullptr)
+		_characterInfo = _controller->GetCharacterInfo();
+		_abilitySlot = _controller->GetGameObject()->GetComponent<AbilitySlot>();
+		if (_abilitySlot != nullptr)
 		{
-			if (_abilitySlot.lock()->GetAbility(0))
+			if (_abilitySlot->GetAbility(0))
 			{
-				_abilityTime = _abilitySlot.lock()->GetAbility(0)->GetAbilityData().AbilityCoolTime;
+				_abilityTime = _abilitySlot->GetAbility(0)->GetAbilityData().AbilityCoolTime;
 			}
 
-			if (_abilitySlot.lock()->GetAbility(1))
+			if (_abilitySlot->GetAbility(1))
 			{
-				_abilityTime2 = _abilitySlot.lock()->GetAbility(1)->GetAbilityData().AbilityCoolTime;
+				_abilityTime2 = _abilitySlot->GetAbility(1)->GetAbilityData().AbilityCoolTime;
 			}
 		}
-		_targetList = _controller.lock()->GetTargetList();
-		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
-		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
-		_attackTime = _characterInfo.lock()->GetDefaultCharacterInfo()._attackTime;
+		_targetList = _controller->GetTargetList();
+		_traceRadius = _characterInfo->GetDefaultCharacterInfo()._traceRadius;
+		_attackRange = _characterInfo->GetDefaultCharacterInfo()._attackRange;
+		_attackTime = _characterInfo->GetDefaultCharacterInfo()._attackTime;
 	}
 }
 
 void RagnarosBattle::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
 		//Target update
-		if (_targetList.lock()->size() <= 0)
+		if (_targetList->size() <= 0)
 		{
 			Out(L"RagnarosStand");
 		}
 		else
 		{
-			if (_targetList.lock()->size() > 0)
+			if (_targetList->size() > 0)
 			{
 				float minAggro = 0.f;
 				shared_ptr<Transform> _lastTarget;
-				for (auto& target : *_targetList.lock())
+				for (auto& target : *_targetList)
 				{
-					if (_targetTransform.lock())
+					if (_targetTransform)
 					{
-						if (target->Target == _targetTransform.lock()->GetGameObject())
+						if (target->Target == _targetTransform->GetGameObject())
 						{
 							minAggro = target->AggroValue;
 							_lastTarget = target->Target->GetTransform();
@@ -328,19 +328,19 @@ void RagnarosBattle::Update()
 				if (_lastTarget)
 				{
 					_targetTransform = _lastTarget;
-					_controller.lock()->SetTargetTransform(_targetTransform.lock());
+					_controller->SetTargetTransform(_targetTransform);
 				}
 			}
 		}
 
-		if (_targetTransform.lock())
+		if (_targetTransform)
 		{
-			bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+			bool& isAlive = _targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
 
 			if (isAlive)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
-				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
+				Vec3 targetPos = _targetTransform->GetLocalPosition();
 				targetPos.y = myPos.y;
 				Vec3 toTargetDir = targetPos - myPos;
 
@@ -349,8 +349,8 @@ void RagnarosBattle::Update()
 					{
 						toTargetDir.Normalize(toTargetDir);
 						{
-							Vec3 myForward = _transform.lock()->GetLookVector();
-							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myForward = _transform->GetLookVector();
+							Vec3 myRight = _transform->GetRightVector();
 							Vec3 myUp = Vec3(0, 1, 0);
 
 							myForward.Normalize();
@@ -368,9 +368,9 @@ void RagnarosBattle::Update()
 
 							angle = angle * _totargetRotationSpeed * _dt;
 
-							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							Vec3 myRot = _transform->GetLocalRotation();
 							myRot.y += angle;
-							_transform.lock()->SetLocalRotation(myRot);
+							_transform->SetLocalRotation(myRot);
 						}
 					}
 				}
@@ -419,26 +419,26 @@ void RagnarosBattle::Update()
 
 void RagnarosBattle::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
 		//Target update
-		if (_targetList.lock()->size() <= 0)
+		if (_targetList->size() <= 0)
 		{
 			Out(L"RagnarosStand");
 		}
 		else
 		{
-			if (_targetList.lock()->size() > 0)
+			if (_targetList->size() > 0)
 			{
 				float minAggro = 0.f;
 				shared_ptr<Transform> _lastTarget;
-				for (auto& target : *_targetList.lock())
+				for (auto& target : *_targetList)
 				{
-					if (_targetTransform.lock())
+					if (_targetTransform)
 					{
-						if (target->Target == _targetTransform.lock()->GetGameObject())
+						if (target->Target == _targetTransform->GetGameObject())
 						{
 							minAggro = target->AggroValue;
 							_lastTarget = target->Target->GetTransform();
@@ -456,19 +456,19 @@ void RagnarosBattle::UpdateFromServer()
 				if (_lastTarget)
 				{
 					_targetTransform = _lastTarget;
-					_controller.lock()->SetTargetTransform(_targetTransform.lock());
+					_controller->SetTargetTransform(_targetTransform);
 				}
 			}
 		}
 
-		if (_targetTransform.lock())
+		if (_targetTransform)
 		{
-			bool& isAlive = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
+			bool& isAlive = _targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive;
 
 			if (isAlive)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
-				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
+				Vec3 targetPos = _targetTransform->GetLocalPosition();
 				targetPos.y = myPos.y;
 				Vec3 toTargetDir = targetPos - myPos;
 
@@ -477,8 +477,8 @@ void RagnarosBattle::UpdateFromServer()
 					{
 						toTargetDir.Normalize(toTargetDir);
 						{
-							Vec3 myForward = _transform.lock()->GetLookVector();
-							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myForward = _transform->GetLookVector();
+							Vec3 myRight = _transform->GetRightVector();
 							Vec3 myUp = Vec3(0, 1, 0);
 
 							myForward.Normalize();
@@ -496,9 +496,9 @@ void RagnarosBattle::UpdateFromServer()
 
 							angle = angle * _totargetRotationSpeed * _dt;
 
-							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							Vec3 myRot = _transform->GetLocalRotation();
 							myRot.y += angle;
-							_transform.lock()->SetLocalRotation(myRot);
+							_transform->SetLocalRotation(myRot);
 						}
 					}
 				}
@@ -547,9 +547,9 @@ void RagnarosBattle::UpdateFromServer()
 
 void RagnarosBattle::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -607,29 +607,29 @@ void RagnarosAttack::Enter(const shared_ptr<AIController>& controller, const wst
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetTargetTransform() != nullptr)
-			_targetTransform = _controller.lock()->GetTargetTransform();
+		if (_controller->GetTargetTransform() != nullptr)
+			_targetTransform = _controller->GetTargetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_characterInfo = _controller.lock()->GetCharacterInfo();
-			_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
-			_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
+			_characterInfo = _controller->GetCharacterInfo();
+			_traceRadius = _characterInfo->GetDefaultCharacterInfo()._traceRadius;
+			_attackRange = _characterInfo->GetDefaultCharacterInfo()._attackRange;
 
-			if (_targetTransform.lock())
+			if (_targetTransform)
 			{
-				auto targetCon = _targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>();
+				auto targetCon = _targetTransform->GetGameObject()->GetComponent<CharacterController>();
 
 				if (targetCon != nullptr)
 				{
-					float attackDamage = _characterInfo.lock()->GetCharacterInfo()._atk;
-					targetCon->TakeDamage(_transform.lock()->GetGameObject(), attackDamage);
+					float attackDamage = _characterInfo->GetCharacterInfo()._atk;
+					targetCon->TakeDamage(_transform->GetGameObject(), attackDamage);
 				}
 			}
 
@@ -637,14 +637,14 @@ void RagnarosAttack::Enter(const shared_ptr<AIController>& controller, const wst
 
 			if (_randAttack == 0)
 			{
-				_animator.lock()->SetFrameEnd(false);
-				_animator.lock()->SetNextAnimation(L"Attack1");
+				_animator->SetFrameEnd(false);
+				_animator->SetNextAnimation(L"Attack1");
 				_attack1Sound->Play(false);
 			}
 			else
 			{
-				_animator.lock()->SetFrameEnd(false);
-				_animator.lock()->SetNextAnimation(L"Attack2");
+				_animator->SetFrameEnd(false);
+				_animator->SetNextAnimation(L"Attack2");
 				_attack2Sound->Play(false);
 			}
 		}
@@ -653,21 +653,21 @@ void RagnarosAttack::Enter(const shared_ptr<AIController>& controller, const wst
 
 void RagnarosAttack::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
 			Out(L"RagnarosBattle");
 		}
 
-		if (_targetTransform.lock())
+		if (_targetTransform)
 		{
-			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			if (_targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
-				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
+				Vec3 targetPos = _targetTransform->GetLocalPosition();
 				targetPos.y = myPos.y;
 				Vec3 toTargetDir = targetPos - myPos;
 
@@ -676,8 +676,8 @@ void RagnarosAttack::Update()
 					{
 						toTargetDir.Normalize(toTargetDir);
 						{
-							Vec3 myForward = _transform.lock()->GetLookVector();
-							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myForward = _transform->GetLookVector();
+							Vec3 myRight = _transform->GetRightVector();
 							Vec3 myUp = Vec3(0, 1, 0);
 
 							myForward.Normalize();
@@ -695,9 +695,9 @@ void RagnarosAttack::Update()
 
 							angle = angle * _totargetRotationSpeed * _dt;
 
-							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							Vec3 myRot = _transform->GetLocalRotation();
 							myRot.y += angle;
-							_transform.lock()->SetLocalRotation(myRot);
+							_transform->SetLocalRotation(myRot);
 						}
 					}
 				}
@@ -708,21 +708,21 @@ void RagnarosAttack::Update()
 
 void RagnarosAttack::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
 			Out(L"RagnarosBattle");
 		}
 
-		if (_targetTransform.lock())
+		if (_targetTransform)
 		{
-			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			if (_targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
-				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
+				Vec3 targetPos = _targetTransform->GetLocalPosition();
 				targetPos.y = myPos.y;
 				Vec3 toTargetDir = targetPos - myPos;
 
@@ -731,8 +731,8 @@ void RagnarosAttack::UpdateFromServer()
 					{
 						toTargetDir.Normalize(toTargetDir);
 						{
-							Vec3 myForward = _transform.lock()->GetLookVector();
-							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myForward = _transform->GetLookVector();
+							Vec3 myRight = _transform->GetRightVector();
 							Vec3 myUp = Vec3(0, 1, 0);
 
 							myForward.Normalize();
@@ -750,9 +750,9 @@ void RagnarosAttack::UpdateFromServer()
 
 							angle = angle * _totargetRotationSpeed * _dt;
 
-							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							Vec3 myRot = _transform->GetLocalRotation();
 							myRot.y += angle;
-							_transform.lock()->SetLocalRotation(myRot);
+							_transform->SetLocalRotation(myRot);
 						}
 					}
 				}
@@ -763,9 +763,9 @@ void RagnarosAttack::UpdateFromServer()
 
 void RagnarosAttack::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -805,49 +805,49 @@ void RagnarosAbility1::Enter(const shared_ptr<AIController>& controller, const w
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetTargetTransform() != nullptr)
-			_targetTransform = _controller.lock()->GetTargetTransform();
+		if (_controller->GetTargetTransform() != nullptr)
+			_targetTransform = _controller->GetTargetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Ability");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Ability");
 		}
-		_characterInfo = _controller.lock()->GetCharacterInfo();
-		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
-		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
-		_abilitySlot = _controller.lock()->GetGameObject()->GetComponent<AbilitySlot>();
+		_characterInfo = _controller->GetCharacterInfo();
+		_traceRadius = _characterInfo->GetDefaultCharacterInfo()._traceRadius;
+		_attackRange = _characterInfo->GetDefaultCharacterInfo()._attackRange;
+		_abilitySlot = _controller->GetGameObject()->GetComponent<AbilitySlot>();
 		_abiltySound->Play(false);
 	}
 }
 
 void RagnarosAbility1::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			if (_targetTransform.lock())
+			if (_targetTransform)
 			{
-				_abilitySlot.lock()->ExecuteAbility(0, _targetTransform.lock()->GetGameObject());
+				_abilitySlot->ExecuteAbility(0, _targetTransform->GetGameObject());
 			}
 			Out(L"RagnarosBattle");
 		}
 
-		if (_targetTransform.lock())
+		if (_targetTransform)
 		{
-			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			if (_targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
-				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
+				Vec3 targetPos = _targetTransform->GetLocalPosition();
 				targetPos.y = myPos.y;
 				Vec3 toTargetDir = targetPos - myPos;
 
@@ -856,8 +856,8 @@ void RagnarosAbility1::Update()
 					{
 						toTargetDir.Normalize(toTargetDir);
 						{
-							Vec3 myForward = _transform.lock()->GetLookVector();
-							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myForward = _transform->GetLookVector();
+							Vec3 myRight = _transform->GetRightVector();
 							Vec3 myUp = Vec3(0, 1, 0);
 
 							myForward.Normalize();
@@ -875,9 +875,9 @@ void RagnarosAbility1::Update()
 
 							angle = angle * _totargetRotationSpeed * _dt;
 
-							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							Vec3 myRot = _transform->GetLocalRotation();
 							myRot.y += angle;
-							_transform.lock()->SetLocalRotation(myRot);
+							_transform->SetLocalRotation(myRot);
 						}
 					}
 				}
@@ -888,25 +888,25 @@ void RagnarosAbility1::Update()
 
 void RagnarosAbility1::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			if (_targetTransform.lock())
+			if (_targetTransform)
 			{
-				_abilitySlot.lock()->ExecuteAbility(0, _targetTransform.lock()->GetGameObject());
+				_abilitySlot->ExecuteAbility(0, _targetTransform->GetGameObject());
 			}
 			Out(L"RagnarosBattle");
 		}
 
-		if (_targetTransform.lock())
+		if (_targetTransform)
 		{
-			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			if (_targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
-				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
+				Vec3 targetPos = _targetTransform->GetLocalPosition();
 				targetPos.y = myPos.y;
 				Vec3 toTargetDir = targetPos - myPos;
 
@@ -915,8 +915,8 @@ void RagnarosAbility1::UpdateFromServer()
 					{
 						toTargetDir.Normalize(toTargetDir);
 						{
-							Vec3 myForward = _transform.lock()->GetLookVector();
-							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myForward = _transform->GetLookVector();
+							Vec3 myRight = _transform->GetRightVector();
 							Vec3 myUp = Vec3(0, 1, 0);
 
 							myForward.Normalize();
@@ -934,9 +934,9 @@ void RagnarosAbility1::UpdateFromServer()
 
 							angle = angle * _totargetRotationSpeed * _dt;
 
-							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							Vec3 myRot = _transform->GetLocalRotation();
 							myRot.y += angle;
-							_transform.lock()->SetLocalRotation(myRot);
+							_transform->SetLocalRotation(myRot);
 						}
 					}
 				}
@@ -947,9 +947,9 @@ void RagnarosAbility1::UpdateFromServer()
 
 void RagnarosAbility1::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -989,49 +989,49 @@ void RagnarosAbility2::Enter(const shared_ptr<AIController>& controller, const w
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetTargetTransform() != nullptr)
-			_targetTransform = _controller.lock()->GetTargetTransform();
+		if (_controller->GetTargetTransform() != nullptr)
+			_targetTransform = _controller->GetTargetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Ability");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Ability");
 		}
-		_characterInfo = _controller.lock()->GetCharacterInfo();
-		_traceRadius = _characterInfo.lock()->GetDefaultCharacterInfo()._traceRadius;
-		_attackRange = _characterInfo.lock()->GetDefaultCharacterInfo()._attackRange;
-		_abilitySlot = _controller.lock()->GetGameObject()->GetComponent<AbilitySlot>();
+		_characterInfo = _controller->GetCharacterInfo();
+		_traceRadius = _characterInfo->GetDefaultCharacterInfo()._traceRadius;
+		_attackRange = _characterInfo->GetDefaultCharacterInfo()._attackRange;
+		_abilitySlot = _controller->GetGameObject()->GetComponent<AbilitySlot>();
 		_abiltySound->Play(false);
 	}
 }
 
 void RagnarosAbility2::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			if (_targetTransform.lock())
+			if (_targetTransform)
 			{
-				_abilitySlot.lock()->ExecuteAbility(1, _targetTransform.lock()->GetGameObject());
+				_abilitySlot->ExecuteAbility(1, _targetTransform->GetGameObject());
 			}
 			Out(L"RagnarosBattle");
 		}
 
-		if (_targetTransform.lock())
+		if (_targetTransform)
 		{
-			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			if (_targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
-				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
+				Vec3 targetPos = _targetTransform->GetLocalPosition();
 				targetPos.y = myPos.y;
 				Vec3 toTargetDir = targetPos - myPos;
 
@@ -1040,8 +1040,8 @@ void RagnarosAbility2::Update()
 					{
 						toTargetDir.Normalize(toTargetDir);
 						{
-							Vec3 myForward = _transform.lock()->GetLookVector();
-							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myForward = _transform->GetLookVector();
+							Vec3 myRight = _transform->GetRightVector();
 							Vec3 myUp = Vec3(0, 1, 0);
 
 							myForward.Normalize();
@@ -1059,9 +1059,9 @@ void RagnarosAbility2::Update()
 
 							angle = angle * _totargetRotationSpeed * _dt;
 
-							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							Vec3 myRot = _transform->GetLocalRotation();
 							myRot.y += angle;
-							_transform.lock()->SetLocalRotation(myRot);
+							_transform->SetLocalRotation(myRot);
 						}
 					}
 				}
@@ -1073,25 +1073,25 @@ void RagnarosAbility2::Update()
 
 void RagnarosAbility2::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
 		_dt = MANAGER_TIME()->GetDeltaTime();
 
-		if (_animator.lock()->GetFrameEnd() == true)
+		if (_animator->GetFrameEnd() == true)
 		{
-			if (_targetTransform.lock())
+			if (_targetTransform)
 			{
-				_abilitySlot.lock()->ExecuteAbility(1, _targetTransform.lock()->GetGameObject());
+				_abilitySlot->ExecuteAbility(1, _targetTransform->GetGameObject());
 			}
 			Out(L"RagnarosBattle");
 		}
 
-		if (_targetTransform.lock())
+		if (_targetTransform)
 		{
-			if (_targetTransform.lock()->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
+			if (_targetTransform->GetGameObject()->GetComponent<CharacterController>()->_isAlive)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
-				Vec3 targetPos = _targetTransform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
+				Vec3 targetPos = _targetTransform->GetLocalPosition();
 				targetPos.y = myPos.y;
 				Vec3 toTargetDir = targetPos - myPos;
 
@@ -1100,8 +1100,8 @@ void RagnarosAbility2::UpdateFromServer()
 					{
 						toTargetDir.Normalize(toTargetDir);
 						{
-							Vec3 myForward = _transform.lock()->GetLookVector();
-							Vec3 myRight = _transform.lock()->GetRightVector();
+							Vec3 myForward = _transform->GetLookVector();
+							Vec3 myRight = _transform->GetRightVector();
 							Vec3 myUp = Vec3(0, 1, 0);
 
 							myForward.Normalize();
@@ -1119,9 +1119,9 @@ void RagnarosAbility2::UpdateFromServer()
 
 							angle = angle * _totargetRotationSpeed * _dt;
 
-							Vec3 myRot = _transform.lock()->GetLocalRotation();
+							Vec3 myRot = _transform->GetLocalRotation();
 							myRot.y += angle;
-							_transform.lock()->SetLocalRotation(myRot);
+							_transform->SetLocalRotation(myRot);
 						}
 					}
 				}
@@ -1133,9 +1133,9 @@ void RagnarosAbility2::UpdateFromServer()
 
 void RagnarosAbility2::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -1155,33 +1155,33 @@ void RagnarosEncounterEvent1::Enter(const shared_ptr<AIController>& controller, 
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Submerged");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Submerged");
 		}
 
-		_targetList = _controller.lock()->GetTargetList();
+		_targetList = _controller->GetTargetList();
 	}
 }
 
 void RagnarosEncounterEvent1::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		if (_targetList.lock()->size() > 0)
+		if (_targetList->size() > 0)
 		{
 			map<float, shared_ptr<TargetDesc>> ToTargetList;
 
-			for (const auto& target : *_targetList.lock())
+			for (const auto& target : *_targetList)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
 				Vec3 targetPos = target->Target->GetTransform()->GetLocalPosition();
 				targetPos.y = myPos.y;
 				bool& isAlive = target->Target->GetComponent<CharacterController>()->_isAlive;
@@ -1201,7 +1201,7 @@ void RagnarosEncounterEvent1::Update()
 
 				if (FinalTarget != nullptr)
 				{
-					_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+					_controller->SetTargetTransform(FinalTarget->GetTransform());
 					Out(L"RagnarosEncounterEvent2");
 				}
 			}
@@ -1211,15 +1211,15 @@ void RagnarosEncounterEvent1::Update()
 
 void RagnarosEncounterEvent1::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		if (_targetList.lock()->size() > 0)
+		if (_targetList->size() > 0)
 		{
 			map<float, shared_ptr<TargetDesc>> ToTargetList;
 
-			for (const auto& target : *_targetList.lock())
+			for (const auto& target : *_targetList)
 			{
-				Vec3 myPos = _transform.lock()->GetLocalPosition();
+				Vec3 myPos = _transform->GetLocalPosition();
 				Vec3 targetPos = target->Target->GetTransform()->GetLocalPosition();
 				targetPos.y = myPos.y;
 				bool& isAlive = target->Target->GetComponent<CharacterController>()->_isAlive;
@@ -1239,7 +1239,7 @@ void RagnarosEncounterEvent1::UpdateFromServer()
 
 				if (FinalTarget != nullptr)
 				{
-					_controller.lock()->SetTargetTransform(FinalTarget->GetTransform());
+					_controller->SetTargetTransform(FinalTarget->GetTransform());
 					Out(L"RagnarosEncounterEvent2");
 				}
 			}
@@ -1249,9 +1249,9 @@ void RagnarosEncounterEvent1::UpdateFromServer()
 
 void RagnarosEncounterEvent1::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -1289,16 +1289,16 @@ void RagnarosEncounterEvent2::Enter(const shared_ptr<AIController>& controller, 
 		_controller = controller;
 		_prevTransition = prevTransition;
 
-		if (_controller.lock()->GetTransform() != nullptr)
-			_transform = _controller.lock()->GetTransform();
+		if (_controller->GetTransform() != nullptr)
+			_transform = _controller->GetTransform();
 
-		if (_controller.lock()->GetAnimator() != nullptr)
-			_animator = _controller.lock()->GetAnimator();
+		if (_controller->GetAnimator() != nullptr)
+			_animator = _controller->GetAnimator();
 
-		if (_animator.lock() != nullptr)
+		if (_animator != nullptr)
 		{
-			_animator.lock()->SetFrameEnd(false);
-			_animator.lock()->SetNextAnimation(L"Birth");
+			_animator->SetFrameEnd(false);
+			_animator->SetNextAnimation(L"Birth");
 		}
 
 		_eventSound->Play(false);
@@ -1307,9 +1307,9 @@ void RagnarosEncounterEvent2::Enter(const shared_ptr<AIController>& controller, 
 
 void RagnarosEncounterEvent2::Update()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		if (_animator.lock()->GetFrameEnd())
+		if (_animator->GetFrameEnd())
 		{
 			Out(L"RagnarosBattle");
 		}
@@ -1318,9 +1318,9 @@ void RagnarosEncounterEvent2::Update()
 
 void RagnarosEncounterEvent2::UpdateFromServer()
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		if (_animator.lock()->GetFrameEnd())
+		if (_animator->GetFrameEnd())
 		{
 			Out(L"RagnarosBattle");
 		}
@@ -1329,9 +1329,9 @@ void RagnarosEncounterEvent2::UpdateFromServer()
 
 void RagnarosEncounterEvent2::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }
 
@@ -1359,8 +1359,8 @@ void RagnarosAllDeadEvent::UpdateFromServer()
 
 void RagnarosAllDeadEvent::Out(const wstring& nextTransition)
 {
-	if (_controller.lock() != nullptr)
+	if (_controller != nullptr)
 	{
-		_controller.lock()->SetCurrentFsmStrategy(_name, nextTransition);
+		_controller->SetCurrentFsmStrategy(_name, nextTransition);
 	}
 }

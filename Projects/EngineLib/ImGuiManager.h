@@ -57,7 +57,7 @@ private:
 	float _mp = 1.0f;
 	char* _name;
 	//Player AbilitySlot
-	weak_ptr<AbilitySlot> _playerAbilitySlot;
+	shared_ptr<AbilitySlot> _playerAbilitySlot;
 	//Picked Object Stat
 	float _pickedHp = 1.0f;
 	//Rebirth

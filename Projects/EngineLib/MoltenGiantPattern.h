@@ -15,7 +15,7 @@ public:
 	MoltenGiantStand();
 	virtual ~MoltenGiantStand();
 private:
-	weak_ptr<TargetList>	_targetList;
+	shared_ptr<TargetList>	_targetList;
 	float					_traceRadius = 0.f;
 	float					_attackRange = 0.f;
 public:
@@ -79,8 +79,8 @@ public:
 	MoltenGiantTrace();
 	virtual ~MoltenGiantTrace();
 private:
-	weak_ptr<TargetList>	_targetList;
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<TargetList>	_targetList;
+	shared_ptr<Transform>		_targetTransform;
 	uint16					_moveSpeed = 0;
 	float					_dt = 0.f;
 	float					_traceRadius = 0.f;
@@ -118,8 +118,8 @@ public:
 	MoltenGiantBattle();
 	virtual ~MoltenGiantBattle();
 private:
-	weak_ptr<TargetList>	_targetList;
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<TargetList>	_targetList;
+	shared_ptr<Transform>		_targetTransform;
 	float					_dt = 0.f;
 	float					_traceTime = 0.f;
 	float					_traceWaitingTime = 0.75f;
@@ -141,7 +141,7 @@ public:
 	MoltenGiantAttack();
 	virtual ~MoltenGiantAttack();
 private:
-	weak_ptr<Transform>		_targetTransform;
+	shared_ptr<Transform>		_targetTransform;
 	shared_ptr<Sounds>		_attack1Sound;
 	shared_ptr<Sounds>		_attack2Sound;
 	float					_dt = 0.f;
